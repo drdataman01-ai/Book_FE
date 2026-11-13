@@ -6,7 +6,7 @@
 \usepgfplotslibrary{fillbetween}
 \definecolor{fenavy}{HTML}{1B2A6B}
 \definecolor{fegray}{HTML}{4D4D4D}
-
+\usetikzlibrary{calc,decorations.pathreplacing}
 
 %\usepackage[top=1in, bottom=1in]{geometry} % Adjust the margins as needed
 \usepackage{pdfpages}
@@ -209,8 +209,7 @@
     },
 }
 \makeatother
-% Callouts (What Failed, Lab at a glance, ...)
-\definecolor{fenavy}{HTML}{1B2A6B}
+
 \newtcolorbox{callout}{%
   breakable, enhanced,
   colback=white, colframe=fenavy, boxrule=0.5pt, arc=1mm,
@@ -419,55 +418,59 @@ Comprehensive TEX Archive Network (CTAN)\\
 \input{chapters/preface.tex}
 
 
-% ---- Part I: How evidence works
-\part{How Evidence Works}
-\include{chapters/ch01}   % 1  Why Prices Are Hard to Predict, and Why Claims Need Testing
-\include{chapters/ch02}   % 2  Financial Data and How to Use It Well
 
-% ---- Part II: How to test a claim
-\part{How to Test a Claim}  
-\include{chapters/ch03}
-\include{chapters/ch04}  
-\include{chapters/ch05}
+% ---- Part: Returns, Luck and Data
+\part{Returns, Luck and Data}
+\include{chapters/ch01}   % 1  Claim: A Strong Track Record Proves Skill
+\include{chapters/ch02}   % 2  Claim: Historical Data Show What a Strategy Would Have Earned
+%\include{chapters/ch03}   % 3  Claim: Individual Investors Hurt Themselves
 
-\include{chapters/ch06}   
-\include{chapters/ch07}   
+% ---- Part: The Classical Cross-Section
+\part{The Classical Cross-Section}
+\include{chapters/ch04}   % 4  Claim: Size and Value Explain Returns That Beta Cannot
+\include{chapters/ch05}   % 5  Claim: Past Winners Keep Winning
 
-% ---- Part III: Returns
-\part{Returns}
-\include{chapters/ch08}  
-\include{chapters/ch08_copilot}   
-\include{chapters/ch09}   
-\include{chapters/ch10}  
+% ---- Part: Predictability through Time
+\part{Predictability through Time}
+\include{chapters/ch06}   % 6  Claim: High-Interest Currencies Depreciate Enough to Offset Their Yield
+\include{chapters/ch07}   % 7  Claim: Forward Rates Predict Future Interest Rates
+\include{chapters/ch08}   % 8  Claim: Simple Trading Rules Beat Buy-and-Hold
+\include{chapters/ch09}   % 9  Claim: Valuations Predict the Equity Premium Out of Sample
 
-% ---- Part IV: Risk and derivatives
-\part{Risk and derivatives}
-\include{chapters/ch11}   % 12 Claim: Volatility Is Predictable
-\include{chapters/ch12}   % 13 The Low-Risk Anomaly
-\include{chapters/ch13}   % 14 Value at Risk and Its Backtests
-\include{chapters/ch14}   % 15 Claim: Selling Options Earns a Reliable Premium
-\include{chapters/ch15}   % 16 Claim: Black--Scholes Delta Hedging Removes Option Risk
+% ---- Part: Volatility and Risk
+\part{Volatility and Risk}
+%\include{chapters/ch10}   % 10 Claim: Volatility Is Predictable
+%\include{chapters/ch11}   % 11 Claim: Value-at-Risk Models Measure Risk Reliably
 
-% ---- Part V: Rates, credit and currencies
-\part{Rates, credit and currencies}
-\include{chapters/ch16}   % 17 Claim: Forward Rates Predict Future Interest Rates
-\include{chapters/ch17}   % 18 Claim: Credit Spreads Compensate Mainly for Expected Default Losses
-\include{chapters/ch18}   % 19 Claim: High-Interest Currencies Depreciate Enough to Offset Their Yield
+% ---- Part: Portfolios and Dependence
+\part{Portfolios and Dependence}
+%\include{chapters/ch12}   % 12 Claim: Optimized Portfolios Beat Naive Ones
+%\include{chapters/ch13}   % 13 Claim: Diversification Fails When You Need It Most
 
-% ---- Part VI: Portfolios
-\part{Portfolios}
-\include{chapters/ch20}   % 20 Claim: Diversification Fails When You Need It Most
+% ---- Part: Derivatives and Credit
+\part{Derivatives and Credit}
+%\include{chapters/ch14}   % 14 Claim: Delta Hedging Removes Option Risk
+%\include{chapters/ch15}   % 15 Claim: Credit Spreads Mainly Reflect Expected Defaults
+%\include{chapters/ch16}   % 16 Claim: Selling Options Earns a Reliable Premium
 
-% ---- Part VII: New methods
-\part{New methods}
-\include{chapters/ch22}   % 21 Claim: Foundation Models Beat Classical Forecasts
-\include{chapters/ch23}   % 22 Claim: Language Models Can Read the News and Earn Returns
+% ---- Part: The Reckoning: Costs, Low Risk and Replication
+\part{The Reckoning: Costs, Low Risk and Replication}
+%\include{chapters/ch17}   % 17 Claim: A Profitable Backtest Is Profitable to Trade
+%\include{chapters/ch18}   % 18 Claim: Low-Risk Stocks Beat High-Risk Stocks
+%\include{chapters/ch19}   % 19 Claim: Most Published Anomalies Fail to Replicate
 
-% ---- Part VIII: Investors and research
-\part{Investors and research}
-\include{chapters/ch24}   % 23 Claim: Individual Investors Hurt Themselves
-\include{chapters/ch25}   % 24 From Claim to Study: Research Design in Empirical Finance
-\include{chapters/ch26}   % 25 Capstone: Replicating a Finance Claim
+% ---- Part: Machine Learning and Foundation Models
+\part{Machine Learning and Foundation Models}
+%\include{chapters/ch20}   % 20 Claim: Machine Learning Predicts Returns Better Than Linear Models
+%\include{chapters/ch21}   % 21 Claim: Foundation Models Forecast Better Than Classical Methods
+%\include{chapters/ch22}   % 22 Claim: Transformers Price Stocks Better Than Factor Models
+%\include{chapters/ch23}   % 23 Claim: Foundation Models Trained on Market Data Beat GARCH
+
+% ---- Part: Capstone
+\part{Capstone}
+%\include{chapters/ch24}   % 24 Capstone: Replicating a Finance Claim
+
+
 
 % ch04.tex (data mining, multiple testing) has been dropped and is not included.
 
