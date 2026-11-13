@@ -1,0 +1,657 @@
+% Chapter 4 -- Out-of-Sample Evaluation (file ch05.tex, label ch:05)
+% Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
+% Defines the callout box only if the preamble has not.
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+\@ifundefined{callout}{%
+  \newtcolorbox{callout}{breakable, enhanced,
+    colback=white, colframe=gray!70, boxrule=0.5pt, arc=1mm,
+    borderline west={2.5pt}{0pt}{gray!70},
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
+\chapter{Out-of-Sample Evaluation}
+\label{ch:05}
+
+
+Every claim about forecasting, however simple or sophisticated the model behind it, has to pass the out-of-time test. This chapter builds the tools for it: loss functions\index{loss function} and benchmarks, walk-forward\index{walk-forward evaluation} designs that use only past information, the forms of leakage\index{leakage} that let the future slip into a backtest\index{backtest}, and the statistics that decide whether one forecast beats another. It then uses those tools on one of the most influential studies in empirical finance.
+
+By the early 2000s, dozens of published papers had found variables that predicted the stock market's excess return\index{return!excess}: the dividend--price ratio\index{valuation ratios!dividend yield}, interest rates, yield spreads, inflation\index{inflation}, corporate issuance and more. Each had been significant in a regression on historical data, and predictability of the equity premium\index{equity premium} was widely taught as a fact. Would an investor who had used these variables in real time, knowing only what was known at each date, have forecast better than someone who simply assumed the average past return? (Amit Goyal and Ivo Welch, 2008)
+
+The claim on trial\index{claims-on-trial method} is: \textbf{a predictor that is statistically significant\index{statistical significance} in-sample\index{in-sample versus out-of-sample} will forecast the equity premium better than the historical mean\index{historical-mean benchmark} out of sample, and well enough to be worth using.}
+
+Every model in this book, from a factor model\index{factor model} to a neural network\index{neural network}, is first estimated on data that are already known. Whether its in-sample success carries into the future is the question that decides whether it is useful, and the Goyal--Welch\index{Goyal--Welch critique} study is an example of how to answer it.
+
+By the end of the chapter you will be able to:
+
+\begin{itemize}
+  \item explain why in-sample $R^2$ flatters complex models, and why in-sample significance is a poor guide to out-of-sample performance;
+  \item design a walk-forward evaluation that uses only information available at each forecast date, with expanding or rolling windows\index{walk-forward evaluation!rolling window};
+  \item recognize and remove the common forms of leakage, including the overlapping-target leak that purging\index{purging and embargoing} and embargoing prevent;
+  \item choose a benchmark that is hard to beat, and measure performance against it with the out-of-sample $R^2$\index{out-of-sample $R^2$}, the Clark--West\index{Clark--West test} and Diebold--Mariano\index{Diebold--Mariano test} tests, White's Reality Check\index{White's Reality Check} for multiple testing, and economic value;
+  \item summarize what Goyal and Welch (2008) found, what the replies to it showed, and what the remedies of restricted and combined forecasts\index{combination forecast} can and cannot achieve.
+\end{itemize}
+
+In the lab you will replicate Goyal and Welch's study with their own updated data. You will regress the equity premium on each of fourteen classic predictors, forecast it month by month from 1965 using only the information available at each date, and plot, predictor by predictor, the running record of when each forecast beat the historical mean and when it lost. 
+
+Chapter~\ref{ch:21} applies the same tools to the forecasting claim in modern finance, that machine learning\index{machine learning} finds return predictability\index{return predictability} that simpler models miss.
+
+\section{Foundations: the basics of forecasting}
+\label{sec:05-foundations}
+
+Let's understand a few basics.
+
+\subsection{Information sets}
+
+Once we know how a forecast will be judged, the next question is what it may be built from. A forecast made at time $t$ may use only the \textbf{information set}\index{forecasting!information set|textbf} available at $t$: past prices, published data, and models estimated on past observations. Everything in this chapter follows from enforcing that rule.
+
+\subsection{Training, validation and test data}
+
+To provide that check, forecasters, and machine-learning researchers in particular, separate data into three parts:
+
+\begin{itemize}
+  \item a \textbf{training set}\index{training, validation and test sets|textbf} to estimate the model;
+  \item a \textbf{validation set} to choose among models or tune settings;
+  \item a \textbf{test set}, used once, to measure performance.
+\end{itemize}
+
+In time series the order matters: the training data must come before the test data, so random splits used for independent observations are not valid. Kuo (2024b, Section 2.3.1) describes this in-time and out-of-time data split in detail. Figure~\ref{fig:21-split} shows the split used in the most influential machine-learning study of stock returns. Refitting the models as the test period advances keeps the split honest, and Section~\ref{sec:05-walkforward} turns that idea into a full evaluation design.
+
+\subsection{In-sample \texorpdfstring{$R^2$}{R2}}
+
+After a predictive regression is estimated, the usual way to summarize its fit is the in-sample $R^2$. For a regression judged on the same data it was estimated on,
+\begin{equation}
+  R^2 = 1 - \frac{\text{sum of squared residuals}}{\text{total sum of squares}}
+  \label{eq:05-r2}
+\end{equation}
+where the total sum of squares measures how far the outcomes vary around their own mean. This $R^2$ can never be negative, and adding variables can never reduce it. That is why in-sample fit flatters complex models, and why this chapter judges forecasts out of sample instead.
+
+\section{In-sample fit versus out-of-sample performance}
+\label{sec:05-insample}
+
+The standard test of return predictability is a regression of next period's excess return on a variable known today:
+\begin{equation}
+  r_{t+1} = \alpha + \beta x_t + \varepsilon_{t+1}
+  \label{eq:05-pred}
+\end{equation}
+
+If $\beta$ is significantly different from zero, $x$ is said to predict returns. Fama and French (1988) and Campbell and Shiller (1988) used regressions like this to argue that the dividend--price ratio predicts stock returns, and dozens of other variables followed: interest rates, yield spreads, inflation, the volume of share issuance, measures of risk. By the early 2000s, predictability of the equity premium was widely regarded as a stylized fact\index{stylized facts of returns}.
+
+Goyal and Welch (2008) asked a simple question of these predictors. Suppose an investor in 1965 had used each one, estimating the regression with data only up to the forecast date and re-estimating it every month. Would she have forecast better than someone who simply used the average past return? For most predictors the answer was no. Many that were significant in-sample produced out-of-sample forecasts worse than the historical mean, and the few that helped did so only in some decades. Their 2024 update with Zafirov found the same pattern for predictors proposed since.
+
+Three forces open the gap between fit and forecast.
+
+\textbf{Estimation error.}\index{estimation error|textbf} A forecaster must estimate $\alpha$ and $\beta$ from a finite sample, and the errors in those estimates become errors in her forecasts. When the true predictable share of returns is tiny, as it is for monthly stock returns, this noise can outweigh the signal. 
+
+\textbf{Instability.} Relationships in markets change. A predictor may work in one era and not another because the economy changes, because investors learn, or because the predictor itself was an artifact of one period. 
+
+\textbf{Selection.} Predictors that appear in the literature were selected partly because they fit the data their discoverers had. 
+
+ 
+A fourth problem comes from the predictors themselves, and it makes the in-sample evidence look stronger than it really is.
+Most popular predictors, such as valuation ratios and interest rates, are highly persistent, and their surprises are correlated with return surprises. Stambaugh\index{Stambaugh bias} (1999) showed that this biases the estimated slope in finite samples and makes conventional t-statistics\index{t-statistic} too large. 
+To see why this matters, let the predictor follows $x_{t+1} = \theta + \rho x_t + v_{t+1}$, where $\rho$ is close to one. In a finite sample, the OLS estimate $\hat{\rho}$ tends to be too low. This error spills over into the slope $\hat{\beta}$, because return shocks and predictor shocks move together. We can split the return shock into two parts, one that moves with the predictor shock and one that does not, so that $u_{t+1} = \gamma v_{t+1} + e_{t+1}$ with $\gamma = \sigma_{uv}/\sigma_v^2$. As a result, the error in the slope inherits the error in the autoregressive coefficient.
+
+
+Because in-sample evidence can be inflated in all of these ways, the most convincing test of a predictor is whether it still works on data it has not yet seen, which is the idea behind walk-forward evaluation.
+
+\section{Walk-forward evaluation: expanding and rolling windows}
+\label{sec:05-walkforward}
+
+A \textbf{walk-forward}\index{walk-forward evaluation|textbf} (or recursive) evaluation replays history as a forecaster would have lived it. At each date, the forecaster may use only information that was actually available at that date, and the forecast is checked against the outcome only after that outcome has occurred. The procedure has four steps.
+
+\begin{enumerate}
+  \item \textbf{Choose a first forecast date.} Split the sample at a date $t_0$, so that the observations before $t_0$ serve only to estimate the model and the observations after it serve only to evaluate it. The initial training period must be long enough to estimate the model with reasonable precision. With annual data and one predictor, twenty years is a common minimum, and a model with more parameters needs a longer period. This choice should be made before any results are seen, because moving $t_0$ until the results look good is itself a form of data mining.
+
+  \item \textbf{Estimate the model using only data available at that date.} At date $t$, fit the model to the observations up to $t$ and to nothing later. ``Available'' means available to a real forecaster, which is stricter than ``dated before $t$.'' 
+
+  \item \textbf{Forecast the next period, and record the forecast and the benchmark's forecast.} Using the estimated model and the predictor value at $t$, form the forecast $\hat{r}_{t+1}$. At the same time, compute the benchmark forecast from the same window. For return prediction, the usual benchmark is the historical mean $\bar{r}_t$, which is the forecast of an investor who believes returns are unpredictable. Once the outcome $r_{t+1}$ arrives, record both forecast errors, $r_{t+1} - \hat{r}_{t+1}$ and $r_{t+1} - \bar{r}_t$. The forecasts are never revised after the fact.
+
+  \item \textbf{Move forward one period, add the new observation, and repeat.} Advance to $t+1$, add the newly observed data to the information set, and return to Step~2. Under an expanding window, the training sample grows by one observation at every step. Under a rolling window, it adds the newest observation and drops the oldest, so its length stays fixed at $w$. The loop ends when the last observation in the sample has been forecast.
+\end{enumerate}
+
+The result is a series of genuine forecasts, each made without knowledge of what followed, together with a matching series of benchmark forecasts. Evaluation statistics are computed on these two series alone. The most common is the \textbf{out-of-sample $R^2$}\index{out-of-sample R-squared@out-of-sample $R^2$} of Campbell and Thompson (2008),
+\begin{equation}
+R^2_{\text{OS}} = 1 - \frac{\sum_{t} \left( r_{t+1} - \hat{r}_{t+1} \right)^2}{\sum_{t} \left( r_{t+1} - \bar{r}_t \right)^2},
+\label{eq:05-r2os}
+\end{equation}
+which is positive only when the model's forecasts have a smaller mean squared error than the historical mean.
+
+\begin{center}
+\small
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.24\linewidth}>{\raggedright\arraybackslash}p{0.24\linewidth}@{}}
+\toprule
+Window & Training data at each date & Strength & Weakness \\
+\midrule
+Expanding & All data from the start of the sample & Most data, lowest estimation error & Slow to adapt if the relationship changes \\
+Rolling & The most recent $w$ periods only & Adapts to change & More estimation error; results depend on $w$ \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    x=0.36cm, y=0.5cm,
+    est/.style={fill=fenavy!18, draw=white, line width=0.6pt},
+    fc/.style={fill=fenavy, draw=white, line width=0.6pt},
+    lab/.style={anchor=east, font=\small},
+    head/.style={anchor=west, font=\small\bfseries},
+  ]
+    \def\wfOff{16}  % horizontal start of the right-hand panel
+
+    % ---------- Expanding window (left) ----------
+    \node[head] at (0,1.2) {Expanding window};
+    \foreach \wfS in {1,...,5} {
+      \pgfmathsetmacro{\wfY}{-\wfS+1}
+      \node[lab] at (-0.3,\wfY) {Step \wfS};
+      \fill[est] (0,\wfY-0.3) rectangle (8+\wfS,\wfY+0.3);
+      \fill[fc]  (8+\wfS,\wfY-0.3) rectangle (9+\wfS,\wfY+0.3);
+    }
+
+    % ---------- Rolling window (right) ----------
+    \node[head] at (\wfOff,1.2) {Rolling window};
+    \foreach \wfS in {1,...,5} {
+      \pgfmathsetmacro{\wfY}{-\wfS+1}
+      \fill[est] (\wfOff+\wfS-1,\wfY-0.3) rectangle (\wfOff+8+\wfS,\wfY+0.3);
+      \fill[fc]  (\wfOff+8+\wfS,\wfY-0.3) rectangle (\wfOff+9+\wfS,\wfY+0.3);
+    }
+
+    % Time axis under both panels
+    \draw[-stealth, thin] (0,-5) -- (\wfOff+15.2,-5)
+      node[anchor=west, font=\small] {time};
+
+    % Legend
+    \fill[est] (4,-6.35) rectangle (5.5,-5.65);
+    \node[anchor=west, font=\small] at (5.8,-6) {training data};
+    \fill[fc]  (\wfOff,-6.35) rectangle (\wfOff+1.5,-5.65);
+    \node[anchor=west, font=\small] at (\wfOff+1.8,-6) {forecast period};
+  \end{tikzpicture}
+  \caption{Walk-forward evaluation. At each step the model is estimated on the
+    light bar and forecasts the dark one; then the evaluation moves forward one
+    period. An expanding window keeps all past data; a rolling window keeps a
+    fixed length and drops the oldest observations.}
+  \label{fig:05-windows}
+\end{figure;
+
+No window is right in general. The choice is a bet on whether the relationship is stable (favoring expanding windows\index{walk-forward evaluation!expanding window}) or changing (favoring rolling ones). The danger is choosing the window after seeing which one works best. Decide the window, the first forecast date and the minimum training period before looking at the results, and report sensitivity to the alternatives.
+
+\textbf{Restrictions from theory.} Campbell and Thompson (2008)\index{Campbell--Thompson restrictions} showed that two simple restrictions, motivated by economics rather than statistics, improve many predictors' out-of-sample performance:
+
+\begin{itemize}
+  \item \textbf{If the estimated slope has the opposite sign to the one theory predicts, use the historical mean instead.} Because the true signal in returns is small and the estimation noise is large, a wrong-sign slope is far more likely to be noise than evidence that theory is wrong. Forecasts built on such a slope would mostly point the wrong way, so setting the slope to zero, which is the same as using the historical mean, removes them at little cost.
+  \item \textbf{Never forecast a negative equity premium, since investors would not hold stocks expecting to lose.} 
+\end{itemize}
+
+Notice that \textbf{machine learning does not remove the need for walk-forward evaluation.} In next chapter we will learn how Gu, Kelly and Xiu (2020) follow this design.
+In time series, the remedy is to replace random folds with a walk-forward design, as L\'opez de Prado (2018) has explained. Hyperparameters must also be tuned inside each training window rather than on the test period. 
+
+Let's understand more about leakage.
+
+\section{Leakage: look-ahead, publication lags, purging and embargoing}
+\label{sec:05-leakage}
+
+\textbf{Leakage}\index{leakage|textbf} is any way that information from the test period reaches the model or the evaluation. It is the most common reason a backtest looks better than live trading. Several forms are worth checking.
+
+\subsection{Full-sample estimation} 
+
+The classic error is to estimate a model on the whole sample and then ``test'' it on part of that same sample. Because the coefficients were fitted to the test period, they already know how it turned out. The same problem arises with every other step that is fitted to data, such as standardizing variables with full-sample means and standard deviations\index{standard deviation}, choosing lags, or \textbf{winsorizing}\index{winsorizing|textbf} (capping extreme values at chosen percentiles) with percentiles taken from the full sample. Each of these steps must use only the data available at the forecast date.
+
+\subsection{Hindsight in choosing the model} 
+
+Suppose a researcher picks a predictor, or one model among several, because it performed well over the whole sample. Even if that model is then evaluated walk-forward, the choice itself used future information, which is a form of look-ahead\index{look-ahead bias}. The honest approach makes the choice at each date using only past data.
+
+
+\subsection{Publication lags and revisions}
+
+\textbf{Publication lags and revisions.}\index{publication lag|textbf} A variable dated March is not necessarily known in March. Consumer prices for March are published in April, company earnings arrive weeks or months after the quarter ends, and many macroeconomic series are revised for years after their first release. Treating the final revised value as if it had been known on its reference date is leakage, and for this reason Goyal and Welch lag inflation by an extra month. For macroeconomic predictors, real-time vintages\index{data!vintages} such as the ALFRED archive of the Federal Reserve Bank of St.\ Louis record what was known on each date. The discussion of point-in-time\index{data!point-in-time} data in Chapter~\ref{ch:02} (Section~\ref{sec:02-lookahead}) applies throughout.
+
+
+\subsection{Overlapping targets and purging} 
+
+Suppose the target is the return over the next 12 months, so an observation formed in June is paired with the return through the following June. If the model is trained at the end of December, the observations formed from January through November have targets that end after December. Those targets contain returns the forecaster could not yet have known, so the observations must be dropped from the training set (Figure~\ref{fig:05-purging}). L\'opez de Prado (2018) calls this \textbf{purging}\index{purging and embargoing|textbf}: removing from the training set every observation whose target overlaps the test period.
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    x=0.28cm, y=0.42cm,
+    lab/.style={anchor=west, font=\small, align=left},
+  ]
+    % Months relative to the forecast date (0). Each observation is formed at
+    % month m and paired with the 12-month return from m to m+12.
+
+    % Kept: target ends before the forecast date
+    \foreach \wfM [count=\wfR from 0] in {-17,-15,-13} {
+      \draw[fenavy, thick] (\wfM,\wfR) -- (\wfM+12,\wfR);
+      \fill[fenavy] (\wfM,\wfR) circle (2.6pt);
+    }
+
+    % Purged: target runs past the forecast date
+    \foreach \wfM [count=\wfR from 3] in {-11,-9,-7,-5,-3,-1} {
+      \draw[gray!55, densely dashed] (\wfM,\wfR) -- (\wfM+12,\wfR);
+      \fill[gray!55] (\wfM,\wfR) circle (2.6pt);
+    }
+
+    % Forecast date
+    \draw[fenavy, thick] (0,-1.5) -- (0,8.6);
+    \node[fenavy, font=\small, anchor=south, align=center] at (0,8.6)
+      {forecast date\\(end of December)};
+
+    % Time axis
+    \draw[-stealth, thin] (-18.5,-1) -- (13,-1)
+      node[anchor=west, font=\small] {months};
+
+    % Labels
+    \node[lab, gray] at (13.5,7) {purged: target runs\\past the forecast date};
+    \node[lab, fenavy] at (1.2,0.7) {kept: 12-month target\\ends before the forecast};
+    \node[font=\small, gray!40!black, anchor=north, align=center]
+      at (-9,-1.6) {training observations (dot $=$ date formed;\\
+                    line $=$ 12-month return it is trained to predict)};
+  \end{tikzpicture}
+  \caption{Purging. Each training observation is paired with the 12-month
+    return that follows it. Observations whose 12-month target runs past the
+    forecast date (dashed) contain returns the forecaster could not yet know,
+    so they are removed from the training set.}
+  \label{fig:05-purging}
+\end{figure}
+
+
+\subsection{Embargoing} 
+
+To explain embargoing, we will first explain what $k$-fold cross-validation is.\index{cross-validation} 
+
+Cross-validation is the standard way machine learning estimates how well a model will perform on new data. The sample is split into $k$ equal blocks, called folds. The model is trained on $k-1$ folds and tested on the remaining one, and this is repeated $k$ times so that each fold serves as the test set exactly once (Figure~\ref{fig:05-kfold}). The $k$ test scores are then averaged. The method assumes that observations are independent, so the order of the folds does not matter. Financial time series violate this assumption, because nearby observations are correlated and some training folds come after the test fold. This is why cross-validation on financial data needs purging and embargoing.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    x=0.36cm, y=0.5cm,
+    est/.style={fill=fenavy!18, draw=white, line width=0.6pt},
+    fc/.style={fill=fenavy, draw=white, line width=0.6pt},
+    lab/.style={anchor=east, font=\small},
+  ]
+    % Five folds of equal width (6 units each); the test fold moves one step per round
+    \foreach \kfR in {1,...,5} {
+      \pgfmathsetmacro{\kfY}{-\kfR+1}
+      \node[lab] at (-0.3,\kfY) {Round \kfR};
+      \foreach \kfF in {1,...,5} {
+        \ifnum\kfF=\kfR
+          \fill[fc]  ({6*(\kfF-1)},\kfY-0.3) rectangle ({6*\kfF},\kfY+0.3);
+        \else
+          \fill[est] ({6*(\kfF-1)},\kfY-0.3) rectangle ({6*\kfF},\kfY+0.3);
+        \fi
+      }
+    }
+
+    % Time axis
+    \draw[-stealth, thin] (0,-5) -- (30.5,-5) node[anchor=west, font=\small] {time};
+
+    % Legend
+    \fill[est] (6,-6.35) rectangle (7.5,-5.65);
+    \node[anchor=west, font=\small] at (7.8,-6) {training folds};
+    \fill[fc]  (17,-6.35) rectangle (18.5,-5.65);
+    \node[anchor=west, font=\small] at (18.8,-6) {test fold};
+  \end{tikzpicture}
+  \caption{Five-fold cross-validation. The sample is split into five folds, and
+    in each round the model is trained on four folds and tested on the fifth.
+    Except in the last round, some training data come after the test fold.}
+  \label{fig:05-kfold}
+\end{figure}
+
+\textbf{Embargoing.} In $k$-fold cross-validation\index{cross-validation}, training data surround the test fold, so leakage can come from both sides. Observations before the test fold are purged, as described above. Observations just after it are \textbf{embargoed}, meaning a short block of them is dropped from training, because they are still correlated with the test period and would let the model learn about it indirectly (Figure~\ref{fig:05-embargo}). In a walk-forward evaluation, training data come only before the forecast, so purging alone is enough.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    x=0.36cm, y=0.5cm,
+    est/.style={fill=fenavy!18, draw=white, line width=0.6pt},
+    fc/.style={fill=fenavy, draw=white, line width=0.6pt},
+    prg/.style={fill=fenavy!45, draw=white, line width=0.6pt},
+    emb/.style={pattern=north east lines, pattern color=fenavy!70, draw=fenavy!70, line width=0.4pt},
+    head/.style={anchor=west, font=\small\bfseries},
+    brace/.style={decorate, decoration={brace, amplitude=3pt, mirror}, thin},
+  ]
+    % ---------- Cross-validation fold: purged before, embargoed after ----------
+    \node[head] at (0,1.2) {Cross-validation fold};
+    \fill[est] (0,-0.3)    rectangle (8,0.3);
+    \fill[prg] (8,-0.3)    rectangle (11,0.3);
+    \fill[fc]  (11,-0.3)   rectangle (18,0.3);
+    \filldraw[emb] (18,-0.3) rectangle (21,0.3);
+    \fill[est] (21,-0.3)   rectangle (31,0.3);
+    \draw[brace] (8,-0.45) -- (11,-0.45) node[midway, below=3pt, font=\scriptsize] {purged};
+    \draw[brace] (11,-0.45) -- (18,-0.45) node[midway, below=3pt, font=\scriptsize] {test fold};
+    \draw[brace] (18,-0.45) -- (21,-0.45) node[midway, below=3pt, font=\scriptsize] {embargoed};
+
+    % Time axis
+    \draw[-stealth, thin] (0,-2.4) -- (31.5,-2.4) node[anchor=west, font=\small] {time};
+
+    % Legend
+    \fill[est] (0,-3.75) rectangle (1.5,-3.05);
+    \node[anchor=west, font=\small] at (1.8,-3.4) {training data};
+    \fill[fc]  (8.5,-3.75) rectangle (10,-3.05);
+    \node[anchor=west, font=\small] at (10.3,-3.4) {test fold};
+    \fill[prg] (15.5,-3.75) rectangle (17,-3.05);
+    \node[anchor=west, font=\small] at (17.3,-3.4) {purged};
+    \filldraw[emb] (22,-3.75) rectangle (23.5,-3.05);
+    \node[anchor=west, font=\small] at (23.8,-3.4) {embargoed};
+  \end{tikzpicture}
+  \caption{Purging and embargoing. In cross-validation, training data surround
+    the test fold, so observations are purged before it and embargoed after it.
+    In a walk-forward evaluation, training data come only before the forecast,
+    so purging alone is enough.}
+  \label{fig:05-embargo}
+\end{figure}
+
+
+\subsection{Serial correlation\index{autocorrelation}}
+
+\textbf{Serial correlation\index{autocorrelation} across the boundary.} When training data can come after the test period, observations just after the test period may still carry information about it through serially correlated features\index{features and targets}. L\'opez de Prado's \textbf{embargo} drops a short period of training data immediately after each test block. In a pure walk-forward design, where training always precedes testing, purging is needed but an embargo is not.
+
+\subsection{Survivorship and selection in the data} 
+
+\textbf{Survivorship and selection in the data.} 
+Datasets of current index members, surviving funds or listed firms build in knowledge of who survived. Chapter~\ref{ch:02} covered these traps; they matter as much for forecasting as for backtesting.
+
+\section{Benchmarks that are hard to beat}
+\label{sec:05-benchmarks}
+
+A forecast is only as impressive as the alternative it beats. Choosing a weak benchmark, such as zero, or a model nobody would use, is one of the easiest ways to make a forecasting method look good. The benchmarks that matter are the simple ones a sensible person would use without any model at all. Table~\ref{tab:05-benchmarks} lists the natural benchmark for each type of quantity commonly forecast in finance, along with the reason each one is hard to beat.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Natural benchmarks for common financial forecasts.}
+\label{tab:05-benchmarks}
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.18\linewidth}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Quantity forecast & Natural benchmark & Why it is hard to beat \\
+\midrule
+Equity premium & Historical mean of past returns & Only one parameter to estimate; no exposure to unstable relationships \\
+Exchange rates, asset prices & Random walk: tomorrow equals today & Meese and Rogoff (1983) found that structural exchange-rate models did not beat it, a result that has proved durable \\
+Interest rates, yields & Random walk, or the forward rate & Rates are highly persistent; Chapter~\ref{ch:16} tests the forward rate as a forecast \\
+Volatility & Recent realized volatility, or a simple exponentially weighted average & Volatility clusters, so the recent past is informative; Chapter~\ref{ch:11} tests richer models \\
+Macroeconomic series & Survey consensus, or the last value & Professional forecasters already use most public information \\
+\bottomrule
+\end{tabularx}
+\end{table}
+\footnote{The \textbf{historical mean} is the benchmark for the equity premium because it is what an investor would assume without a forecasting model. It is computed in real time, with the same training data as the model, so that the comparison isolates the value of the predictor. 
+A \textbf{survey consensus}\index{survey forecasts|textbf} is the average forecast of professional forecasters.}
+
+Once a model has produced a series of out-of-sample forecasts, the next step is to judge whether they are better than the benchmark's, and whether that improvement is large enough to matter.
+
+\section{Measuring forecast accuracy: Diebold--Mariano, Clark--West, and White's Reality Check}
+\label{sec:05-accuracy}
+
+A walk-forward evaluation produces two series of forecasts, one from the model and one from the benchmark, and the out-of-sample $R^2$ tells us which series had smaller errors. That alone does not show that the model is better. Returns are so noisy that in any finite sample one forecast will beat the other by chance, so a small positive out-of-sample $R^2$ could easily be luck. We therefore need answers to two further questions. The first is statistical: is the improvement larger than luck alone would produce, both in single pairwise tests and when searching across many candidate models? The second is economic: is the improvement large enough to matter to an investor? This section covers both.
+
+\subsection{Is the difference significant? The Diebold--Mariano test}
+
+Diebold and Mariano (1995) proposed a test of whether two forecasts are equally accurate. The test looks at the difference between the two forecasts' squared errors at each date,
+\begin{equation}
+  d_t = e^2_{\text{bench},t} - e^2_{\text{model},t},
+  \label{eq:05-dm}
+\end{equation}
+where $e$ denotes a forecast error. A positive $d_t$ means the model did better than the benchmark on that date. If the two forecasts are equally accurate, the mean of $d_t$ is zero, so the test is simply a t-test on that mean. For multi-step forecasts, the errors overlap and are serially correlated, so the t-test should use Newey--West\index{standard error!Newey--West (HAC)} standard errors\index{standard error} (Section~\ref{sec:03-se}). Harvey, Leybourne and Newbold (1997) proposed a small-sample correction that is now standard.
+
+\subsection{Why nested models need a different test: Clark--West}
+
+The Diebold--Mariano test works well when the two forecasts come from different models. In return prediction, however, the comparison is almost always between a model and a simpler version of itself, and this case needs a different test. Two models are \textbf{nested} when one is a special case of the other. A predictive regression and the historical mean are nested, because setting $\beta = 0$ in the regression gives the historical mean.
+
+To see the problem, suppose the predictor is useless, so the true $\beta$ is zero. The regression still has to estimate $\beta$, and the estimate is never exactly zero. This estimation noise makes the regression's forecasts slightly worse than the historical mean on average, even though the two models are equally good in truth. The mean of $d_t$ is therefore pushed below zero, and the Diebold--Mariano test rarely finds a useful predictor even when one exists. This matters because the test is biased against exactly the predictors we are looking for, so a researcher who relies on it alone may discard a predictor that carries real information.
+
+Clark and West (2007) corrected this bias by adding back the expected cost of the estimation noise. Their adjusted loss difference is
+\begin{equation}
+  f_t = (r_{t+1} - \bar r_t)^2 - \left[(r_{t+1} - \hat r_{t+1})^2 - (\bar r_t - \hat r_{t+1})^2\right],
+  \label{eq:05-cw}
+\end{equation}
+where $\bar r_t$ is the historical-mean forecast and $\hat r_{t+1}$ is the model's forecast. The last term in brackets is the adjustment. The test is a one-sided\index{hypothesis testing!one-sided and two-sided} t-test of whether the mean of $f_t$ is positive. It is the standard test in the equity-premium literature and should be reported alongside the Diebold--Mariano test.
+
+The two tests can disagree, and the disagreement is informative. Clark--West can find a model significantly informative even when its out-of-sample $R^2$ is slightly negative. This is not a contradiction, because the two measures answer different questions. Clark--West asks whether the predictor carries information at all, while the out-of-sample $R^2$ asks whether this particular estimated forecast beat the historical mean. A predictor can carry real information that is too weak, or too noisily estimated, to improve the forecast in practice.
+
+\subsection{Multiple testing: White's Reality Check and Hansen's SPA}
+
+The Diebold--Mariano and Clark--West tests compare a single model against a benchmark. In practice, researchers and quantitative traders rarely test just one model; they test dozens or hundreds of predictors, lag combinations, or hyperparameters, and report the one that achieved the best out-of-sample performance. 
+
+When searching across $M$ candidate models, the best model's performance is artificially inflated by data mining\index{data mining|textbf}. Even if every model is completely useless, evaluating $M$ random forecasts against a benchmark guarantees that the maximum out-of-sample $R^2$ will often look impressive purely by chance. Standard t-tests evaluate the best model in isolation, ignoring the $M-1$ failed attempts, and produce severely over-optimistic $p$-values.
+
+White (2000)\index{White's Reality Check|textbf} introduced the \textbf{Reality Check} to evaluate whether the best performing model among $M$ candidates genuinely outperforms the benchmark after controlling for multiple testing. Define the loss differential for model $m \in \{1, \dots, M\}$ at date $t$ relative to the benchmark as $d_{m,t} = e^2_{\text{bench},t} - e^2_{m,t}$, and its sample average over $n$ forecast periods as $\bar{d}_m = n^{-1} \sum_{t=1}^n d_{m,t}$. The null hypothesis is that no model in the candidate pool beats the benchmark:
+\begin{equation}
+  H_0: \max_{m=1,\dots,M} E[d_{m,t}] \le 0.
+  \label{eq:05-white-null}
+\end{equation}
+
+Because the exact distribution of $\max_m \bar{d}_m$ under the null depends on the complex dependence structure across the $M$ models and over time, White uses a time-series bootstrap\index{bootstrap!stationary bootstrap}---such as Politis and Romano's (1994) stationary bootstrap---to construct the null distribution. By resampling blocks of historical forecast errors with centered mean differentials, the test generates thousands of pseudo-sample maxima $\max_m \bar{d}_m^{*,b}$ under $H_0$. The $p$-value is the fraction of bootstrapped samples whose maximum performance exceeds the observed sample maximum $\max_m \bar{d}_m$.
+
+Hansen (2005)\index{Hansen's SPA test|textbf} refined White's test with the \textbf{Superior Predictive Ability (SPA)} test. White's Reality Check can be overly conservative if the candidate pool includes many models that perform poorly, because bad models widen the null distribution unnecessarily. Hansen introduced a studentized statistic and a thresholding rule that removes the influence of strictly inferior models, improving test power while maintaining strict control over data-mining bias.
+
+\subsection{Is the difference economically meaningful?}
+
+A significant test tells us that a predictor carries information, but not whether that information is worth acting on. Investors care about returns and risk, not about squared forecast errors, and the two can diverge sharply. Campbell and Thompson (2008) showed that an investor who times the market can gain substantially from an $R^2$ that looks negligible. As a rough guide, the timer's expected excess return rises in proportion to $R^2/S^2$, where $S$ is the market's Sharpe ratio\index{Sharpe ratio} per period. Take a monthly Sharpe ratio of about 0.12, which is about 0.42 a year, and a monthly $R^2$ of 0.5\%. The ratio is then $0.005/0.12^2 \approx 0.35$, so the timer's expected excess return rises by about a third.
+
+Economic value can also be measured directly. Consider a \textbf{mean--variance investor}\index{mean--variance optimization|textbf}, who cares only about the mean and variance of her portfolio's return. She uses each forecast to set her weight in stocks, and her results are compared with those of the same investor using the historical mean. The difference is reported as a gain in \textbf{certainty-equivalent return}\index{certainty-equivalent return|textbf}, which is the riskless return she would accept in place of the risky strategy. This measure expresses a forecast in the unit an investor cares about. However, the answer depends on two choices: her \textbf{risk aversion}\index{risk aversion|textbf}, which is how much expected return\index{return!expected} she demands for each unit of variance, and the limits placed on her portfolio weights. Both choices should be fixed before the evaluation is run.
+
+\section{The claim}
+\label{sec:05-claim}
+
+\begin{callout}
+\textbf{Claim.} A predictor that is statistically significant in-sample will forecast the equity premium better than the historical mean out of sample, and well enough to be worth using.
+\end{callout}
+
+The claim has three parts, and each can fail on its own:
+
+\begin{itemize}
+  \item \textbf{Statistical:} predictors that are significant in-sample produce real-time forecasts with a positive out-of-sample $R^2$ against the historical mean, and the Clark--West test confirms that they carry information.
+  \item \textbf{Robust:} the advantage is spread across the decades, rather than earned in one episode and lost in the rest.
+  \item \textbf{Economic:} an investor who uses the forecasts to set her equity weight is better off, after accounting for risk, than one who assumes a constant expected return.
+\end{itemize}
+
+\section{The original evidence and the debate it started}
+\label{sec:05-evidence}
+
+\textbf{The original proposal.} The case for predictability was built one predictor at a time. Fama and French (1988) and Campbell and Shiller (1988) found that the dividend--price ratio predicted stock returns. Later papers added interest rates, the term spread\index{term spread}, the default spread\index{credit spread!default spread (Baa--Aaa)}, the earnings--price\index{valuation ratios!earnings yield} and book-to-market\index{book-to-market ratio} ratios, new equity issues, inflation and stock-market variance. Each reported a significant slope in a regression like Equation~\eqref{eq:05-pred}, usually estimated on the full sample. Chapter~\ref{ch:07} tells this history in detail for the valuation ratios.
+
+\textbf{The test.}\index{Goyal--Welch critique|textbf} Goyal and Welch (2008) put these predictors through the walk-forward test described earlier in this chapter, using data extended to 2005. Most failed. Their in-sample significance faded on the longer data, their out-of-sample $R^2$ was negative, and their few successes came mainly from the oil shock\index{oil shock of 1973--75} of 1973--75. Even the kitchen-sink regression\index{regression!kitchen-sink}, which used all the predictors at once, did worse than the historical mean. Goyal, Welch and Zafirov (2024) repeated the test about fifteen years later, adding the predictors proposed since 2008, and found the same pattern.
+
+\textbf{Why we still study them.} Few economists doubt that expected returns vary over time, and later work showed that some of this variation can still be used. Campbell and Thompson (2008) found that the restrictions of Section~\ref{sec:05-walkforward} turn many out-of-sample $R^2$ values from negative to small and positive, and that such small values can be economically meaningful (Section~\ref{sec:05-accuracy}). Cochrane (2008) argued that, because dividend growth is not predictable, the present-value identity of Chapter~\ref{ch:07} implies that the dividend--price ratio must predict returns. Rapach, Strauss and Zhou (2010) found that an equal-weighted average of the individual forecasts beat the historical mean consistently, with statistically and economically significant\index{economic significance} gains, because averaging keeps the forecast close to the mean and reduces its variance. The debate also produced most of the tools in this chapter, from walk-forward evaluation to the Clark--West test, so following it is the clearest way to learn how a forecast should be tested.
+
+The evidence therefore contradicts the statistical and robustness\index{robustness} parts of the claim for most single predictors. It is more mixed on the economic part, where restrictions and combinations deliver small but real gains.
+
+\section{Post-publication samples as natural experiments}
+\label{sec:05-postpub}
+
+This section answers a question every reader of a published strategy should ask: how much of the reported return will survive once the strategy is used in practice?
+
+A walk-forward evaluation guarantees that the model never sees the future, but it cannot guarantee the same for the researcher. Anyone designing a test on historical data already knows how history turned out. She knows that the 1970s brought inflation, the 1990s a bull market and 2008 a crisis, and this knowledge can shape her choice of predictors, windows and sample periods without her noticing. The forecasts are out of sample, but the researcher is not.
+
+The only data that no researcher could have fitted are data that did not yet exist when the idea was proposed. Every published predictor therefore comes with a ready-made test: the years after its publication. This is a \textbf{natural experiment}\index{causal inference!natural experiment|textbf}, because the passage of time, not the researcher, supplies the test data.
+
+McLean and Pontiff\index{anomaly!post-publication decay} (2016) used this idea to study 97 published stock-return patterns, or anomalies. They split each anomaly's history into three periods (Figure~\ref{fig:05-postpub}). The first is the original sample, in which the pattern was discovered. The second runs from the end of that sample to the date of publication. These data are new, but no investor could yet have traded on the paper, so any fall in returns here suggests that the original result was partly luck, found by data mining. Returns in this period were 26\% lower. The third period starts after publication, when investors could read the paper and trade on it. Returns were 58\% lower, and the extra decline suggests that investors traded part of the pattern away. Chapter~\ref{ch:10} tests these findings in detail.
+
+
+The same test works for predictors of the market as a whole: compare each predictor's out-of-sample forecasts before and after the year it was first published. The test has two limits. Post-publication data accumulate slowly, so the samples are often short, and a decline after publication can reflect a changed market rather than an overfit result. Post-publication data are still the most honest out-of-sample evidence available.
+
+\begin{callout}
+\textbf{What Failed: the dividend yield.} The dividend--price ratio is a clear example of a predictor that failed after publication. Through the 1980s, it had a strong in-sample record. In the 1990s it fell to the lowest levels in its history, signaling poor returns year after year, while stocks rose strongly. A forecaster using it in real time would have stayed underweight equities through one of the great bull markets. Lettau and Van Nieuwerburgh (2008) argued that a shift in the ratio's long-run mean explains much of this failure, and Chapter~\ref{ch:07} returns to the debate. The lesson for this chapter is about method: a relationship that held across a sample can still fail the person who must use it in real time. For that person, the verdict on the claim that the dividend yield forecasts returns is \textbf{weakens}. The economic logic is sound, but as a real-time forecasting tool it has not delivered.
+\end{callout}
+
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    x=0.36cm, y=0.5cm,
+    seg/.style={draw=white, line width=0.6pt},
+    lab/.style={font=\scriptsize, align=center, anchor=north},
+  ]
+    % Three periods on one time line
+    \fill[fenavy!18, seg] (0,-0.3)  rectangle (14,0.3);
+    \fill[fenavy!45, seg] (14,-0.3) rectangle (20,0.3);
+    \fill[fenavy, seg]    (20,-0.3) rectangle (31,0.3);
+
+    \node[font=\small, anchor=south] at (7,0.4)  {original sample};
+    \node[font=\small, anchor=south] at (17,0.4) {after sample};
+    \node[font=\small, anchor=south] at (25.5,0.4) {after publication};
+
+    \node[lab] at (7,-0.5)  {the pattern\\is discovered};
+    \node[lab] at (17,-0.5) {returns 26\% lower:\\data mining};
+    \node[lab] at (25.5,-0.5) {returns 58\% lower:\\data mining plus\\investors trading on it};
+
+    % Markers
+    \draw[thick] (14,-0.5) -- (14,0.5);
+    \draw[thick] (20,-0.5) -- (20,0.5);
+    \node[font=\scriptsize, anchor=north] at (14,-3.1) {sample ends};
+    \node[font=\scriptsize, anchor=north] at (20,-3.1) {paper published};
+
+    \draw[-stealth, thin] (0,-2.8) -- (31.5,-2.8) node[anchor=west, font=\small] {time};
+  \end{tikzpicture}
+  \caption{The post-publication test of McLean and Pontiff (2016). Returns on
+    97 anomalies are compared across three periods. A decline after the sample
+    ends, before anyone could trade on the paper, points to data mining. The
+    further decline after publication points to investors trading the pattern
+    away.}
+  \label{fig:05-postpub}
+\end{figure}
+
+\section{Lab~\thechapter: replicating Goyal and Welch}
+\label{sec:05-lab}
+
+\begin{callout}
+\textbf{Lab~\ref{ch:05} at a glance.} \emph{Claim on trial:} predictors that are significant in-sample beat the historical mean out of sample. \emph{Data:} Amit Goyal's updated monthly predictor file, the data set behind Goyal and Welch (2008) and Goyal, Welch and Zafirov (2024), free from his website. It contains the S\&P 500 index, twelve-month dividends and earnings, Treasury and corporate bond yields and returns, inflation, net equity issuance, stock variance and CRSP\index{CRSP} value-weighted\index{index weighting!value-weighted} returns from 1926. \emph{Code:} runs as a script (\texttt{python lab04.py -{}-data PredictorData.xlsx}), and \texttt{python lab04.py -{}-source sim} tests it on simulated data with a known truth.
+\end{callout}
+
+\textbf{The setup.} The target is the monthly log equity premium: the log return\index{return!log} of the CRSP value-weighted index, including dividends, minus the log return of a Treasury bill. The lab builds the fourteen monthly predictors of Goyal and Welch from the raw series:
+
+\begin{center}
+\small
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.30\linewidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Group & Predictors \\
+\midrule
+Valuation ratios & dividend--price ratio, dividend yield, earnings--price ratio, dividend payout ratio, book-to-market ratio \\
+Interest rates & Treasury-bill rate, long-term government yield, long-term government bond return, term spread \\
+Credit & default yield spread (Baa minus Aaa), default return spread (corporate minus government bond return) \\
+Other & stock variance, net equity expansion, inflation (lagged an extra month for its publication delay) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Every predictor enters with a one-month lag, so that a forecast for month $t+1$ uses only values known at the end of month $t$.
+
+\begin{itemize}
+  \item \textbf{Part A, in-sample.} Each predictor is regressed on its own over 1927--2005, the original Goyal--Welch period, and over the full sample. The lab reports the slope, a heteroskedasticity-robust\index{standard error!robust (White)} t-statistic and the in-sample $R^2$.
+  \item \textbf{Part B, out of sample.} Walk-forward forecasts from January 1965 with an expanding window, against a historical mean computed from the same data. For each predictor and for the kitchen sink, the lab reports the out-of-sample $R^2$ of Equation~\eqref{eq:05-r2os} and the Clark--West and Diebold--Mariano statistics, for 1965--2005 and for the full period. To evaluate performance across the candidate pool, the lab applies White's Reality Check across the 14 single predictors. Lab Figure~\ref{ch:05}.1 plots the cumulative difference in squared errors for every predictor, the picture that made the original paper famous, with the oil shock shaded and the end of the original sample marked.
+  \item \textbf{Part C, remedies.} The Campbell--Thompson restrictions, with the expected signs fixed in advance; the equal-weight combination of the fourteen forecasts; and the economic value of each forecast for a mean--variance investor with a risk aversion of 3, whose equity weight is limited to between 0 and 150\% and whose variance estimate uses the previous five years. Economic value is reported as the annualized gain in certainty-equivalent return over the same investor using the historical mean.
+  \item \textbf{Part D, after publication.} The same statistics for the original 1965--2005 period, for 1965--2005 without 1973--75, and for 2006 onward. The years after 2005 are a natural experiment of the kind described in Section~\ref{sec:05-postpub}: they test whether the Goyal--Welch verdict was itself right out of sample. Lab Figure~\ref{ch:05}.2 sets the two periods side by side.
+\end{itemize}
+
+\textbf{What the simulated run shows.} The lab was run end to end on simulated data, so that the truth is known. In the simulation, the dividend--price ratio truly explains 0.5\% of monthly return variation until 1990 and nothing afterwards, the term spread truly explains 0.2\% throughout, and the other twelve predictors have no power at all. The surprises in the valuation ratios are strongly negatively correlated with return surprises, as they are in real data.
+
+\begin{itemize}
+  \item \textbf{In-sample tests passed false predictors.} Over 1927--2005, four predictors had $|t| > 1.96$: the dividend--price ratio, the term spread, the book-to-market ratio and the Treasury-bill rate. The last two have no true power. The book-to-market ratio passed because of the Stambaugh bias, and the bill rate by luck. The term spread's in-sample $R^2$ of 1.44\% was seven times its true value.
+  \item \textbf{Out of sample, most predictors lost.} From 1965 to 2005, ten of the fourteen predictors had a negative out-of-sample $R^2$, and only the term spread was significant by Clark--West ($R^2_{OS} = 2.38\%$, $t = 3.68$). The kitchen sink scored $-1.42\%$.
+  \item \textbf{A broken relationship showed in the plot.} The dividend--price ratio's cumulative squared-error line rose until the late 1980s and then drifted down after its true effect ended, so its out-of-sample $R^2$ fell from 0.27\% over 1965--2005 to 0.03\% over the full period.
+  \item \textbf{Remedies helped a little.} The Campbell--Thompson restrictions raised the term spread's $R^2_{OS}$ from 1.30\% to 1.41\% and the book-to-market ratio's from $-0.66\%$ to $-0.31\%$, but they could not rescue predictors with no true power. The combination forecast earned $R^2_{OS} = 0.26\%$, significant by Clark--West ($t = 1.81$), and a certainty-equivalent gain of 0.64\% a year.
+  \item \textbf{After 2005, even the genuine predictor lost.} From 2006 onward the term spread, which truly predicts returns throughout the simulation, had $R^2_{OS} = -0.68\%$. Nineteen years of monthly data were not enough to show a true $R^2$ of 0.2\%, which is the low power of Section~\ref{sec:05-insample} at work. The combination stayed positive at 0.20\%.
+\end{itemize}
+
+On real data the lab answers what the simulation cannot: which predictors pass and fail in the actual history, how much of their success came from the oil shock, and whether the Goyal--Welch verdict has held in the two decades since its sample ended.
+
+\section{Stress tests}
+\label{sec:05-stress}
+
+\textbf{The first forecast date.} Goyal and Welch showed results starting both twenty years after each series began and in 1965. A predictor whose verdict changes with the start date is fragile. The lab's \texttt{-{}-oos-start} option lets readers repeat Part B from other start dates, such as 1950 and 1980.
+
+\textbf{The window.} An expanding window assumes the relationship is stable, and a rolling window allows it to change. Both should be run, with the window length fixed before the results are seen; the lab's \texttt{-{}-window} option sets a rolling window (Section~\ref{sec:05-walkforward}).
+
+\textbf{The oil shock.}\index{oil shock of 1973--75|textbf} If a predictor's out-of-sample record depends on 1973--75, its success rests on one episode, and Part D removes those years to measure how much.
+
+\textbf{Multiple testing.} Testing fourteen predictors individually creates a data-mining hazard: the best predictor out of sample may look significant under a standard pairwise test simply because fourteen tries were allowed. White's Reality Check and Hansen's SPA test adjust the $p$-value for the search across all candidate predictors.
+
+\textbf{Real-time data.} The lab lags inflation by an extra month, as Goyal and Welch did, but earnings, book values and issuance are used as they appear in the file, not as they were first reported. Revisions and reporting delays can only flatter the forecasts, so the lab's results are an upper bound on what a real-time investor could have achieved.
+
+\textbf{Power.} A negative out-of-sample $R^2$ is weak evidence that a predictor is useless (Inoue and Kilian 2004), as the term spread shows in the simulated run after 2005. The verdict below is therefore stated as a failure of the claim, which concerns real-time forecasts, rather than as proof that expected returns are constant.
+
+\textbf{Choices fixed in advance.} The expected signs for the Campbell--Thompson restrictions, the risk aversion, the weight limits and the variance window are set in the code before the results are seen. Changing them after looking at the results would turn the remedies into a search.
+
+\section{Verdict}
+\label{sec:05-verdict}
+
+\begin{callout}
+\textbf{Verdict: fails} (as of November 2026). For most single predictors, statistical significance in-sample did not carry over into real-time forecasts that beat the historical mean. The successes were few, small and concentrated in time, and they did not hold up after the original study was published (Goyal and Welch 2008; Goyal, Welch and Zafirov 2024).
+\end{callout}
+
+\begin{itemize}
+  \item \textbf{Statistical: fails.} Most predictors have a negative out-of-sample $R^2$, the kitchen sink is worst of all, and after accounting for data mining across candidate predictors with White's Reality Check, individual out-of-sample successes fail to achieve statistical significance.
+  \item \textbf{Robust: fails.} Where predictors did beat the mean, they mostly did so in the 1970s.
+  \item \textbf{Economic: survives, weakly, for remedies.} Sign and non-negativity restrictions and equal-weight combinations deliver small but positive gains, because they keep the forecast close to the historical mean. Their success is evidence for shrinkage\index{shrinkage}, not for any single predictor.
+\end{itemize}
+
+The verdict is about forecasts, not about whether expected returns vary. A forecast that fails out of sample is weak evidence that the relationship is false, because out-of-sample tests have little power when the signal is small. What the evidence establishes is narrower and more useful: describing the past is much easier than forecasting the future, and for monthly stock returns the gap between the two is large relative to the signal. The verdict would move toward \emph{survives} if a predictor fixed in advance beat the historical mean significantly, and consistently across decades, in the years after it was proposed.
+
+\section{What investors can use}
+\label{sec:05-investors}
+
+\begin{itemize}
+  \item \textbf{Start from the historical mean.} Without strong out-of-sample evidence, the best estimate of the market's expected return is close to its long-run average. A forecast that moves far from it should have to earn that distance.
+  \item \textbf{Prefer many small signals to one strong story.} Combinations of forecasts, and forecasts shrunk toward the mean, have a better real-time record than any single predictor. The same principle reappears as regularization\index{regularization} in Chapter~\ref{ch:21} and as shrinkage of portfolio inputs in Chapter~\ref{ch:19}.
+  \item \textbf{Look at the record over time, not only the average.} A cumulative squared-error plot shows at a glance whether a forecast kept winning or won once and then drifted.
+  \item \textbf{Treat a published in-sample t-statistic as a starting point.} It tells you a pattern existed in one sample. Whether it can be used is a separate question that only out-of-sample evidence can answer.
+\end{itemize}
+
+Six questions turn this chapter into a checklist for any forecasting model an investor is shown:
+
+\begin{enumerate}
+  \item \textbf{Were the forecasts genuine?} Ask whether every number was produced by a model estimated only on data available at that date, including the choice of variables, windows and hyperparameters. If any choice was made on the full sample, the evaluation is in-sample.
+  \item \textbf{Was the data available on time?} Ask about publication lags, revisions and point-in-time data, and, for multi-period targets, whether overlapping observations\index{overlapping observations} were purged.
+  \item \textbf{What is the benchmark?} It should be the simple default a sensible person would use: the historical mean for returns, the random walk\index{random walk} for prices and exchange rates\index{exchange rate}, recent volatility for risk. For a complex model, the benchmarks should also include any simple strategy the model might be reproducing, such as momentum\index{momentum}. Beating a straw man proves nothing.
+  \item \textbf{How was the difference tested?} For a model that nests the benchmark, ask for Clark--West rather than an uncorrected Diebold--Mariano test. When multiple candidate predictors or models were evaluated, verify whether White's Reality Check or Hansen's SPA test was used to control for data mining, and look at the cumulative squared-error plot to see whether gains are spread over time or concentrated in one episode.
+  \item \textbf{What happened after the model was fixed?} Live or post-publication performance is the strongest evidence. A backtest that ends the month the model was finalized has not yet been tested.
+\end{enumerate}
+
+Every degree of freedom in the design of a forecast evaluation, from the first forecast date to the window length, is an opportunity for a search. The defenses are always the same: decide in advance, record what was tried, and keep some data, or some future, untouched.
+
+\section{Open questions}
+\label{sec:05-open}
+
+\begin{itemize}
+  \item \textbf{Real-time data.} How much worse do the classic predictors look when every series is used as it was first published rather than as later revised?
+  \item \textbf{Instability or absence?} When a predictor stops working, has the relationship changed, or was it never there? Methods that allow slopes to drift over time give different answers from those that assume stability.
+  \item \textbf{International evidence.} Do the same predictors fail out of sample in other countries' markets, where the history is shorter but independent of the U.S. sample on which they were found?
+  \item \textbf{Beyond linear forecasts.} Can flexible models that use many predictors at once deliver forecasts that survive this chapter's tests? Chapter~\ref{ch:21} takes up that question for the market and for individual stocks.
+\end{itemize}
+
+\section*{Exercises}
+\addcontentsline{toc}{section}{Exercises}
+
+\subsection*{Conceptual (all readers)}
+
+\begin{enumerate}
+  \item Explain why the in-sample $R^2$ of a predictive regression can never be negative, while the out-of-sample $R^2$ can. What does a negative out-of-sample $R^2$ mean in words?
+  \item A researcher forecasts 12-month returns every month and trains on all observations up to the forecast date. Describe exactly which observations leak future information, and how many must be dropped.
+  \item Why does the Diebold--Mariano test reject too rarely when a predictive regression is compared with the historical mean? What does the Clark--West adjustment add back?
+  \item Explain why applying a standard $t$-test to the best performing model out of $M$ candidates produces misleading conclusions. How does White's Reality Check correct for this data-mining bias?
+  \item Give an example of a forecast that is calibrated but useless, and one that is sharp but badly calibrated. Which would a proper scoring rule prefer, and why?
+  \item Goyal and Welch found that the kitchen-sink regression forecast worst of all. Using the bias--variance trade-off, explain why adding predictors that are individually significant can make forecasts worse.
+  \item Why does an equal-weight combination of fourteen forecasts tend to sit close to the historical mean? Explain why that is a strength when each signal is weak.
+  \item A predictor's cumulative squared-error line rises steeply in 1973--75 and drifts slowly downward afterwards, ending above zero. Its out-of-sample $R^2$ is positive. Would you use it, and why?
+  \item Explain why a predictor that truly explains 0.2\% of monthly return variation can produce a negative out-of-sample $R^2$ over twenty years. What does this imply for how a failed out-of-sample test should be reported?
+\end{enumerate}
+
+\subsection*{Lab extensions (technical readers)}
+
+\begin{enumerate}
+  \setcounter{enumi}{9}
+  \item Part B: run on real data. How many of the fourteen predictors have a positive out-of-sample $R^2$ over 1965--2005, and how many are significant by Clark--West? Compare your numbers with those in Goyal and Welch (2008).
+  \item Implement White's Reality Check on the 14 out-of-sample predictor series using Politis and Romano's stationary bootstrap. Does the best-performing predictor survive the test?
+  \item Rerun Part B with \texttt{-{}-oos-start 1950-01} and \texttt{-{}-oos-start 1980-01}. Which predictors' verdicts depend on the start date?
+  \item Replace the expanding window with a rolling window of 20 years. Which predictors improve, and what does that suggest about stability?
+  \item Part D: which predictors that beat the mean over 1965--2005 also beat it from 2006 onward? Does the combination forecast keep its advantage?
+  \item Change the risk aversion in Part C from 3 to 5 and the weight limits to between 0 and 100\%. How sensitive is the certainty-equivalent gain, and why should these choices be fixed before the results are seen?
+  \item Add a forecast that shrinks each predictor's forecast halfway toward the historical mean. How does it compare with the Campbell--Thompson restrictions and with the combination?
+  \item Choose a forecasting model from your own work or a published paper. Audit its evaluation against the six questions of Section~\ref{sec:05-investors}, and report which, if any, it fails.
+\end{enumerate}

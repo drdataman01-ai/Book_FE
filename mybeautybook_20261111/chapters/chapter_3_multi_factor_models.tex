@@ -1,0 +1,272 @@
+\chapter{Multi-Factor Models, Risk Decomposition, and Heavy-Tailed Inference}
+\label{ch:03}
+
+Part II of the book turns the lessons of Part I into tools. It begins with the most basic tool of all: the $t$-statistic.
+
+Almost every claim in quantitative finance ends in a test statistic, such as ``the strategy's alpha has a $t$-statistic of 2.4.'' A $t$-statistic is an estimate, such as a mean return or an alpha, divided by its standard error:
+\begin{equation}
+  t = \frac{\hat{\alpha}}{\operatorname{SE}(\hat{\alpha})}
+  \label{eq:03-tstat}
+\end{equation}
+It tells us how many standard errors the estimate lies away from zero, and a value above about 1.96 is usually read as significant at the 5\% level. That reading is only as good as the standard error behind it. The usual formula for the standard error assumes that \textbf{observations are independent}, that their \textbf{spread is constant over time}, and that their \textbf{distribution is roughly normal}.
+
+Financial returns satisfy none of these assumptions. Their tails are fat, their volatility comes in clusters, and many empirical research designs build strong dependence between observations. When these assumptions fail, the standard error is often too small, so the $t$-statistic looks larger than it should, and a result can appear significant when it is not. The good news is that each of these problems has a well-tested remedy, and this chapter shows you how to choose the right one.
+
+The claim on trial in this chapter is: \textbf{variation in expected stock returns can be explained by exposures to systematic risk factors, and regression statistics remain reliable for financial returns once standard errors account for heteroskedasticity, autocorrelation, and fat tails.}
+
+By the end of the chapter you will be able to:
+\begin{itemize}
+  \item summarize a return distribution by its mean, variance, skewness, kurtosis, and autocorrelation;
+  \item run and interpret linear regressions under OLS, and explain what heteroskedasticity and serial correlation do to standard errors;
+  \item explain the CAPM and the Fama--French three-factor model, and interpret beta, alpha, and factor risk loadings;
+  \item execute a contemporaneous linear risk decomposition, partitioning total variance into systematic factor variance and idiosyncratic residual variance;
+  \item evaluate the practical and institutional implications of multi-factor architectures for asset management, style attribution, corporate finance, and macroeconomic state variable modeling;
+  \item describe the stylized facts of financial returns: fat tails, volatility clustering, weak return autocorrelation, and asymmetry;
+  \item choose standard errors that remain valid under these features: White, Newey--West (HAC), clustered, and Hodrick standard errors;
+  \item use non-parametric block bootstrapping and Markov Chain Monte Carlo (MCMC) simulations to measure uncertainty without relying on Gaussian assumptions;
+  \item apply multiple-testing hurdles ($t > 3.0$) to prevent false discoveries in the factor zoo;
+  \item separate statistical significance from economic significance.
+\end{itemize}
+
+In the lab you will measure these features on real data, compute the alphas of 25 classic Fama--French portfolios under four standard error methods, and run a controlled experiment showing how overlapping long-horizon regressions find predictability that is not there.
+
+\section{Foundations: Distributions, Regression, and Factor Architectures}
+\label{sec:03-foundations}
+
+\subsection{Describing a Distribution}
+Four numbers, called \textbf{moments}, summarize a return distribution:
+\begin{itemize}
+  \item The \textbf{mean} is its center: the average return.
+  \item The \textbf{variance}, or its square root the standard deviation, measures spread: how far returns typically fall from the mean.
+  \item \textbf{Skewness} measures asymmetry. It is negative when large losses are more likely than large gains of the same size, as for most stock indexes.
+  \item \textbf{Kurtosis} measures tail heaviness. A normal distribution has kurtosis 3; values above 3 indicate \textbf{fat tails}, meaning extreme returns occur far more often than a normal distribution predicts.
+\end{itemize}
+
+A fifth measure describes behavior over time. \textbf{Autocorrelation} is the correlation of a series with its own past values. The first-order autocorrelation ($\rho_1$) compares each month with the month before. A return series with zero autocorrelation cannot be predicted from its own history.
+
+\subsection{Linear Regression and OLS Assumptions}
+\label{sec:03-regression}
+A regression describes how a dependent variable, $y$, moves with an independent variable, $x$. Ordinary least squares (OLS) fits:
+\begin{equation}
+  y_t = \alpha + \beta x_t + \varepsilon_t
+  \label{eq:03-ols}
+\end{equation}
+by choosing the intercept $\alpha$ and slope $\beta$ that minimize the sum of squared residuals $\sum \varepsilon_t^2$. The slope $\beta$ measures how much $y$ moves when $x$ moves by one unit. The $R$-squared ($R^2$) measures the share of the variance of $y$ explained by the regression.
+
+The classical formula for the standard error assumes that residuals are independent and identically distributed (i.i.d.) with constant variance $\sigma^2$. Two departures are common in finance:
+\begin{itemize}
+  \item \textbf{Heteroskedasticity}: residual variance changes over time or across observations (e.g., rising during crises).
+  \item \textbf{Serial Correlation}: residuals are correlated with past values, so positive or negative errors arrive in long runs.
+\end{itemize}
+When either is present, OLS point estimates remain unbiased on average, but standard analytical standard errors are wrong.
+
+\subsection{The Capital Asset Pricing Model (CAPM)}
+\label{sec:03-capm}
+The Capital Asset Pricing Model (Sharpe 1964, Lintner 1965, Mossin 1966) splits risk into two components: \textbf{systematic risk}, which moves with the aggregate market and cannot be diversified away, and \textbf{idiosyncratic risk}, which is unique to individual assets and can be eliminated by holding a broad portfolio. Formally:
+\begin{equation}
+  E[R_i] - r_f = \beta_i \left(E[R_m] - r_f\right), \qquad \beta_i = \frac{\operatorname{Cov}(R_i, R_m)}{\operatorname{Var}(R_m)}
+  \label{eq:03-capm}
+\end{equation}
+The regression model is estimated in time series:
+\begin{equation}
+  R_{i,t} - r_{f,t} = \alpha_i + \beta_i (R_{m,t} - r_{f,t}) + \varepsilon_{i,t}
+  \label{eq:03-capm-ts}
+\end{equation}
+The slope $\beta_i$ measures systematic market sensitivity. The intercept $\alpha_i$ (alpha) represents average excess return unexplained by market exposure. The model predicts that $\alpha_i = 0$ for all assets. Empirical tests (Black, Jensen, and Scholes 1972), however, reveal that the security market line is flatter than predicted: low-beta stocks earn higher returns than the CAPM implies, while high-beta stocks earn lower returns.
+
+\subsection{Multi-Factor Architectures and the Factor Zoo}
+\label{sec:03-factors}
+To capture return variations missed by market beta, Fama and French (1993) introduced the three-factor model, adding size ($SMB$, Small Minus Big) and value ($HML$, High Minus Low) long-short portfolios:
+\begin{equation}
+  R_{i,t} - r_{f,t} = \alpha_i + b_i (R_{m,t} - r_{f,t}) + s_i \,\mathrm{SMB}_t + h_i \,\mathrm{HML}_t + \varepsilon_{i,t}
+  \label{eq:03-ff3}
+\end{equation}
+where $b_i$, $s_i$, and $h_i$ represent systematic factor exposures. Modern extensions incorporate profitability ($RMW$), investment ($CMA$), and momentum ($UMD$). However, as Cochrane (2011) and Harvey, Liu, and Zhu (2016) document, intense backtesting has led to a ``zoo of factors'' comprising hundreds of published anomalies, demanding strict multiple-testing corrections.
+
+\section{The Economics and Mechanics of Risk Decomposition}
+\label{sec:03-decomposition}
+
+\begin{callout}
+\noindent \textbf{Contemporaneous Decomposition of Risk}
+
+Notice that a multi-factor regression represents a contemporaneous linear decomposition of risk. It partitions return variation in period $t$ using factors realized in period $t$:
+\begin{equation}
+  R_{i,t} - r_{f,t} = \alpha_i + \boldsymbol{\beta}_i' \mathbf{f}_t + \varepsilon_{i,t}
+\end{equation}
+Because the factors $\mathbf{f}_t$ are realized concurrently, the regression does not forecast future returns; it measures contemporaneous systematic exposure. High explanatory power ($R^2 > 90\%$ for diversified portfolios) demonstrates that known systematic factors dominate asset variation.
+\end{callout}
+
+\subsection{Contemporaneous Linear Variance Partitioning}
+Taking the variance of both sides of the multi-factor regression (assuming residual independence from factors) yields the variance decomposition:
+\begin{equation}
+  \operatorname{Var}(R_i) = \boldsymbol{\beta}_i' \boldsymbol{\Sigma}_f \boldsymbol{\beta}_i + \operatorname{Var}(\varepsilon_i)
+  \label{eq:03-vardec}
+\end{equation}
+where $\boldsymbol{\Sigma}_f$ is the covariance matrix of factor returns. Total asset risk is cleanly separated into \textbf{systematic factor variance} ($\boldsymbol{\beta}_i' \boldsymbol{\Sigma}_f \boldsymbol{\beta}_i$) and \textbf{idiosyncratic residual variance} ($\operatorname{Var}(\varepsilon_i)$).
+
+\subsection{Time-Series vs. Cross-Sectional Asset Pricing Diagnostics}
+Two standard procedures test factor models:
+\begin{enumerate}
+  \item \textbf{Gibbons--Ross--Shanken (GRS 1989) Test:} Evaluates time-series regressions across a set of $N$ assets, testing the joint null hypothesis that all alphas are simultaneously zero ($\alpha_1 = \alpha_2 = \dots = \alpha_N = 0$).
+  \item \textbf{Fama--MacBeth (1973) Procedure:} Evaluates cross-sectional regressions. In step one, time-series regressions estimate betas ($\hat{\boldsymbol{\beta}}_i$). In step two, cross-sectional regressions are run every period $t$ to estimate factor risk premia ($\lambda_t$):
+  \begin{equation}
+    R_{i,t} - r_{f,t} = \alpha_t + \hat{\boldsymbol{\beta}}_i' \boldsymbol{\lambda}_t + u_{i,t}
+  \end{equation}
+  The time-series average of $\hat{\boldsymbol{\lambda}}_t$ measures the factor risk premium, and its time-series standard error measures sampling uncertainty.
+\end{enumerate}
+
+\subsection{Practical and Institutional Implications}
+Multi-factor models transform modern investment and corporate practice:
+\begin{itemize}
+  \item \textbf{Asset Management \& Alpha Unbundling:} Gross excess returns are unbundled into cheap systematic factor betas ($\boldsymbol{\beta}' \mathbf{f}$) and true manager skill ($\alpha$). Returns previously misattributed to stock-picking skill under CAPM often reduce to simple style tilts.
+  \item \textbf{Performance Attribution \& Benchmark Construction:} Institutional allocators track factor loadings over time to enforce risk budgets and detect unwanted ``style drift.''
+  \item \textbf{Corporate Finance \& Hurdle Rates:} Corporations extend cost-of-capital estimates beyond single-beta CAPM equations by incorporating size, distress, and investment factor penalties into discount rates.
+  \item \textbf{Macroeconomic State Variable Interpretation:} Following ICAPM (Merton) and APT (Ross), factors are interpreted as proxies for underlying business-cycle shifts, aggregate default risks, and state-dependent consumption hedges.
+\end{itemize}
+
+\section{Stylized Facts of Financial Returns and $t$-Statistic Failures}
+\label{sec:03-facts}
+
+Cont (2001) summarized key empirical properties of returns across markets:
+\begin{enumerate}
+  \item \textbf{Fat Tails:} Extreme return events occur far more frequently than predicted by Gaussian distributions (kurtosis $K \gg 3$).
+  \item \textbf{Volatility Clustering:} Large price changes tend to follow large price changes, of either sign. Absolute and squared returns exhibit strong, persistent autocorrelation.
+  \item \textbf{Weak Return Autocorrelation:} Price changes exhibit negligible autocorrelation, though small-cap equities exhibit minor positive autocorrelation due to stale pricing and market frictions.
+  \item \textbf{Asymmetry \& Leverage Effect:} Large market declines are more frequent than large gains, and volatility increases more sharply following negative return shocks.
+\end{enumerate}
+
+\subsection{Overlapping Observations and Persistent Predictors}
+Long-horizon regressions test predictability over multi-period windows:
+\begin{equation}
+  r_{t+1} + r_{t+2} + \dots + r_{t+k} = a + b x_t + u_{t+k}
+  \label{eq:03-overlap}
+\end{equation}
+Researchers often utilize long horizons for four primary reasons: (1) valuation ratios act over multi-year scales; (2) signal accumulates faster than noise ($\text{Signal} \propto k$, $\text{Noise} \propto \sqrt{k}$); (3) institutional investors seek long-term forecasts; and (4) the design tests price mean-reversion.
+
+However, using monthly data with $k$-period targets creates overlapping windows sharing $k-1$ months. A sample of $T$ monthly observations contains only about $T/k$ independent periods. Furthermore, when predictor variables $x_t$ are persistent (e.g., dividend yield $\rho \approx 0.98$) and predictor shocks correlate with return shocks, OLS yields finite-sample \textbf{Stambaugh bias} (1999) and non-standard limiting distributions (Valkanov 2003).
+
+\begin{callout}
+\noindent \textbf{What Failed: The Long-Horizon Evidence}
+
+In the 1980s and 1990s, regressions of multi-year returns on dividend yields produced $R^2$ values exceeding 30\% and large $t$-statistics, widely interpreted as strong evidence of return predictability. Subsequent research (Valkanov 2003; Boudoukh, Richardson, and Whitelaw 2008) demonstrated that these results were driven by overlap-induced serial correlation and persistent predictor bias. Once appropriate corrections are applied, long-horizon evidence offers little beyond one-period regressions.
+\end{callout}
+
+\section{Diagnostic Remedies and Robust Inference}
+\label{sec:03-se}
+
+\subsection{Choosing the Right Standard Error}
+To restore valid inference, standard error formulas must match the dependence structure of the data:
+\begin{itemize}
+  \item \textbf{White (1980):} Robust to heteroskedasticity (volatility clustering).
+  \item \textbf{Newey--West (1987) HAC:} Robust to heteroskedasticity and serial correlation up to lag $L$. The estimated covariance component is:
+  \begin{equation}
+    \hat S = \sum_t x_t x_t' \hat\varepsilon_t^2 + \sum_{\ell=1}^{L} \left(1 - \frac{\ell}{L+1}\right) \sum_t \left(x_t \hat\varepsilon_t \hat\varepsilon_{t-\ell} x_{t-\ell}' + x_{t-\ell} \hat\varepsilon_{t-\ell} \hat\varepsilon_t x_t'\right)
+    \label{eq:03-nw}
+  \end{equation}
+  The standard lag selection rule is $L = \lfloor 4(T/100)^{2/9} \rfloor$, or $L \ge k-1$ for overlapping data.
+  \item \textbf{Hodrick (1992):} Corrects standard errors specifically for overlapping horizon regressions.
+  \item \textbf{Clustered Standard Errors (Petersen 2009):} Accounts for correlation within firm or time clusters.
+\end{itemize}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Standard Error Selection Guide}
+\label{tab:03-se-guide}
+\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.32\linewidth}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Data Structure & Standard Error Remedy & Underlying Rationale \\
+\midrule
+Monthly returns, non-overlapping & White, or Newey--West ($L \approx 3$--5) & Volatility varies over time, but return autocorrelation is minor. \\
+Daily returns / stale pricing & Newey--West ($L > 5$) & Volatility clusters and short-term serial correlation is present. \\
+Overlapping $k$-period returns & Newey--West ($L \ge k-1$) or Hodrick (1992) & Overlap introduces mechanical autocorrelation $k-1$ lags long. \\
+Multi-firm panel data & Clustered by firm and time & Errors correlate across firms within a month and across time. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Non-Parametric Resampling and Simulation}
+\label{sec:03-bootstrap}
+When parametric distributional assumptions fail:
+\begin{itemize}
+  \item \textbf{Stationary Block Bootstrap (Politis and Romano 1994):} Resamples blocks of consecutive observations with random block lengths, preserving autocorrelation and stationarity without assuming Gaussian errors.
+  \item \textbf{Markov Chain Monte Carlo (MCMC):} Algorithms such as Gibbs sampling and Metropolis--Hastings (Kuo 2025) draw random parameter paths step-by-step, accommodating heavy tails and time-varying volatility structures.
+\end{itemize}
+
+\subsection{Multiple Testing in the Factor Zoo}
+When evaluating many candidate factors, standard cutoffs ($|t| > 1.96$) yield high false discovery rates. Harvey, Liu, and Zhu (2016) recommend raising the significance threshold to $|t| > 3.0$ for new factor discoveries.
+
+\subsection{Statistical vs. Economic Significance}
+\label{sec:03-economic}
+Statistical significance ($t$-statistic) measures precision against zero, whereas economic significance measures real-world investment impact (annualized return, Sharpe ratio enhancement, net of fees and transaction costs).
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Statistical vs. Economic Significance}
+\label{tab:03-stat-econ}
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\toprule
+ & Economically Small & Economically Large \\
+\midrule
+\textbf{Statistically Significant} & Tiny alpha (0.4\%/yr) measured precisely in a low-risk, high-turnover portfolio consumed by trading costs. & Robust claims that survive multiple testing and cost hurdles. \\
+\textbf{Not Significant} & Irrelevant finding. & Large alpha (6\%/yr) estimated imprecisely over a short, volatile sample. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{What Investors Can Use}
+\label{sec:03-investors}
+
+\textbf{Rules of Thumb:}
+\begin{enumerate}
+  \item Unbundle alpha from factor beta: Do not pay active fees for static loadings on known factors ($SMB$, $HML$, $UMD$).
+  \item Count independent observations: $T$ monthly observations with a $k$-month horizon provide only $\approx T/k$ independent periods.
+  \item Demand higher cutoffs: Require $t > 3.0$ for proposed factor anomalies to adjust for search bias.
+  \item Convert $t$-statistics to net returns: Evaluate alpha after transaction costs, short fees, and turnover.
+\end{enumerate}
+
+\textbf{Questions to Ask Fund Managers:}
+\begin{itemize}
+  \item What standard errors were used, and do your results hold under Newey--West HAC and block bootstrap methods?
+  \item What fraction of net performance comes from true alpha versus systematic factor exposures?
+  \item How many candidate models or variations were backtested before selecting this strategy?
+\end{itemize}
+
+\section*{Exercises}
+\addcontentsline{toc}{section}{Exercises}
+
+\subsection*{Conceptual (all readers)}
+\begin{enumerate}
+  \item Daily returns show minimal autocorrelation, yet absolute daily returns show strong autocorrelation. Explain how both statements can be true, and why this matters for standard errors.
+  \item An active equity manager reports a CAPM alpha of 3.2\% per year ($t = 2.5$). Under a Fama--French three-factor model, the alpha drops to 0.1\% ($t = 0.2$), with $SMB$ beta = 0.70 and $HML$ beta = 0.50. Explain the source of the manager's excess return.
+  \item A long-horizon regression of 5-year returns on dividend yields uses 50 years of monthly data ($T=600$, $k=60$). How many independent observations does it contain, and why are classical $t$-statistics misleading?
+  \item Why must a time-series bootstrap resample blocks of observations rather than individual months?
+  \item Explain why a factor alpha with $t = 3.2$ might lack economic significance.
+\end{enumerate}
+
+\subsection*{Lab Extensions (technical readers)}
+\begin{enumerate}
+  \setcounter{enumi}{5}
+  \item Replicate Part B of Lab 3 across two sub-samples: 1963--1992 and 1993--present. Compare changes in factor risk premia and GRS test rejections.
+  \item Compute $t$-statistics for 25 portfolio alphas using four methods: Classical OLS, White, Newey--West, and Stationary Block Bootstrap. Identify portfolios with the largest SE discrepancies.
+  \item Pair monthly returns with 1,000 simulated non-predictive predictors ($\rho = 0.98$). Run long-horizon regressions ($k=1$ to $60$) and plot false-positive rates for OLS, Newey--West, and Hodrick standard errors.
+\end{enumerate}
+
+\section{Lab 3: Replicating Fama and French (1993) and Testing Robust Standard Errors}
+\label{sec:03-lab}
+
+\begin{callout}
+\noindent \textbf{Lab 3 at a Glance.} \emph{Claim on trial:} Variation in expected stock returns can be explained by systematic risk factors, and regression statistics remain reliable once standard errors account for non-Gaussian features. \emph{Data:} 25 Fama--French portfolios formed on Size and Book-to-Market plus factor returns ($R_m-r_f$, $SMB$, $HML$) from the Kenneth French Data Library. \emph{Code:} \texttt{ch03-noisy-returns/}.
+\end{callout}
+
+\subsection*{Lab Structure}
+\begin{itemize}
+  \item \textbf{Part A: Stylized Facts.} Compute moments (mean, variance, skewness, kurtosis) across 25 portfolios and count extreme tail events ($>3\sigma$).
+  \item \textbf{Part B: Multi-Factor Regressions \& Risk Decomposition.} Estimate CAPM and FF 3-Factor regressions for all 25 portfolios. Calculate $R^2$ and evaluate alpha decay.
+  \item \textbf{Part C: Multivariate Tests \& Standard Error Comparison.} Run the GRS test across all 25 portfolio intercepts. Compare Classical, White, Newey--West, and Stationary Bootstrapped $t$-statistics.
+  \item \textbf{Part D: Controlled Overlapping Regression Experiment.} Regress market returns on 1,000 simulated non-predictive persistent predictors ($\rho=0.98$) for horizons $k=1$ to $60$. Compare rejection rates across OLS, Newey--West, and Hodrick standard errors.
+\end{itemize}
+
+\subsection*{Verdict}
+\textbf{Survives, with conditions.} Multi-factor models capture substantial cross-sectional variation ($R^2 > 90\%$). Standard error choices make little difference for non-overlapping monthly data, but for overlapping horizons or persistent predictors, standard analytical SEs fail severely, requiring Hodrick SEs or block bootstrapping.
