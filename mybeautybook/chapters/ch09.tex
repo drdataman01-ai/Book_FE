@@ -1,292 +1,284 @@
-% Chapter 9 -- Claim: Momentum Works
-% Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
-% Defines the callout box only if the preamble has not.
-\providecolor{fenavy}{HTML}{1B2A6B}
-\providecolor{feshade}{HTML}{F3F5FA}
-\makeatletter
-\@ifundefined{callout}{%
-  \newtcolorbox{callout}{breakable, enhanced,
-    colback=white, colframe=gray!70, boxrule=0.5pt, arc=1mm,
-    borderline west={2.5pt}{0pt}{gray!70},
-    left=8pt, right=8pt, top=4pt, bottom=4pt}%
-}{}
-\makeatother
-
-\chapter{Claim: Momentum Works}
+\chapter{Claim: Valuations Predict the Equity Premium Out of Sample}
 \label{ch:09}
 
-If value says buy what is cheap, momentum\index{momentum} says buy what has been going up. Stocks that have outperformed over the past year tend to keep outperforming for months afterward, and stocks that have lagged tend to keep lagging. Stated so plainly, the idea sounds like a chart-reader's superstition, and for decades efficient-markets economists treated it as one. Yet momentum has become one of the most thoroughly documented patterns in finance, found in a century of U.S. data, in dozens of countries and in asset classes from bonds to commodities.
+In the 1980s the view that stock returns are unpredictable gave way to a new consensus. Fama and French (1988) and Campbell and Shiller (1988) found that the dividend--price ratio predicts the stock market's return over the following years, and later papers added interest rates, yield spreads, inflation, corporate issuance and other variables. By the early 2000s predictability of the equity premium was widely taught as a fact, and it had reshaped asset-pricing theory: if expected returns vary over time, then risk premiums, not only cash flows, move prices.
 
-Momentum also has a dark side that the average return conceals. Every so often it loses, in a few months, much of what it gained over years. Those crashes are not random: they cluster at moments that can be described in advance, when a falling market suddenly turns.
+Almost all of that evidence came from regressions fitted to the whole history. Goyal and Welch (2008) asked a sharper question: would an investor who had used these variables in real time, knowing only what was known at each date, have forecast better than someone who simply assumed the average past return? For most predictors the answer was no, and several did worse than the historical mean. Campbell and Thompson (2008) replied that small, sensible restrictions, such as ruling out negative forecasts of the premium, recover a modest but useful predictability. The debate turned on method as much as on data, and it established the out-of-sample test as the standard for every forecasting claim.
 
-This chapter puts the claim on trial\index{claims-on-trial method} and asks two questions an investor needs answered: does the premium survive scrutiny, and can its crashes be managed well enough for anyone to hold it?
+The implications reach investors and researchers. An investor who times the market on valuation ratios is betting that in-sample predictability survives out of sample; a pension fund that sets contributions on an estimate of the equity premium needs to know which estimate is reliable; and every later claim in this book about forecasting, from volatility to machine learning, is judged with the tools this chapter builds. The claim on trial\index{claims-on-trial method} is: \textbf{a predictor that is statistically significant in sample will forecast the equity premium better than the historical mean out of sample, and well enough to be worth using.}
+
+The lab in Section~\ref{sec:09-lab} replicates the horse race of Goyal and Welch (2008) with their free, updated predictor file, applies the sign restrictions of Campbell and Thompson (2008), and uses White's Reality Check to account for the number of predictors tried, in order to check whether any predictor beats the historical mean when it is used as an investor would have used it.
 
 By the end of the chapter you will be able to:
-
 \begin{itemize}
-  \item compute the standard 12--1 momentum signal and explain why it skips the most recent month\index{momentum!skipping the most recent month};
-  \item distinguish cross-sectional from time-series momentum\index{momentum!time-series};
-  \item scale a position to a volatility\index{volatility} target using only past data;
-  \item explain underreaction\index{underreaction} and overreaction\index{overreaction}, and how a long--short portfolio\index{long--short portfolio}'s beta\index{beta} changes over time;
-  \item state the claim that momentum works in a form that can fail, and test it over time, across markets, after costs and through its crashes;
-  \item explain why momentum crashes\index{momentum!crashes} after market rebounds, and how volatility scaling\index{momentum!volatility-managed} manages that risk.
+  \item explain why in-sample $R^2$ flatters complex models, and why in-sample significance is a poor guide to out-of-sample performance;
+  \item design a walk-forward evaluation using expanding or rolling windows with strict point-in-time information sets;
+  \item recognize and prevent data leakage, applying purging and embargoing for overlapping targets and cross-validation;
+  \item select natural hard-to-beat benchmarks and evaluate out-of-sample explanatory power ($R^2_{\text{OS}}$);
+  \item execute hypothesis tests for forecast accuracy using Diebold--Mariano (for non-nested models) and Clark--West (for nested models);
+  \item evaluate economic significance through certainty-equivalent return (CER) gains;
+  \item apply White's (2000) Reality Check and Hansen's (2005) SPA test to evaluate data mining across multiple candidate forecasting models;
+  \item analyze post-publication decay (McLean and Pontiff 2016) as a natural experiment;
+  \item summarize the Goyal--Welch critique and evaluate the effectiveness of restricted and combined forecasts.
 \end{itemize}
 
-\section{Foundations: past returns, two kinds of momentum, and investor behavior}
+In the lab you will replicate Goyal and Welch's study with updated data, evaluating 14 classic predictors walk-forward from 1965 to the present, and apply White's Reality Check to a universe of predictive rules.
+
+\section{Foundations: The Basics of Forecasting}
 \label{sec:09-foundations}
 
-\subsection{Measuring past performance}
+\subsection{Information Sets}
+A forecast made at time $t$ for target $t+1$ must rely exclusively on the information set $\mathcal{F}_t$ available at date $t$: past prices, published macroeconomic releases, and models estimated on past data.
 
-A stock's past return over a window is its cumulative return over those months: $(1 + R_1)(1 + R_2)\cdots(1 + R_k) - 1$. The standard momentum signal uses the return from twelve months ago to two months ago, written ``12--1'' or ``12--2'': it covers eleven months and \textbf{skips the most recent month}\index{momentum!skipping the most recent month|textbf} (Figure~\ref{fig:09-signal}). The skip exists because returns over a single month tend to reverse (Chapter~\ref{ch:06}'s short-term reversal\index{short-term reversal}); including that month would mix two opposite effects.
+\subsection{Data Splits: Training, Validation, and Test}
+Forecasters divide data into three distinct chronological partitions:
+\begin{itemize}
+  \item \textbf{Training set}: used to estimate model parameters;
+  \item \textbf{Validation set}: used to tune hyperparameters or select models;
+  \item \textbf{Test set}: held out until final evaluation to measure performance out of sample.
+\end{itemize}
 
-\begin{figure}[htbp]
-\centering
-\scalebox{0.8}{%
-\begin{tikzpicture}[x=0.82cm, y=1cm]
-  % Ranking period t-12 to t-1, skipped month t-1 to t, holding month t to t+1
-  \fill[fenavy]   (0,0.25) rectangle (11,0.95);
-  \fill[gray!35]  (11,0.25) rectangle (12,0.95);
-  \fill[gray!70]  (12,0.25) rectangle (13,0.95);
-  \node[white] at (5.5,0.6) {ranking period: 11 months};
-
-  % Time axis
-  \draw[-stealth, thick] (0,0) -- (14.2,0) node[anchor=west] {months};
-  \foreach \wfI in {0,...,13} { \draw (\wfI,0.08) -- (\wfI,-0.08); }
-  \node[anchor=north] at (0,-0.15)  {$t-12$};
-  \node[anchor=north] at (11,-0.15) {$t-1$};
-  \node[anchor=north] at (12,-0.15) {$t$};
-  \node[anchor=north] at (13,-0.15) {$t+1$};
-
-  % Labels
-  \node[anchor=south, align=center] (skip) at (11.5,1.25) {skipped\\month};
-  \draw[-stealth] (11.5,1.25) -- (11.5,0.98);
-  \node[anchor=north, align=center] at (12.6,-0.75) {holding\\month};
-\end{tikzpicture}%
-}
-\caption{The 12--1 momentum signal. Stocks are ranked on their return over the eleven months from $t-12$ to $t-1$; the most recent month is skipped; the portfolio is held for the month that follows.}
-\label{fig:09-signal}
-\end{figure}
-
-\subsection{Cross-sectional momentum}
-
-\textbf{Cross-sectional} or \textbf{relative} momentum ranks stocks against each other: buy the stocks with the highest past returns (\textbf{winners}) and sell those with the lowest (\textbf{losers}), regardless of whether the market as a whole rose or fell. Its long--short portfolio is \textbf{market-neutral}\index{market-neutral|textbf} on average: over time its beta to the market is close to zero. The Fama--French\index{Fama--French factors} momentum factor, often called \textbf{UMD}\index{factor!UMD (momentum)|textbf} (up minus down) or Mom, is built this way, from six portfolios sorted on size and past return, in the same style as HML\index{factor!HML (value)} (Section~\ref{sec:08-how}).
-
-\subsection{Time-series momentum}
-
-\textbf{Time-series} or \textbf{absolute} momentum looks at each asset on its own: hold it long if its own past return is positive, short if negative. It is also called \textbf{trend following}\index{trend following|textbf}, and it is what most \textbf{managed-futures funds}\index{managed futures|textbf}, funds that trade futures contracts across many markets, do. Unlike cross-sectional momentum\index{momentum!cross-sectional} it can be \textbf{net long} or \textbf{net short} the market, holding more long than short positions or the reverse, and it is usually applied across asset classes: stock indices, government bonds, currencies and commodities.
-
-\subsection{Volatility scaling}
-
-Many strategies size positions inversely to recent volatility, holding more when markets are calm and less when they are turbulent. If a position is scaled to
+\subsection{In-Sample $R^2$ and Its Flattery}
+For a model fitted to $T$ observations, the in-sample $R^2$ is:
 \begin{equation}
-  w = \frac{\sigma^*}{\hat\sigma}
-  \label{eq:09-volscale}
+  R^2 = 1 - \frac{\sum_{t=1}^T (y_t - \hat{y}_t)^2}{\sum_{t=1}^T (y_t - \bar{y})^2}
+  \label{eq:09-r2}
 \end{equation}
-where $\sigma^*$ is a target volatility and $\hat\sigma$ a forecast of the asset's volatility, its risk stays roughly constant over time. With a 12\% target and a forecast of 24\%, the position is halved; with a forecast of 8\%, it is one and a half times the base size. The forecast must use only data available before the position is set.
+Because OLS explicitly minimizes the sum of squared residuals, in-sample $R^2$ can never decrease when candidate regressors are added. Consequently, in-sample $R^2$ flatters overfitted models, necessitating out-of-sample evaluation.
 
-\subsection{Underreaction and overreaction}
-\label{sec:09-behavior}
+\section{In-Sample Fit versus Out-of-Sample Performance}
+\label{sec:09-insample}
 
-\textbf{Behavioral finance}\index{behavioral finance|textbf} studies how investors' systematic errors affect prices. Two errors matter here.
+The standard time-series predictive regression evaluates next-period excess return:
+\begin{equation}
+  r_{t+1} = \alpha + \beta x_t + \varepsilon_{t+1}
+  \label{eq:09-pred}
+\end{equation}
+Goyal and Welch (2008) tested whether real-time recursive forecasts from Equation~\eqref{eq:09-pred} beat the simple historical mean $\bar{r}_t$. Most failed. Three primary forces open the gap between fit and forecast:
+\begin{enumerate}
+  \item \textbf{Estimation Error:} In finite samples with low signal-to-noise ratios, sampling noise in $\hat{\alpha}$ and $\hat{\beta}$ dominates the forecast.
+  \item \textbf{Structural Instability:} Economic relationships evolve over time due to structural shifts, learning, and institutional changes.
+  \item \textbf{Selection Bias:} Published predictors were selected because they fit historical data in-sample.
+\end{enumerate}
+In addition, Stambaugh (1999) bias inflates in-sample $t$-statistics when predictors $x_t$ are highly persistent ($\rho \approx 1$) and predictor shocks correlate with return shocks.
 
-\begin{itemize}
-  \item \textbf{Underreaction}\index{underreaction|textbf}: investors adjust too slowly to news, because of conservatism or limited attention, so prices drift in the direction of the news for months.
-  \item \textbf{Overreaction}\index{overreaction|textbf}: investors extrapolate a run of good or bad news too far, pushing prices past their fair value, which later reverses.
-\end{itemize}
+\section{Walk-Forward Evaluation: Expanding and Rolling Windows}
+\label{sec:09-walkforward}
 
-Momentum at horizons of a few months to a year fits underreaction or delayed overreaction; the long-run reversals documented by De Bondt and Thaler (1985) fit overreaction followed by correction.
+A walk-forward evaluation replays history recursively:
+\begin{enumerate}
+  \item Select an initial forecast date $t_0$, establishing an initial estimation window.
+  \item Estimate parameters using data available up to $t$.
+  \item Forecast target $\hat{r}_{t+1}$ and record the benchmark forecast $\bar{r}_t$.
+  \item Advance to $t+1$, update the training window, and repeat until the sample end.
+\end{enumerate}
 
-\subsection{Beta that changes over time}
-
-A long--short portfolio's market beta is the beta of its long side minus the beta of its short side. When the composition of the portfolio changes, so does its beta. After a market crash, the stocks that fell most, the losers, are typically high-beta stocks, so a momentum portfolio that is short them has a large negative beta. If the market then rebounds sharply, the portfolio loses heavily. This simple mechanism, explained in Section~\ref{sec:09-how}, accounts for momentum's worst months.
-
-\textbf{Worked example.} A stock returned +40\% from twelve months ago to two months ago and $-5$\% last month. Its 12--1 momentum signal is +40\%, ignoring last month. If it ranks in the top 30\% of stocks on that signal, the momentum factor holds it in the winner portfolio for the coming month.
-
-\section{How it works}
-\label{sec:09-how}
-
-\textbf{The strategy.} At the end of each month, rank stocks on their 12--1 past return. Buy the top group, sell the bottom group, hold for a month, and repeat. Because the ranking window shifts by one month at a time, ten of its eleven months carry over, and about a third of each side of the portfolio is replaced each month (Chapter~\ref{ch:06}). Jegadeesh and Titman\index{Jegadeesh and Titman} (1993) studied many combinations of ranking and holding periods from three to twelve months; the 12--1 ranking with a one-month hold has become the standard.
-
-\textbf{Why momentum might exist.} Three families of explanation compete.
-
-\begin{itemize}
-  \item \textbf{Underreaction.}\index{underreaction|textbf} Investors update slowly. Good news about a firm is only partly reflected in its price at first, and the rest arrives over the following months. Hong and Stein (1999) model news diffusing gradually through the investor population; Barberis, Shleifer and Vishny (1998) model investors who are too conservative in updating their beliefs.
-  \item \textbf{Delayed overreaction.} Daniel, Hirshleifer and Subrahmanyam (1998) argue that overconfident\index{overconfidence} investors, seeing their views confirmed by early price moves, push prices further than fundamentals justify, producing momentum in the medium term and reversal later.
-  \item \textbf{Risk.} Momentum's crashes are themselves a candidate explanation: a strategy that loses heavily in rare, sharp market rebounds may earn a premium for bearing that risk. Rational models in which expected returns\index{return!expected} vary with firms' growth options have also been proposed, though none has become standard.
-\end{itemize}
-
-\textbf{Crashes and changing beta.} Momentum's market beta is not constant (Figure~\ref{fig:09-beta}). In a rising market, past winners\index{winners and losers} are high-beta stocks and momentum has positive beta. After a market decline, past losers are the high-beta stocks and momentum is short them, giving it a strongly negative beta. Grundy and Martin (2001) noted this time variation; Daniel and Moskowitz (2016) showed that it explains momentum's crashes, which occur when markets rebound after a decline, and that their timing is partly predictable from the past market return and recent volatility.
-
-\begin{figure}[htbp]
+\begin{table}[htbp]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.64\linewidth, height=0.34\linewidth,
-  ybar, bar width=0.41cm,
-  axis lines=left, axis line style={-stealth},
-  ymin=-1.35, ymax=1.8,
-  ytick={-1,0,1},
-  ylabel={Market beta},
-  symbolic x coords={Winners (long side),Losers (short side),Momentum (net)},
-  xtick=data, enlarge x limits=0.22,
-  xticklabel style={align=center, text width=2.2cm, font=\small},
-  nodes near coords, every node near coord/.append style={font=\small},
-  legend style={draw=none, font=\small, at={(0.5,1.10)}, anchor=south, legend columns=2,
-                /tikz/every even column/.append style={column sep=1em}},
-  extra y ticks={0}, extra y tick labels={},
-  extra y tick style={grid=major, major grid style={gray, thin}},
-  clip=false,
-]
-  \addplot[fill=gray!40, draw=none] coordinates
-    {(Winners (long side),1.2) (Losers (short side),0.9) (Momentum (net),0.3)};
-  \addplot[fill=fenavy, draw=none] coordinates
-    {(Winners (long side),0.7) (Losers (short side),1.6) (Momentum (net),-0.9)};
-  \legend{after a rising market, after a falling market}
-\end{axis}
-\end{tikzpicture}
-\caption{Why momentum's beta flips (illustrative values). After a rising market the winners it holds are the high-beta stocks, so its net beta is positive. After a falling market the losers it sells short are the high-beta stocks, so its net beta turns strongly negative, and a sharp market rebound produces a large loss.}
-\label{fig:09-beta}
-\end{figure}
+\small
+\caption{Expanding vs. Rolling Window Architectures}
+\label{tab:09-windows}
+\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.18\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.24\linewidth}>{\raggedright\arraybackslash}p{0.24\linewidth}@{}}
+\toprule
+Window Type & Training Data Used at Date $t$ & Key Advantage & Primary Limitation \\
+\midrule
+\textbf{Expanding} & All observations from start to $t$ & Uses maximum data; minimizes parameter estimation noise. & Adapts slowly if underlying data-generating process changes. \\
+\textbf{Rolling} & Fixed window of most recent $w$ observations & Adapts quickly to structural shifts. & Subject to higher parameter estimation error; sensitive to choice of $w$. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-\textbf{Managing the crashes.} Because momentum's volatility rises sharply before and during crashes, scaling the position by forecast volatility, as in Equation~\eqref{eq:09-volscale}, cuts exposure when crashes are most likely. Barroso and Santa-Clara (2015) found that this nearly doubled momentum's Sharpe ratio\index{Sharpe ratio} and largely eliminated its crashes in U.S. data. Daniel and Moskowitz (2016) proposed a dynamic version that also uses a forecast of momentum's mean return.
+Out-of-sample forecast accuracy is evaluated using the Campbell and Thompson (2008) out-of-sample $R^2$:
+\begin{equation}
+  R^2_{\text{OS}} = 1 - \frac{\sum_{t} \left( r_{t+1} - \hat{r}_{t+1} \right)^2}{\sum_{t} \left( r_{t+1} - \bar{r}_t \right)^2}
+  \label{eq:09-r2os}
+\end{equation}
+$R^2_{\text{OS}} > 0$ indicates that model forecasts achieve lower mean squared error than the historical mean.
 
-\section{The claim}
-\label{sec:09-claim}
-
-Stated so that it can fail:
-
-\begin{callout}
-\textbf{Stocks with high returns over the past year continue to outperform stocks with low past returns over the following months, by enough to survive costs, in data beyond the samples that established the result, and with risks an investor can manage.}
-\end{callout}
-
-The final clause is what distinguishes this chapter's claim from a simple statement about average returns. A premium that is real on average but delivers losses of 50\% or more in a few months may be a premium few investors can collect. The tests follow:
-
+\subsection{Theoretical Restrictions}
+Campbell and Thompson (2008) showed that imposing economic restrictions improves out-of-sample performance:
 \begin{itemize}
-  \item \textbf{Time.} Is the premium present after Jegadeesh and Titman's 1965--1989 sample, and in every era?
-  \item \textbf{Breadth.} Is it found in other countries and asset classes?
-  \item \textbf{Costs.} Momentum trades far more than value. Does its premium exceed its costs?
-  \item \textbf{Crashes.} How large are the crashes, can they be anticipated, and does managing them change the verdict?
+  \item Set $\hat{\beta} = 0$ if the estimated slope sign contradicts economic theory.
+  \item Truncate negative equity premium forecasts at zero ($\hat{r}_{t+1} = \max(0, \hat{r}_{t+1})$).
 \end{itemize}
 
-\section{The original evidence}
-\label{sec:09-evidence}
+\section{Data Leakage: Look-Ahead, Publication Lags, Purging, and Embargoing}
+\label{sec:09-leakage}
 
-\textbf{Jegadeesh and Titman (1993)}\index{Jegadeesh and Titman|textbf} sorted U.S. stocks from 1965 to 1989 on their past three- to twelve-month returns and found that buying winners and selling losers earned about 1\% a month, a result that could not be explained by market risk. They also found that part of the profit reversed after a year or more. \textbf{Jegadeesh and Titman (2001)} returned to the question with the years after their first paper and found that momentum continued to earn a similar premium out of sample\index{in-sample versus out-of-sample}, one of the earliest successful post-publication\index{anomaly!post-publication decay} tests of an anomaly\index{anomaly}.
-
-\textbf{Carhart (1997)}\index{Carhart four-factor model|textbf} added a momentum factor to the Fama--French three-factor model to study mutual fund performance. The four-factor model\index{factor model} became a standard benchmark, and Carhart's finding that much of the apparent persistence\index{persistence} in fund returns was momentum exposure rather than skill was influential in its own right. Fama and French themselves did not include momentum in their models, while noting that their three factors could not explain it.
-
-\textbf{Breadth.} Rouwenhorst (1998) found momentum in twelve European markets. Asness, Moskowitz and Pedersen (2013) found it in stocks across countries and in government bonds, currencies and commodity futures. Moskowitz, Ooi and Pedersen (2012) documented \textbf{time-series momentum}\index{momentum!time-series|textbf} in 58 futures and forward contracts across four asset classes: an asset's own past twelve-month return predicted its return over the next month in almost every market studied. The notable exception is Japan, where Chui, Titman and Wei (2010) and others found cross-sectional momentum weak or absent.
-
-\textbf{Crashes.} Daniel and Moskowitz (2016) documented that momentum's worst losses come in clusters after market declines, when the market rebounds. In the spring of 2009, as the market recovered from the financial crisis, past losers, many of them battered financial and cyclical stocks, rose far more than past winners. A similar episode occurred in 1932. The crashes were large enough that momentum's long-run return, though positive, came with negative skewness\index{skewness} and extreme drawdowns\index{drawdown}. Barroso and Santa-Clara (2015) showed that scaling by forecast volatility removed much of this risk in U.S. data.
-
-\section{Replication lab: Lab~\thechapter}
-\label{sec:09-lab}
-
-\begin{callout}
-\textbf{Lab~\ref{ch:09} at a glance.} \emph{The question:} has momentum earned a premium throughout the century of U.S. data, when do its crashes occur, and can volatility scaling make it a strategy an investor could hold? \emph{Data:} Kenneth French\index{Kenneth French data library}'s library: the monthly and daily momentum factor from the 1920s, the market factor and risk-free rate\index{risk-free rate}, ten portfolios sorted on 12--2 past returns, and ten industry portfolios. Optionally, the Jensen--Kelly--Pedersen data for momentum in many countries. \emph{Code:} repository folder \texttt{ch09-momentum/}, with a guided notebook.
-\end{callout}
-
-\textbf{The setup.}
-
+Data leakage occurs whenever future information enters model training or specification:
 \begin{itemize}
-  \item \textbf{Part A, replication\index{replication}.} Momentum's average return, t-statistic\index{t-statistic}, Sharpe ratio, skewness, worst month and \textbf{maximum drawdown}\index{maximum drawdown|textbf}, the largest fall from a previous peak, over the full sample, by decade, before and during the Jegadeesh--Titman sample, and after publication. The average returns of the ten momentum deciles show whether returns rise steadily from losers to winners.
-  \item \textbf{Part B, crashes.} The ten worst months, with the market's return that month and over the previous two years. A regression of momentum on the market, with extra terms for \textbf{bear markets} (here, periods when the market's past 24-month return is negative) and for bear-market months in which the market rises, measures how momentum's beta changes.
-  \item \textbf{Part C, volatility scaling.} Each month, momentum is scaled to a 12\% annual volatility target using the volatility of its daily returns over the previous six months. Its results are compared with raw momentum levered to the same average volatility, so the comparison is about timing, not leverage\index{leverage}.
-  \item \textbf{Part D, time-series momentum.} Each of ten industry portfolios and the market is held long or short according to the sign of its past twelve-month excess return\index{return!excess}, scaled to equal volatility. This is a narrow, equity-only version of Moskowitz, Ooi and Pedersen's test, and the lab says so.
-  \item \textbf{Part E, costs.} Net returns at one-way costs\index{transaction costs!one-way and round-trip} of 20 and 50 basis points\index{basis point}, using momentum's turnover\index{turnover} of about 35\% a month.
+  \item \textbf{Full-Sample Estimation \& Preprocessing:} Estimating coefficients, standardizing features, or setting winsorizing cutoffs using full-sample statistics.
+  \item \textbf{Hindsight Model Selection:} Choosing variables or hyperparameters based on full-sample metrics.
+  \item \textbf{Publication Lags \& Revisions:} Ignoring release delays (e.g., CPI releases arrive weeks after month-end; macroeconomic data undergo revisions). Point-in-time archives (such as ALFRED) must be used.
+  \item \textbf{Overlapping Targets \& Purging:} When predicting multi-period targets ($k$-period returns), training observations whose target windows overlap the forecast date contain future information. López de Prado (2018) defines \textbf{purging} as dropping these overlapping observations from the training set.
+  \item \textbf{Cross-Validation \& Embargoing:} In $k$-fold cross-validation, training data follow test folds. \textbf{Embargoing} drops a block of training data immediately after the test fold to eliminate serial correlation leakage.
 \end{itemize}
 
-\textbf{What readers will find.} Lab Figure~\ref{ch:09}.1 marks the five worst months on a century-long chart of momentum's growth; Lab Figure~\ref{ch:09}.3 shows that they cluster in the upper right of a scatter of momentum against the market during bear markets: when beaten-down markets rebound. Lab Figure~\ref{ch:09}.4 compares raw and volatility-scaled momentum, with their drawdowns. The test of the claim is whether the premium is present in most decades and after publication, survives costs, and whether its crashes are manageable without hindsight.
+\section{Benchmarks That Are Hard to Beat}
+\label{sec:09-benchmarks}
 
-\section{Stress tests}
-\label{sec:09-stress}
+\begin{table}[htbp]
+\centering
+\small
+\caption{Natural Hard-to-Beat Forecasting Benchmarks}
+\label{tab:09-benchmarks}
+\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.30\linewidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Target Quantity & Natural Benchmark & Rationale \\
+\midrule
+Equity Premium & Historical mean return ($\bar{r}_t$) & Minimal estimation noise; avoids unstable parameter fits. \\
+Exchange Rates / Prices & Random Walk ($y_{t+1} = y_t$) & Meese and Rogoff (1983) empirical result. \\
+Interest Rates / Yields & Random Walk or Forward Rate & Yields are highly persistent. \\
+Volatility & Realized Volatility / EWMA & Volatility exhibits strong clustering. \\
+Macroeconomic Variables & Survey Consensus / Last Value & Professional surveys aggregate public information efficiently. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-\textbf{1. After publication.} Jegadeesh and Titman's paper appeared in 1993. Momentum's post-publication record is one of the longest out-of-sample tests of any anomaly, and Jegadeesh and Titman (2001) found it continued to work through the 1990s. The lab extends the test to the present, through the 2009 crash and the 2010s.
+\section{Measuring Forecast Accuracy: Diebold--Mariano and Clark--West}
+\label{sec:09-accuracy}
 
-\textbf{2. Other countries and asset classes.} The international evidence is broad but not universal: momentum is strong in Europe and weak in Japan. The JKP data allow a country-by-country count, with the caution of Section~\ref{sec:01-backtests} about how many significant results to expect by chance.
+\subsection{Non-Nested Model Comparison: Diebold--Mariano Test}
+Diebold and Mariano (1995) test equal predictive accuracy between two non-nested forecasts based on loss differentials $d_t = e^2_{\text{bench},t} - e^2_{\text{model},t}$. The test statistic is a $t$-test on $\bar{d}$ using Newey--West HAC standard errors, with Harvey, Leybourne, and Newbold (1997) small-sample corrections.
 
-\textbf{3. Costs.} With turnover of about 35\% a month on each side, momentum pays four times that fraction of the one-way cost each month (Equation~\eqref{eq:06-net}). At 20 basis points, costs absorb roughly $4 \times 0.35 \times 0.20 \times 12 \approx 3$ percentage points of the annual premium; at 50 basis points, about 8. Novy-Marx and Velikov (2016) estimated momentum's costs at about 0.65\% a month and found it still earned a significant net premium, unlike higher-turnover strategies (Chapter~\ref{ch:06}). Volatility scaling adds trading when the weight changes; the lab charges for that too.
+\subsection{Nested Model Comparison: Clark--West Test}
+When a predictive regression is compared against the historical mean, the models are nested. Under the null hypothesis ($\beta=0$), estimating $\beta$ introduces parameter estimation noise that elevates the model's mean squared error above the benchmark. The uncorrected Diebold--Mariano test is therefore undersized and biased against discovering true predictability.
 
-\textbf{4. Crashes and their predictability.} A crash that could be predicted only with hindsight is no help to an investor. The lab uses only information available at the start of each month: the past 24-month market return for the bear-market indicator, and past daily volatility for scaling. The test is whether those signals, set in advance, reduce the crashes.
+Clark and West (2007) adjust for estimation noise by defining the adjusted loss differential:
+\begin{equation}
+  f_t = (r_{t+1} - \bar r_t)^2 - \left[(r_{t+1} - \hat r_{t+1})^2 - (\bar r_t - \hat r_{t+1})^2\right]
+  \label{eq:09-cw}
+\end{equation}
+A one-sided $t$-test on the mean of $f_t$ tests whether the predictor carries significant predictive information.
 
-\textbf{5. The volatility-scaling result itself.} A result that improves on a famous anomaly by adjusting it is itself a claim that can be overfit\index{overfitting}. Barroso and Santa-Clara chose a six-month window and a 12\% target; the lab lets readers change both, and an exercise asks how sensitive the improvement is. Chapter~\ref{ch:11} returns to whether volatility timing\index{volatility targeting} works in general.
+\subsection{Economic Value: Certainty-Equivalent Return (CER)}
+For a mean-variance investor with risk aversion $\gamma$, portfolio weight in equities is $w_t = \frac{\hat{r}_{t+1}}{\gamma \hat{\sigma}^2_{t+1}}$. The gain in Certainty-Equivalent Return ($\Delta \text{CER}$) measures the risk-free return premium the investor would accept to replace benchmark-based allocation with model-based forecasts. Campbell and Thompson (2008) provide the approximation $\Delta E[R] \approx R^2_{\text{OS}} / S^2$, where $S$ is the benchmark Sharpe ratio.
+
+\section{Multiple Testing in Next-Period Forecasting: White's Reality Check}
+\label{sec:09-reality}
+
+When a researcher tests $N$ candidate forecasting rules or models, selecting the top performer induces data-mining bias. White (2000) introduced the \textbf{Reality Check for Data Mining} to test the null hypothesis that the best model among $N$ candidates does not outperform the benchmark:
+\begin{equation}
+  H_0: \max_{k=1, \dots, N} E[d_k] \le 0
+  \label{eq:09-white-null}
+\end{equation}
+where $d_{k,t} = e^2_{\text{bench},t} - e^2_{k,t}$ represents the performance differential of model $k$ relative to the benchmark.
+
+\subsection{The Reality Check Protocol}
+\begin{enumerate}
+  \item Compute observed mean performance differentials $\bar{d}_k = \frac{1}{T} \sum_{t=1}^T d_{k,t}$ for all $k = 1, \dots, N$, and record $V^{\text{obs}} = \max_k \bar{d}_k$.
+  \item Resample performance series jointly using the stationary block bootstrap (Politis and Romano 1994) across $B$ bootstrap iterations.
+  \item Construct the null distribution by centering bootstrapped statistics:
+  \begin{equation}
+    V^{*,b} = \max_{k=1, \dots, N} \left( \bar{d}_{k}^{*,b} - \bar{d}_k \right)
+  \end{equation}
+  \item Calculate the $p$-value as the proportion of bootstrap iterations where $V^{*,b} \ge V^{\text{obs}}$.
+\end{enumerate}
+Hansen (2005) refined this test into the Superior Predictive Ability (SPA) test, which reduces sensitivity to poor candidate models.
+
+\begin{callout}
+\noindent \textbf{What Failed: A Century of Technical Trading Rules}
+
+Brock, Lakonishok, and LeBaron (1992) documented significant profits from moving-average and trading-range rules applied to the Dow Jones Index from 1897 to 1986. Sullivan, Timmermann, and White (1999) re-evaluated these results across a universe of thousands of technical rules using White's Reality Check. Once search bias was accounted for, the best rule was statistically indistinguishable from chance out of sample, proving that the original results reflected data mining.
+\end{callout}
+
+\section{Post-Publication Samples as Natural Experiments}
+\label{sec:09-postpub}
+
+McLean and Pontiff (2016) evaluated 97 published anomalies across three distinct periods:
+\begin{enumerate}
+  \item \textbf{In-Sample Period}: original discovery sample;
+  \item \textbf{Post-Sample / Pre-Publication Period}: returns dropped by 26\%, reflecting data-mining bias;
+  \item \textbf{Post-Publication Period}: returns dropped by an additional 32\% (58\% total decline), reflecting arbitrage activities by market participants.
+\end{enumerate}
+
+\begin{callout}
+\noindent \textbf{What Failed: The Dividend Yield Out of Sample}
+
+The dividend-price ratio exhibited strong in-sample predictive performance through the 1980s. During the 1990s bull market, however, dividend yields dropped to historical lows, generating persistent negative return forecasts while equity markets surged. Real-time forecasters relying on dividend yields would have remained underweight equities throughout one of the largest bull markets in history. Structural shifts in mean dividend payouts explain much of this out-of-sample breakdown (Lettau and Van Nieuwerburgh 2008; Goyal and Welch 2008).
+\end{callout}
+
+\section{What Investors Can Use}
+\label{sec:09-investors}
+
+\textbf{Rules of Thumb:}
+\begin{itemize}
+  \item Start from the historical mean: Use the historical mean return as the primary benchmark for asset returns.
+  \item Prefer model combinations: Equal-weighted forecast combinations consistently beat individual predictive models by shrinking variance.
+  \item Inspect cumulative error plots: Plot cumulative squared error differences to verify whether forecast gains are steady or concentrated in single shock events.
+\end{itemize}
+
+\textbf{6-Question Investor Audit Checklist:}
+\begin{enumerate}
+  \item Were forecasts generated strictly walk-forward without look-ahead bias?
+  \item Were point-in-time publication delays and data revisions accounted for?
+  \item Is the benchmark model appropriate and hard to beat?
+  \item Was nested model comparison evaluated using the Clark--West test?
+  \item Does performance survive multiple-testing corrections (White's Reality Check / SPA)?
+  \item Does predictive efficacy persist in post-publication samples?
+\end{enumerate}
 
 \section{Verdict}
 \label{sec:09-verdict}
 
-Based on the published evidence, to be confirmed by readers' runs of Lab~\ref{ch:09} on data through 2025: \textbf{survives, with severe crash risk\index{crash risk}.}
-
-\begin{center}
-\small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.25\linewidth}@{}}
-\toprule
-Test & Finding & Effect on the claim \\
-\midrule
-A century of U.S. data & A large average premium with a high t-statistic & Supports \\
-After publication & Continued to earn a premium through the 1990s; weaker and more volatile since 2000, with the 2009 crash & Supports, weakened \\
-Other countries and assets & Broad, with Japan the notable exception & Supports \\
-Costs & Large, but smaller than the gross premium at institutional costs & Supports, with a smaller net premium \\
-Crashes & Rare, severe and concentrated in market rebounds after declines & A serious qualification \\
-Volatility scaling & Reduces crashes and raises the Sharpe ratio in the literature, using only past data & Supports manageability, but is itself a claim to test \\
-\bottomrule
-\end{tabularx}
-\end{center}
-
-Momentum is among the most robust anomalies in finance: it has survived publication, appears in most markets and asset classes, and covers its costs at institutional trading costs\index{transaction costs}. Its crashes are the reason the verdict is not an unqualified survives: an investor holding raw momentum must be prepared to lose a large fraction of the strategy's value in a few months, at moments when the rest of the portfolio is recovering. The verdict is dated by the sample tested.
-
-\section{What investors can use}
-\label{sec:09-investors}
-
-\textbf{Trend rules for asset allocation.} Time-series momentum applied across asset classes, the core of managed-futures funds, has historically tended to do well in prolonged market declines, when it turns short. That makes it a candidate \textbf{diversifier}, an addition that tends to do well when the rest of the portfolio does badly, for a stock-heavy portfolio. Its returns have been uneven, with long flat periods, and its fees are often high.
-
-\textbf{Stock-picking momentum.} Cross-sectional momentum is best held as one component of a multi-factor portfolio. It is negatively correlated with value, so combining the two smooths returns (Asness, Moskowitz and Pedersen 2013). On its own, its crashes make it hard to hold.
-
-\textbf{Manage the risk, not just the return.} Volatility scaling, or at least sizing a momentum allocation so that a 50\% loss in a few months would be survivable, is more important than any refinement of the signal.
-
-\textbf{Questions to ask a momentum or trend-following manager:}
-
-\begin{enumerate}
-  \item How did the strategy perform from March to May 2009, and what would it do in a similar rebound?
-  \item Is the position sized by volatility, and was that rule fixed before the backtest\index{backtest}?
-  \item What is the strategy's turnover, and what costs were assumed? How do they compare with your live trading costs?
-  \item How much of the return comes from small, illiquid stocks?
-  \item Over which periods has the strategy failed to make money, and for how long?
-\end{enumerate}
-
 \begin{callout}
-\textbf{What Failed: holding raw momentum through the 2009 rebound.} By early 2009 momentum had performed well through the financial crisis: it was long defensive winners and short the collapsing financial and cyclical stocks. When the market turned in March 2009, the most beaten-down stocks rebounded hardest. Over the following months, momentum's loser portfolio rose far more than its winner portfolio, and the strategy lost much of a decade's gains in a few months (Daniel and Moskowitz 2016). Nothing about the crash was a mystery afterward: the strategy was short a portfolio of very high-beta stocks at the bottom of a bear market. The failure was in treating momentum's average return as the whole story, and in sizing positions as if the risk were constant. The claim that momentum's historical return could be harvested without managing its crash risk \textbf{fails}.
+\noindent \textbf{Verdict: Fails}
+
+For most single macroeconomic predictors, in-sample statistical significance fails to translate into out-of-sample forecast superiority over the historical mean benchmark (Goyal and Welch 2008; Goyal, Welch, and Zafirov 2024). Out-of-sample $R^2_{\text{OS}}$ metrics are predominantly negative, and success is concentrated in isolated historical shocks. Economic value survives weakly only when imposing sign restrictions and equal-weighted forecast combinations.
 \end{callout}
-
-\section{Open questions}
-\label{sec:09-open}
-
-\begin{itemize}
-  \item \textbf{Can momentum crashes be forecast in real time?} The bear-market and volatility signals help in sample. How well do they work for an investor who adopts them today, and do they survive the multiple-testing\index{multiple testing} corrections of Chapter~\ref{ch:10}?
-  \item \textbf{Why not Japan?} Cultural explanations, differences in investor behavior and differences in market structure have all been proposed for momentum's weakness in Japan; none is settled.
-  \item \textbf{Risk or behavior?} If crashes are the risk that momentum's premium compensates, managing the crashes should reduce the premium. Does it?
-  \item \textbf{Momentum in factors.}\index{momentum|textbf} Ehsani and Linnainmaa (2022) argue that factor returns themselves have momentum. How does that relate to momentum in individual stocks?
-\end{itemize}
 
 \section*{Exercises}
 \addcontentsline{toc}{section}{Exercises}
 
 \subsection*{Conceptual (all readers)}
-
 \begin{enumerate}
-  \item Why does the standard momentum signal skip the most recent month? What would happen to the strategy's returns if it did not?
-  \item Explain the difference between cross-sectional and time-series momentum. In a year when every stock rises, what does each strategy do?
-  \item Explain, using betas, why momentum loses when a falling market rebounds sharply.
-  \item Volatility scaling raised momentum's Sharpe ratio in the original study. List two reasons the improvement might be smaller for an investor who adopts it now.
+  \item Explain why in-sample $R^2$ cannot decrease when adding variables, whereas out-of-sample $R^2_{\text{OS}}$ can be negative.
+  \item A forecaster predicts 12-month returns monthly using past data. Explain which training observations must be purged to prevent leakage.
+  \item Why is the uncorrected Diebold--Mariano test biased when comparing nested predictive models? What adjustment does Clark--West provide?
+  \item Describe how White's Reality Check constructs a null distribution for the maximum performance statistic across $N$ models.
+  \item Explain why an equal-weighted combination of 14 weak forecasts often beats every individual forecast out of sample.
 \end{enumerate}
 
-\subsection*{Lab extensions (technical readers)}
-
+\subsection*{Lab Extensions (technical readers)}
 \begin{enumerate}
-  \setcounter{enumi}{4}
-  \item Re-run Part C with a weight cap of 1.5 and with targets of 8\% and 16\%. How sensitive is the improvement?
-  \item Replace the 24-month bear-market indicator with a 12-month one. Does the crash regression change?
-  \item Compute momentum's net Sharpe ratio after 2001 with a one-way cost of 10 basis points. Is momentum more implementable today?
-  \item In Part D, change the look-back from 12 months to 3 and to 24. How does time-series momentum change?
-  \item Using the JKP data, count the countries in which momentum has a t-statistic above 2. How many would you expect by chance?
-  \item Combine momentum and value (Chapter~\ref{ch:08}) in a 50/50 portfolio. Compare its Sharpe ratio, skewness and worst drawdown with each strategy alone.
+  \setcounter{enumi}{5}
+  \item Replicate Part B of Lab~\ref{ch:09} across 14 macro predictors. Compute $R^2_{\text{OS}}$ and Clark--West $p$-values for 1965--2005 vs. post-2005 samples.
+  \item Evaluate sensitivity to window choice by rerunning walk-forward forecasts using a 20-year rolling window versus an expanding window.
+  \item Apply White's Reality Check to a universe of 500 technical trading rules applied to daily market index returns. Determine whether the top rule survives multiple-testing penalties.
 \end{enumerate}
+
+\section{Lab~\thechapter: Replicating Goyal and Welch (2008) and White's Reality Check}
+\label{sec:09-lab}
+
+\begin{callout}
+\textbf{Lab~\ref{ch:09} at a glance.} \emph{Papers replicated:} Goyal and Welch (2008); Campbell and Thompson (2008); White (2000). \emph{Claim on trial:} In-sample significant predictors beat the historical mean out of sample. \emph{Data:} Goyal and Welch's updated dataset (\texttt{PredictorData.xlsx}), free from Amit Goyal's website, containing 14 macro predictors (valuation ratios, interest rates, credit spreads, stock variance, net equity expansion, inflation). \emph{Code:} \texttt{ch05-out-of-sample/}.
+\end{callout}
+
+\subsection*{Lab Setup and Structure}
+\begin{table}[htbp]
+\centering
+\small
+\caption{The 14 Macroeconomic Predictors of Goyal and Welch}
+\label{tab:09-goyal-predictors}
+\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Category & Predictors \\
+\midrule
+Valuation Ratios & Dividend--price ratio, dividend yield, earnings--price ratio, dividend payout ratio, book-to-market ratio. \\
+Interest Rates & Treasury-bill rate, long-term government yield, long-term bond return, term spread. \\
+Credit & Default yield spread (Baa minus Aaa), default return spread. \\
+Other & Stock variance, net equity expansion, inflation (lagged 2 months). \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{Part A: In-Sample Regressions.} Run univariate regressions for all 14 predictors; record slope, White $t$-statistic, and $R^2$.
+  \item \textbf{Part B: Out-of-Sample Walk-Forward.} Generate recursive forecasts starting in 1965. Compute $R^2_{\text{OS}}$, Clark--West, and Diebold--Mariano statistics. Plot cumulative squared error differences.
+  \item \textbf{Part C: Remedies.} Evaluate Campbell--Thompson sign restrictions, forecast combinations, and certainty-equivalent return gains ($\Delta \text{CER}$).
+  \item \textbf{Part D: Post-Publication Natural Experiment.} Evaluate predictive performance in the post-2005 sample.
+  \item \textbf{Part E: White's Reality Check.} Apply White's Reality Check to a simulated technical trading universe to measure search bias.
+\end{itemize}
+
+\subsection*{Verdict}
+\textbf{Fails.} Single macroeconomic predictors do not consistently outperform the historical mean out of sample. Forecast combinations and theoretical sign constraints provide minor improvements, but overall out-of-sample predictability remains weak.

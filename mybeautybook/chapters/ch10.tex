@@ -1,4 +1,4 @@
-% Chapter 10 -- Claim: Most Anomalies Are False
+% Chapter 10 -- Claim: Volatility Is Predictable
 % Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -12,331 +12,365 @@
 }{}
 \makeatother
 
-\chapter{Claim: Most Anomalies Are False}
+\chapter{Claim: Volatility Is Predictable}
 \label{ch:10}
 
-Chapters~\ref{ch:08} and~\ref{ch:09} examined two famous anomalies\index{anomaly} in depth. This chapter steps back to the whole population. Academic finance has published hundreds of variables said to predict the cross-section of stock returns. If the arithmetic of multiple testing\index{multiple testing} applies (Section~\ref{sec:01-backtests}), many of them should be false discoveries. In 2020 a widely cited study reported that most of them fail to replicate; in 2023 an equally careful study concluded that most of them do replicate.
+Mandelbrot (1963) observed that in commodity prices large changes tend to be followed by large changes, of either sign, and small changes by small changes. For two decades the observation had no model. Engle (1982) supplied one, the autoregressive conditional heteroskedasticity, or ARCH, model, in which today's variance depends on yesterday's squared shocks, and Bollerslev (1986) generalized it into GARCH, which became the standard model of financial volatility. The pattern is easy to see in market history. A quiet day tends to follow another quiet day, and a violent day another violent one; the 1987 crash, the autumn of 2008 and March 2020 each arrived as a run of violent days.
 
-Both studies were done by respected researchers using largely the same data. They reached opposite conclusions because they asked slightly different questions and applied different standards. That makes this chapter's claim unusual: the verdict depends less on the data than on the rules of evidence, and the reader is asked to choose those rules and defend them.
+The claim carries a great deal of weight. Option prices, risk limits, Value at Risk\index{Value at Risk (VaR)}, margin requirements\index{margin} and volatility-targeting\index{volatility targeting} funds all assume that volatility\index{volatility} can be forecast. Yet in the 1990s the evidence looked weak: GARCH forecasts explained only a few percent of the variation in squared daily returns. Andersen and Bollerslev (1998) showed that the fault lay with the yardstick, because a single squared return is a very noisy measure of a day's variance, and that forecasts look good when judged against realized variance\index{realized variance} built from intraday data. Hansen and Lunde (2005) found that a simple GARCH(1,1) is hard to beat, Corsi (2009) introduced the HAR model, and Moreira and Muir (2017) argued that investors can earn higher Sharpe ratios by scaling their exposure to forecast volatility, a claim that Cederburg, O'Doherty, Wang and Yan (2020) challenged.
 
-The chapter presents the case for the prosecution and the case for the defense, measures what happens to published predictors after their samples end and after they are published, and gives readers a lab in which they can apply each side's standards to the same data.
+Part III asked whether anything forecasts the \emph{level} of returns, and the answers were mostly modest. This chapter asks about their \emph{size}, and the contrast is the point: the same out-of-sample tools that rejected most return forecasts find strong evidence here. The open question is less \emph{whether} than \emph{how well}, \emph{at what horizon}, \emph{by which model}, and whether an investor can turn the forecasts into better returns. The claim on trial\index{claims-on-trial method} is: \textbf{tomorrow's volatility can be forecast well from today's information, and the forecasts are good enough to improve a portfolio.}
+
+The lab in Section~\ref{sec:10-lab} replicates the proxy result of Andersen and Bollerslev (1998) and the model comparison of Hansen and Lunde (2005) on free daily U.S. market returns since 1926 and the VIX since 1990, and then rebuilds the volatility-managed portfolios of Moreira and Muir (2017), in order to check how predictable volatility is, which model forecasts it best, and whether the forecasts are useful to an investor.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item explain the three forms of market efficiency\index{efficient market hypothesis} and the joint-hypothesis problem\index{joint-hypothesis problem};
-  \item define an anomaly, and distinguish reproduction\index{reproduction}, pure replication\index{replication!pure, scientific and out-of-sample}, scientific replication and out-of-sample replication;
-  \item explain how publication bias\index{publication bias} inflates published results, and how empirical Bayes\index{empirical Bayes} shrinkage\index{shrinkage} corrects noisy estimates;
-  \item list the design choices that can change whether an anomaly replicates;
-  \item set out the prosecution's and the defense's cases, and explain why they reach opposite verdicts from similar data;
-  \item separate post-publication\index{anomaly!post-publication decay} decay due to selection from decay due to investors' learning;
-  \item write and defend your own verdict, stating the standard of evidence you apply.
+  \item annualize a daily volatility and explain why models work in variance\index{variance};
+  \item compute historical, EWMA\index{EWMA} and GARCH\index{GARCH} volatility forecasts\index{volatility!forecasting}, the long-run variance\index{GARCH!unconditional variance} and the half-life\index{half-life} of a shock;
+  \item explain realized variance\index{volatility!realized}, the HAR\index{HAR model} model, implied volatility\index{volatility!implied}, the VIX\index{VIX} and the variance risk premium\index{risk premium};
+  \item state the claim that volatility is predictable in a form that can fail, and summarize the evidence for it;
+  \item evaluate volatility forecasts with robust loss functions\index{loss function} such as QLIKE\index{loss function!QLIKE}, and with Mincer--Zarnowitz and Diebold--Mariano\index{Diebold--Mariano test} tests;
+  \item judge whether volatility timing improves an investor's returns once forecasts are made in real time and costs and leverage\index{leverage} limits apply.
 \end{itemize}
 
-\section{Foundations: market efficiency, anomalies and replication}
+\section{Foundations: measuring and modelling volatility}
 \label{sec:10-foundations}
 
-\subsection{The efficient market hypothesis}
+\subsection{Volatility and variance}
 
-Section~\ref{sec:01-efficient-markets} introduced the efficient market hypothesis and Fama's (1970) three forms, weak, semi-strong and strong. The debate in this chapter concerns the semi-strong form\index{efficient market hypothesis!semi-strong form}: whether publicly available characteristics of firms, such as their valuation ratios or past returns, predict returns beyond what risk justifies.
+Volatility, the standard deviation\index{standard deviation} of returns, and its annualization were introduced in Section~\ref{sec:01-expret}. This chapter works mostly with daily data, so a daily standard deviation $\sigma_d$ is annualized as $\sigma_d\sqrt{252}$, since there are about 252 trading days in a year; a 1\% daily volatility is therefore about 16\% a year. The square root assumes returns are uncorrelated from day to day, which is close to true for daily stock returns (Section~\ref{sec:10-how}). Variance is volatility squared. Most models work in variance, because variances of uncorrelated returns add: the variance over the next $h$ days is the sum of the daily variances.
 
-\subsection{The joint-hypothesis problem}
+\subsection{Historical volatility}
 
-Section~\ref{sec:01-efficient-markets} also introduced the joint-hypothesis problem: a strategy that beats a model such as the CAPM\index{capital asset pricing model (CAPM)} shows either that the market is inefficient or that the model is wrong, and the two cannot be separated (Fama 1970). For anomalies the consequence is direct, because the same evidence can be read as mispricing\index{mispricing} by one researcher and as compensation for an unmodeled risk by another.
+\textbf{Historical volatility}\index{volatility!historical|textbf} is the sample standard deviation over a past window, such as the last 22 trading days (about one month). It weights every day in the window equally and drops days abruptly when they leave it. Because daily mean returns are tiny compared with daily volatility, practitioners usually set the mean to zero and estimate variance as the average squared return.
 
-\subsection{Anomalies}
+\subsection{EWMA}
 
-An \textbf{anomaly}\index{anomaly|textbf} is a pattern in returns that a benchmark asset pricing model cannot explain: a characteristic, such as a valuation ratio or past return, that predicts future returns after adjusting for the model's risk factors. Anomalies are usually documented with portfolio sorts\index{portfolio sort} and long--short returns (Section~\ref{sec:08-foundations}) and judged by the t-statistic\index{t-statistic} of the average return or alpha\index{alpha}.
-
-\subsection{Replication, reproduction and robustness}
-
-Terms are used loosely, but a useful distinction is:
-
-\begin{itemize}
-  \item \textbf{Reproduction}\index{reproduction|textbf}: the same data and code give the same numbers. It checks for errors.
-  \item \textbf{Pure replication}\index{replication!pure, scientific and out-of-sample|textbf}: the same method on the same kind of data, perhaps rebuilt independently, gives the same result. It checks that the finding is not an artifact of one implementation.
-  \item \textbf{Scientific replication} or \textbf{robustness}\index{robustness|textbf}: different but reasonable choices of method, sample or market give a similar result. It checks that the finding is about the world, not about the choices.
-  \item \textbf{Out-of-sample replication}: the result holds in data not used to find it, such as later years or other countries.
-\end{itemize}
-
-The two sides of this chapter's debate differ largely in which of these they demand.
-
-\subsection{Publication bias}
-
-Journals are more likely to publish significant results. If only strong in-sample\index{in-sample versus out-of-sample} results are published, the published estimates are biased upward even if every individual study was done honestly: the published set is selected for luck as well as truth. Part E of this chapter's lab measures how large this effect can be.
-
-\subsection{Shrinkage}
-
-When many noisy estimates are made at once, a better estimate of each true value pulls it toward the average of all of them, more for noisier estimates and less for precise ones. A very high estimate is more likely to be partly luck than a moderate one, so pulling it back improves it on average. This idea, from \textbf{empirical Bayes}\index{empirical Bayes|textbf} statistics (Efron and Morris 1975), in which the data themselves supply the average toward which estimates are pulled, is the basis of the defense's methodology.
-
-\textbf{Worked example.} One hundred honest researchers each test a different trading signal with no true predictive power. By chance, about five will find t-statistics beyond $\pm 1.96$, and those five publish (Figure~\ref{fig:10-pubbias}). Every published paper reports a significant result; none is real. A reader who saw only the journals would find a literature with a 100\% success rate.
-
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[declare function={npdf(\x) = exp(-\x*\x/2)/sqrt(2*pi);}]
-\begin{axis}[
-  width=0.68\linewidth, height=0.34\linewidth,
-  axis lines=left, axis line style={-stealth},
-  xmin=-4, xmax=4.1, ymin=0, ymax=0.62,
-  xtick={-1.96,0,1.96}, xticklabels={$-1.96$,$0$,$1.96$},
-  ytick=\empty,
-  xlabel={t-statistic of a signal with no true power},
-  ylabel={Share of signals},
-  samples=200, domain=-4:4, clip=false,
-]
-  \addplot[name path=curve, draw=none] {npdf(x)};
-  \path[name path=base] (axis cs:-4,0) -- (axis cs:4,0);
-  \addplot[fenavy] fill between[of=curve and base, soft clip={domain=-4:-1.96}];
-  \addplot[fenavy] fill between[of=curve and base, soft clip={domain=1.96:4}];
-  \addplot[fegray, thick] {npdf(x)};
-
-  \node[align=center] at (axis cs:0,0.52) {about 95 signals: not significant,\\never published};
-  \node[fenavy, align=center, font=\small] (L) at (axis cs:-2.4,0.36) {about 2.5 signals:\\``significant,'' published};
-  \node[fenavy, align=center, font=\small] (R) at (axis cs:2.9,0.36) {about 2.5 signals:\\``significant,'' published};
-  \draw[-stealth, fenavy] (axis cs:-2.5,0.30) -- (axis cs:-2.3,0.03);
-  \draw[-stealth, fenavy] (axis cs:2.85,0.30) -- (axis cs:2.3,0.03);
-\end{axis}
-\end{tikzpicture}
-\caption{Publication bias. One hundred signals with no true power produce t-statistics spread around zero. Only the few in the shaded tails, about 2.5 on each side, look significant and get published. The published record shows only the tails.}
-\label{fig:10-pubbias}
-\end{figure}
-
-\section{How it works: the factor zoo and how replications are designed}
-\label{sec:10-how}
-
-\textbf{The zoo.} For decades, finance explained why some stocks earn more than others with a single factor, the market, as in the CAPM, and later with a handful, such as size, value and momentum\index{momentum}. By the time John Cochrane gave his presidential address to the American Finance Association in 2011, the literature had produced so many candidate predictors that he called it a ``zoo of new factors'' (Cochrane 2011). He argued that the field needed to work out which of them were truly independent, which were redundant, and which were simply noise. Harvey, Liu and Zhu (2016) counted 316 factors published in leading journals, and the count has kept growing since.
-
-The problem is statistical as much as economic. When thousands of researchers test thousands of variables on the same U.S. stock data, some will look significant by luck alone: at the conventional cutoff of a t-statistic near 2, roughly one useless variable in twenty passes, and journals mostly publish the ones that pass (Section~\ref{sec:10-foundations}). The published zoo is therefore a mixture of real effects and false discoveries. Many of its members are also the same idea measured in slightly different ways, such as several versions of the finding that cheap stocks beat expensive ones. Since Harvey, Liu and Zhu's count, two open data projects have made it possible to rebuild most of the zoo:
-
-\begin{itemize}
-  \item Chen and Zimmermann's \textbf{Open Source Asset Pricing}\index{Open Source Asset Pricing|textbf} (2022) replicates more than 200 cross-sectional predictors from the original papers' descriptions and publishes their portfolio returns and code.
-  \item Jensen, Kelly and Pedersen (2023) built a \textbf{global factor database} of 153 factors across 93 countries, with harmonized definitions, meaning each factor is built the same way in every country.
-\end{itemize}
-
-No table can list hundreds of predictors, but it does not need to, because most of them are variations on a few ideas. Hou, Xue and Zhang\index{q-factor model} (2020) sort their 452 anomalies into six categories, and Table~\ref{tab:10-zoo} shows two or three well-known predictors from each. The sign shows whether stocks with a high value of the predictor earned higher (+) or lower ($-$) average returns in the original study. The full lists, with definitions and code for every predictor, are in the Open Source Asset Pricing and JKP documentation, and Jensen, Kelly and Pedersen (2023) group their 153 factors into 13 themes along similar lines.
-
-\begin{table}[htbp]
-\centering
-\small
-\caption{A map of the factor zoo: representative predictors in the six categories of Hou, Xue and Zhang (2020).}
-\label{tab:10-zoo}
-\renewcommand{\arraystretch}{1.15}
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.21\linewidth}c@{}}
-\toprule
-Category & Predictor & What it measures & Original study & Sign \\
-\midrule
-Momentum & Price momentum & Return over the past 12 months, skipping the most recent month & Jegadeesh and Titman (1993) & $+$ \\
- & Earnings surprise & Change in quarterly earnings from a year earlier, scaled by its volatility & Bernard and Thomas (1989) & $+$ \\
- & Short-term reversal & Return over the past month & Jegadeesh (1990) & $-$ \\
-\addlinespace
-Value versus growth & Book-to-market & Book value of equity divided by market value & Rosenberg, Reid and Lanstein (1985); Fama and French (1992) & $+$ \\
- & Earnings-to-price & Earnings divided by market value & Basu (1977) & $+$ \\
-\addlinespace
-Investment & Asset growth & Annual percentage growth in total assets & Cooper, Gulen and Schill (2008) & $-$ \\
- & Net share issuance & Annual change in shares outstanding & Pontiff and Woodgate (2008) & $-$ \\
- & Accruals & Earnings minus operating cash flow, scaled by assets & Sloan (1996) & $-$ \\
-\addlinespace
-Profitability & Gross profitability & Revenue minus cost of goods sold, divided by assets & Novy-Marx (2013) & $+$ \\
- & F-score & Sum of nine accounting signals of financial strength & Piotroski (2000) & $+$ \\
-\addlinespace
-Intangibles & R\&D intensity & Research and development spending divided by market value & Chan, Lakonishok and Sougiannis (2001) & $+$ \\
-\addlinespace
-Trading frictions & Size & Market value of equity & Banz (1981) & $-$ \\
- & Idiosyncratic volatility & Volatility of returns not explained by the Fama--French factors & Ang, Hodrick, Xing and Zhang (2006) & $-$ \\
- & Illiquidity & Average absolute daily return per dollar of trading volume & Amihud (2002) & $+$ \\
- & Maximum daily return & Largest daily return in the past month & Bali, Cakici and Whitelaw (2011) & $-$ \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\textbf{Design choices in a replication\index{replication}.} A replication of an anomaly must make many choices, each defensible, that can change the result:
-
-\begin{center}
-\small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.34\linewidth}@{}}
-\toprule
-Choice & Options & Why it matters \\
-\midrule
-Universe & All stocks, or excluding micro-caps (for example below the NYSE 20th size percentile) & Many anomalies are concentrated in tiny stocks that are costly to trade and hold little value \\
-Weighting & Equal-weighted or value-weighted portfolios & Equal weighting gives micro-caps large influence \\
-Breakpoints & Deciles, quintiles or terciles; NYSE or all-stock breakpoints & Extreme portfolios magnify signals and noise \\
-Sample & The original paper's sample, or the longest available & Later years are out of sample \\
-Significance hurdle & $t > 1.96$, $t > 3$, a false-discovery-rate rule, or a Bayesian posterior & Determines what counts as a success \\
-Benchmark & Raw returns, CAPM alpha, or alpha against a multifactor model & A factor explained by others may be real but redundant \\
-\bottomrule
-\end{tabularx}
-\end{center}
-
-\textbf{NYSE breakpoints}\index{NYSE breakpoints|textbf} set the cut-offs between groups using only stocks listed on the New York Stock Exchange, which are larger on average, so the many tiny Nasdaq stocks do not crowd the extreme portfolios. A \textbf{Bayesian posterior}\index{Bayesian posterior|textbf} is the probability of a hypothesis after combining a prior belief with the data.
-
-\textbf{Pure and scientific replication again.} A replication that copies the original method tests whether the paper's numbers can be reproduced. One that changes the universe, weighting or hurdle tests whether the finding is robust. Both are valuable, but they answer different questions, and the debate in this chapter turns partly on that difference.
-
-\section{The claim}
-\label{sec:10-claim}
-
-Stated so that it can fail:
-
-\begin{callout}
-\textbf{Most published cross-sectional return predictors do not reflect a real, persistent relationship: they fail to replicate under reasonable standards, or their returns disappear outside the sample in which they were found.}
-\end{callout}
-
-``Reasonable standards'' is where the debate lies. The claim can be tested in three ways:
-
-\begin{itemize}
-  \item \textbf{Replication within the original sample.} Do the predictors' long--short returns clear a significance hurdle when rebuilt independently? Which hurdle, and with which portfolio construction?
-  \item \textbf{Out of sample.}\index{in-sample versus out-of-sample|textbf} Do returns persist after the original sample ends and after publication?
-  \item \textbf{Statistically corrected.} After accounting for the number of predictors tested and for publication bias, what share have a high probability of a positive true return?
-\end{itemize}
-
-\section{The prosecution}
-\label{sec:10-prosecution}
-
-\textbf{Harvey, Liu and Zhu (2016)} argued from statistics: with hundreds of factors tested, and many more tested but never published, the conventional $t > 2$ hurdle lets through too many false discoveries. Adjusting for the number of tests, they proposed that a new factor should clear a t-statistic of about 3, and concluded that many published factors were likely false.
-
-\textbf{Hou, Xue and Zhang (2020)}\index{q-factor model|textbf} argued from replication. They rebuilt 452 anomalies with a common method designed to limit the influence of micro-caps\index{micro-caps}: NYSE breakpoints and value-weighted\index{index weighting!value-weighted} returns. Under that method, 65\% of the anomalies could not clear the single-test hurdle of an absolute t-statistic of 1.96, and raising the hurdle to 2.78 to allow for multiple testing raised the failure rate to 82\%. Anomalies based on \textbf{trading frictions}\index{trading frictions|textbf}, the costs and obstacles of trading, such as illiquidity\index{illiquidity} and idiosyncratic risk measures, failed most often, 96\% of them. \textbf{Idiosyncratic risk}\index{risk!idiosyncratic|textbf} is the part of a stock's volatility\index{volatility} not explained by the market or other factors. Their conclusion: most anomalies are either false or confined to micro-caps that are too small and costly to matter.
-
-The prosecution's case rests on two premises: that the right hurdle is high because many tests have been run, and that the right portfolio construction gives little weight to the smallest stocks.
-
-\section{The defense}
-\label{sec:10-defense}
-
-\textbf{Jensen, Kelly and Pedersen (2023)} argued that the replication crisis was overstated. Using a Bayesian model of factor replication, they found that:
-
-\begin{itemize}
-  \item most factors can be replicated;
-  \item they cluster into 13 themes, most of which are significant parts of the optimal portfolio;
-  \item they work out of sample in a large new data set covering 93 countries;
-  \item the evidence is strengthened rather than weakened by the large number of factors, because related factors corroborate one another.
-\end{itemize}
-
-Their approach treats each factor's alpha as a draw from a common distribution and shrinks noisy estimates toward the average of related factors, rather than judging each one in isolation against a fixed hurdle.
-
-\textbf{Chen and Zimmermann (2022)} found that the predictors whose original papers reported clear statistical evidence almost all reproduce with the original methods. \textbf{Chen and Zimmermann (2020)} estimated publication bias directly across 156 published predictors and concluded that bias-adjusted returns are only about 12\% smaller than in-sample returns, and that for predictors that survive journal review, a t-statistic hurdle of about 1.8 is enough to control for multiple testing. \textbf{Chen (2021)} argued that the sheer size of published t-statistics is hard to explain by \textbf{p-hacking}\index{p-hacking|textbf}, trying analyses until one crosses the significance line, alone.
-
-The defense's case rests on different premises: that the question is whether the original findings are real, not whether they survive a construction that de-emphasizes small stocks, and that evidence should be pooled across related factors rather than judged one test at a time.
-
-\section{Post-publication decay}
-\label{sec:10-decay}
-
-Whatever the replication standard, out-of-sample performance is a separate question. \textbf{McLean and Pontiff (2016)}\index{anomaly!post-publication decay|textbf} followed 97 predictors after their original samples ended and after publication. Portfolio returns were 26\% lower out of sample and 58\% lower after publication (Figure~\ref{fig:10-decay}). They interpreted the first figure as an upper bound on the effect of data mining\index{data mining}, since nothing changed in the world when a sample ended except that researchers stopped looking, and attributed the further decline after publication to investors trading on the published results.
+\textbf{EWMA}\index{EWMA|textbf} (exponentially weighted moving average), popularized by J.P. Morgan's RiskMetrics\index{RiskMetrics} in 1994, weights recent days more heavily:
+\begin{equation}
+  \sigma^2_t = \lambda\,\sigma^2_{t-1} + (1 - \lambda)\,r^2_{t-1}
+  \label{eq:10-ewma}
+\end{equation}
+RiskMetrics set $\lambda = 0.94$ for daily data. Yesterday's squared return gets weight 6\%, the day before $0.94 \times 6\% \approx 5.6\%$, and so on (Figure~\ref{fig:10-ewma}).
 
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-  width=0.56\linewidth, height=0.34\linewidth,
-  ybar, bar width=0.68cm,
+  width=0.64\linewidth, height=0.36\linewidth,
   axis lines=left, axis line style={-stealth},
-  ymin=0, ymax=118, ytick={0,50,100},
-  ylabel={Average return (in-sample $= 100$)},
-  symbolic x coords={A,B,C},
-  xtick=data,
-  xticklabels={In sample, {After sample\\before publication}, {After\\publication}},
-  xticklabel style={align=center, text width=2.4cm, font=\small},
-  enlarge x limits=0.25,
-  nodes near coords,
+  xmin=0, xmax=41, ymin=0, ymax=7.3,
+  xtick={0,5,...,40}, ytick={0,2,4,6},
+  xlabel={Days ago},
+  ylabel={Weight on that day's squared return (\%)},
+  legend style={draw=none, fill=none, at={(0.98,0.98)}, anchor=north east,
+                cells={anchor=west}, font=\small},
+  legend cell align=left,
 ]
-  \addplot[fill=fenavy, draw=none] coordinates {(A,100) (B,74) (C,42)};
+  % EWMA weights: (1 - lambda) * lambda^(k-1), lambda = 0.94
+  \addplot[ybar, area legend, bar width=0.5, fill=fenavy, draw=none,
+           domain=1:40, samples=40] {100*0.06*0.94^(x-1)};
+  \addlegendentry{EWMA, $\lambda = 0.94$}
+  % Historical window: 1/22 on each of the last 22 days
+  \addplot[fegray, very thick, const plot] coordinates
+    {(0.5,4.545) (22.5,4.545) (22.5,0)};
+  \addlegendentry{22-day window, equal weights}
 \end{axis}
 \end{tikzpicture}
-\caption{Post-publication decay in McLean and Pontiff (2016). With in-sample returns set to 100, the average predictor earned 74 between the end of its original sample and publication, and 42 after publication.}
-\label{fig:10-decay}
+\caption{Weights on past squared returns. A 22-day historical window gives each day the same weight and then drops it abruptly. EWMA gives the most weight to yesterday and fades older days gradually, so it reacts faster to news and never drops a day all at once.}
+\label{fig:10-ewma}
 \end{figure}
 
-The two readings matter for the claim. If most of the decline happens when the sample ends, the original results were inflated by selection: a sign of data mining. If most happens after publication, the results were real but have been arbitraged away by investors: a sign of learning, which is consistent with the original finding having been true. McLean and Pontiff's numbers suggest both forces matter, with the publication effect the larger.
+\subsection{GARCH(1,1)}
+\label{sec:10-garch}
 
-This chapter's lab adds a check the original study could not make: a simulated literature in which the truth is known. If only significant results are published, returns appear to fall after the sample ends even when nothing changes. The size of that purely statistical decline is a benchmark for how much of the observed decay is selection.
+\textbf{GARCH(1,1)}\index{GARCH|textbf} (generalized autoregressive conditional heteroskedasticity\index{heteroskedasticity}) adds a pull toward a long-run level:
+\begin{equation}
+  \sigma^2_t = \omega + \alpha\,r^2_{t-1} + \beta\,\sigma^2_{t-1}
+  \label{eq:10-garch}
+\end{equation}
+Here $\alpha$ measures how strongly a new shock moves the forecast, and $\beta$ measures how long the effect lasts. Four quantities follow from the parameters:
 
-\section{Replication lab: Lab~\thechapter}
+\begin{itemize}
+  \item \textbf{Persistence}\index{persistence|textbf} is $\alpha + \beta$, which must be below 1.
+  \item The \textbf{long-run variance}\index{GARCH!unconditional variance|textbf} is $V = \omega / (1 - \alpha - \beta)$.
+  \item Forecasts revert to $V$ geometrically: the expected variance $k$ days ahead is
+  \begin{equation}
+    E_t[\sigma^2_{t+k}] = V + (\alpha + \beta)^{k-1}\left(\sigma^2_{t+1} - V\right)
+    \label{eq:10-forecast}
+  \end{equation}
+  \item The \textbf{half-life}\index{half-life|textbf} of a volatility shock, the time for half of it to fade, is $\ln 0.5 / \ln(\alpha + \beta)$.
+\end{itemize}
+
+EWMA is the special case $\omega = 0$, $\alpha = 1 - \lambda$, $\beta = \lambda$, with persistence exactly 1, so EWMA forecasts never revert. \textbf{GJR-GARCH}\index{GARCH!GJR|textbf} adds a term $\gamma\,r^2_{t-1}\,\mathbf{1}[r_{t-1} < 0]$, where the indicator $\mathbf{1}[\cdot]$ is 1 when its condition holds and 0 otherwise, so falls raise volatility more than rises. This asymmetry is the \textbf{leverage effect}\index{leverage effect|textbf}. The parameters are estimated by \textbf{maximum likelihood}\index{maximum likelihood|textbf}: choosing the values that make the observed returns most probable under the model.
+
+\subsection{Realized variance}
+\label{sec:10-rv}
+
+\textbf{Realized variance}\index{volatility!realized|textbf} sums squared returns within a period, such as squared five-minute returns within a day. With enough intraday data it measures that day's variance almost exactly. The \textbf{HAR model}\index{HAR model|textbf} (heterogeneous autoregressive) forecasts tomorrow's realized variance by regressing it on the averages of the last day, week and month.
+
+\subsection{Implied volatility}
+\label{sec:10-iv}
+
+\textbf{Implied volatility}\index{volatility!implied|textbf} is the volatility that makes an option's market price equal its model price (Chapter~\ref{ch:16}). The \textbf{VIX}\index{VIX|textbf} is the market's 30-day implied volatility for the S\&P 500, computed from a strip of index options. It is a forecast under the \emph{risk-neutral\index{risk-neutral pricing}} measure, the probabilities that price assets as if investors did not care about risk, not the real-world probabilities. Investors pay a premium to insure against volatility, so the VIX usually exceeds the volatility that follows. The gap is the \textbf{variance risk premium}\index{variance|textbf}.
+
+\textbf{Worked example.} Yesterday's daily volatility estimate was 1.6\% (variance 0.000256), and the market then fell 3\% ($r^2 = 0.0009$).
+
+\begin{itemize}
+  \item EWMA with $\lambda = 0.94$: $\sigma^2 = 0.94 \times 0.000256 + 0.06 \times 0.0009 = 0.000295$. Volatility rises to 1.72\% a day, or 27\% annualized.
+  \item GARCH with $\omega = 0.000002$, $\alpha = 0.08$ and $\beta = 0.90$:
+  \begin{itemize}
+    \item $\sigma^2 = 0.000002 + 0.08 \times 0.0009 + 0.90 \times 0.000256 = 0.000304$, or 1.74\% a day.
+    \item Persistence is 0.98, so the long-run variance is $0.000002 / 0.02 = 0.0001$: 1\% a day, or 15.9\% a year. The half-life is $\ln 0.5 / \ln 0.98 \approx 34$ trading days (Figure~\ref{fig:10-garch}).
+    \item The variance over the next ten days is $10 \times 0.0001 + (0.000304 - 0.0001) \times (1 - 0.98^{10})/(1 - 0.98) = 0.00287$. Ten-day volatility is 5.4\%, or 26.9\% annualized. That is below the 27.7\% you would get by assuming today's 1.74\% persists, because the forecast is already reverting.
+  \end{itemize}
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  % Variance gap to the long-run level halves every 34 trading days
+  declare function={vol(\k) = sqrt(15.9^2 + (27.7^2 - 15.9^2)*0.5^((\k-1)/34));}
+]
+\begin{axis}[
+  width=0.64\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=0, xmax=150, ymin=12, ymax=30,
+  xtick={0,20,...,140}, ytick={15,20,25,30},
+  xlabel={Trading days ahead},
+  ylabel={Forecast volatility (\% a year)},
+  clip=false,
+]
+  \addplot[fegray, dashed, domain=0:150, samples=2] {15.9};
+  \addplot[fenavy, very thick, domain=1:150, samples=150] {vol(x)};
+  \draw[fenavy, dashed] (axis cs:35,12) -- (axis cs:35,{vol(35)});
+  \node[fenavy, anchor=west] at (axis cs:4,27.4) {tomorrow: 27.7\%};
+  \node[fenavy, anchor=south west] at (axis cs:37,16.3) {half-life: 34 days};
+  \node[fegray, anchor=north east] at (axis cs:148,15.6) {long-run level, 15.9\%};
+\end{axis}
+\end{tikzpicture}
+\caption{A GARCH forecast reverting to its long-run level, from the worked example. After a 3\% fall the forecast for tomorrow is 27.7\% a year; it then decays toward 15.9\%, losing half of the gap every 34 trading days.}
+\label{fig:10-garch}
+\end{figure}
+
+\section{How it works}
+\label{sec:10-how}
+
+Three regularities in daily stock returns, which Part A of this chapter's lab measures, motivate every model in this chapter.
+
+\begin{itemize}
+  \item \textbf{Volatility clustering.}\index{volatility clustering|textbf} Mandelbrot (1963) observed that large changes tend to be followed by large changes, of either sign, and small changes by small changes. Returns themselves have almost no autocorrelation\index{autocorrelation}, but absolute and squared returns are positively autocorrelated, and the autocorrelation decays slowly over weeks and months. A forecastable size combined with an unforecastable sign is exactly what an efficient market\index{efficient market hypothesis} with changing risk would produce.
+  \item \textbf{Fat tails.}\index{fat tails|textbf} Daily returns have far more extreme days than a normal distribution\index{distribution!normal} allows. Part of this is clustering itself: a mixture of calm and turbulent periods, each roughly normal, has fat tails overall. Even after allowing for clustering, the standardized returns $r_t / \sigma_t$ remain somewhat fat-tailed, which is why many applications use Student-$t$ shocks.
+  \item \textbf{The leverage effect.}\index{leverage effect|textbf} Volatility rises more after falls than after rises of the same size. Black (1976) attributed this to leverage, since a falling share price raises a firm's debt-to-equity ratio and so the riskiness of its equity. The effect is too large to be explained by leverage alone, and it is strongest for the index. Risk premiums and \textbf{volatility feedback}\index{volatility feedback|textbf}, in which higher expected volatility lowers prices, both contribute.
+\end{itemize}
+
+The models differ in how they turn past returns into a forecast.
+
+\begin{itemize}
+  \item \textbf{Historical and EWMA} forecasts are smoothing rules with one choice: the window length or $\lambda$.
+  \item \textbf{GARCH}\index{GARCH|textbf} models are estimated, have a long-run level and revert toward it. At long horizons their forecasts converge to the \textbf{unconditional variance}\index{GARCH!unconditional variance|textbf}, the long-run average, which is right if volatility truly mean-reverts and costly if the long-run level itself shifts.
+  \item \textbf{HAR}\index{HAR model|textbf} captures the slow decay of volatility's memory with three regressors, one per horizon. It is linear and estimated by ordinary least squares\index{regression!ordinary least squares (OLS)}, which makes it easy to extend.
+  \item \textbf{The VIX}\index{VIX|textbf} is not a model of past returns. It is a market price that can embed information about scheduled events, such as elections and central bank meetings, that no time-series model sees. It also embeds the variance risk premium, so it is biased upward as a forecast.
+\end{itemize}
+
+Lab Figure~\ref{ch:10}.1, from the lab, shows the pattern the models exploit. On U.S. data the bars for returns hover near zero at every lag. The bars for absolute returns are positive at lag 1 and still clearly positive after 50 trading days.
+
+\section{The claim}
+\label{sec:10-claim}
+
+\begin{callout}
+\textbf{Claim.} Today's volatility forecasts tomorrow's. Forecasts built from past returns, or from option prices, beat a constant forecast by a wide margin, out of sample\index{in-sample versus out-of-sample}, at horizons from one day to one month.
+\end{callout}
+
+To test the claim we need to be precise on four points.
+
+\begin{itemize}
+  \item \textbf{What is forecast.} The target is the variance of the market's return over the next $h$ days, for $h = 1$, 5 and 22. True variance is never observed, so we use a \textbf{proxy}, an observable stand-in: the sum of squared daily returns over those days.
+  \item \textbf{Against what.} The weakest benchmark is the \textbf{long-run average}, a constant. Beating it shows that volatility is forecastable at all. The stronger benchmark is a \textbf{random walk}\index{random walk|textbf} in volatility: last month's variance continues. Beating that shows that a model adds something beyond the obvious.
+  \item \textbf{How it is scored.} We use two loss functions, MSE\index{loss function!squared-error (MSE)} and QLIKE, explained in Section~\ref{sec:10-eval}. The choice matters more than it does for return forecasts.
+  \item \textbf{What would count against it.} The claim fails if forecasts beat the long-run average only in sample, or only in calm periods. It weakens if the gain disappears at horizons beyond a few days, or if no model beats the random walk.
+\end{itemize}
+
+A second, separate claim concerns use: that an investor who holds less of the market when forecast volatility is high earns a higher Sharpe ratio\index{Sharpe ratio}. Forecastable volatility is necessary for that claim but not sufficient. Expected returns\index{return!expected} may rise with volatility, and trading has costs.
+
+\section{The original evidence}
+\label{sec:10-evidence}
+
+\textbf{ARCH and GARCH.} Engle (1982) introduced the ARCH model, in which today's variance depends on past squared shocks. His first application was to U.K. inflation\index{inflation}, not stock returns. Bollerslev (1986) added lagged variance, producing GARCH(1,1), which captures long memory with three parameters. Within a decade GARCH-type models had been fitted to almost every financial series, with the same finding each time: persistence close to 1, so volatility shocks die out over weeks to months. Glosten, Jagannathan and Runkle (1993) added the asymmetric term that bears their initials and found strong leverage effects in U.S. stock returns. Engle shared the 2003 Nobel prize for this work.
+
+\textbf{The low-$R^2$\index{regression!R-squared@$R^2$} puzzle and its resolution.} Early out-of-sample tests seemed discouraging. Regressions of daily squared returns on GARCH forecasts gave $R^2$ of only a few percent, and some authors concluded that GARCH forecasts were poor. Andersen and Bollerslev (1998) showed that the problem was the target, not the forecast. A single squared return is an extremely noisy measure of that day's variance, so even a perfect forecast must have a low $R^2$ against it. Measured against realized variance from intraday returns, the same GARCH forecasts explained around half of the variation.
+
+\textbf{Realized volatility and HAR.}\index{volatility!realized|textbf} Andersen, Bollerslev, Diebold and Labys (2003) treated realized variance as an observable series and modelled it directly. Simple time-series models of realized variance outperformed GARCH models estimated on daily returns. Corsi (2009) proposed the HAR model, motivated by traders who operate at daily, weekly and monthly horizons. It reproduces volatility's long memory with three regressors and has become the standard benchmark for realized-variance forecasts.
+
+\textbf{Horse races.} Hansen and Lunde (2005) compared 330 models on a Deutsche mark--dollar exchange rate\index{exchange rate} and IBM stock returns. For the exchange rate, nothing significantly beat GARCH(1,1). For IBM, GARCH(1,1) was clearly inferior to models with a leverage effect. Poon and Granger (2003) reviewed 93 studies. Implied volatility generally forecast best, followed by historical volatility and GARCH roughly together, and all methods did better than a constant.
+
+\section{Evaluating volatility forecasts}
+\label{sec:10-eval}
+
+Scoring a volatility forecast is harder than scoring a return forecast, because the thing being forecast is never observed. Every comparison uses a proxy, such as the sum of squared daily returns. The proxy is unbiased but noisy. The question is whether the noise can change which model wins.
+
+Patton (2011) answered it. With a noisy proxy, only some loss functions are \textbf{robust}: they rank forecasts in the same order as they would against the true variance. Two common ones are robust (Figure~\ref{fig:10-qlike}).
+
+\begin{itemize}
+  \item \textbf{MSE}\index{loss function!squared-error (MSE)|textbf}, $(RV - F)^2$, where $RV$ is the proxy and $F$ the forecast. It is robust but dominated by the largest days. A few crisis days can decide the whole comparison.
+  \item \textbf{QLIKE}\index{loss function!QLIKE|textbf}, $\log F + RV/F$, the loss implied by the normal likelihood. It is robust and penalizes forecasts that are too \emph{low} much more than forecasts that are too high, which suits risk management. Because it depends on the ratio $RV/F$, it is not dominated by the level of volatility in crises.
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  % x = forecast / realized variance; both losses measured from their minimum at x = 1
+  declare function={qlike(\x) = 1/\x + ln(\x) - 1;  mse(\x) = (\x - 1)^2;}
+]
+\begin{axis}[
+  width=0.61\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=0.2, xmax=3.2, ymin=0, ymax=2.2,
+  xtick={0.5,1,...,3}, ytick={0,0.5,1,1.5,2},
+  xticklabel style={/pgf/number format/fixed},
+  yticklabel style={/pgf/number format/fixed},
+  xlabel={Forecast as a multiple of realized variance, $F/RV$},
+  ylabel={Loss above its minimum},
+  samples=200, clip=false,
+]
+  \addplot[fegray, thick, dashed, domain=0.2:2.48] {mse(x)};
+  \addplot[fenavy, very thick, domain=0.225:3.2] {qlike(x)};
+  \node[fegray, anchor=west] at (axis cs:2.5,2.15) {MSE};
+  \node[fenavy, anchor=west] at (axis cs:3.22,{qlike(3.2)}) {QLIKE};
+  \node[align=center] at (axis cs:0.85,1.4) {too low:\\heavily penalized};
+  \node[align=center] at (axis cs:2.65,0.9) {too high:\\mildly penalized};
+\end{axis}
+\end{tikzpicture}
+\caption{Two robust loss functions, measured from their minimum. MSE treats a forecast that is too high and one that is too low symmetrically. QLIKE punishes a forecast that is too low far more than one that is too high: underestimating risk is the costlier mistake.}
+\label{fig:10-qlike}
+\end{figure}
+
+Others are not robust. Mean absolute error and MSE on volatility rather than variance, both common in early studies, can rank a biased forecast above the true variance when the proxy is noisy. They should be avoided.
+
+Two diagnostics complement the loss comparison.
+
+\begin{itemize}
+  \item \textbf{Mincer--Zarnowitz regression.} Regress realized on forecast variance. An unbiased forecast has intercept 0 and slope 1. A slope below 1 means the forecast overreacts\index{overreaction}, which is typical of the VIX because of the variance risk premium. The $R^2$ measures informativeness but is capped by the noise in the proxy, as Andersen and Bollerslev showed.
+  \item \textbf{Diebold--Mariano test}\index{Diebold--Mariano test|textbf} (Chapter~\ref{ch:09}). Test whether the average loss difference between two models is zero, using Newey--West\index{standard error!Newey--West (HAC)} errors with $h - 1$ lags, since multi-day targets overlap.
+\end{itemize}
+
+A fair comparison also requires real-time forecasts. Every parameter must be estimated only on data available at the forecast date, as in the walk-forward\index{walk-forward evaluation} design of Chapter~\ref{ch:09}.
+
+\section{Lab~\thechapter: Replicating Andersen and Bollerslev (1998), Hansen and Lunde (2005) and Moreira and Muir (2017)}
 \label{sec:10-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:10} at a glance.} \emph{The question:} applying each side's standards to the same data, what share of published predictors survive, and how much of their return remains after their samples end and after publication? \emph{Data:} Open Source Asset Pricing: monthly long--short returns for more than 200 predictors as constructed in the original papers, and the signal documentation giving each paper's sample period and publication year. Optionally, a second construction of the same signals, value-weighted or excluding micro-caps, for the methodology comparison. \emph{Code:} repository folder \texttt{ch10-anomalies/}, with a guided notebook.
+\textbf{Lab~\ref{ch:10} at a glance.} \emph{Papers replicated:} Andersen and Bollerslev (1998); Hansen and Lunde (2005); Moreira and Muir (2017). \emph{Claim on trial\index{claims-on-trial method}:} volatility is predictable. \emph{Data:} U.S. market returns since 1926, from the daily factors in the Kenneth French\index{Kenneth French data library} library, and, from 1990, the VIX from FRED\index{FRED}; both are free. \emph{Code:} runs as a script (\texttt{python lab11.py}) or as a notebook with a prediction prompt before each step.
 \end{callout}
 
-\textbf{The setup.}
+\textbf{Part A, stylized facts\index{stylized facts of returns}.} It computes autocorrelations of daily returns and absolute returns at lags 1 to 50, and the correlation\index{correlation} between today's return and tomorrow's absolute return (Lab Figure~\ref{ch:10}.1). Expect the first to hover near zero, the second to stay positive for months, and the third to be negative: the leverage effect.
 
-\begin{itemize}
-  \item \textbf{Part A, replication.} Each predictor's t-statistic over its own original sample. The share clearing $t > 1.96$, $t > 3$\index{t-statistic!$t>3$ hurdle}, and a Benjamini--Hochberg test, which limits the expected share of false discoveries among the predictors it declares significant.
-  \item \textbf{Part B, decay.} Average returns in-sample, after the sample ended but before publication, and after publication. A \textbf{pooled regression}\index{regression!pooled|textbf}, which combines all predictors into one regression in the style of McLean and Pontiff, measures the proportional decline in each period with errors clustered by\index{standard error!clustered} month (Section~\ref{sec:03-se}).
-  \item \textbf{Part C, methodology.} The same statistics for an alternative construction, if supplied. This is the core of the disagreement between Hou, Xue and Zhang and the defense.
-  \item \textbf{Part D, shrinkage.} An empirical Bayes estimate of each predictor's true mean, pulled toward the average in proportion to its noise; the share with more than 95\% probability of a positive true mean; and whether shrunk estimates predict post-publication returns better than raw ones.
-  \item \textbf{Part E, known truth.} A simulated literature in which only signals with in-sample $t > 2$ are published, run with no true decay and with a 30\% decay after publication.
-\end{itemize}
-
-\textbf{What readers will find.} The simulation alone delivers one of the chapter's central lessons. When the lab's simulated literature was run with \textbf{no} true change after publication, the pooled regression still measured returns about 45\% lower after the samples ended and about 54\% lower after publication, purely because publication selected lucky in-sample results. With a true 30\% post-publication decay added, the measured post-publication decline rose to about 68\%. Readers who run the lab on the real data can compare McLean and Pontiff's figures, and their own, with this benchmark.
-
-\section{Why the two sides disagree}
-\label{sec:10-why}
-
-The prosecution and the defense agree on most facts. They disagree on four choices.
+\textbf{Part B, forecast comparison.} Each trading day from 1990, the lab forecasts the market's variance over the next 1, 5 and 22 days with seven methods:
 
 \begin{center}
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.20\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.33\linewidth}@{}}
 \toprule
-Choice & Prosecution (Hou, Xue and Zhang; Harvey, Liu and Zhu) & Defense (Jensen, Kelly and Pedersen; Chen and Zimmermann) \\
+Method & Forecast & Parameters \\
 \midrule
-Which stocks count & De-emphasize micro-caps: NYSE breakpoints, value weights & Replicate the original construction; micro-caps are part of the market \\
-Hurdle & High: $t$ of about 3 or 2.78, for multiple testing & Lower, or a Bayesian posterior; multiple-testing corrections for published factors need not be severe \\
-Unit of evidence & Each factor judged on its own & Related factors pooled; corroboration strengthens the evidence \\
-Kind of replication & Scientific: does it survive reasonable alternative choices? & Pure: are the original findings reproducible and real? \\
+Long-run average & Mean squared return to date & None \\
+Random walk & Last 22 days' variance continues & None \\
+EWMA & RiskMetrics, $\lambda = 0.94$ & Fixed \\
+GARCH(1,1) & Mean-reverting, normal likelihood & Re-estimated yearly on the past 20 years \\
+GJR-GARCH & GARCH with the leverage term & Re-estimated yearly \\
+HAR & Regression on 1-, 5- and 22-day averages & Re-estimated yearly by OLS \\
+VIX & $(\mathrm{VIX}/100)^2 \times h/252$ & None \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-Neither side is wrong on its own terms. A factor that appears only among micro-caps may be real and still irrelevant to an investor who cannot trade micro-caps. A factor that fails a $t > 3$ hurdle may be real and simply estimated with noise. A Bayesian estimate that pools related factors is more efficient if the pooling assumptions are right and misleading if a whole theme was mined together.
+Each method is scored against the random walk with QLIKE and MSE, with Diebold--Mariano tests and Mincer--Zarnowitz regressions. Lab Figure~\ref{ch:10}.2 plots one-month forecasts through 2007--2010 against the volatility that followed. Lab Figure~\ref{ch:10}.3 ranks the methods at each horizon.
 
-The practical lesson is that ``does this anomaly replicate?'' is not a well-posed question until the purpose is stated. For understanding how markets price risk, pure replication and pooled evidence are appropriate. For deciding what to invest in, value-weighted, liquid-universe, out-of-sample, after-cost evidence is what matters.
+\textbf{Part C, crises.} The same losses are computed within 2008--09, 2020 and 2022 (Lab Figure~\ref{ch:10}.4).
 
-\section{Verdict: a split decision}
+\textbf{Part D, use.} A \textbf{volatility-managed portfolio}\index{volatility targeting|textbf} holds the market with weight proportional to 1 / last month's realized variance, scaled so its volatility matches the market's, as in Moreira and Muir (2017). The lab reports Sharpe ratio, drawdown\index{drawdown} and alpha\index{alpha} against the market, net of a cost per unit of weight change, with an optional leverage cap (Lab Figure~\ref{ch:10}.5).
+
+Three design choices affect the results. First, the proxy is built from daily returns, because intraday data are not freely available back to 1926. That makes every model look worse than in studies using five-minute data, but it does not bias the ranking under QLIKE. Second, the HAR model here uses squared daily returns, a much noisier input than the realized variance Corsi used, so expect it to do less well than in the literature. Third, the VIX was redefined in 2003; FRED's VIXCLS uses the current method throughout.
+
+\textbf{What the simulated run shows.} On simulated GJR-GARCH data, the lab recovers what it should. Every dynamic model beats the long-run average by a wide margin. GJR, the true model, ranks first under QLIKE at all three horizons. The simulated VIX shows the upward bias built into it. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
+
+\section{Stress tests}
+\label{sec:10-stress}
+
+\textbf{Horizon.} Forecastability is a short-horizon phenomenon. Because GARCH persistence is below 1, every GARCH forecast converges to the long-run level. Beyond a few months, a constant forecast is hard to beat, and over years, estimates of the long-run level itself drift. At one day to one month, the horizons in the lab, the evidence for forecastability is strong in the literature. The lab lets you measure how fast the advantage over the long-run average shrinks.
+
+\textbf{Crises.} Volatility jumps faster than any model built on past returns can follow. In the first days of October 2008 and of March 2020, every time-series forecast was far too low. QLIKE punishes exactly that error. The models catch up within days, and because they then revert too slowly, they overpredict as the crisis fades. The VIX, as a market price, can react within the day to news and is the obvious candidate to do better at the onset. Lab Figure~\ref{ch:10}.4 tests whether it did.
+
+\textbf{The 2022 rate shock.} In 2022 stocks fell by about a fifth, but realized volatility stayed moderate, without a single spike. This is a useful contrast with 2008 and 2020. A model that forecasts volatility well can still miss a large, slow decline, because volatility and losses are different things.
+
+\textbf{Estimation window.} GARCH parameters estimated on 20 years that include 2008 differ from those estimated on calmer windows. Persistence near 1 means that small changes in $\alpha + \beta$ produce large changes in long-horizon forecasts. Rerun Part B with \texttt{-{}-window-years 10} and compare.
+
+\textbf{Proxy.} A sum of squared daily returns is noisy, especially at the 1-day horizon, where it is a single squared return. Andersen and Bollerslev (1998) showed that this lowers every model's $R^2$ but, with a robust loss, does not change the ranking. Liu, Patton and Sheppard (2015) compared nearly 400 realized-variance estimators and found that five-minute realized variance is hard to beat. Students with intraday data can replace the proxy and check.
+
+\section{Verdict}
 \label{sec:10-verdict}
 
-This chapter's verdict is deliberately left to the reader, with the evidence summarized:
+\begin{callout}
+\textbf{Verdict: survives, strongly, at horizons from one day to one month} (as of October 2026). The claim about \emph{using} volatility forecasts to improve a market investor's Sharpe ratio is a separate one, and it \textbf{weakens} once forecasts are made in real time and costs and leverage limits are applied.
+\end{callout}
 
-\begin{center}
-\small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.22\linewidth}@{}}
-\toprule
-Standard & What the evidence suggests & Verdict on ``most anomalies are false'' \\
-\midrule
-Original construction, conventional hurdle & Most published predictors reproduce & Fails \\
-Micro-caps de-emphasized, value-weighted & Most fail to clear $t = 1.96$ (Hou, Xue and Zhang) & Survives \\
-Bayesian pooling across related factors and countries & Most replicate and work out of sample (Jensen, Kelly and Pedersen) & Fails \\
-Out of sample, after publication & Returns about half their in-sample level, part of it selection (McLean and Pontiff; Part E) & Weakens the anomalies, without making most false \\
-After costs, for an investor & Little expected return remains for the average anomaly (Chen and Velikov 2023; Chapter~\ref{ch:06}) & Survives, in practice \\
-\bottomrule
-\end{tabularx}
-\end{center}
+The case for the forecasting claim rests on four findings.
 
-A defensible summary: \textbf{most published anomalies are not pure statistical flukes, but most are smaller than reported, concentrated in small stocks, partly arbitraged away, and not profitable to trade after costs.} Whether that makes them ``false'' depends on whether the question is scientific or practical. Readers should write their own verdict, stating the standard they apply and why, and date it with the sample they tested.
+\begin{itemize}
+  \item \textbf{It replicates across markets, assets and decades.} Volatility clustering appears in every liquid market studied, back to the nineteenth century. GARCH-type models fitted to them give persistence close to 1.
+  \item \textbf{It holds out of sample.} In real-time forecasts, dynamic models beat the long-run average by a wide margin. That is the result Lab~\ref{ch:10} is built to check on U.S. data since 1990.
+  \item \textbf{It survives the right loss functions.} Early doubts came from evaluating against a noisy proxy with an unsuitable loss. Andersen and Bollerslev (1998) and Patton (2011) removed both problems.
+  \item \textbf{It has a plausible mechanism.} News arrives in clusters, and uncertainty is persistent. Nothing about forecastable volatility contradicts market efficiency, since it predicts risk, not returns.
+\end{itemize}
+
+The qualifications are about \emph{how much}, not \emph{whether}.
+
+\begin{itemize}
+  \item \textbf{Complex models add little over simple ones.} EWMA and GARCH(1,1) are hard to beat for many series. A leverage term helps for equity indices. HAR helps most when realized variance from intraday data is available.
+  \item \textbf{The advantage fades with horizon.} Beyond a few months, forecasts converge to a long-run level that is itself uncertain.
+  \item \textbf{Every model is late at the onset of a crisis.} Forecasts built from past returns cannot anticipate the first violent day. They are most useful after it.
+  \item \textbf{The VIX is informative but biased.} It contains the variance risk premium, so it overstates future volatility on average. It must be adjusted before it is used as a forecast.
+\end{itemize}
 
 \section{What investors can use}
 \label{sec:10-investors}
 
-\textbf{A checklist for judging any new factor fund or signal:}
+\textbf{Risk forecasts, yes.} Any investor sizing positions, setting stop-losses or computing margin should use a volatility forecast that reacts to recent data, such as EWMA or GARCH, rather than a long-run average. This is uncontroversial and is the basis of Value at Risk (Chapter~\ref{ch:11}).
 
-\begin{enumerate}
-  \item \textbf{Is the original evidence strong?} Ask for the t-statistic in the original study and whether it clears about 3.
-  \item \textbf{Does it hold among large, liquid stocks, value-weighted?} If the effect lives in micro-caps, it is unlikely to be investable at scale.
-  \item \textbf{What happened after publication?} Ask for returns from the paper's publication date forward. Expect roughly half the backtest\index{backtest} at best.
-  \item \textbf{Does it belong to a theme that works?} A signal related to established themes such as value, momentum, profitability or low risk has corroborating evidence; an isolated signal has none.
-  \item \textbf{What survives costs?} Ask for turnover\index{turnover} and net returns at realistic costs (Chapter~\ref{ch:06}).
-  \item \textbf{How many signals did the provider test before choosing this one?} Apply this chapter's multiple-testing corrections to the answer.
-\end{enumerate}
+\textbf{Volatility timing for returns: be skeptical.} Moreira and Muir (2017) found that scaling exposure to the market inversely to last month's variance produced an alpha of about 4.9\% a year over 1926--2015, with similar results for several factors. \textbf{Volatility-targeting}\index{volatility targeting|textbf} funds and \textbf{risk-parity}\index{risk parity|textbf} strategies, which allocate so that each asset contributes equal risk, apply versions of the idea. Three later findings temper it.
+
+\begin{itemize}
+  \item \textbf{Real-time feasibility.} Cederburg, O'Doherty, Wang and Yan (2020) tested 103 equity strategies. The alphas in \textbf{spanning regressions}\index{regression!spanning|textbf}, regressions of the managed portfolio on the original, were real, but exploiting them required combining the managed and unmanaged portfolios with weights estimated in sample. Implemented out of sample, the managed versions generally did no better than the originals, because the spanning regressions were unstable.
+  \item \textbf{Leverage.}\index{leverage|textbf} The managed portfolio's weight on the market often exceeds 1 in calm periods. In the lab's simulated run it averaged 1.4 and peaked near 10. Capping leverage at a realistic level reduces the gains.
+  \item \textbf{Costs and crowding\index{crowding}.} Turnover\index{turnover} is high when volatility changes quickly, and volatility-targeting funds all sell at the same time, which can deepen the declines they are trying to avoid.
+\end{itemize}
+
+The benefit is clearer for momentum\index{momentum}, where crashes follow high volatility (Barroso and Santa-Clara 2015; Chapter~\ref{ch:05}), than for the market.
+
+\textbf{Questions to ask a manager who uses volatility targeting:}
+
+\begin{itemize}
+  \item What volatility forecast do you use, and how quickly does it react?
+  \item What is the maximum leverage, and what happens to turnover in a volatility spike?
+  \item Is the backtest\index{backtest} scaled using information available at the time, or using full-sample volatility?
+  \item How did the strategy perform in February 2018 and March 2020, when volatility jumped within days?
+\end{itemize}
 
 \begin{callout}
-\textbf{What Failed: the trading-frictions anomalies.} A family of anomalies based on liquidity\index{liquidity}, idiosyncratic volatility\index{idiosyncratic volatility} and other trading frictions looked strong in the papers that introduced them. In Hou, Xue and Zhang's replication, 96\% of the anomalies in this category failed to clear a t-statistic of 1.96 once micro-caps were de-emphasized with NYSE breakpoints and value weights. Their returns had come mostly from the smallest, least liquid stocks, exactly where costs and frictions are largest. The claim that frictions-based anomalies offer returns an investor can capture \textbf{fails}; whether they reveal something real about how illiquid stocks are priced is a separate and open question.
+\textbf{What Failed: selling volatility before February 5, 2018.} For years before 2018, products that bet against volatility were among the best performers in the market. The VelocityShares Daily Inverse VIX Short-Term ETN (XIV) earned the variance risk premium by shorting VIX futures, and it held \$1.9 billion in assets. On February 5, 2018, the VIX rose 115.6\%, its largest one-day increase ever. XIV lost 96.3\% of its value that day, and Credit Suisse, its issuer, closed it within weeks.
+
+The episode does not contradict this chapter. Volatility forecasts are informative on average. But a forecast that volatility will stay low is weakest exactly when it matters most: at the onset of a spike. A strategy that earns a small premium most days and loses almost everything on one day can look excellent in any backtest that misses that day. Chapter~\ref{ch:11} returns to this problem.
 \end{callout}
 
 \section{Open questions}
 \label{sec:10-open}
 
 \begin{itemize}
-  \item \textbf{What replication standard should the field adopt?} Should journals require value-weighted, micro-cap-robust results, pre-registered\index{pre-registration} hurdles, or Bayesian posteriors?
-  \item \textbf{How many signals were tested but never published?} The unknown size of this \textbf{file drawer}\index{publication bias|textbf}, the studies left unpublished, limits every correction for multiple testing.
-  \item \textbf{Is post-publication decay learning or selection?} Part E's benchmark separates the two in simulation; doing so convincingly in real data remains open.
-  \item \textbf{Do anomalies reflect risk or mispricing?} Their decay after publication favors mispricing for many; their persistence\index{persistence} across countries favors something more durable for a few themes.
+  \item \textbf{Does volatility timing pay after costs?} The evidence for the market is mixed. Does it hold for factors such as momentum, and in other countries?
+  \item \textbf{What is the right long-run level?} GARCH forecasts revert to a constant, but the evidence suggests slow-moving changes in average volatility, linked to the business cycle\index{business cycle} and macroeconomic uncertainty. Component GARCH and GARCH-MIDAS models try to capture this. Do they forecast better at long horizons?
+  \item \textbf{Can machine learning\index{machine learning} beat HAR?} Recent studies add many predictors, such as news, macroeconomic data and other assets' volatilities. Do the gains survive the out-of-sample discipline of Chapter~\ref{ch:09}?
+  \item \textbf{What does the VIX know?} Implied volatility combines a forecast with a risk premium. Can the two be separated well enough to improve the forecast?
 \end{itemize}
 
 \section*{Exercises}
@@ -345,20 +379,19 @@ A defensible summary: \textbf{most published anomalies are not pure statistical 
 \subsection*{Conceptual (all readers)}
 
 \begin{enumerate}
-  \item Explain the joint-hypothesis problem. Why can an anomaly never by itself prove that markets are inefficient?
-  \item Distinguish pure replication from scientific replication. Which does Hou, Xue and Zhang's study perform, and which does Chen and Zimmermann's?
-  \item Explain why a literature that publishes only significant results will show declining returns out of sample even if every published effect were partly real.
-  \item Why might pooling related factors strengthen the evidence for each? When could pooling mislead?
+  \item A GARCH(1,1) model has $\omega = 0.000003$, $\alpha = 0.10$ and $\beta = 0.88$. (a) What are the long-run daily and annualized volatilities? (b) What is the half-life of a shock? (c) If tomorrow's variance forecast is 0.0004, what is the forecast volatility over the next 22 days, annualized?
+  \item Show that EWMA is GARCH(1,1) with $\omega = 0$. What does this imply for EWMA forecasts at long horizons?
+  \item A colleague argues that because volatility is forecastable, markets cannot be efficient. Explain why forecastable volatility is consistent with efficiency, and what evidence would change your answer.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
-  \setcounter{enumi}{4}
-  \item Run Part C with the micro-caps-excluded construction. How many signals drop below $t = 1.96$?
-  \item Restrict the sample to signals published after 2000. Is post-publication decay larger or smaller than for older signals?
-  \item In Part E, raise the publication threshold from $t > 2$ to $t > 3$. How does the apparent decay from selection change?
-  \item In Part D, compare the shrunk estimates with post-publication returns for the 20 signals with the highest in-sample t-statistics. Which estimate predicts better?
-  \item Estimate a \textbf{mixture prior} in which a share of signals have exactly zero true mean and the rest are normal. What share of zeros do the data imply?
-  \item Write a two-page verdict on the chapter's claim, stating your standard of evidence and defending it against the other side.
+  \setcounter{enumi}{3}
+  \item Part A: compute the autocorrelations of squared returns as well as absolute returns. Which decays faster, and why might extreme days explain the difference?
+  \item Part B: rank the models by MSE instead of QLIKE. Does the ranking change? Which days drive the MSE comparison?
+  \item Part B: estimate GARCH with Student-$t$ shocks, using the option \texttt{dist="t"} of \texttt{fit\_garch}. Does it forecast better than the normal version?
+  \item Part B: regress realized variance on both the GJR forecast and the VIX. Does each add information? Compare the VIX's Mincer--Zarnowitz slope with 1 and explain.
+  \item Part C: for the first ten trading days of October 2008 and of March 2020, plot each forecast against realized variance. How many days did each model take to catch up?
+  \item Part D: rescale the managed portfolio using only past data and cap the weight at 1.5. How much of the alpha survives? Compare with Cederburg et al.\ (2020).
 \end{enumerate}

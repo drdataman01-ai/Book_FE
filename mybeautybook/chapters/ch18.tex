@@ -1,4 +1,4 @@
-% Chapter 18 -- Claim: High-Interest Currencies Depreciate Enough to Offset Their Yield
+% Chapter 18 -- Claim: Low-Risk Stocks Beat High-Risk Stocks
 % Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -12,278 +12,290 @@
 }{}
 \makeatother
 
-\chapter{Claim: High-Interest Currencies Depreciate Enough to Offset Their Yield}
+\chapter{Claim: Low-Risk Stocks Beat High-Risk Stocks}
 \label{ch:18}
 
-In 2007 a Japanese household could borrow yen at less than 1\% and deposit Australian dollars at more than 6\%. Japanese retail investors, nicknamed ``Mrs.\ Watanabe,'' and hedge funds did this on a large scale. If exchange rates\index{exchange rate} had stayed put, the trade would have earned the difference, year after year.
+The capital asset pricing model\index{capital asset pricing model (CAPM)} makes one central prediction: assets that move more with the market should earn more. Double the beta\index{beta}, double the expected excess return\index{return!excess}. The prediction was among the first in finance to be tested, and Chapter~\ref{ch:04} showed that it failed early: Black, Jensen and Scholes (1972) and Fama and MacBeth (1973) found the relation between beta and average return positive but far flatter than the theory implied. Black (1972) offered an explanation. Investors who cannot borrow freely, but want more risk, bid up the prices of high-beta stocks, which lowers their later returns.
 
-Textbook theory says it should not work. If investors are risk-neutral\index{risk-neutral pricing} and rational, a currency that pays a higher interest rate must be expected to fall by just enough to offset its yield advantage. Otherwise everyone would borrow in yen and lend in Australian dollars until the opportunity disappeared. This is \textbf{uncovered interest parity}\index{uncovered interest parity (UIP)|textbf}, and it underpins much of international macroeconomics.
+For two decades the flat security market line was treated as a curiosity. It became a claim about profits when later research made it larger and easier to trade. Ang, Hodrick, Xing and Zhang (2006) found that stocks with high idiosyncratic volatility\index{volatility} earned strikingly low returns, Baker, Bradley and Wurgler (2011) argued that fund managers judged against a benchmark have little incentive to correct the mispricing, and Frazzini and Pedersen (2014) built a leveraged ``betting-against-beta'' factor that earned high risk-adjusted returns in many countries and asset classes. The pattern is now called the \textbf{low-risk anomaly}\index{low-risk anomaly|textbf}. Novy-Marx and Velikov (2022) then argued that much of the betting-against-beta performance comes from the way the factor is constructed rather than from low risk itself.
 
-This chapter tests it, and it turns out to be one of the most persistent puzzles in finance. The test also shows what the carry trade\index{carry trade}'s returns look like and how they end.
+The implications are practical. Low-volatility funds grew rapidly after 2010, companies still use beta to set hurdle rates, and the leverage needed to exploit the anomaly is exactly what the explanation says investors avoid. The claim on trial\index{claims-on-trial method} is: \textbf{low-beta and low-volatility stocks earn higher risk-adjusted returns than high-risk stocks, and a leveraged long--short portfolio captures the difference.}
+
+The lab in Section~\ref{sec:18-lab} replicates the security market line of Black, Jensen and Scholes (1972) and the cross-sectional regressions of Fama and MacBeth (1973) on the free beta- and variance-sorted portfolios of the Kenneth R. French Data Library, and rebuilds the betting-against-beta factor of Frazzini and Pedersen (2014) for comparison with AQR's free published series, in order to check whether low-risk stocks still earn more than the CAPM predicts after costs and construction choices are taken into account.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item quote exchange rates and measure currency returns in logs;
-  \item compute a forward exchange rate from covered interest parity\index{covered interest parity (CIP)}, and explain why arbitrage\index{arbitrage} enforces it;
-  \item state uncovered interest parity and compute the profit or loss on a carry trade;
-  \item run and interpret the Fama regression, and explain the forward premium puzzle\index{forward premium puzzle};
-  \item compare the risk-premium, crash-risk and slow-adjustment explanations, and the evidence for each;
-  \item judge what a currency carry fund is paid for and how it loses money.
+  \item estimate a beta, split total risk\index{risk!total} into systematic and idiosyncratic parts, and compute a CAPM alpha\index{alpha};
+  \item draw the security market line\index{security market line} and explain how leverage\index{leverage} constraints flatten it;
+  \item build a beta-neutral\index{market-neutral} betting-against-beta portfolio and explain why a naive low-minus-high portfolio can lose money despite a positive alpha;
+  \item state the weak and strong forms of the low-risk claim and summarize the evidence for each;
+  \item compare the explanations: leverage constraints, lottery preferences\index{lottery preference}, benchmarking, and missing risk factors;
+  \item judge whether a minimum-volatility or BAB\index{betting against beta (BAB)} fund delivers what its backtest\index{backtest} promises.
 \end{itemize}
 
-\section{Foundations: exchange rates, forwards and interest parity}
+\section{Foundations: beta, the CAPM and the security market line}
 \label{sec:18-foundations}
 
-\subsection{Exchange rates}
+\subsection{Beta, the CAPM and the security market line}
 
-The \textbf{spot rate}\index{spot rate|textbf} $S$ is the price of one currency in terms of another. In this chapter $S$ is the number of U.S. dollars per unit of foreign currency, so a rise in $S$ means the foreign currency has \textbf{appreciated}. Changes are measured in logs: $\Delta s_{t+1} = \ln(S_{t+1}/S_t)$.
+Chapter~\ref{ch:04} introduced beta, the CAPM and the security market line (Section~\ref{sec:04-capm}). Beta is the slope of a regression of an asset's excess return on the market's excess return (Equation~\eqref{eq:04-capm}), the market itself has a beta of 1, and the CAPM says that expected excess returns rise in a straight line with beta. Two consequences of the model matter for this chapter. First, the security market line passes through the risk-free rate\index{risk-free rate} at $\beta = 0$ and through the market at $\beta = 1$, so its slope equals the market premium. Second, an asset's \textbf{total risk}\index{risk!total|textbf}, the variance\index{variance} of its return, splits into a systematic part, $\beta_i^2\,\mathrm{Var}(R_m)$, and an idiosyncratic part, the variance of the regression residual\index{regression!residuals}. Only the systematic part is priced, because investors can diversify\index{diversification} the idiosyncratic part away for free. Two stocks with the same volatility can therefore have very different betas, and the CAPM says they should have very different expected returns\index{return!expected}.
 
-\subsection{Forward rates and covered interest parity (CIP)}
+\subsection{Alpha}
 
-A forward contract fixes today the exchange rate $F$ for a trade at a future date. An investor can earn the dollar interest rate $i$ either directly, or by converting dollars to foreign currency, earning the foreign rate $i^*$, and converting back at the forward rate\index{forward rate}. Arbitrage makes the two equal:
-\begin{equation}
-  \frac{F}{S} = \frac{1 + i}{1 + i^*}, \qquad \text{or in logs,} \qquad f - s \approx i - i^*
-  \label{eq:18-cip}
-\end{equation}
-The forward rate is below the spot rate for a high-interest currency: the \textbf{forward discount}\index{forward discount|textbf} equals the interest differential. CIP held closely until 2008 and has shown small but persistent deviations since (Du, Tepper and Verdelhan 2018).
+An asset's alpha, often called Jensen's alpha, is the intercept of the same regression: the average return beyond what beta explains (Section~\ref{sec:04-capm}). Under the CAPM every alpha is zero. A multifactor alpha adds other factors to the regression, such as size, value and momentum\index{momentum} (Chapter~\ref{ch:04}). The low-risk anomaly is a claim about how alpha varies with beta: low-beta stocks have had positive alphas and high-beta stocks negative ones.
 
-\subsection{Uncovered interest parity (UIP)}
+The CAPM assumes that investors can borrow and lend freely at the risk-free rate. An investor who wants more risk than the market then borrows and buys the market, or any efficient portfolio. Many investors cannot do this. Mutual funds and pension plans face limits on \textbf{leverage}\index{leverage|textbf}, borrowing to hold more than their capital. Individuals face \textbf{margin} requirements and pay more than the risk-free rate to borrow. Black (1972) showed that without riskless borrowing the SML is still straight but flatter: it starts at the return on a \textbf{zero-beta portfolio}\index{zero-beta portfolio|textbf}, a portfolio uncorrelated with the market, which lies above the risk-free rate.
 
-\textbf{Uncovered interest parity (UIP)}\index{uncovered interest parity (UIP)|textbf} goes further. It says the \emph{expected} future spot rate equals the forward rate, so the high-interest currency is expected to depreciate by the interest differential:
-\begin{equation}
-  E_t[\Delta s_{t+1}] = i_t - i^*_t
-  \label{eq:18-uip}
-\end{equation}
-UIP has no arbitrage behind it. Holding a foreign currency unhedged is risky, so UIP holds only if investors require no premium for that risk.
-
-\subsection{The carry trade}
-
-Borrow in a low-interest currency, convert and invest in a high-interest currency, and convert back later without hedging. Its excess return\index{return!excess} is the interest differential plus the change in the exchange rate:
-\begin{equation}
-  rx_{t+1} = (i^*_t - i_t) + \Delta s_{t+1}
-  \label{eq:18-carry}
-\end{equation}
-Under UIP its expected value is zero. Equivalently, the carry trade is buying high-interest currencies forward at a discount and hoping they do not fall by as much as the discount.
-
-\textbf{Worked example.} The U.S. one-year rate is 1\%, the Australian rate 5\%, and the spot rate is \$0.70 per Australian dollar (Figure~\ref{fig:18-carry}).
+\textbf{Worked example.} The risk-free rate is 3\% and the market premium is 6\% (Figure~\ref{fig:18-sml}).
 
 \begin{itemize}
-  \item CIP: the one-year forward rate is $0.70 \times 1.01/1.05 \approx \$0.673$.
-  \item UIP: the expected spot rate in a year is also \$0.673, a 3.8\% depreciation.
-  \item Carry trade: borrow \$1 million at 1\%, buy A\$1.429 million, invest at 5\% to get A\$1.5 million.
-  \begin{itemize}
-    \item Spot unchanged at \$0.70: proceeds \$1.05 million, repay \$1.01 million, profit \$40,000.
-    \item Spot falls to \$0.673, as UIP predicts: proceeds \$1.01 million, profit zero.
-    \item Spot falls 10\% to \$0.63: proceeds \$945,000, loss \$65,000.
-  \end{itemize}
+  \item Stock A has a beta of 0.6 and has averaged 9\%. The CAPM predicts $3\% + 0.6 \times 6\% = 6.6\%$, so A's alpha is $+2.4\%$.
+  \item Stock B has a beta of 1.5 and has averaged 10\%. The CAPM predicts $3\% + 1.5 \times 6\% = 12\%$, so B's alpha is $-2\%$.
+  \item An investor who can borrow at 3\% can lever A to a beta of 1. She holds $1/0.6 = 1.67$ dollars of A for each dollar of capital and borrows the remaining 0.67 dollars. Her expected return is $3\% + 1.67 \times (9\% - 3\%) = 13\%$, compared with 9\% for the market at the same beta. Even at a borrowing rate of 5\%, she earns $1.67 \times 9\% - 0.67 \times 5\% \approx 11.7\%$.
+  \item An investor who cannot borrow and wants a beta above 1 must buy B instead. If many investors are in that position, they bid up high-beta stocks such as B and push down their future returns. That is the core of the leverage-constraint explanation in Section~\ref{sec:18-explanations}.
 \end{itemize}
 
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[
-  % Profit ($ thousands) = 1500 x (spot - 0.6733): +40k if unchanged at 0.70,
-  % zero at the UIP forecast 0.673, -65k after a 10% fall to 0.63
-  declare function={carry(\s) = 1500*(\s - 0.67333);}
+  % CAPM: r = 3 + 6 * beta. A = (0.6, 9), B = (1.5, 10); the line through A and B
+  declare function={capm(\b) = 3 + 6*\b;  flat(\b) = 9 + (\b - 0.6)/0.9;}
 ]
 \begin{axis}[
-  width=0.61\linewidth, height=0.34\linewidth,
+  width=0.6\linewidth, height=0.34\linewidth,
   axis lines=left, axis line style={-stealth},
-  xmin=0.6, xmax=0.75, ymin=-110, ymax=120,
-  xtick={0.6,0.62,...,0.74}, ytick={-100,0,100},
-  xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2},
-  xlabel={Spot rate in one year (\$ per Australian dollar)},
-  ylabel={Carry profit (\$ thousands)},
+  xmin=0, xmax=2, ymin=0, ymax=15.5,
+  xtick={0,0.2,...,2}, ytick={0,5,10,15},
+  xticklabel style={/pgf/number format/fixed},
+  xlabel={Beta}, ylabel={Average return (\%)},
   clip=false,
 ]
-  \addplot[gray, thin, domain=0.6:0.75, samples=2] {0};
-  \addplot[fenavy, very thick, domain=0.6:0.75, samples=2] {carry(x)};
-  \fill[fenavy] (axis cs:0.70,40)  circle (2.6pt);
-  \fill[fenavy] (axis cs:0.67333,0) circle (2.6pt);
-  \fill[fenavy] (axis cs:0.63,-65) circle (2.6pt);
-  \node[anchor=south east] at (axis cs:0.697,42) {unchanged: $+\$40$k};
-  \node[anchor=north west] at (axis cs:0.676,-3) {UIP forecast 0.673: zero};
-  \node[anchor=west] at (axis cs:0.633,-70) {$-10\%$: $-\$65$k};
+  \addplot[fegray, thick, dashed, domain=0:2, samples=2] {flat(x)};
+  \addplot[fenavy, very thick, domain=0:2, samples=2] {capm(x)};
+  \fill (axis cs:0.6,9)  circle (2.6pt);
+  \fill (axis cs:1,9)    circle (2.6pt);
+  \fill (axis cs:1.5,10) circle (2.6pt);
+  \node[anchor=south] at (axis cs:0.6,9.5) {A: $\alpha = +2.4\%$};
+  \node[anchor=north west] at (axis cs:1.02,8.8) {market};
+  \node[anchor=north west] at (axis cs:1.52,9.8) {B: $\alpha = -2\%$};
+  \node[anchor=north west] at (axis cs:0.02,2.7) {$r_f = 3\%$};
+  \node[fenavy, anchor=west] at (axis cs:2.02,15) {CAPM line};
+  \node[fegray, anchor=west, align=left] at (axis cs:2.02,{flat(2)})
+    {line through\\A and B};
 \end{axis}
 \end{tikzpicture}
-\caption{Profit on the worked example's carry trade against the spot rate a year later. The trade earns \$40,000 if the Australian dollar is unchanged, breaks even at the UIP forecast of \$0.673, and loses \$65,000 if the currency falls 10\%.}
-\label{fig:18-carry}
+\caption{The security market line in the worked example. The CAPM line runs from the risk-free rate of 3\% through the market at a beta of 1. Stock A lies above it (positive alpha) and stock B below it (negative alpha), so the line through A and B is flatter than the CAPM predicts.}
+\label{fig:18-sml}
 \end{figure}
 
 \section{How it works}
 \label{sec:18-how}
 
-UIP can be tested in two ways, one for each currency and one across currencies.
+There are three ways to sort stocks on risk, and the literature uses all three.
 
-\textbf{The Fama regression.} Regress the change in the exchange rate on the lagged interest differential:
+\begin{itemize}
+  \item \textbf{Beta.}\index{beta|textbf} Estimate each stock's beta from past returns, typically 36 to 60 months of monthly data or a year of daily data. Sort into portfolios. This tests the CAPM directly.
+  \item \textbf{Total volatility.} Sort on the standard deviation\index{standard deviation} of past daily returns, often over one to three months. This needs no market model, and it is how most low-volatility funds work.
+  \item \textbf{Idiosyncratic volatility.}\index{idiosyncratic volatility|textbf} Sort on the volatility of residuals from a factor model\index{factor model}, usually the Fama--French\index{Fama--French factors} three-factor model. Under the CAPM this risk should not be priced at all, so a negative relation is especially puzzling.
+\end{itemize}
+
+The three measures are strongly correlated. High-beta stocks tend to be volatile, and volatile stocks tend to have high idiosyncratic risk\index{risk!idiosyncratic}. Separating them is one of the open problems in this chapter.
+
+A flat SML shows up in two ways. The first is \emph{alphas}: low-risk portfolios have positive CAPM alphas and high-risk portfolios negative ones. The second is a \emph{long-short portfolio\index{long--short portfolio}}. The naive version, long low-risk stocks and short high-risk stocks, has a strongly negative beta. It loses money in rising markets even if the SML is flat, and its average return can be negative while its alpha is positive. \textbf{Betting against beta (BAB)}\index{betting against beta (BAB)|textbf} fixes this. It levers the low-beta leg up to a beta of 1 and scales the high-beta leg down to a beta of 1, so the portfolio is \textbf{beta-neutral}\index{market-neutral|textbf}, with no net exposure to the market (Figure~\ref{fig:18-bab}):
 \begin{equation}
-  \Delta s_{t+1} = a + b\,(i_t - i^*_t) + e_{t+1}
-  \label{eq:18-fama}
+  r_{\mathrm{BAB}} = \frac{r_L - r_f}{\beta_L} - \frac{r_H - r_f}{\beta_H}
+  \label{eq:18-bab}
 \end{equation}
-UIP implies $b = 1$: a one-point interest advantage for the foreign currency predicts a one-point depreciation. If $b = 0$, exchange rates are a random walk and the carry trade earns the whole differential. If $b < 0$, high-interest currencies tend to \emph{appreciate}, and the carry trade earns more than the differential (Figure~\ref{fig:18-fama}). This is the \textbf{forward premium puzzle}.
+If the SML is flat, this portfolio earns a positive return with no market exposure. The betas must be \textbf{ex ante}, estimated from data available when the portfolio is formed. Otherwise the construction looks ahead (Section~\ref{sec:02-lookahead}).
 
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-  width=0.46\linewidth, height=0.34\linewidth,
+  width=0.6\linewidth, height=0.34\linewidth,
+  ybar, bar width=0.6cm,
   axis lines=left, axis line style={-stealth},
-  xmin=-0.5, xmax=4.5, ymin=-4.5, ymax=4.5,
-  xtick={0,1,...,4}, ytick={-4,-2,0,2,4},
-  xlabel={Foreign interest advantage, $i^* - i$ (\%)},
-  ylabel={Expected change in foreign currency (\%)},
-  clip=false,
+  ymin=-2, ymax=2.2, ytick={-2,-1,0,1,2},
+  ylabel={Dollars per \$1 of capital},
+  symbolic x coords={L,H}, xtick=data,
+  xticklabels={Low-beta leg ($\beta_L = 0.6$), High-beta leg ($\beta_H = 1.5$)},
+  enlarge x limits=0.45,
+  nodes near coords,
+  nodes near coords style={font=\small},
+  extra y ticks={0}, extra y tick labels={},
+  extra y tick style={grid=major, major grid style={gray, thin}},
+  legend style={draw=none, at={(0.5,1.03)}, anchor=south, legend columns=2,
+                /tikz/every even column/.append style={column sep=1em}},
 ]
-  \addplot[gray, thin, domain=-0.5:4.5, samples=2] {0};
-  % Typical estimate b = -0.9: the currency rises by 0.9 x its advantage
-  \addplot[thick, densely dotted, domain=0:4.3, samples=2] {0.9*x};
-  % Random walk b = 0
-  \addplot[fegray, thick, dashed, domain=0:4.3, samples=2] {0};
-  % UIP b = 1: falls by its interest advantage
-  \addplot[fenavy, very thick, domain=0:4.3, samples=2] {-x};
-  \node[anchor=west, align=left] at (axis cs:4.6,3.87)
-    {typical estimate\\($b \approx -0.9$):\\rises instead};
-  \node[fegray, anchor=west, align=left] at (axis cs:4.6,0)
-    {random walk\\($b = 0$)};
-  \node[fenavy, anchor=west, align=left] at (axis cs:4.6,-4.3)
-    {UIP ($b = 1$):\\falls by its\\interest advantage};
+  \addplot[fill=fenavy, draw=none] coordinates {(L,1.67) (H,-0.67)};
+  \addplot[fill=gray!40, draw=none] coordinates {(L,1) (H,-1)};
+  \legend{position size, resulting beta exposure}
 \end{axis}
 \end{tikzpicture}
-\caption{Three readings of the Fama regression. Under UIP ($b = 1$), a currency with a higher interest rate falls by its interest advantage. Under a random walk ($b = 0$), it is expected not to move. The typical estimate ($b \approx -0.9$, Froot and Thaler 1990) implies that it rises instead.}
-\label{fig:18-fama}
+\caption{Building a BAB portfolio from the worked example. Per dollar of capital, it holds \$1.67 of the low-beta stock ($\beta_L = 0.6$) and shorts \$0.67 of the high-beta stock ($\beta_H = 1.5$). Each leg then carries a beta exposure of 1, in opposite directions, so the portfolio's beta is zero.}
+\label{fig:18-bab}
 \end{figure}
 
-\textbf{Carry portfolios.} Each month, sort currencies by their interest rate, buy the highest-yielding ones and sell the lowest. If UIP holds, the portfolio earns nothing on average. Portfolios diversify away currency-specific noise and are what investors actually trade.
-
-\textbf{Why UIP might fail.} There are three broad explanations.
-
-\begin{itemize}
-  \item \textbf{A risk premium.} High-interest currencies tend to fall in global downturns, when investors flee to the dollar, yen and Swiss franc. Investors demand a premium for holding them. Lustig, Roussanov and Verdelhan (2011) argue that carry returns compensate for exposure to a global risk factor.
-  \item \textbf{Crash risk.} Carry returns may be steady most of the time and then collapse when carry traders all unwind at once, as funding dries up. The premium pays for those crashes (Brunnermeier, Nagel and Pedersen 2008).
-  \item \textbf{Slow adjustment.} Investors may underreact to interest-rate changes, so currencies move toward UIP only gradually. That would be a mispricing rather than a risk premium, and should shrink as more capital pursues it.
-\end{itemize}
-
-These explanations make different predictions. A risk premium should show up as losses in bad times for the world economy. Crash risk should show up as negative skewness and losses concentrated in a few episodes. Slow adjustment should show up as a premium that declines over time and does not depend on market conditions.
+The explanations divide into those that treat the anomaly\index{anomaly} as \textbf{mispricing}\index{mispricing|textbf} and those that treat it as \textbf{compensation for a risk the CAPM misses}. Section~\ref{sec:18-explanations} sets them out. They matter because they predict different things about when the anomaly should be strongest, and about whether it should survive its own popularity.
 
 \section{The claim}
 \label{sec:18-claim}
 
 \begin{callout}
-\textbf{Claim (uncovered interest parity).} The currency of a high-interest country is expected to depreciate by its interest advantage, so borrowing in low-interest currencies and lending in high-interest ones earns nothing on average.
+\textbf{Claim.} Low-beta and low-volatility stocks earn higher risk-adjusted returns than the CAPM predicts. The security market line is flatter than the market premium, and a beta-neutral portfolio that is long low-risk stocks and short high-risk stocks earns a positive alpha.
 \end{callout}
 
-To test it we need to be precise on three points.
+To test it we need to specify four things.
 
 \begin{itemize}
-  \item \textbf{On average, over what period.} UIP is a statement about expectations. Over a few months, exchange-rate noise dominates. The test needs decades of data and many currencies.
-  \item \textbf{Which currencies.} The lab uses nine developed-market currencies against the dollar. Emerging-market currencies have higher carry but also capital controls, default risk and much higher trading costs.
-  \item \textbf{What would count against it.} UIP fails if Fama slopes are significantly below 1 and if a carry portfolio earns a significant average return. It fails in a deeper sense if the return survives trading costs and the slopes are below zero, not merely below one.
+  \item \textbf{The strong form.}\index{efficient market hypothesis!strong form|textbf} The SML is not just flat but \emph{inverted\index{yield curve!inverted}}: low-risk stocks earn higher raw returns, not just higher risk-adjusted returns. Some studies of volatility sorts find this. Most studies of beta sorts find a flat or weakly positive relation instead.
+  \item \textbf{The weak form.}\index{efficient market hypothesis!weak form|textbf} The SML is positive but flatter than the CAPM predicts, so low-beta stocks have positive alphas. This is what Black, Jensen and Scholes found, and it is the claim tested here.
+  \item \textbf{Risk adjustment.} A CAPM alpha is the natural first test. The claim is more interesting if the alpha survives the size, value and momentum factors, and more interesting still if it survives profitability and interest-rate exposure.
+  \item \textbf{What would count against it.} The claim weakens if the alpha is concentrated in micro-caps\index{micro-caps}, if it disappears after controlling for other known factors, or if it has faded since the strategy became popular. It fails if a beta-neutral, tradable version earns nothing after costs.
 \end{itemize}
 
 \section{The original evidence}
 \label{sec:18-evidence}
 
-\textbf{Fama (1984).} Using monthly data for nine currencies against the dollar after the end of fixed exchange rates in 1973, Fama found that the slopes were not just below 1 but generally negative. High-interest currencies tended to appreciate. He showed that this implies a risk premium in forward rates that varies over time and is more volatile than expected exchange-rate changes. Froot and Thaler (1990) summarized the literature: across 75 published estimates, the average slope was about $-0.88$.
+\textbf{A flat line from the start.} Black, Jensen and Scholes (1972) sorted NYSE stocks from 1931 to 1965 into ten portfolios by past beta, so that estimation error\index{estimation error} in individual betas would average out. Average returns rose with beta, but much less than the CAPM predicted. Low-beta portfolios had positive alphas and high-beta portfolios negative ones. Fama and MacBeth (1973) confirmed a positive but modest slope. Haugen and Heins (1975) reported that low-volatility portfolios had matched or beaten high-volatility ones, and Fama and French (1992) found almost no relation between beta and average return from 1963 to 1990 once size was controlled for.
 
-\textbf{Carry as a risk factor.} Lustig, Roussanov and Verdelhan (2011) sorted currencies into portfolios by interest rate. The high-minus-low\index{factor!HML (value)} portfolio earned substantial average returns. They showed that a single carry factor, together with a dollar factor, explained much of the cross-section of currency returns, and that high-interest currencies loaded more heavily on it. Menkhoff, Sarno, Schmeling and Schrimpf (2012) found that carry losses coincided with increases in global currency volatility\index{volatility}.
+\textbf{Idiosyncratic volatility.}\index{idiosyncratic volatility|textbf} Ang, Hodrick, Xing and Zhang (2006) sorted U.S. stocks on idiosyncratic volatility measured over the previous month. The highest-volatility quintile earned 1.06\% a month less than the lowest, and its Fama--French alpha was 1.31\% a month lower. The result was a strong form of the anomaly: an inverted relation between this risk and raw returns. Their 2009 paper found the same pattern in 23 developed markets.
 
-\textbf{Crashes.} Brunnermeier, Nagel and Pedersen (2008) showed that carry returns are negatively skewed\index{skewness}: large losses are more likely than large gains. Losses coincided with falling risk appetite and funding liquidity\index{liquidity}, measured among other things by rises in the VIX\index{VIX}, as carry traders were forced to unwind together.
+\textbf{From anomaly to strategy.} Baker, Bradley and Wurgler (2011) documented the low-risk anomaly for investors and argued that benchmarking prevents institutions from exploiting it. Frazzini and Pedersen (2014) built the BAB factor described in Section~\ref{sec:18-how} from individual stocks, using rank weights and shrunk betas. In U.S. stocks from 1926 to 2012 it had a Sharpe ratio\index{Sharpe ratio} of 0.78. It earned significant alphas after size, value, momentum and liquidity\index{liquidity} controls, in 19 international equity markets, and in Treasury bonds, corporate bonds and futures. They also found that BAB returns were lower when funding constraints were tight, which their leverage-constraint theory predicts.
 
-\textbf{Peso problems.}\index{peso problem|textbf} One possible explanation is that the high returns compensate for rare disasters not yet seen in the sample, a \textbf{peso problem}. Burnside, Eichenbaum, Kleshchelski and Rebelo (2011) tested this by hedging carry positions with currency options. The hedged trade still earned a substantial return. They concluded that rare disasters could explain the premium only if the market prices them at much more than their likely cost.
+By 2014 the low-risk anomaly looked like one of the best-documented patterns in finance. Low-volatility index funds launched in the United States around 2011 and grew quickly.
 
-\section{Replication lab: G10 currencies against the dollar}
+\section{Explanations}
+\label{sec:18-explanations}
+
+\textbf{Leverage constraints.}\index{leverage|textbf} Black (1972) and Frazzini and Pedersen (2014) argue that investors who want high expected returns but cannot borrow overweight high-beta stocks instead of levering the market. That bids up high-beta stocks and flattens the SML. The theory predicts that constrained investors, such as mutual funds and individuals, hold high-beta portfolios, and that BAB does worse when funding tightens. Both predictions have empirical support.
+
+\textbf{Lottery preferences.}\index{lottery preference|textbf} Some investors like stocks with a small chance of a very large gain, as with a lottery ticket, and overpay for them. Barberis and Huang (2008) derive this from probability weighting in prospect theory\index{prospect theory}. Bali, Cakici and Whitelaw (2011) found that stocks with the largest daily returns over the past month subsequently underperform, and that this absorbs much of the idiosyncratic volatility effect. Lottery demand explains volatility sorts more naturally than beta sorts.
+
+\textbf{Benchmarking.} Most institutional managers are judged against a capitalization-weighted index. For them, a low-beta stock with positive alpha is not attractive: it adds \textbf{tracking error}\index{tracking error|textbf}, the volatility of the return difference from the benchmark, and lags in rising markets. Baker, Bradley and Wurgler (2011) argue that this keeps institutions from correcting the mispricing. Part D of the lab measures how large that tracking error is.
+
+\textbf{Overpricing that is hard to short.} Liu, Stambaugh\index{Stambaugh bias} and Yuan (2018) found that the beta anomaly comes from beta's correlation\index{correlation} with idiosyncratic volatility, and that it is concentrated among overpriced stocks, where short-selling\index{short selling} is costly.
+
+\textbf{Missing risk factors.} Other explanations treat the alpha as compensation for risks the CAPM omits.
+
+\begin{itemize}
+  \item \emph{Profitability and investment.} Low-risk stocks tend to be large, profitable and conservative in investment. Fama and French (2016) found that their five-factor model, which adds profitability and investment factors, explains much of the low-beta and low-volatility alphas.
+  \item \emph{Interest rates.} Low-volatility stocks, such as utilities and consumer staples, behave partly like bonds. Driessen, Kuiper, Nazliben and Beilo (2019) found that low-volatility portfolios lose value when rates rise and that an interest-rate premium explains part, but not all, of the anomaly. Over 1981--2020 bond yields fell almost continuously, which would have flattered any bond-like equity strategy.
+  \item \emph{Conditional betas.} Cederburg and O'Doherty (2016) found that betas vary over time in ways that bias unconditional alphas, and that modelling time-varying betas\index{beta!time-varying} largely eliminates the alpha gap between low- and high-beta stocks.
+\end{itemize}
+
+The explanations are not mutually exclusive. Asness, Frazzini, Gormsen and Pedersen (2020) split BAB into a bet against correlation, which they link to leverage constraints, and a bet against volatility, which they link to lottery demand, and report that both earn returns.
+
+\section{Lab~\thechapter: Replicating Black, Jensen and Scholes (1972) and Frazzini and Pedersen (2014)}
 \label{sec:18-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:18} at a glance.} \emph{Claim on trial\index{claims-on-trial method}:} high-interest currencies depreciate enough to offset their yield. \emph{Data:} free monthly data from FRED\index{FRED}: the Federal Reserve's exchange rates for nine currencies (yen, pound, Swiss franc, Canadian, Australian and New Zealand dollars, Swedish krona and Norwegian krone, and the euro from 1999) and OECD three-month interbank rates for each country and the United States. The VIX and the Fama--French\index{Fama--French factors} market factor are optional. \emph{Code:} runs as a script (\texttt{python lab18.py}) or as a notebook with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:18} at a glance.} \emph{Papers replicated:} Black, Jensen and Scholes (1972); Fama and MacBeth (1973); Frazzini and Pedersen (2014). \emph{Claim on trial\index{claims-on-trial method}:} low-risk stocks earn more than the CAPM predicts. \emph{Data:} ten portfolios formed on market beta, on total variance and on residual variance, each value- and equal-weighted\index{index weighting!equal-weighted}, from July 1963, from the Kenneth French\index{Kenneth French data library} library; the Fama--French and momentum factors; the 10-year Treasury yield from FRED\index{FRED}; optionally, AQR's published BAB factor for comparison. All are free. \emph{Code:} runs as a script (\texttt{python lab12.py}) or as a notebook with a prediction prompt before each step.
 \end{callout}
 
-\textbf{Part A, Fama regressions.} For each currency, the monthly change in the log exchange rate (dollars per foreign unit) on last month's U.S.-minus-foreign interest differential, with Newey--West\index{standard error!Newey--West (HAC)} errors, plus a pooled slope (Lab Figure~\ref{ch:18}.1).
+\textbf{Part A, the SML.} For each set of decile portfolios, the lab estimates average excess return, realized beta, CAPM alpha and four-factor alpha, and the slope of average return on beta across the deciles. Lab Figure~\ref{ch:18}.1 plots the deciles against the CAPM line, which runs from the origin through the market.
 
-\textbf{Part B, the carry portfolio.} Each month, long the three highest-rate currencies and short the three lowest, equally weighted, using rates known at the end of the previous month. The return is split into the interest earned and the exchange-rate change (Lab Figure~\ref{ch:18}.2). Its distribution is compared with a normal distribution\index{distribution!normal} (Lab Figure~\ref{ch:18}.3).
+\textbf{Part B, long-short portfolios.} Two constructions for each sort:
 
-\textbf{Part C, stress tests.} Three subperiods (to 1998, 1999--2007, 2008 onward), transaction costs\index{transaction costs} of 0 to 20 basis points\index{basis point} per unit of weight traded, exposure to stock-market returns and to changes in the VIX, and the ten worst months.
+\begin{center}
+\small
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.17\linewidth}@{}}
+\toprule
+Construction & Long & Short & Beta \\
+\midrule
+Low minus high & Three lowest-risk deciles & Three highest-risk deciles & Strongly negative \\
+BAB-style & Low leg $\times\, 1/\beta_L$ & High leg $\times\, 1/\beta_H$ & About zero \\
+\bottomrule
+\end{tabularx}
+\end{center}
 
-\textbf{Part D, the investor's view.} Drawdowns\index{drawdown}, recovery times, the share of losses from the worst months, and carry returns plotted against VIX changes (Lab Figures~\ref{ch:18}.4 and~\ref{ch:18}.5).
+The betas are estimated from the previous 60 months of each leg's returns, so the portfolio uses only information available at the time. Lab Figure~\ref{ch:18}.2 plots cumulative returns.
 
-Three data choices matter.
+This is a simpler construction than Frazzini and Pedersen's. They use individual stocks with rank weights. The lab uses published portfolios, which anyone can reproduce in minutes. Expect it to show the same pattern with smaller numbers, partly because it does not tilt toward small stocks. Comparing it with AQR's factor (optional) shows how much the construction matters.
 
-\begin{itemize}
-  \item The interest differential stands in for the forward discount, which covered interest parity makes nearly equal; forward rates are not freely available.
-  \item FRED's exchange rates are monthly averages of daily rates, which smooths returns and makes crashes look milder than they were.
-  \item The sample is limited to developed currencies, where carry is smaller but trading costs and capital controls are minor.
-\end{itemize}
+\textbf{Part C, stress tests.} Equal versus value weights, three subperiods (1963--1990, 1991--2009, 2010 onward), interest-rate exposure, calendar-year returns in 2008, 2020 and 2022, and rolling ten-year alphas (Lab Figures~\ref{ch:18}.3 and~\ref{ch:18}.4).
 
-\textbf{What the simulated run shows.} The simulation lets high-rate currencies depreciate by only 30\% of their interest advantage and adds rare risk-off months in which they fall sharply. The lab recovers this: a pooled Fama slope well below 1, a carry portfolio with a positive average return and negative skewness, interest income partly offset by exchange-rate losses, and losses when the VIX jumps. Individual currency slopes are very imprecise, as they are in real data. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
+\textbf{Part D, the investor's view.} The lowest-volatility and lowest-beta quintiles against the market: Sharpe ratio, alpha, drawdown\index{drawdown}, tracking error and the share of years in which they trailed the market (Lab Figure~\ref{ch:18}.5).
+
+\textbf{What the simulated run shows.} On simulated data built with a flat SML, the lab recovers what it should. The slope across beta deciles is far below the market premium. The BAB-style portfolios have betas near zero and positive alphas. The low-minus-high portfolio sorted on beta loses money on average despite its positive alpha, which illustrates why the construction matters. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
 
 \section{Stress tests}
 \label{sec:18-stress}
 
-\textbf{Subperiods.} Carry returns have varied a lot over time. A strategy that earns most of its return in a few long calm stretches and gives back much of it in a few months can look very different depending on where the sample starts and ends. The period since 2008 matters most: interest-rate differentials among developed countries collapsed toward zero for years, and with them the carry available.
+\textbf{Micro-caps and weighting.}\index{micro-caps|textbf} Novy-Marx and Velikov (2022) found that AQR's BAB factor, through its rank weighting and leverage, commits on average about \$1.05 of each dollar to the smallest 1\% of stocks by market capitalization\index{market capitalization}. Those stocks are expensive to trade (Chapter~\ref{ch:17}). After costs BAB still earned positive returns, but they attribute part of them to exposure to profitability and investment. The lab's equal- versus value-weighted\index{index weighting!value-weighted} comparison is a coarse version of this test. If the effect is much stronger in equal-weighted portfolios, small stocks are doing much of the work (Section~\ref{sec:02-microcaps}).
 
-\textbf{Transaction costs.}\index{transaction costs|textbf} G10 currencies are the most liquid assets in the world, with bid--ask spreads\index{bid--ask spread} of a few basis points. Carry portfolios rebalance\index{rebalancing} only when interest rankings change, so turnover\index{turnover} is modest. Costs reduce but rarely eliminate the developed-market carry premium. For emerging-market currencies they matter much more.
+\textbf{Other factors.} Fama and French (2016) found that profitability and investment factors absorb much of the low-risk alphas. The lab uses four factors, so its alphas probably overstate what remains. Exercise 6 adds the five-factor model.
 
-\textbf{Skewness and crashes.}\index{skewness|textbf} The carry trade is often described as ``going up the stairs and down the elevator.'' Its returns should show negative skewness, and its worst months should cluster in episodes of global stress: 1992 (the European exchange-rate crisis), 1998 (the Russian default and LTCM), 2008, and the yen rally of August 2024. The lab lists the worst months and their share of total losses.
+\textbf{Interest rates.} If low-risk stocks are partly bonds, their alpha includes a bond premium earned during four decades of falling yields. The lab regresses the long-short returns and the low-risk leg on the market and on monthly changes in the 10-year yield. A negative coefficient means the strategy loses when yields rise. 2022 is the natural out-of-sample\index{in-sample versus out-of-sample} test: yields rose sharply, and stocks and bonds fell together.
 
-\textbf{Exposure to stocks and fear.} If carry is a risk premium\index{risk premium}, its returns should be positively correlated with stock returns, especially in bad months, and negatively correlated with changes in the VIX. A strategy whose beta\index{beta} to stocks rises in down markets offers less diversification\index{diversification} than its average correlation\index{correlation} suggests.
+\textbf{Crowding.}\index{crowding|textbf} Low-volatility funds grew rapidly after 2011. If the anomaly reflected mispricing, the inflows should have raised the prices of low-risk stocks, boosting returns at first and lowering them afterward. The lab's 2010-onward subperiod and the rolling alphas in Lab Figure~\ref{ch:18}.3 show whether the premium has shrunk.
 
-\textbf{Monthly averages.} Because the exchange rates are monthly averages of daily data, the lab's worst months will understate the speed of the real crashes. In October 2008 several carry currencies fell by double digits against the yen within days.
+\textbf{Drawdowns.}\index{drawdown|textbf} Low-risk portfolios are meant to protect in crashes. Check 2008 and March 2020. A beta-neutral BAB portfolio is a different matter. It is long levered low-beta stocks and short high-beta stocks, and it can lose heavily when high-beta stocks rebound sharply, as in 2009 and in the 2020 recovery.
+
+\textbf{Estimation error in beta.}\index{estimation error|textbf} Sorting on noisy past betas means the low-beta portfolio contains stocks whose true betas are higher than estimated, and the reverse. This biases the SML toward flatness even if the CAPM holds. Black, Jensen and Scholes used portfolios to reduce the problem, and the French portfolios do the same. Novy-Marx and Velikov (2022) also showed that Frazzini and Pedersen's beta estimator, which combines correlations and volatilities measured over different windows, introduces its own biases.
 
 \section{Verdict}
 \label{sec:18-verdict}
 
 \begin{callout}
-\textbf{Verdict: fails} (as of October 2026) over most samples. High-interest currencies have not depreciated by their interest advantage on average; Fama slopes are well below 1 and often negative, and carry portfolios have earned a premium. That premium is paid for with sudden crashes that arrive in global downturns.
+\textbf{Verdict: weakens} (as of October 2026). The weak form of the claim, that the security market line is flatter than the CAPM predicts, is one of the most robust findings in empirical finance. The strong form, that low-risk stocks earn a distinct premium that a beta-neutral portfolio can harvest, is weaker. Its size depends heavily on construction and on micro-caps, much of it overlaps with profitability, investment and interest-rate exposure, and the evidence that it is a separate premium is weaker than it looked in 2014.
 \end{callout}
-
-What fails:
-
-\begin{itemize}
-  \item \textbf{The slope.} Across decades of studies, slopes in the Fama regression have been below 1 and usually below zero. A high interest rate has predicted, if anything, a stronger currency in the short run.
-  \item \textbf{The zero-return prediction.} Carry portfolios have earned positive average returns after realistic costs for developed-market currencies.
-\end{itemize}
 
 What survives:
 
 \begin{itemize}
-  \item \textbf{The spirit of UIP over long horizons and in extremes.} Some studies find slopes closer to 1 at horizons of several years, and in countries with very high inflation\index{inflation}, where large interest differentials are matched by large depreciations.
-  \item \textbf{No free lunch.} The premium comes with negative skewness, losses concentrated in global crises and positive correlation with stocks in bad months. That is what a risk premium looks like, not an arbitrage. An investor who earns carry is paid for providing liquidity and insurance to the rest of the world when it is scarce.
+  \item \textbf{The flat SML.} Since Black, Jensen and Scholes, beta sorts have shown a relation between beta and average return that is much flatter than the market premium, in the United States and abroad. A CAPM hurdle rate overstates the expected return of high-beta assets relative to low-beta ones.
+  \item \textbf{Low risk without lower returns.} Low-volatility portfolios have delivered returns close to the market's with substantially less volatility, so their Sharpe ratios have been higher. For an unconstrained investor that is useful.
 \end{itemize}
 
-The verdict would move to \emph{weakens} if carry returns since 2008 were consistently near zero, as narrow interest differentials and crowding\index{crowding} might imply.
+What weakens it:
+
+\begin{itemize}
+  \item \textbf{Construction.} Rank-weighted, stock-level BAB factors put much of their capital in the smallest stocks (Novy-Marx and Velikov 2022). Portfolio-based versions, like the lab's, earn less.
+  \item \textbf{Overlap with other factors.} Profitability and investment factors explain much of the alpha (Fama and French 2016). Time-varying betas explain much of the rest (Cederburg and O'Doherty 2016).
+  \item \textbf{Interest rates.} Low-risk stocks behave partly like bonds, and the sample is dominated by four decades of falling yields.
+  \item \textbf{Crowding.}\index{crowding|textbf} Inflows into low-volatility funds after 2011 are likely to have raised the prices of low-risk stocks, which would make past returns a poor guide to future ones.
+\end{itemize}
+
+The verdict would move to \emph{survives} if a beta-neutral, value-weighted version continued to earn a significant alpha against the five-factor model and interest-rate exposure out of sample. It would move to \emph{fails} if the post-2010 alphas proved to be inflow effects that reversed.
 
 \section{What investors can use}
 \label{sec:18-investors}
 
-\textbf{What a currency carry fund earns.} A carry strategy collects interest-rate differentials between currencies and keeps them as long as exchange rates do not move against it. In calm years it delivers modest, steady gains. Its risk is not spread evenly over time: most of its losses come in a few months of global stress, when high-yielding currencies fall together and funding currencies, the yen and Swiss franc above all, rise.
-
-\textbf{How it loses money.} Carry crashes are fast. They begin when something forces leveraged carry traders to cut positions: a rise in volatility, a margin call\index{margin}, a surprise from the central bank of a funding currency. Selling pushes high-yield\index{credit rating} currencies down further, which forces more selling. Diversifying across many currency pairs helps little, because the losses are driven by a common factor.
-
-\textbf{Carry in a portfolio.} Because carry tends to lose when stocks fall, it adds less diversification to an equity portfolio than its average correlation suggests. Investors should measure its correlation with stocks in bad months, not over the whole sample.
-
-\textbf{Questions to ask a manager running currency carry:}
+\textbf{Minimum-volatility funds}\index{minimum-volatility funds|textbf} are the most common way investors access the low-risk anomaly. They hold a portfolio of stocks chosen or optimized for low volatility, usually long-only and without leverage. Three things are worth knowing before buying one.
 
 \begin{itemize}
-  \item What are the funding currencies, and how concentrated is the portfolio in one or two pairs?
-  \item How much leverage\index{leverage} is used, and what happens to margin in a volatility spike?
-  \item How did the strategy perform in late 2008 and in August 2024?
-  \item Is there a crash filter, such as cutting exposure when volatility rises, and how did it perform out of sample\index{in-sample versus out-of-sample}?
+  \item \textbf{They are low-beta, not market-neutral.} With a beta around 0.7 to 0.8, a minimum-volatility fund will usually trail the market in strong bull markets and beat it in crashes. The case for holding one rests on a better ratio of return to risk, not higher returns.
+  \item \textbf{Tracking error is large.}\index{tracking error|textbf} For an investor measured against the market, the fund can lag for years at a time. Part D of the lab shows how often. Investors who cannot tolerate that, including most institutions, are the reason Baker, Bradley and Wurgler think the anomaly persists. Investors who abandon the strategy after a few bad years lose most of its benefit.
+  \item \textbf{Hidden exposures.} These funds tend to overweight utilities, consumer staples and real estate, which are sensitive to interest rates. Their valuations can rise with the strategy's popularity. An investor should check the sector weights, the valuation relative to the market, and how the fund behaved when yields rose.
+\end{itemize}
+
+\textbf{BAB-style funds}\index{betting against beta (BAB)|textbf}, long levered low-beta stocks and short high-beta stocks, are a different product. They are market-neutral, carry the micro-cap and leverage issues discussed above, and can suffer sharp losses when high-beta stocks rebound.
+
+\textbf{Questions to ask a manager offering a low-volatility or defensive equity strategy:}
+
+\begin{itemize}
+  \item Is the portfolio sorted on beta, on volatility or on an optimizer's estimate of risk? How much tracking error should I expect against the market?
+  \item What are the strategy's sector weights and interest-rate sensitivity? How did it perform in 2022?
+  \item Does the backtest include micro-caps? What is its alpha against the five-factor model?
+  \item How have valuations of low-volatility stocks changed since the strategy became popular?
 \end{itemize}
 
 \begin{callout}
-\textbf{What Failed: the yen carry trade, 2008.} In the years before 2008, borrowing in yen at rates near zero and investing in Australian dollars, New Zealand dollars and other high-yielding currencies was one of the most popular trades in the world, among Japanese retail investors and hedge funds alike. When the financial crisis intensified in the autumn of 2008, carry traders rushed to repay yen loans at the same time. Between July and late October 2008 the Australian and New Zealand dollars lost more than a third of their value against the yen, wiping out years of interest income in a few weeks.
+\textbf{What Failed: the CAPM as a hurdle rate.} The CAPM's empirical problems have been known since the early 1970s, yet it remains the standard way to set the cost of equity. In a survey of 392 U.S. CFOs, Graham and Harvey (2001) found that 73.5\% of respondents always or almost always used it. A flat SML means that the CAPM overstates the cost of capital for high-beta projects and understates it for low-beta ones. Firms that rely on it may reject good low-beta projects and accept poor high-beta ones.
 
-The episode matched the risk-premium explanation exactly. The trade paid steadily in good times and lost heavily in the worst global downturn in decades, when investors could least afford it. It recurred on a smaller scale in August 2024: after the Bank of Japan raised its policy rate to 0.25\% at the end of July, the yen rose sharply, carry positions were cut, and on August 5 the Nikkei 225 fell 12.4\%.
+The lesson is not that the CAPM is useless. Beta is a good measure of exposure to the market, and that is what risk management needs. The failure is treating a model of \emph{risk} as a reliable model of \emph{expected return} when the evidence has long said otherwise.
 \end{callout}
 
 \section{Open questions}
 \label{sec:18-open}
 
 \begin{itemize}
-  \item \textbf{Is carry a risk premium or a slowly corrected mispricing\index{mispricing}?} If it were mispricing, it should shrink as more capital pursues it. Has it?
-  \item \textbf{What happened to carry after 2008?} Near-zero rates in many developed countries removed most interest differentials. Did the premium per unit of differential change, or only the opportunity?
-  \item \textbf{Do covered-interest-parity deviations matter?} Since 2008, CIP has not held exactly, reflecting the cost of banks' balance sheets. How does this affect measured carry returns?
-  \item \textbf{Can crashes be avoided?} Momentum\index{momentum} and volatility filters claim to sidestep the worst months. Do they work out of sample, or do they simply give up the premium?
+  \item \textbf{How much is interest-rate exposure?} Low-risk stocks lose when yields rise. Is the remaining alpha, after controlling for rates, large enough to matter, and how did the strategy hold up in the rising-rate environment after 2021?
+  \item \textbf{Which risk measure is priced?} Beta, total volatility and idiosyncratic volatility are highly correlated. Leverage-constraint theories favor beta; lottery theories favor volatility. Which survives when the others are controlled for?
+  \item \textbf{Has crowding ended the premium?} Inflows into low-volatility funds should have produced a temporary windfall followed by lower returns. Is the post-2010 evidence consistent with that?
+  \item \textbf{Does it hold for large stocks after costs?} A value-weighted, beta-neutral portfolio of liquid stocks is the version that matters for most investors. How large is its alpha against the five-factor model?
 \end{itemize}
 
 \section*{Exercises}
@@ -292,19 +304,19 @@ The episode matched the risk-premium explanation exactly. The trade paid steadil
 \subsection*{Conceptual (all readers)}
 
 \begin{enumerate}
-  \item The U.S. one-year rate is 4\% and the Japanese rate 0.5\%. The spot rate is 150 yen per dollar. Compute the one-year forward rate. Under UIP, what spot rate is expected in a year?
-  \item Using the numbers in Exercise 1, compute the return to a dollar-based investor who borrows yen, converts to dollars and invests at 4\%, if the spot rate stays at 150, moves to the UIP forecast, or falls to 135.
-  \item Explain why covered interest parity is enforced by arbitrage but uncovered interest parity is not.
+  \item The risk-free rate is 4\% and the market premium 5\%. Stock X has a beta of 0.7 and an expected return of 9\%; stock Y has a beta of 1.4 and an expected return of 10\%. (a) Compute each alpha. (b) Build a beta-neutral BAB portfolio from X and Y. What is its expected return? (c) How does your answer change if borrowing costs 6\%?
+  \item Explain why estimation error in individual betas flattens the estimated SML, and why sorting into portfolios helps.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
-  \setcounter{enumi}{3}
-  \item Part A: how many currencies have Fama slopes significantly below 1? Below 0? What is the pooled slope?
-  \item Part B: what share of the carry portfolio's interest income was offset by exchange-rate changes? Compare with what UIP predicts.
-  \item Part C: compare carry returns before and after 2008. What happened to the interest differentials?
-  \item Part C: estimate the carry portfolio's beta to stocks in all months and in months when stocks fell. What does the difference mean for an investor?
-  \item Add a filter that holds the carry portfolio only when the VIX is below its 12-month median. Compare the Sharpe ratio and the worst month with the unfiltered strategy.
-  \item A financial adviser recommends a fund that earns ``the interest-rate differential between currencies.'' Using this chapter's evidence, explain what the fund is really paid for and when it is likely to lose money.
+  \setcounter{enumi}{2}
+  \item Part A: compare the SML slope for beta-sorted and volatility-sorted deciles, value- and equal-weighted. Which shows the flattest relation?
+  \item Part B: explain why the low-minus-high portfolio sorted on beta can have a negative average return and a positive alpha at the same time.
+  \item Part B: download AQR's BAB factor and compare it with the lab's BAB-style portfolio. What is their correlation? Which has the higher alpha, and why might that be?
+  \item Part C: add the five-factor model (download the Fama--French 5-factor file). How much of each low-risk alpha remains?
+  \item Part C: using the interest-rate regression, estimate the ``duration'' of the low-volatility leg. How much of its 2022 return does the rise in yields explain?
+  \item Part D: find the longest period in which the lowest-volatility quintile trailed the market. Would you have kept a manager through it?
+  \item A pension fund asks whether to move 20\% of its equities into a minimum-volatility fund. Write a one-page memo that uses the evidence in this chapter, including the case against.
 \end{enumerate}

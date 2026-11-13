@@ -1,4 +1,4 @@
-% Chapter 2 -- Financial Data and How to Use It Well
+% Chapter 2 -- Claim: Historical Data Show What a Strategy Would Have Earned
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -12,10 +12,12 @@
 }{}
 \makeatother
 
-\chapter{Financial Data and How to Use It Well}
+\chapter{Claim: Historical Data Show What a Strategy Would Have Earned}
 \label{ch:02}
 
-Chapter~\ref{ch:01} showed what a track record must do to reveal real skill. This chapter turns to something that comes before any track record, namely the data on which it is built. A backtest\index{backtest} can test a single idea with honest statistics and still give the wrong answer because of the way its dataset was put together. Fortunately, each of these problems is well understood, and each one has a fix.
+Empirical finance became possible only when someone built the data. In the 1960s the Center for Research in Security Prices at the University of Chicago assembled the first comprehensive file of U.S. stock prices, and within a decade tests of market efficiency, the CAPM and investment performance rested on it. Every database, however, embodies choices: which companies are included, how a company that disappears is recorded, and when an accounting number is treated as known. In the 1980s and 1990s researchers discovered that these choices could create results by themselves.
+
+Three findings showed why this matters. Banz (1981) reported that small companies earned higher returns than the CAPM predicted, and the size effect became one of the first famous anomalies. Brown, Goetzmann, Ibbotson and Ross (1992) then showed that a sample containing only the funds that survive can create the appearance of persistent performance where none exists, and Shumway (1997) found that the main research database was missing the final returns of many companies delisted for poor performance, which made small stocks look better than they were. Horowitz, Loughran and Savin (2000) and Schwert (2003) found that the size effect weakened sharply after it was published. The same data that founded the field could also mislead it.
 
 The problems are rarely dramatic. Each one looks like a small technical detail, yet each can add a percentage point or more a year to a strategy's measured return. The most common are the following:
 
@@ -27,8 +29,9 @@ The problems are rarely dramatic. Each one looks like a small technical detail, 
   \item an average return that is quoted in a way that overstates what an investor actually earned.
 \end{itemize}
 
-The claim on trial\index{claims-on-trial method} in this chapter is one that every reader who works with free data needs to be true: \textbf{free, public data can support a reliable backtest.} Because every lab in this book relies on this claim, we test it first, and the answer comes with a checklist that shows you how to make it true in your own work.
+The implications are practical. Every lab in this book uses free data, and most readers will build their own backtests with free data too. If free data are reliable, students and small investors can test published claims for themselves; if not, the work belongs only to those who can pay for commercial databases. The claim on trial\index{claims-on-trial method} is: \textbf{free, public data can support a reliable backtest.} Because every lab relies on it, we test it first, and the answer comes with a checklist that shows how to make it true in your own work.
 
+The lab in Section~\ref{sec:02-lab} replicates the size-effect evidence of Banz (1981), Horowitz, Loughran and Savin (2000) and Schwert (2003) on the free size portfolios of the Kenneth R. French Data Library, in order to see how the effect looks before and after publication. Because stock-level data with delisting returns are not free, it reproduces the survivorship and delisting results of Brown et al.\ (1992) and Shumway (1997) in a simulated market, in order to measure how much each data trap changes the return a strategy appears to have earned.
 
 By the end of the chapter you will be able to:
 
@@ -343,7 +346,7 @@ The table below lists the common sources of look-ahead bias and the standard tre
 2 & Accounting publication lags & Annual results for a December fiscal year are used in January, though they are published weeks or months later & Lag accounting data; Fama and French (1993) use fiscal-year data only from the following June \\
 3 & Revised economic data & GDP or employment figures are used as revised years later, not as first reported & Use real-time vintages, such as FRED's ALFRED archive \\
 4 & Index membership & Today's index members are used for the past & Use historical membership lists \\
-5 & Full-sample choices & Parameters, thresholds or variable definitions are chosen using the whole sample, then ``tested'' on it & Choose using only data available at each date (walk-forward; Chapter~\ref{ch:05}) \\
+5 & Full-sample choices & Parameters, thresholds or variable definitions are chosen using the whole sample, then ``tested'' on it & Choose using only data available at each date (walk-forward; Chapter~\ref{ch:09}) \\
 6 & Full-sample scaling & Signals are standardized with means and volatilities computed over the whole sample & Use expanding or rolling estimates \\
 \bottomrule
 \end{tabularx}
@@ -422,7 +425,7 @@ This matters because of the way portfolios are weighted (Section~\ref{sec:02-fou
 
 Micro-caps are also expensive and difficult to trade. Their \textbf{bid--ask spreads}\index{bid--ask spread|textbf}, the gap between the price at which you can buy and the price at which you can sell, are wide. They have little \textbf{liquidity}\index{liquidity|textbf}, which means that buying or selling even a modest amount moves the price. They are also costly to \textbf{sell short}\index{short selling|textbf}, that is, to borrow and sell in the hope of buying them back later at a lower price. In addition, micro-caps have the most extreme returns and the most data problems, including the missing delisting returns described in Section~\ref{sec:02-survivorship}. A pattern that appears in equal-weighted portfolios but not in value-weighted ones may therefore exist only where no large investor can exploit it.
 
-The replication\index{replication} debate in Chapter~\ref{ch:10} turns partly on this point. An \textbf{anomaly}\index{anomaly|textbf} is a pattern in returns that standard risk models, such as the CAPM\index{capital asset pricing model (CAPM)}, cannot explain. Hou, Xue and Zhang\index{q-factor model} (2020) found that many anomalies disappear when micro-caps are given little weight, while their critics argue that this mainly shows that anomalies are concentrated among small stocks. Either way, the lesson for this chapter is simple: \textbf{always ask how a portfolio is weighted and whether the result survives without micro-caps.}
+The replication\index{replication} debate in Chapter~\ref{ch:19} turns partly on this point. An \textbf{anomaly}\index{anomaly|textbf} is a pattern in returns that standard risk models, such as the CAPM\index{capital asset pricing model (CAPM)}, cannot explain. Hou, Xue and Zhang\index{q-factor model} (2020) found that many anomalies disappear when micro-caps are given little weight, while their critics argue that this mainly shows that anomalies are concentrated among small stocks. Either way, the lesson for this chapter is simple: \textbf{always ask how a portfolio is weighted and whether the result survives without micro-caps.}
 
 \begin{callout}
 \textbf{What Failed: the size effect\index{size premium}.} Banz (1981) found that small companies had earned higher risk-adjusted returns than large ones, and ``small beats big'' became one of the best-known findings in finance. Later research, however, found that the effect became much weaker after it was published, that it was heavily concentrated among the very smallest stocks, and that in the early studies it was concentrated in January. Size remains a common factor in models of risk, but as a stand-alone source of extra return it has been far less reliable than its early evidence suggested. Lab~\ref{ch:02} tests how much of the size premium comes from micro-caps and how much comes from the years before 1981.
@@ -438,16 +441,16 @@ Lo and MacKinlay (1990) called this \textbf{data-snooping bias}\index{data snoop
 Three defenses work, and later chapters use all of them.
 
 \begin{enumerate}
-  \item \textbf{New data.} Test the claim in periods or markets that played no part in its discovery, such as the years before the original sample, the years after publication, or other countries (Chapters~\ref{ch:08}--\ref{ch:10}).
-  \item \textbf{Higher hurdles.} Require stronger evidence for claims that are tested on heavily used data, such as a t-statistic\index{t-statistic} above 3 (Harvey, Liu and Zhu 2016; Chapter~\ref{ch:10}).
+  \item \textbf{New data.} Test the claim in periods or markets that played no part in its discovery, such as the years before the original sample, the years after publication, or other countries (Chapters~\ref{ch:05} and~\ref{ch:19}).
+  \item \textbf{Higher hurdles.} Require stronger evidence for claims that are tested on heavily used data, such as a t-statistic\index{t-statistic} above 3 (Harvey, Liu and Zhu 2016; Chapter~\ref{ch:19}).
     \item \textbf{Economic reasoning stated in advance.} Before running a test, state why the pattern should exist. A story written after a pattern is found proves little, because a clever explanation can be invented for almost any result, including one produced by chance. A reason stated beforehand turns the test into a genuine check, because the data can prove it wrong. 
 \end{enumerate}
 
-\section{Lab~\thechapter: Four ways data can mislead}
+\section{Lab~\thechapter: Replicating the size effect and the survivorship and delisting biases}
 \label{sec:02-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:02} at a glance.} \emph{Claim on trial:} free, public data can support a reliable backtest. \emph{Data:} monthly and daily U.S. market returns and size-sorted portfolios\index{portfolio sort} since 1926, from the Kenneth R. French Data Library\index{Kenneth French data library} (downloaded automatically), plus a simulated stock market. \emph{Tools:} Python with pandas, NumPy and matplotlib, plus the fintest module. \emph{Time:} about 90 minutes, including the guided notebook. \emph{Code:} repository folder \texttt{ch02-data-traps/}.
+\textbf{Lab~\ref{ch:02} at a glance.} \emph{Papers replicated:} the size effect of Banz (1981) before and after publication (Horowitz, Loughran and Savin 2000; Schwert 2003); the survivorship and delisting biases of Brown et al.\ (1992) and Shumway (1997), in a simulated market. \emph{Claim on trial:} free, public data can support a reliable backtest. \emph{Data:} monthly and daily U.S. market returns and size-sorted portfolios\index{portfolio sort} since 1926, from the Kenneth R. French Data Library\index{Kenneth French data library} (downloaded automatically), plus a simulated stock market. \emph{Tools:} Python with pandas, NumPy and matplotlib, plus the fintest module. \emph{Time:} about 90 minutes, including the guided notebook. \emph{Code:} repository folder \texttt{ch02-data-traps/}.
 \end{callout}
 
 The design of this lab draws on a line of well-known studies, each of which showed how one feature of the data can change a result. Brown, Goetzmann, Ibbotson and Ross (1992) used a simulation to show that dropping the funds that disappear can create patterns in performance that are not really there, and Shumway (1997) measured how large the missing delisting losses are. Brock, Lakonishok and LeBaron (1992) made moving-average trading rules famous, and Sullivan, Timmermann and White (1999) later showed how much of their apparent success came from searching across many rules. Banz (1981) discovered the size effect, and Horowitz, Loughran and Savin (2000) and Schwert (2003) found that it weakened after publication and depended heavily on the smallest stocks. Each part of the lab follows the logic of one of these studies, using free data, so that you can see the problem for yourself.

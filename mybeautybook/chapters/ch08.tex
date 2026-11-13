@@ -1,453 +1,279 @@
-\chapter{Claim: Valuations Predict the Equity Premium}
-\label{ch:07}
+% Chapter 8 -- Claim: Simple Trading Rules Beat Buy-and-Hold
+% Requires: amsmath, amssymb, booktabs, array, tabularx, tcolorbox (breakable, skins), hyperref or url.
+% Defines the callout box only if the preamble has not.
+\providecolor{fenavy}{HTML}{1B2A6B}
+\makeatletter
+\@ifundefined{callout}{%
+  \newtcolorbox{callout}{breakable, enhanced,
+    colback=white, colframe=gray!70, boxrule=0.5pt, arc=1mm,
+    borderline west={2.5pt}{0pt}{gray!70},
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
 
-This is the first of the book's claim chapters. Chapters~\ref{ch:01} to~\ref{ch:06} built the tools: statistics for noisy returns, corrections for searching, honest out-of-sample\index{in-sample versus out-of-sample} tests and trading costs\index{transaction costs}. From here on, each chapter takes one widely held claim and puts it on trial with those tools, following the same steps: how the idea works, the claim stated so it can fail, the evidence that made it famous, a replication\index{replication} on open data, stress tests, and a dated verdict.
+\chapter{Claim: Simple Trading Rules Beat Buy-and-Hold}
+\label{ch:08}
 
-The first claim is one of the oldest and most consequential in finance. If stock returns are predictable\index{return predictability} from valuations, then investors can time the market, retirement plans should assume lower returns when prices are high, and the efficient-markets view that dominated the 1970s needs rethinking. Few empirical questions have been argued over longer, by more distinguished economists, with more at stake for ordinary savers.
+``The trend is your friend'' is one of the oldest sayings on Wall Street. It tells a trader to buy what has been rising, sell what has been falling, and stay with the move until it ends. To an efficient-markets economist the saying sounds like superstition: if past prices could predict future prices, traders would use them until the prediction disappeared (Section~\ref{sec:01-efficient-markets}). For decades academic studies agreed, finding that technical trading rules did not beat buy-and-hold once costs were counted. Brock, Lakonishok and LeBaron (1992) reopened the question. They tested 26 simple moving-average and breakout rules on 90 years of the Dow Jones Industrial Average and found that the days after buy signals earned much more than the days after sell signals.
 
-The chapter's answer depends on what ``predictable'' is supposed to mean. For deciding whether to be in or out of stocks next month or next year, the evidence is weak. For setting a realistic range for the next decade's returns, valuations carry real information, though the range is wide. The lab lets you see both conclusions emerge from the same data.
+The finding mattered because it challenged the weak form of market efficiency with rules anyone could follow, and because a large industry already traded on such rules. It also raised a methodological problem that became central to empirical finance. Trend rules come in thousands of variants, and any of them can be tuned on the past. Sullivan, Timmermann and White (1999) applied White's Reality Check, a test that accounts for the whole universe of rules a researcher might have tried, and found that the best rule's success on the Dow did not carry into the following decade. Moskowitz, Ooi and Pedersen (2012) then documented \emph{time-series momentum} in 58 futures markets, and Huang, Li, Wang and Zhou (2020) questioned how strong that evidence is once each market is tested on its own.
+
+The implications are practical. Managed-futures funds, often called commodity trading advisors, run large sums on trend rules and market them as protection in crises, so whether trends are real decides whether their investors are paid for anything. For research, the chapter shows how to judge a claim that was found by searching. The claim on trial\index{claims-on-trial method} is: \textbf{simple trend rules on an asset's own past prices earn returns that survive a full accounting for the number of rules tried.}
+
+The lab in Section~\ref{sec:08-lab} replicates the 26 rules of Brock, Lakonishok and LeBaron (1992) on the free daily U.S. market series of the Kenneth R. French Data Library since 1926, applies the Reality Check of Sullivan, Timmermann and White (1999) to the full rule universe, and rebuilds the time-series momentum of Moskowitz, Ooi and Pedersen (2012) with AQR's free factor data and FRED series, in order to check whether trend signals still predict returns after data snooping, costs and publication.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item explain the motivation behind return predictability research and its implications for financial planning, asset allocation, and economic theory;
-  \item identify and apply the evaluation tools drawn from Chapters~\ref{ch:01} to~\ref{ch:06} specifically for testing return predictability;
-  \item explain how return predictability connects to out-of-sample evaluation and differs from cross-sectional multi-factor models;
-  \item compute present values\index{present value} and use the Gordon growth model\index{dividend discount model} to link a dividend yield\index{valuation ratios!dividend yield} to expected returns\index{return!expected} and growth;
-  \item distinguish expected from realized returns\index{return!realized}, and real from nominal returns\index{real and nominal returns};
-  \item read a yield curve\index{yield curve} and compute a term spread\index{term spread};
-  \item explain what valuation ratios such as the dividend--price ratio and CAPE\index{valuation ratios!CAPE} measure, and why the Campbell--Shiller\index{Campbell--Shiller decomposition} identity says they must carry information about the future;
-  \item state the claim that returns are predictable in a form that can fail, and summarize the evidence for and against it;
-  \item test the claim with corrected long-horizon regressions, a bootstrap\index{bootstrap} for the Stambaugh\index{Stambaugh bias} bias and walk-forward\index{walk-forward evaluation} forecasts;
-  \item use valuations to set a range for long-run returns, rather than to time the market.
+  \item define moving-average, fixed-length and trading-range breakout rules, and compute their signals by hand;
+  \item explain the difference between time-series momentum\index{momentum!time-series} and the cross-sectional momentum of Chapter~\ref{ch:05};
+  \item size positions to a volatility target\index{volatility targeting} using only past data;
+  \item test the best of many rules with White's Reality Check\index{Reality Check} and Hansen's SPA test\index{SPA test};
+  \item explain why trend following tends to profit in long bear markets, and why that pattern looks like owning an option straddle\index{straddle};
+  \item state the claim in a form that can fail, and test it after publication, after costs and asset by asset.
 \end{itemize}
 
-\section{Motivation: why this claim matters and its implications}
-\label{sec:07-motivation}
+\section{Foundations: technical rules and time-series momentum}
+\label{sec:08-foundations}
 
-Return predictability sits at the intersection of economic theory, institutional asset allocation, and personal wealth management. Whether equity returns can be forecast from aggregate valuation ratios is not merely an academic dispute; it alters how trillions of dollars in capital are managed and evaluated.
+\subsection{Moving-average and trading-range breakout rules}
 
-\subsection{Why researchers and practitioners care}
-
-\begin{itemize}
-  \item \textbf{Tactical asset allocation and market timing:} If aggregate valuation ratios (such as the dividend yield or CAPE) contain reliable predictive signals, investors can systematically shift between equities and risk-free assets to improve risk-adjusted returns or reduce drawdown risk.
-  \item \textbf{Long-term wealth and retirement planning:} Pension plans, university endowments, and individual retirees rely on return assumptions over multi-year or multi-decade horizons. Assuming a static historical mean return (e.g., 7\% real) regardless of starting valuation levels can lead to severe underfunding when markets are historically expensive.
-  \item \textbf{Foundation of modern asset pricing theory:} Economists care because return predictability directly tests the Efficient Market Hypothesis (EMH). If market returns vary over time, asset pricing models must explain whether this predictability reflects rational, time-varying compensation for risk or persistent market mispricing driven by investor psychology.
-\end{itemize}
-
-\subsection{Key implications}
-
-The empirical validity of return predictability carries distinct implications across finance:
-
-\begin{itemize}
-  \item \textbf{For investors and asset managers:} If short-horizon predictability fails out of sample, tactical market timing destroys value through trading drag and missed market gains. Conversely, if long-horizon predictability survives weakly, valuations should inform baseline return expectations rather than dynamic timing rules.
-  \item \textbf{For corporate finance and cost of capital:} Capital expenditure decisions and equity issuance timing depend on the cost of equity. If market expected returns fluctuate with valuations, a firm's hurdle rate must adjust over the business cycle rather than remain fixed.
-  \item \textbf{For macroeconomic policy and financial stability:} Central banks and regulators monitor valuation metrics (such as the term spread or CAPE) to assess financial stability, credit expansion, and asset price bubble risks.
-\end{itemize}
-
-\section{Toolkit needed from earlier chapters}
-\label{sec:07-connection}
-
-As the first claim chapter, Chapter~\ref{ch:07} relies heavily on the methodological foundation laid in Chapters~\ref{ch:01} to~\ref{ch:06}. Understanding how this chapter connects to out-of-sample evaluation, how it differs from multi-factor models, and how it deploys tools from earlier chapters clarifies its position in the book.
-
-\subsection{Relationship to Out-of-Sample Evaluation (Chapter~\ref{ch:05})}
-
-Chapter~\ref{ch:07} is the direct empirical application of the framework built in Chapter~\ref{ch:05}:
-
-\begin{itemize}
-  \item \textbf{Same core task (time-series market prediction):} Both chapters evaluate predictive regressions of the aggregate equity premium over time ($r_{t+1} = \alpha + \beta x_t + \varepsilon_{t+1}$).
-  \item \textbf{Shared toolkit and data:} Chapter~\ref{ch:07} uses the exact same Goyal and Welch monthly dataset and out-of-sample testing design established in Chapter~\ref{ch:05} (walk-forward windows, purging overlapping targets, out-of-sample $R^2$, and the Clark--West test).
-  \item \textbf{Key difference in focus:} Chapter~\ref{ch:05} establishes the evaluation methodology---building loss functions, establishing the historical mean benchmark, identifying leakage, and defining statistical tests for model comparison. Chapter~\ref{ch:07} puts a specific economic claim on trial---testing whether valuation ratios (dividend--price ratio, CAPE) and yield spreads carry genuine predictive power for aggregate market returns across different time horizons (1-month, 1-year, and 10-year), backed by present-value theory (the Campbell--Shiller identity).
-\end{itemize}
-
-\subsection{Difference from multi-factor models}
-
-Chapter~\ref{ch:07} differs fundamentally from multi-factor models in both economic scope and econometric structure:
-
-\begin{itemize}
-  \item \textbf{Time-series versus cross-section:} Chapter~\ref{ch:07} is a time-series problem: it asks whether a single asset class (the broad stock market) can be timed over time using valuation signals. Multi-factor models are primarily a cross-sectional problem: they explain why different assets or portfolios (e.g., small-cap vs.\ large-cap, value vs.\ growth) earn different average returns over the same period based on their risk factor exposures ($\beta$'s).
-  \item \textbf{Predictors versus risk factors:} Chapter~\ref{ch:07} uses aggregate macroeconomic and valuation indicators (CAPE, dividend yield, term spread) to forecast market returns. Multi-factor models use systematic risk factors (such as market excess return, SMB, HML, or RMW) to decompose portfolio risk and test for abnormal return ($\alpha$).
-\end{itemize}
-
-\subsection{Summary of tools drawn from Chapters 1--6}
-
-Table~\ref{tab:07-tools} explicitly identifies the specific analytical tools drawn from Chapters~\ref{ch:01} through~\ref{ch:06} that are deployed throughout this chapter to evaluate market predictability.
-
-\begin{table}[htbp]
-\centering
-\small
-\caption{Tools drawn from Chapters 1--6 used in Chapter 7.}
-\label{tab:07-tools}
-\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.18\linewidth}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}X@{}}
-\toprule
-Origin Chapter & Tool / Concept & Role in Chapter 7 \\
-\midrule
-Chapter~\ref{ch:01} & Expected vs.\ Realized Returns & Separating predictable expected returns from large unforecastable return shocks. \\
-Chapter~\ref{ch:02} & Point-in-Time Data \& Publication Lags & Lagging inflation and accounting earnings to eliminate look-ahead leakage in real-time evaluations. \\
-Chapter~\ref{ch:03} & Overlapping Data Corrections (Newey--West, Hodrick) & Correcting standard errors when forecasting 1-year and 10-year returns sampled at monthly frequency. \\
-Chapter~\ref{ch:04} & Search Hazards \& Multiple Testing & Accounting for data-mining bias when selecting among candidate valuation ratios and horizons. \\
-Chapter~\ref{ch:05} & Walk-Forward Evaluation \& Purging & Generating genuine recursive forecasts without future leakage and purging overlapping targets. \\
-Chapter~\ref{ch:05} & Out-of-Sample $R^2$ \& Clark--West Test & Measuring whether valuation forecasts beat the historical mean benchmark out of sample. \\
-Chapter~\ref{ch:05} & Campbell--Thompson Restrictions & Applying sign and non-negativity economic bounds to prevent noisy slopes from destroying forecasts. \\
-Chapter~\ref{ch:06} & Transaction Costs \& Turnover & Evaluating whether tactical market-timing rules generate profits after realistic execution drag. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\section{Foundations: valuing a stock market, interest rates and inflation}
-\label{sec:07-foundations}
-
-\subsection{Present value}
-
-A dollar received in the future is worth less than a dollar today, because today's dollar could be invested. The rate used to translate future money into today's money is the \textbf{discount rate}\index{discount rate|textbf}. At a discount rate $r$ per year, a cash flow $C$ received in $n$ years has a \textbf{present value}\index{present value|textbf} of $C/(1 + r)^n$: \$110 received in one year is worth \$100 today at a 10\% discount rate. The price of any asset can be written as the present value of the cash flows it is expected to pay, discounted at the return investors require to hold it.
-
-\subsection{The dividend discount model}
-
-For a stock, or for the market as a whole, the cash flows are the dividends that shareholders receive. The model becomes simple if we make two assumptions. First, dividends grow forever at a constant rate $g$ each year. Second, investors require an expected return $r$ that is higher than $g$. Under these assumptions the present value of all future dividends reduces to a single fraction, known as the \textbf{Gordon growth model}\index{dividend discount model|textbf}:
+A \textbf{moving average}\index{moving average|textbf} is the average of the most recent prices. Write $P_t$ for the price (or index level) on day $t$. The $n$-day moving average is
 \begin{equation}
-  P_0 = \frac{D_1}{r - g}
-  \label{eq:07-gordon}
+  MA_t(n) = \frac{1}{n} \sum_{i=0}^{n-1} P_{t-i}.
+  \label{eq:08-ma}
 \end{equation}
-Here $P_0$ is today's price and $D_1$ is the dividend expected next year. In words, the price equals next year's dividend divided by the gap between the return investors require and the rate at which dividends grow. For example, a market that will pay a \$3 dividend next year, with dividends growing at 4\% a year and a required return of 7\%, is worth $\$3/(0.07 - 0.04) = \$100$.
+A one-day moving average is just today's price. A long moving average, such as 200 days, moves slowly and shows the general direction of the market. A short one, such as 1 or 5 days, follows the price closely.
 
-Dividing both sides of Equation~\eqref{eq:07-gordon} by the price turns the model around, and this second form is the key to the chapter:
+A \textbf{moving-average rule}\index{technical trading rule!moving average|textbf} compares a short average with a long one. It gives a buy signal when the short average is above the long one by more than a band $b$, and a sell signal when it is below by more than the band:
 \begin{equation}
-  \frac{D_1}{P_0} = r - g
-  \label{eq:07-gordon-yield}
+  \text{buy if } MA_t(s) > (1+b)\,MA_t(l), \qquad \text{sell if } MA_t(s) < (1-b)\,MA_t(l),
+  \label{eq:08-marule}
 \end{equation}
-The left-hand side is the \textbf{dividend yield}\index{valuation ratios!dividend yield|textbf}, so the equation says that the dividend yield equals the required return minus expected growth. In the example, the yield of $\$3/\$100 = 3\%$ is exactly the 7\% required return minus the 4\% growth rate. A high dividend yield must therefore mean that investors require high returns, that they expect low growth, or both. The same logic applies to earnings. If a firm pays out a constant share of its earnings as dividends, called the \textbf{payout ratio}\index{payout ratio|textbf}, then the \textbf{earnings yield}\index{valuation ratios!earnings yield|textbf} $E/P$, which is the inverse of the P/E ratio, is also tied to required returns and growth.
+where $s$ is the short window and $l$ the long one. Inside the band no new signal is given. The band filters out ``whipsaws,'' the many small crossings that happen when the two averages are close. A rule is described by its two windows and its band, so ``1--200, 1\%'' means today's price against the 200-day average with a 1\% band.
 
-Because $r - g$ is small, the price is very sensitive to it (Figure~\ref{fig:07-gordon}). A one-point fall in the required return can raise the price by half. This is why stock markets can swing widely on changes in expected returns alone.
+Brock, Lakonishok and LeBaron used the rule in two ways. In the \textbf{variable-length moving average} (VMA) version, the investor holds the position for as long as the signal lasts. In the \textbf{fixed-length moving average} (FMA) version, the investor acts only when the short average crosses the long one and then holds for a fixed ten days, which lets the researcher measure what happens after a crossing.
 
-\providecolor{fenavy}{HTML}{1B2A6B}
-\providecolor{feorange}{HTML}{B8481C}
+A \textbf{trading-range breakout rule}\index{technical trading rule!trading-range breakout|textbf} uses recent highs and lows instead of averages. Traders call the recent high a \textbf{resistance level} and the recent low a \textbf{support level}. The rule buys when the price rises above the maximum of the past $n$ days and sells when it falls below the minimum:
+\begin{equation}
+  \text{buy if } P_t > (1+b)\max_{1\le i\le n} P_{t-i}, \qquad \text{sell if } P_t < (1-b)\min_{1\le i\le n} P_{t-i}.
+  \label{eq:08-trb}
+\end{equation}
 
-\begin{figure}[htbp]
-  \centering
-  \begin{tikzpicture}[
-    declare function={price(\x) = 3/((\x - 4)/100);}
-  ]
-  \begin{axis}[
-    width=0.6\linewidth, height=0.38\linewidth,
-    axis lines=left,
-    axis line style={-stealth, thin},
-    xmin=5, xmax=10.3, ymin=0, ymax=230,
-    xtick={5,6,7,8,9,10},
-    xticklabels={5\%,6\%,7\%,8\%,9\%,10\%},
-    ytick={0,50,100,150,200},
-    yticklabels={\$0,\$50,\$100,\$150,\$200},
-    tick label style={font=\small},
-    xlabel={Required return, $r$},
-    ylabel={Price, $P = D/(r - g)$},
-    samples=200, domain=5.35:10,
-    clip=false,
-  ]
-    \addplot[fenavy, very thick] {price(x)};
+\textbf{Worked example.} Suppose an index closes at 104 today. Its 200-day average is 100 and its 50-day high is 103. The 1--200 rule with a 1\% band compares 104 with $1.01 \times 100 = 101$ and signals a buy. The 50-day breakout rule with a 1\% band compares 104 with $1.01 \times 103 = 104.03$ and gives no signal, because the price has not cleared the band.
 
-    % r = 7%: price $100, yield 3%
-    \draw[gray, densely dashed, thin] (axis cs:7,0) -- (axis cs:7,100) -- (axis cs:5,100);
-    \fill[fenavy] (axis cs:7,100) circle (2.2pt);
-    \node[font=\small, anchor=south west, align=left] at (axis cs:7.1,102)
-      {$r = 7\%$: price \$100,\\dividend yield 3\%};
+\subsection{Time-series versus cross-sectional momentum}
 
-    % r = 6%: price $150, yield 2%
-    \draw[feorange, densely dashed, thin] (axis cs:6,0) -- (axis cs:6,150) -- (axis cs:5,150);
-    \fill[feorange] (axis cs:6,150) circle (2.2pt);
-    \node[feorange, font=\small, anchor=south west, align=left] at (axis cs:6.1,152)
-      {$r = 6\%$: price \$150,\\dividend yield 2\%};
+Chapter~\ref{ch:05} studied \textbf{cross-sectional momentum}: it ranks stocks against each other and buys the relative winners. \textbf{Time-series momentum}\index{momentum!time-series|textbf} looks at each asset on its own. It asks only whether the asset's own excess return over the look-back period was positive or negative, and holds it long or short accordingly. In a year when every market rises, cross-sectional momentum is still long half the assets and short the other half, while time-series momentum is long all of them.
 
-    \node[font=\small, anchor=north east, align=right, text=gray!40!black]
-      at (axis cs:10.2,215) {$D = \$3$, $g = 4\%$};
-  \end{axis}
-  \end{tikzpicture}
-  \caption{The Gordon growth model for a market paying a \$3 dividend next
-    year, with dividends growing 4\% a year. Lowering the required return from
-    7\% to 6\% raises the price from \$100 to \$150 and lowers the dividend
-    yield from 3\% to 2\%. High prices and low yields go with low expected
-    returns.}
-  \label{fig:07-gordon}
-\end{figure}
+Moskowitz, Ooi and Pedersen define the strategy for asset $s$ as follows. At the end of month $t$, look at the asset's excess return over the past twelve months, $r^s_{t-12,t}$. If it is positive, go long for one month; if it is negative, go short. The position is scaled by the asset's volatility, as described in the next subsection. The monthly return is
+\begin{equation}
+  r^{\text{TSMOM},s}_{t,t+1} = \operatorname{sign}\left(r^s_{t-12,t}\right) \frac{40\%}{\sigma^s_t}\, r^s_{t,t+1},
+  \label{eq:08-tsmom}
+\end{equation}
+where $\sigma^s_t$ is the asset's annualized volatility estimated with data up to month $t$. A twelve-month time-series momentum signal is a close cousin of a moving-average rule: an asset whose price is above its level of a year ago is usually also above its long moving average. Both rules ask the same question, ``has the price been going up?'', in slightly different ways.
 
-\subsection{Expected and realized returns}
+\subsection{Volatility targeting across assets}
 
-The required return $r$ in these formulas is the expected return of Section~\ref{sec:01-expret}: what investors anticipate, on average, when they buy. The \textbf{realized return} in any year is the expected return plus a surprise, and Section~\ref{sec:01-foundations} showed how large those surprises are for stocks. The same distinction applies to the equity premium (Section~\ref{sec:01-rf}): U.S. stocks have earned a realized premium of roughly 6 to 8 percent a year over Treasury bills, but how much of that was expected is debated.
+A trend-following portfolio may hold a Treasury bond, whose volatility is about 5\% a year, next to crude oil, whose volatility can exceed 40\%. If both received the same dollar amount, oil would dominate the portfolio's risk. \textbf{Volatility targeting}\index{volatility targeting|textbf} sizes each position so that each contributes about the same risk. Moskowitz, Ooi and Pedersen estimate each asset's variance with an exponentially weighted average of past squared daily returns,
+\begin{equation}
+  \left(\sigma^s_t\right)^2 = 261 \sum_{i=0}^{\infty} (1-\delta)\,\delta^i \left(r^s_{t-1-i} - \bar r^s_t\right)^2,
+  \label{eq:08-ewma}
+\end{equation}
+where 261 annualizes a daily variance and $\delta$ is chosen so that the average age of the data, $\delta/(1-\delta)$, is 60 days. This is the EWMA estimator that Chapter~\ref{ch:10} develops further. The position in Equation~\eqref{eq:08-tsmom} is then $40\%/\sigma^s_t$, which targets an annual volatility of 40\% for each asset. With dozens of assets that do not move together, the diversified portfolio's volatility is far lower, about 12\% a year in their sample.
 
-\subsection{Interest rates and the term structure}
-\label{sec:07-rates}
+Two rules keep the test honest. The volatility estimate must use only data available before the position is taken, and the target must be fixed in advance, not chosen after seeing which value worked best.
 
-The \textbf{yield} on a bond is the single discount rate that makes the present value of its promised payments equal to its price. Yields on government bonds of different maturities form the \textbf{term structure}, or \textbf{yield curve} (Figure~\ref{fig:07-curve}). The \textbf{term spread} is the yield on a long-term bond (say, 10 years) minus the yield on a short-term bill. The curve normally slopes upward; it tends to be steep near the bottom of recessions and flat or \textbf{inverted}, with short rates above long ones, before them. Hull's \emph{Options, Futures, and Other Derivatives} covers the term structure in detail; Chapter~\ref{ch:16} tests what forward rates predict.
+\subsection{Rule universes and the SPA test}
 
-\subsection{Real and nominal}
+A single rule tested once is one hypothesis. Technical analysis offers thousands: every pair of window lengths, every band, every holding period and every family of rules. Sullivan, Timmermann and White (1999) built a universe of 7,846 rules from five families: filter rules, moving averages, support and resistance, channel breakouts and on-balance volume. The best rule in such a universe will look good by chance alone, exactly as the best of 1,000 random strategies did in Lab~\ref{ch:01}.
 
-\textbf{Nominal} returns and yields are in dollars; \textbf{real} returns subtract inflation, approximately $r_{\text{real}} \approx r_{\text{nominal}} - \text{inflation}$. A 5\% nominal return with 3\% inflation is about a 2\% real return. Stocks are claims on real businesses whose earnings tend to rise with prices over time, so their earnings yield behaves more like a real return. Government bond yields are nominal. Comparing the two directly, as the ``Fed model'' does, mixes the units.
+White's Reality Check (Section~\ref{sec:09-reality}) answers the right question: could the best rule have done this well if no rule had any real ability? It compares the best rule's performance with the distribution of the \emph{best} performance across all rules in bootstrap samples where the true performance of every rule is set to zero. The bootstrap must keep the dependence in daily returns, so it resamples blocks of days; Sullivan, Timmermann and White used the stationary bootstrap of Politis and Romano (1994), with blocks of random length averaging ten days.
 
-\textbf{Worked example.} A market pays a dividend of \$3 next year on a price of \$100, a dividend yield of 3\%. If dividends are expected to grow 4\% a year, the Gordon model implies an expected return of $3\% + 4\% = 7\%$. If the price rose to \$150 with no change in expected growth, the yield would fall to 2\% and the implied expected return to 6\%.
+The Reality Check has one weakness. Adding many hopeless rules to the universe makes it harder to declare the best rule significant, even though the hopeless rules are irrelevant. Hansen's (2005) \textbf{Superior Predictive Ability} (SPA) test\index{SPA test|textbf} fixes this. It divides each rule's average performance by its own standard error, and it largely ignores rules that clearly do worse than the benchmark when it builds the null distribution. The SPA test therefore has more power when a universe contains many poor rules, which is the usual case.
 
 \section{How it works}
-\label{sec:07-how}
+\label{sec:08-how}
 
-\textbf{Valuation ratios.} A valuation ratio compares a stock market's price with a measure of what it pays or earns.
-
-\begin{itemize}
-  \item The \textbf{dividend--price ratio} divides the last twelve months of dividends by the index level.
-  \item The \textbf{cyclically adjusted price--earnings ratio (CAPE)}, introduced by Campbell and Shiller (1988, 1998), divides the inflation-adjusted price by the average of inflation-adjusted earnings over the previous ten years. The ten-year average smooths out the swings of the \textbf{business cycle}, the alternation of expansions and recessions.
-\end{itemize}
-
-When prices are high relative to dividends or earnings, the market is said to be expensive.
-
-\textbf{Why a valuation ratio should carry information.} The present-value identity of Campbell and Shiller (1988) links today's dividend--price ratio to the future. Approximately, and without any assumption about investor behavior,
-\begin{equation}
-  d_t - p_t \approx \text{constant} + \sum_{j=1}^{\infty} \rho^{j-1}\left(r_{t+j} - \Delta d_{t+j}\right)
-  \label{eq:07-identity}
-\end{equation}
-where $d - p$ is the log dividend--price ratio, $r$ is the log return, $\Delta d$ is log dividend growth and $\rho$ is a constant slightly below one. In words: if prices are high relative to dividends today, then either future dividends must grow fast, or future returns must be low, or the ratio must stay high forever (Figure~\ref{fig:07-identity}). The identity does not say which. Whether returns are predictable is the question of which side of the identity does the work.
-
-\providecolor{fenavy}{HTML}{1B2A6B}
-
-\begin{figure}[!htbp]
-  \centering
-  \begin{tikzpicture}[
-    declare function={
-      normal(\x)   = 4.72 - 3.3*exp(-\x/2.9);
-      inverted(\x) = 3.8 + 1.35*exp(-\x/2.5);
-    }]
-  \begin{axis}[
-    width=0.43\linewidth, height=0.27\linewidth,
-    scale only axis,
-    axis lines=left,
-    axis line style={-stealth, thin},
-    xmin=0, xmax=30.5, ymin=0, ymax=6.2,
-    xtick={0,2,5,10,20,30},
-    ytick={0,2,4,6},
-    xlabel={Maturity (years)},
-    ylabel={Yield (\%)},
-    samples=150, domain=0.3:30,
-    clip=false,
-  ]
-    \addplot[fenavy, very thick] {normal(x)};
-    \addplot[thick, dashed, gray!30!black] {inverted(x)};
-
-    % Term spread: 10-year yield minus short rate, on the normal curve
-    \draw[fenavy, thick, <->] (axis cs:10.5,{normal(0.3)}) -- (axis cs:10.5,{normal(10)});
-    \node[fenavy, anchor=north west, align=left] at (axis cs:11,3.6)
-      {term spread:\\10-year minus short rate};
-
-    % Curve labels
-    \node[fenavy, anchor=west] at (axis cs:30.3,{normal(30)}) {normal (upward sloping)};
-    \node[gray!30!black, anchor=west] at (axis cs:30.3,{inverted(30)}) {inverted};
-  \end{axis}
-  \end{tikzpicture}
-  \caption{Two shapes of the yield curve (illustrative). Normally, long-term yields exceed short-term ones and the term spread is positive. Before recessions the curve often flattens or inverts.}
-  \label{fig:07-curve}
-\end{figure}
-
-\providecolor{fenavy}{HTML}{1B2A6B}
-
-\begin{figure}[!htbp]
-  \centering
-  \scalebox{0.8}{%
-\begin{tikzpicture}[
-    csbox/.style={draw=fenavy, thick, rounded corners=2pt, align=center,
-                  minimum width=3.6cm, minimum height=1.15cm, inner sep=4pt},
-    csarr/.style={-stealth, thick},
-  ]
-    % Top: today's price relative to dividends
-    \node[csbox, fill=fenavy!12, minimum width=4cm, minimum height=1.35cm] (cstop) at (0,0)
-      {Prices high relative to\\dividends today};
-
-    % Three outcomes
-    \node[csbox] (csret) at (-4.3,-2.9) {future returns\\are low};
-    \node[csbox] (csdiv) at (0,-2.9)    {future dividends\\grow fast};
-    \node[csbox] (csbub) at (4.3,-2.9)  {the ratio stays\\high forever};
-
-    \draw[csarr] (cstop.south) ++(-1,0) -- (csret.north);
-    \draw[csarr] (cstop.south) -- (csdiv.north);
-    \draw[csarr] (cstop.south) ++(1,0) -- (csbub.north);
-
-    \node[fenavy, font=\small] at (-5.1,-1.45) {returns are predictable};
-
-    \node[font=\small] at (0,-4.3)
-      {at least one must happen; the identity does not say which};
-  \end{tikzpicture}%
-}
-  \caption{The Campbell--Shiller identity in words. A high price relative to
-    dividends must be followed by low returns, fast dividend growth or a
-    permanently high ratio. Return predictability is the first branch.}
-  \label{fig:07-identity}
-\end{figure}
-
-\textbf{Two readings of predictability.} If expected returns vary over time, there are two broad explanations:
+\textbf{Why trends might exist.} Several explanations have been proposed, and they are not mutually exclusive.
 
 \begin{itemize}
-  \item \textbf{Rational time-varying risk premia.} In bad times investors are poorer, more \textbf{risk-averse} (less willing to bear risk) or more exposed to risk, so they demand higher expected returns; prices fall until expected returns are high enough. Predictability is then compensation, not a free lunch (Fama and French 1989; Cochrane 2008).
-  \item \textbf{Behavioral mispricing.} Investors \textbf{extrapolate} recent good news, assuming it will continue; prices overshoot, and later returns are low as they correct. Predictability is then a sign of mispricing (Shiller 2000).
+  \item \textbf{Slow reaction to news.} Investors anchor on old prices and update their views gradually, so prices react to news too little at first and keep moving as the news sinks in. This is the underreaction\index{underreaction} story of Chapter~\ref{ch:05}.
+  \item \textbf{Herding and feedback.} Once a move is under way, other investors chase it, and the move overshoots. This explains why trends eventually partly reverse, as Moskowitz, Ooi and Pedersen found after about a year.
+  \item \textbf{Investors who do not trade for profit.} Central banks smooth exchange rates and interest rates, and hedgers such as airlines and farmers trade to reduce risk rather than to earn a return. Their trades can slow the adjustment of prices. Moskowitz, Ooi and Pedersen found that speculators in futures markets tend to follow trends, and that they profit at the expense of hedgers.
 \end{itemize}
 
-Both readings imply that high valuations precede low returns. They differ on whether an investor can profit by acting on that, which is the question this chapter tests.
+\textbf{Why trend following likes extreme markets.} A trend rule is long after prices have risen and short after they have fallen. In a long, steady decline, such as 2008 or the bear markets of the 1970s, it turns short early and profits as the decline continues. In a long, steady rise it is long. It loses in markets that move back and forth, when every signal arrives just before the price turns. The payoff therefore looks like that of an option \textbf{straddle}\index{straddle|textbf}, a combination of a call and a put that profits from a large move in either direction. Fung and Hsieh (2001) first described trend followers' returns in these terms. Moskowitz, Ooi and Pedersen confirmed the pattern: regressing the strategy's quarterly return on the market's return and its square gave an insignificant linear term and a significant positive square term, a ``smile.''
 
-\textbf{Predictive regressions.} The standard test regresses the return over the next $k$ months on today's predictor, as in Chapter~\ref{ch:05}. Because valuation ratios move slowly, regressions at long horizons use overlapping returns: each monthly observation of a 10-year return shares 119 months with the next. Chapter~\ref{ch:03} showed how overlap inflates ordinary t-statistics; this chapter uses the corrections developed there.
+The straddle pattern explains the appeal of trend following as a \textbf{diversifier}\index{diversification}. It tends to do well when a stock portfolio does badly over several months. The pattern has a limit: a straddle profits from large moves that last long enough for the rule to react. A sudden one-day crash, such as October 1987, or a sharp turn, such as March 2009, can hurt a trend follower who was positioned the other way.
 
 \section{The claim}
-\label{sec:07-claim}
+\label{sec:08-claim}
 
 Stated so that it can fail:
 
 \begin{callout}
-\textbf{Claim.} Valuation ratios and macroeconomic variables forecast the U.S. equity premium out of sample better than the historical mean benchmark.
+\textbf{Simple trend rules, which buy assets whose prices have been rising and sell assets whose prices have been falling, earn returns above a buy-and-hold benchmark, and the best of them remain significant after accounting for the number of rules tried, after publication, and after trading costs.}
 \end{callout}
 
-The last clause is what makes the claim testable. A pattern visible in the full history, with coefficients estimated using data the investor did not have, is not enough. The claim is about forecasts that could have been made in real time.
+The claim has two forms. The \textbf{strong form} is that classic technical rules on a single stock index, such as the Dow, beat buy-and-hold. The \textbf{weak form} is that a diversified time-series momentum portfolio across many asset classes earns a positive risk-adjusted return. The tests follow:
 
-The chapter tests four predictors, chosen because each has a large literature and a clear economic story:
-
-\begin{center}
-\small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.30\linewidth}>{\raggedright\arraybackslash}p{0.20\linewidth}>{\raggedright\arraybackslash}X@{}}
-\toprule
-Predictor & Expected sign & Story \\
-\midrule
-Dividend--price ratio & High ratio, high returns & Cheap stocks pay more per dollar invested \\
-CAPE (entered with its sign reversed) & High CAPE, low returns & Prices high relative to normal earnings must eventually fall back, or earnings rise \\
-Term spread (long-term minus short-term yield) & Wide spread, high returns & The spread is high near business-cycle troughs, when risk premia are high (Fama and French 1989) \\
-The ``Fed model'': earnings yield minus the 10-year Treasury yield & High spread, high returns & Stocks are cheap when their earnings yield exceeds bond yields \\
-\bottomrule
-\end{tabularx}
-\end{center}
-
-The claim is tested at three horizons: one month, one year and ten years. They correspond to three uses: tactical trading, annual asset allocation, and long-term planning.
+\begin{itemize}
+  \item \textbf{Search.} Is the best rule still significant after the Reality Check and the SPA test?
+  \item \textbf{Time.} Did the rules keep working after the samples that established them, and after they were published?
+  \item \textbf{Breadth.} Is the evidence strong asset by asset, or only in a pooled test?
+  \item \textbf{Costs.} Trend rules trade often. Does the profit survive realistic costs?
+\end{itemize}
 
 \section{The original evidence}
-\label{sec:07-evidence}
+\label{sec:08-evidence}
 
-The case for predictability was built in three waves, and the case against it in a fourth.
+\subsection{Brock, Lakonishok and LeBaron (1992)}
 
-\textbf{Valuation ratios (1987--1998).} Fama and French (1988) regressed U.S. stock returns on dividend yields and found that the explanatory power rose with the horizon: dividend yields explained little of monthly returns but often more than a quarter of the variance of returns over two to four years. Campbell and Shiller (1988) derived the present-value identity of Section~\ref{sec:07-how} and showed that dividend--price ratios and smoothed earnings forecast returns. Campbell and Shiller (1998), writing as U.S. valuations reached record highs, used ten-year average earnings, the measure now called CAPE, to argue that the market's expected returns over the following decade were unusually low. Shiller had presented similar evidence to the Federal Reserve Board in December 1996, days before Alan Greenspan's ``irrational exuberance'' speech.
+Brock, Lakonishok and LeBaron\index{Brock, Lakonishok and LeBaron|textbf} tested 26 rules on the daily Dow Jones Industrial Average from 1897 to 1986. Ten were variable-length moving-average rules (the window pairs 1--50, 1--150, 5--150, 1--200 and 2--200, each with no band and with a 1\% band), ten were the same rules in fixed-length form with a ten-day holding period, and six were trading-range breakout rules with windows of 50, 150 and 200 days, with and without a 1\% band.
 
-\textbf{Business-cycle variables (1986--1989).} Keim and Stambaugh (1986), Campbell (1987) and Fama and French (1989) found that interest-rate spreads also predicted returns: notably the term spread between long- and short-term yields, and the \textbf{default spread} between the yields of low- and high-grade corporate bonds. Fama and French linked the pattern to the business cycle: expected returns were high near \textbf{troughs}, the low points of recessions, when spreads were wide and investors' willingness to bear risk was low. Their interpretation made predictability compatible with efficient markets, as time-varying compensation for risk.
+The results were striking for their time. Returns after buy signals were consistently higher than returns after sell signals. For the fixed-length rules, the average ten-day return after a buy signal was about 0.53\%, the average after a sell signal was about $-0.40\%$, and the average ten-day return over the whole sample was 0.17\%. Returns after sell signals were also more volatile. A negative expected return after sell signals is hard to explain with any model in which investors are paid for risk.
 
-\textbf{A consensus forms.} By the early 2000s, predictability from valuation ratios was widely taught as a stylized fact, and Cochrane's (2011) presidential address to the American Finance Association built a research agenda on the premise that discount rates, not expected cash flows, account for most of the movement in valuations.
+The authors used a bootstrap to check the results. They fitted four standard models of returns to the data, a random walk, an AR(1), a GARCH-in-mean and an exponential GARCH, simulated many artificial Dow histories from each, and applied the rules to the simulated data. None of the four models produced the buy--sell differences seen in the real data.
 
-\textbf{The challenge (1999--present).} Statisticians had warned that the evidence was fragile.
+\subsection{Sullivan, Timmermann and White (1999)}
+
+Sullivan, Timmermann and White asked the question that Brock, Lakonishok and LeBaron could not: how many rules had the profession tried before settling on these 26? They extended the Dow data to 1996, built the universe of 7,846 rules described in Section~\ref{sec:08-foundations}, and applied White's Reality Check.
+
+In the original 1897--1986 sample the answer favored technical analysis. The best of Brock, Lakonishok and LeBaron's own rules, a 50-day variable moving average with a 1\% band, earned about 10\% a year, and the best rule in the full universe, a 5-day moving average, earned about 19\% a year. Both had Reality Check $p$-values close to zero.
+
+The ten years after the original sample told a different story. From 1987 to 1996 the best rule in the full universe had a $p$-value of 0.34, and the best of the original 26 had a $p$-value of 0.15. On S\&P 500 futures from 1984 to 1996, no rule beat the benchmark. The rules had worked in the sample in which they were discovered and not in the decade that followed.
+
+\subsection{Moskowitz, Ooi and Pedersen (2012) and Hurst, Ooi and Pedersen (2017)}
+
+Moskowitz, Ooi and Pedersen\index{Moskowitz, Ooi and Pedersen|textbf} moved the question from one stock index to many markets. They studied 58 liquid futures and forward contracts: 24 commodities, 12 currency pairs, 9 equity indices and 13 government bond futures. Their price data begin in 1965, and they evaluated the strategy from 1985 to 2009, when many more markets were available.
+
+Three findings stand out. First, in a pooled regression of each asset's volatility-scaled monthly return on its own past returns, the coefficients were positive for the first twelve months of past returns and mostly negative beyond, so trends persisted for about a year and then partly reversed. Second, the twelve-month strategy of Equation~\eqref{eq:08-tsmom} had a positive average return in every one of the 58 contracts, and 52 were significant at the 5\% level. Third, the diversified portfolio had a Sharpe ratio above one and an alpha of about 1.6\% a month against a global stock index and the size, value and momentum factors. It performed best in extreme market quarters, up or down.
+
+Hurst, Ooi and Pedersen (2017) pushed the test back in time. They combined one-, three- and twelve-month signals in 67 markets, including commodities, equity indices, bond markets and currency pairs, and simulated the strategy from 1880 to 2016, with higher assumed trading costs in the early decades and after a 2\% management fee and a 20\% performance fee. The strategy earned positive returns in every decade, had low correlations with stocks and bonds, and made money in most of the ten largest drawdowns of a 60/40 stock--bond portfolio.
+
+\subsection{Huang, Li, Wang and Zhou (2020)}
+
+Huang, Li, Wang and Zhou\index{time-series momentum!critique} challenged the statistical evidence. Their argument has three parts.
 
 \begin{itemize}
-  \item Stambaugh (1999) showed that persistent predictors whose surprises are correlated with returns bias slopes and t-statistics in finite samples.
-  \item Valkanov (2003) and Boudoukh, Richardson and Whitelaw (2008) showed that long-horizon regressions add little information beyond short-horizon ones: the rising $R^2$ is largely a mechanical consequence of overlapping data and persistent predictors.
-  \item Ang and Bekaert (2007), using data from several countries, found that long-horizon predictability from dividend yields largely disappeared once standard errors were corrected, while dividend yields helped at short horizons in combination with short-term interest rates.
-  \item Goyal and Welch (2008) showed that almost none of the published predictors beat the historical mean in walk-forward forecasts, and Goyal, Welch and Zafirov (2024) found the same for predictors proposed since.
+  \item \textbf{The pooled regression overstates the evidence.} A regression that stacks all assets together can find a significant slope even when no single asset is predictable, for example when assets with higher average returns also tend to have positive past returns. When Huang and coauthors bootstrapped the pooled $t$-statistic, it was no longer significant.
+  \item \textbf{Asset by asset, the evidence is weak.} Running the predictive regression separately for each of their 55 assets, most slopes were insignificant, and only a few assets showed significant out-of-sample predictability.
+  \item \textbf{A simpler strategy does as well.} A ``time-series history'' strategy, which goes long an asset whose average return over its whole past is positive and short otherwise, earned about the same as time-series momentum. That strategy needs no predictability at all. It profits from the fact that assets with positive average returns in the past, such as stock indices and bonds, kept earning positive average returns.
 \end{itemize}
 
-The defense did not concede. Campbell and Thompson (2008) showed that simple economic restrictions improve out-of-sample performance and that tiny $R^2$ values can be economically valuable. Cochrane (2008) argued that the absence of dividend-growth predictability implies return predictability through the present-value identity, so the evidence should be judged jointly rather than one regression at a time.
+Their conclusion was that the strategy is profitable but that the profit need not come from trends. Defenders of trend following reply that the strategy's value lies in its behavior in crises, not only in its average return, and that a diversified portfolio of weak signals can be valuable even when each signal is hard to detect on its own (Section~\ref{sec:08-stress}).
 
-\section{Lab~\thechapter: replicating Campbell and Shiller}
-\label{sec:07-lab}
+\section{Lab~\thechapter: Replicating Brock--Lakonishok--LeBaron and Moskowitz--Ooi--Pedersen}
+\label{sec:08-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:07} at a glance.} \emph{Claim on trial\index{claims-on-trial method}:} valuation ratios and macroeconomic variables forecast stock returns better than the historical mean benchmark. \emph{Data:} the Goyal--Welch monthly data from 1927, the same file used in Lab~\ref{ch:05}, which replicates Goyal and Welch (2008), which includes the S\&P 500 index, twelve-month dividends and earnings, Treasury yields, inflation and CRSP total returns. CAPE is built from the index, earnings and inflation; it begins in 1923, once ten years of inflation-adjusted earnings are available. Optionally, Robert Shiller's long-run file extends CAPE and real returns back to 1881 for the ten-year analysis. \emph{Code:} repository folder \texttt{ch07-predictability/}, with a guided notebook.
+\textbf{Lab~\ref{ch:08} at a glance.} \emph{Papers replicated:} Brock, Lakonishok and LeBaron (1992); Sullivan, Timmermann and White (1999); Moskowitz, Ooi and Pedersen (2012). \emph{Claim on trial\index{claims-on-trial method}:} simple trend rules beat buy-and-hold after correcting for the number of rules tried. \emph{Data:} the daily U.S. market index built from the Kenneth R. French Data Library\index{Kenneth French data library}, from July 1926, and optionally the daily Dow Jones Industrial Average from a free source such as Stooq; AQR's free \emph{Time Series Momentum: Factors, Monthly} data set; and, for a small multi-asset test, the 10-year Treasury yield (GS10), the H.10 exchange rates, three-month interbank rates and the WTI oil price from FRED\index{FRED}, which earlier labs already use. \emph{Code:} runs as a script or as a notebook, with a prediction prompt before each step.
 \end{callout}
 
-\textbf{The setup.} Lab~\ref{ch:07} replicates the empirical evaluation of Campbell and Shiller (1988, 1998) and Goyal and Welch (2008) across four predictive models and three horizons:
+The lab has five parts. Each signal uses only prices up to the day, or month, before the position is taken.
 
 \begin{itemize}
-  \item \textbf{Part A, replication.} Regressions of future log excess returns on each predictor at each horizon, with three t-statistics: ordinary least squares, which ignores the overlap; Newey--West with lags equal to the horizon minus one; and Hodrick's (1992) standard errors, which avoid overlapping errors altogether. Lab Figure~\ref{ch:07}.1 shows the classic pattern to look for: $R^2$ rising with the horizon.
-  \item \textbf{Part B, walk-forward.} Forecasts from January 1965 using only data available at each date, with training observations purged when their targets had not yet been observed (Chapter~\ref{ch:05}). Out-of-sample $R^2$ against the historical mean, the Clark--West test, and the Campbell--Thompson restrictions. Lab Figure~\ref{ch:07}.2 sets these beside the in-sample results.
-  \item \textbf{Part C, stress tests.} Section~\ref{sec:07-stress} describes these.
-  \item \textbf{Part D, ranges.} Annualized ten-year real returns regressed on starting CAPE, with the walk-forward forecast error used to set an honest range around the forecast for today's CAPE (Lab Figure~\ref{ch:07}.5).
+  \item \textbf{Part A, the 26 rules.} The lab applies Brock, Lakonishok and LeBaron's ten variable-length, ten fixed-length and six breakout rules to the daily U.S. market. For each rule it reports the number of buy and sell days, the mean daily return after buy and after sell signals, and the buy--sell difference with its $t$-statistic. It does this separately for 1926--1986, the overlap with the original sample, and for 1987 to the present, the period after publication.
+  \item \textbf{Part B, the search correction.} The lab builds a universe of a few thousand moving-average and breakout rules by varying the windows, bands and holding periods. It computes each rule's excess return over buy-and-hold and applies White's Reality Check and Hansen's SPA test, using the stationary bootstrap with an average block length of ten days and 1,000 bootstrap samples. Again the two periods are reported separately.
+  \item \textbf{Part C, time-series momentum across asset classes.} The lab reads AQR's monthly time-series momentum factors for equity indices, bonds, currencies and commodities, and for the diversified portfolio. It reports the average return, Sharpe ratio and alpha against the market, before and after the original sample ended in 2009.
+  \item \textbf{Part D, the smile.} Using the AQR diversified factor and the U.S. market return, the lab regresses quarterly trend returns on the market's return and its square, as in Moskowitz, Ooi and Pedersen, and lists the strategy's return in the ten worst quarters for U.S. stocks.
+  \item \textbf{Part E, asset by asset.} With free data the lab builds a small universe of about a dozen assets: U.S. stocks, a 10-year Treasury bond built from yields as in Lab~\ref{ch:13}, nine currencies against the dollar with their interest differentials as in Lab~\ref{ch:06}, and spot crude oil. It runs Huang and coauthors' tests on this universe: separate predictive regressions for each asset, the pooled regression with a bootstrap $p$-value, and a comparison of time-series momentum with the time-series history strategy.
 \end{itemize}
 
-\textbf{What readers will find.} The lab reports every number from the data the reader supplies, so the results update as the data do. The pattern to test is the one the literature reports: in-sample $R^2$ of around 1\% at one month, larger at one year, and large at ten years; out-of-sample $R^2$ near or below zero at the short horizons for most predictors; and a ten-year relationship with CAPE that holds out of sample but leaves a range several percentage points wide. When the lab was run on simulated data in which the dividend--price ratio has weak true predictive power, the bootstrap of Part C showed why the published t-statistics overstate the evidence: the 95\% critical value under the null was about 2.6 rather than the textbook 1.645.
+\textbf{What readers will find.} Lab Figure~\ref{ch:08}.1 compares the buy--sell differences of the 26 rules before and after 1987. Lab Figure~\ref{ch:08}.2 shows the Reality Check and SPA $p$-values for the best rule in a rolling ten-year window. Lab Figure~\ref{ch:08}.3 plots quarterly trend returns against market returns, with the fitted smile. The test of the claim is whether the best rule survives the search correction after 1986, and whether the diversified strategy's return holds up after 2009 and asset by asset.
+
+\emph{[Draft note: the figures and numbers are generated by running the lab on data at the time of publication. The book prints the results; the text above does not anticipate them.]}
 
 \section{Stress tests}
-\label{sec:07-stress}
+\label{sec:08-stress}
 
-Four stress tests apply the earlier chapters' tools to the claim.
+\textbf{1. After publication.} The cleanest test of a trading rule is the period after the paper that made it famous. For the stock-index rules that period begins in 1992, or in 1987 if one counts from the end of the sample. For time-series momentum it begins in 2010. Industry reports and the AQR data show that diversified trend strategies had a weak decade after 2009, with long flat periods, before a strong year in 2022 when inflation surged and bonds and stocks fell together. A strategy that works in one regime and stalls in another is not disproved by a flat decade, but the post-publication record is the evidence an investor should weigh most.
 
-\textbf{1. Overlapping data (Chapter~\ref{ch:03}).} At the ten-year horizon, consecutive monthly observations share 119 of their 120 months. A century of data contains only about ten non-overlapping decades. Ordinary t-statistics treat the 1,000-plus overlapping observations as if they were independent and can overstate significance many times over. The lab reports OLS, Newey--West and Hodrick t-statistics side by side; the gap between the first and the others is the size of the overlap problem.
+\textbf{2. Costs and a one-day lag.} The stock-index rules switch between long and short many times a year, and most of their profit comes from short holding periods. Bajgrowicz and Scaillet (2012) found that even low transaction costs offset the in-sample performance of the best rules on the Dow, and the lab measures how much a cost of 0.1\% per switch, or trading at the next day's close instead of today's, takes away. Time-series momentum with a twelve-month signal changes position far less often than daily rules, and it trades liquid futures, so its costs are much lower. Hurst, Ooi and Pedersen assumed costs six times higher before 1993 to reflect older markets and still found positive net returns.
 
-\textbf{2. The Stambaugh bias.} Valuation ratios are extremely persistent, and their surprises are strongly negatively correlated with return surprises: when prices jump, the dividend--price ratio falls. In finite samples this biases the estimated slope upward and makes t-statistics too large (Stambaugh 1999; Nelson and Kim 1993). The lab measures the bias directly with a bootstrap: it keeps each predictor's persistence and the correlation of its surprises with returns, but rebuilds returns with no predictability at all, and runs the same regression on 500 artificial histories. Lab Figure~\ref{ch:07}.4 shows the resulting distribution of t-statistics under the null, which is shifted to the right of zero, and compares the actual t-statistic with that distribution rather than with the textbook normal.
+\textbf{3. Asset by asset or pooled.} A pooled test can find a significant result when no single asset is significant, and Huang and coauthors argue that this is what happened. The answer depends on what the investor holds. An investor who trades a single market needs that market to be predictable. An investor who holds a diversified portfolio of fifty markets benefits from many weak signals combined, in the same way that Chapter~\ref{ch:01} showed a higher Sharpe ratio requires fewer years to detect. The lab reports both views.
 
-\textbf{3. Different decades.} A relationship that reflects a stable economic mechanism should appear in different periods. The lab estimates each predictor's one-year slope in three subperiods (1927--1964, 1965--1994 and 1995 onward) and over rolling 20-year windows (Lab Figure~\ref{ch:07}.3). The dividend--price ratio is the classic test case: the ratio fell to record lows in the late 1990s while returns stayed high, and many studies find that its slope and significance depend heavily on whether that period is included.
+\textbf{4. Is it trend or carry?} The time-series history strategy of Huang and coauthors earns its return by holding assets that have had positive average returns, mainly stocks and bonds. If trend following's return over a long sample is mostly that, then its value lies elsewhere: in its tendency to turn short during long declines. Part D tests that tendency directly.
 
-\textbf{4. Out of sample and with restrictions (Chapter~\ref{ch:05}).} Walk-forward forecasts with purging, the Clark--West test, and the Campbell--Thompson restrictions. These are the decisive tests for the claim as stated, because the claim is about forecasts an investor could have made.
-
-\textbf{What the stress tests do not cover.} All four use U.S. data. International evidence is weaker and more mixed, which matters because the U.S. market's history is one of the most successful on record, a selection problem Chapter~\ref{ch:02} discussed. The open questions in Section~\ref{sec:07-open} return to this.
+\textbf{5. Data snooping in the defense.} The one-, three- and twelve-month windows, the 40\% target and the 60-day volatility estimate are themselves choices. They were made by researchers who knew the history. The lab lets readers vary each choice and reports how sensitive the results are, in the spirit of the robustness grids in Chapter~\ref{ch:24}.
 
 \section{Verdict}
-\label{sec:07-verdict}
+\label{sec:08-verdict}
 
-The verdict depends on the horizon and on what the predictions are for. Based on the published evidence through the Goyal--Welch--Zafirov sample, and to be confirmed by readers' runs of Lab~\ref{ch:07} on data through 2025:
+Based on the published evidence, to be confirmed by readers' runs of Lab~\ref{ch:08} on data through 2025: \textbf{fails for classic rules on a single stock index; survives, weakened, for diversified time-series momentum.}
 
 \begin{center}
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.21\linewidth}>{\raggedright\arraybackslash}p{0.11\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.24\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.24\linewidth}@{}}
 \toprule
-Use & Horizon & Verdict & Why \\
+Test & Finding & Effect on the claim \\
 \midrule
-Market timing: moving in and out of stocks & 1 month to 1 year & \textbf{Fails} & In-sample t-statistics shrink after correcting for overlap and the Stambaugh bias; walk-forward forecasts rarely beat the historical mean, and the predictors that help do so only in some decades \\
-Long-run planning: setting expected-return assumptions & 10 years & \textbf{Survives, weakly} & High CAPE has been followed by lower ten-year returns, a pattern that has generally held up in walk-forward tests, but with roughly ten independent decades of evidence the relationship is imprecise and the honest range is several percentage points wide \\
-The Fed model as a valuation signal & Any & \textbf{Fails} & Comparing a real earnings yield with a nominal bond yield has no sound economic basis, and it has not forecast returns \\
+Stock-index rules, original sample & Large buy--sell differences, significant even after the Reality Check & Supports \\
+Stock-index rules, after 1986 & Best rule no longer significant; costs and a one-day lag remove much of the profit & Strong form fails \\
+Many markets, original sample & Positive in all 58 contracts; Sharpe ratio above one & Supports weak form \\
+A century of data & Positive in every decade since 1880, after fees & Supports weak form \\
+Asset by asset & Most single-asset slopes insignificant; pooled test overstated & Weakens \\
+After 2009 & A long weak period, then strong gains in 2022 & Weakens, not decisive \\
+Crisis behavior & Profits in most long equity drawdowns & Supports its use as a diversifier \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-The verdict on the claim as stated, that these variables forecast the equity premium well enough to beat a constant expected return in real time, is therefore \textbf{fails for market timing}, with a narrower claim, that valuations shift the distribution of decade-long returns, surviving weakly. The verdict is dated by the sample tested and should be revisited as data accumulate: a decade of new returns adds one new independent observation to the ten-year evidence.
+The trend is not a reliable friend for someone who trades a single stock index with a classic moving-average rule. Those rules worked in the century in which they were found, and not after. Diversified trend following across many asset classes has a much stronger record, including more than a century of simulated history and a decade of live trading after publication. Its average return, however, is smaller and less certain than the original studies suggested, and part of it may come from holding assets that simply rose over time. Its most dependable feature is its tendency to make money during long market declines. The verdict is dated by the sample tested.
 
 \section{What investors can use}
-\label{sec:07-investors}
+\label{sec:08-investors}
 
-The useful lesson from a century of debate is not a timing signal but a planning input.
+\textbf{Use trend as a diversifier, not as a stand-alone bet.} A modest allocation to a diversified trend strategy has historically reduced the drawdowns of a stock--bond portfolio. It is not a strategy that wins every year, and it can go through years of flat or negative returns.
 
-\begin{itemize}
-  \item \textbf{Set long-run return assumptions with valuations in mind.} A retirement plan, an endowment's spending rule or a pension's discount rate that assumes the historical average return regardless of starting valuations ignores the most robust part of this evidence. When CAPE is high, plan for lower decade-long returns; when it is low, higher ones.
-  \item \textbf{Plan for the range, not the point.} Lab~\ref{ch:07}'s Part D reports a 90\% range for the next decade's annualized real return. The range is wide, typically several percentage points either side of the central forecast, and the plan should work across it.
-  \item \textbf{Do not trade on it.} Valuations have been high, or low, for years at a time before returns responded. An investor who reduced equities whenever CAPE looked expensive would often have spent long periods underinvested while the market rose.
-  \item \textbf{Distrust precise forecasts.} Any forecast of next year's market return stated to a decimal place, or a valuation ``fair value'' target for the index, implies a precision this evidence does not support.
-\end{itemize}
+\textbf{Prefer breadth and patience.} A trend strategy that holds many markets in several asset classes and uses slow signals is more robust than one that trades a single market with fast signals. Fast rules generate more trades, higher costs and more room for overfitting.
 
-\textbf{Questions to ask a fund manager or adviser who times the market with valuations:}
+\textbf{Check fees carefully.} Trend-following funds have often charged high fees. Simple rules on liquid futures are cheap to run, so the fee should be judged against what a transparent rule would deliver.
+
+\textbf{Questions to ask a trend-following manager:}
 
 \begin{enumerate}
-  \item Were your signals and their thresholds chosen before the period you are showing me? What did you try and discard?
-  \item How did the strategy perform in real time, after it was designed, not in a backtest?
-  \item What t-statistics do you get after correcting for overlapping returns and the persistence of your predictor?
-  \item How long has the signal been wrong in the past, and could I bear being out of the market for that long?
-  \item What is the strategy's out-of-sample $R^2$ against simply assuming the average return?
+  \item How many signal variants did you test before choosing the ones you use, and were the choices fixed before the backtest\index{backtest}?
+  \item How did the strategy perform after 2009, and in 2022?
+  \item What would the strategy have done in a one-day crash such as October 1987, and in a sharp rebound such as March 2009?
+  \item How much of the long-run return comes from being long stocks and bonds on average?
+  \item What are the turnover, trading costs and fees, and what is the return after all three?
 \end{enumerate}
 
 \begin{callout}
-\textbf{What Failed: the Fed model.} In July 1997 the Federal Reserve's Monetary Policy Report to Congress included a chart comparing the stock market's earnings yield with the ten-year Treasury yield. The strategist Ed Yardeni named the comparison the ``Fed model'': stocks are cheap when their earnings yield is above bond yields and expensive when below. The Fed never endorsed it, but it became one of Wall Street's most quoted valuation tools. Asness (2003) argued that it rests on a confusion: earnings yields are real quantities, because earnings grow with inflation, while bond yields are nominal, so comparing them builds in \textbf{money illusion}, the mistake of treating nominal and real amounts as the same, of the kind Modigliani and Cohn (1979) described. Its empirical record matches the logic. Asness found that it described how investors set prices but not what returns followed, and it had little power to forecast long-run returns. The relationship it relies on was also unstable: from the late 1990s, bond yields and earnings yields moved in opposite directions for long periods. The claim that the Fed model identifies when stocks are cheap \textbf{fails}. Lab~\ref{ch:07} includes it as a fourth predictor so readers can check.
+\textbf{What Failed: fast trend rules on a single stock index.} For decades, newsletters and trading systems sold moving-average rules for timing the stock market, often with backtests on the Dow going back to the early twentieth century. The rules that looked best were short-window rules that traded many times a year. Sullivan, Timmermann and White's test showed what happened next: from 1987 to 1996 the best rules were no longer significant, and on S\&P 500 futures, the market where the rules could actually be traded cheaply, no rule beat the benchmark. The failure was in treating the best rule in a long backtest as a rule with real predictive power. The claim that a fast moving-average rule on a single index beats buy-and-hold \textbf{fails}.
 \end{callout}
 
 \section{Open questions}
-\label{sec:07-open}
+\label{sec:08-open}
 
 \begin{itemize}
-  \item \textbf{International evidence.} Do valuation ratios predict long-run returns outside the United States, using long histories for many countries? The answer bears on whether U.S. evidence reflects a mechanism or one fortunate market.
-  \item \textbf{Changes in payout policy.} Share buybacks have replaced much of the dividend payout since the 1980s, which may have shifted the dividend--price ratio's level permanently. How should valuation ratios be adjusted, and does adjustment restore their predictive power?
-  \item \textbf{Accounting changes in earnings.} Changes in accounting rules, such as write-down rules for goodwill, affect reported earnings and therefore CAPE. How large are these effects, and how should a long-run series correct for them?
-  \item \textbf{Real-time data.} Lab~\ref{ch:07} uses earnings as dated in the data file, not as first reported. How much does using genuinely real-time earnings change the evidence?
-  \item \textbf{Combining signals.} Do forecast combinations, Bayesian methods that impose economic priors, or machine-learning models (Chapter~\ref{ch:21}) deliver forecasts that survive the stress tests of this chapter?
+  \item \textbf{Has trend following become crowded?} Assets in managed-futures funds grew sharply after 2008. Did the extra money weaken trends, and is that why returns were lower after 2009?
+  \item \textbf{Trend or carry?} How much of trend following's long-run return is predictability, and how much is the average return of the assets it tends to hold?
+  \item \textbf{Which window?} Short windows react faster to turning points but trade more. Is there a principled way to choose, or to combine, look-back periods without overfitting?
+  \item \textbf{Will the crisis behavior continue?} Trend following profited in long declines such as 2008 and 2022. Will it do so in the next crisis, which may be faster or shaped differently?
 \end{itemize}
 
 \section*{Exercises}
-\addcontentsline{toc}{section}{Exercises}
 
 \subsection*{Conceptual (all readers)}
 
 \begin{enumerate}
-  \item Use the present-value identity of Section~\ref{sec:07-how} to explain why a high dividend--price ratio must be followed by high returns, high dividend growth, or a permanently high ratio. Which of these does the evidence favor?
-  \item Explain why the $R^2$ of a regression of 10-year returns on a persistent predictor can be large even if the predictor has little information about 1-month returns.
-  \item Why does the Stambaugh bias push t-statistics up for the dividend--price ratio, and why would it push them the other way for a predictor whose surprises were positively correlated with returns?
-  \item An adviser says CAPE predicts that the next ten years will deliver 3\% a year after inflation. What information is missing from that statement?
+  \item An index is at 1,050. Its 200-day moving average is 1,030 and its 50-day high is 1,060. What signals do the 1--200 rule with a 1\% band and the 50-day breakout rule with a 1\% band give?
+  \item In a year when every asset class rises, what does a time-series momentum strategy hold? What does the cross-sectional momentum strategy of Chapter~\ref{ch:05} hold?
+  \item Explain why the payoff of a trend-following strategy resembles an option straddle. When does the analogy break down?
+  \item Why does adding many poor rules to a universe make White's Reality Check less powerful, and how does Hansen's SPA test address the problem?
+  \item Huang and coauthors' time-series history strategy needs no predictability. Explain how it can still earn a positive return.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
-  \setcounter{enumi}{4}
-  \item Re-run Lab~\ref{ch:07} ending in 1990 (\texttt{-{}-end 1990-12}), roughly the data available to the original authors. Then run it from 1991. How different are the conclusions?
-  \item Compare the OLS, Newey--West and Hodrick t-statistics for the 10-year horizon. By what factor does ignoring overlap overstate significance?
-  \item Lag CAPE by four months to allow for delays in reported earnings. Does the evidence change?
-  \item Supply Shiller's data and repeat Part D from 1881. How does the longer history change the slope and the width of the range?
-  \item Obtain long-run data for another country's stock market and repeat Part D. Does the CAPE relationship hold?
-  \item Build a combination forecast of the four predictors, as in Rapach, Strauss and Zhou (2010), and evaluate it with the stress tests of Section~\ref{sec:07-stress}.
+  \setcounter{enumi}{5}
+  \item In Part A, charge 0.1\% for every switch between long and short and trade at the next day's close. How many of the 26 rules still beat buy-and-hold after 1986?
+  \item In Part B, double the size of the rule universe by adding filter rules. How do the Reality Check and SPA $p$-values of the best rule change?
+  \item In Part C, split the post-2009 period into 2010--2021 and 2022 to the present. How much of the post-publication return comes from 2022?
+  \item In Part E, change the look-back from 12 months to 3 and to 24 months. Does any single asset become significant?
+  \item Combine the AQR diversified trend factor with the U.S. market in an 80/20 portfolio. Compare its Sharpe ratio and maximum drawdown with the market alone, before and after 2009.
 \end{enumerate}

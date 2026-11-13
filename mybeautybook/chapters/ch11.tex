@@ -1,4 +1,4 @@
-% Chapter 11 -- Claim: Volatility Is Predictable
+% Chapter 11 -- Claim: Value-at-Risk Models Measure Risk Reliably
 % Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -12,361 +12,333 @@
 }{}
 \makeatother
 
-\chapter{Claim: Volatility Is Predictable}
+\chapter{Claim: Value-at-Risk Models Measure Risk Reliably}
 \label{ch:11}
 
-Chapters~\ref{ch:07} to~\ref{ch:10} asked whether anything forecasts the \emph{level} of returns, and the answers were mostly modest. This chapter asks about their \emph{size}. On that question the evidence is strong. A quiet day in the market tends to follow another quiet day, and a violent day tends to follow another violent one. The 1987 crash, the autumn of 2008 and March 2020 each arrived as a run of violent days, not a single one.
+In the early 1990s large banks needed a single number that summarized the market risk of a trading book. J.P. Morgan's RiskMetrics system, made public in 1994, popularized one: \textbf{Value at Risk}\index{Value at Risk (VaR)}, the loss that should be exceeded only on a stated fraction of days. A bank that reports a one-day 99\% VaR of \$50 million is claiming that it will lose more than \$50 million on about one trading day in a hundred. In 1996 the Basel Committee on Banking Supervision allowed banks to set their capital for market risk with their own VaR models, provided the models passed a regular backtest.
 
-This is the most robust claim in the book, and it carries a lot of weight. Option prices, risk limits, Value at Risk\index{Value at Risk (VaR)} (Chapter~\ref{ch:13}), margin requirements\index{margin} and the volatility-targeting\index{volatility targeting} funds that now manage hundreds of billions of dollars all assume that volatility\index{volatility} can be forecast. So the questions here are less \emph{whether} than \emph{how well}, \emph{at what horizon}, and \emph{by which model}. A further question is whether an investor can turn the forecasts into better returns, and the evidence on that is much weaker.
+That decision raised a statistical question with real money attached: how can anyone tell whether a VaR model is right? VaR is unusual among the claims in this book because it is a forecast that checks itself. Every day produces a test, because either the loss exceeded the VaR or it did not. Kupiec (1995) proposed a test of whether breaches occur as often as the model promises, and Christoffersen (1998) added a test of whether they arrive independently or in clusters, since a model that is right on average but wrong in every crisis is of little use. The crisis of 2007--09, when breaches came in runs, led regulators to replace VaR with expected shortfall in the Fundamental Review of the Trading Book.
+
+The implications go beyond banks. Every investor who sets a risk limit, a stop-loss or a leverage ratio from a model is relying on the same kind of forecast. The claim on trial\index{claims-on-trial method} is: \textbf{a well-built 99\% VaR model is breached about 1\% of the time, with breaches that are independent over time.}
+
+The lab in Section~\ref{sec:11-lab} replicates the backtests of Kupiec (1995) and Christoffersen (1998) on six common VaR models, using free daily U.S. market returns since 1930, in order to check whether any of them measures risk reliably and how they fail in crises.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item annualize a daily volatility and explain why models work in variance\index{variance};
-  \item compute historical, EWMA\index{EWMA} and GARCH\index{GARCH} volatility forecasts\index{volatility!forecasting}, the long-run variance\index{GARCH!unconditional variance} and the half-life\index{half-life} of a shock;
-  \item explain realized variance\index{volatility!realized}, the HAR\index{HAR model} model, implied volatility\index{volatility!implied}, the VIX\index{VIX} and the variance risk premium\index{risk premium};
-  \item state the claim that volatility is predictable in a form that can fail, and summarize the evidence for it;
-  \item evaluate volatility forecasts with robust loss functions\index{loss function} such as QLIKE\index{loss function!QLIKE}, and with Mincer--Zarnowitz and Diebold--Mariano\index{Diebold--Mariano test} tests;
-  \item judge whether volatility timing improves an investor's returns once forecasts are made in real time and costs and leverage\index{leverage} limits apply.
+  \item compute a parametric VaR and expected shortfall\index{expected shortfall (ES)}, and scale them across horizons with the square-root-of-time\index{Value at Risk (VaR)!square-root-of-time rule} rule, knowing when it fails;
+  \item explain coherence\index{coherent risk measure} and show with an example how VaR can fail subadditivity\index{subadditivity};
+  \item compare parametric, historical simulation\index{Value at Risk (VaR)!historical simulation}, GARCH\index{GARCH} and filtered historical simulation\index{Value at Risk (VaR)!filtered historical simulation} VaR models;
+  \item state the claim of conditional coverage\index{coverage test!conditional} and summarize the evidence from banks and from model comparisons;
+  \item backtest\index{backtest} a VaR model with the Kupiec\index{Kupiec test} and Christoffersen\index{Christoffersen test} tests and the Basel\index{Basel framework} traffic light\index{Basel traffic light}, and backtest expected shortfall;
+  \item judge a bank's or fund's risk disclosures and know what VaR cannot tell you.
 \end{itemize}
 
-\section{Foundations: measuring and modelling volatility}
+\section{Foundations: VaR, expected shortfall and their properties}
 \label{sec:11-foundations}
 
-\subsection{Volatility and variance}
+\subsection{Value at Risk}
 
-Volatility, the standard deviation\index{standard deviation} of returns, and its annualization were introduced in Section~\ref{sec:01-expret}. This chapter works mostly with daily data, so a daily standard deviation $\sigma_d$ is annualized as $\sigma_d\sqrt{252}$, since there are about 252 trading days in a year; a 1\% daily volatility is therefore about 16\% a year. The square root assumes returns are uncorrelated from day to day, which Chapter~\ref{ch:03} showed is close to true (Section~\ref{sec:03-facts}). Variance is volatility squared. Most models work in variance, because variances of uncorrelated returns add: the variance over the next $h$ days is the sum of the daily variances.
-
-\subsection{Historical volatility}
-
-\textbf{Historical volatility}\index{volatility!historical|textbf} is the sample standard deviation over a past window, such as the last 22 trading days (about one month). It weights every day in the window equally and drops days abruptly when they leave it. Because daily mean returns are tiny compared with daily volatility, practitioners usually set the mean to zero and estimate variance as the average squared return.
-
-\subsection{EWMA}
-
-\textbf{EWMA}\index{EWMA|textbf} (exponentially weighted moving average), popularized by J.P. Morgan's RiskMetrics\index{RiskMetrics} in 1994, weights recent days more heavily:
+For a confidence level $1 - \alpha$ and a horizon (one day, ten days), VaR is the loss that is exceeded with probability $\alpha$:
 \begin{equation}
-  \sigma^2_t = \lambda\,\sigma^2_{t-1} + (1 - \lambda)\,r^2_{t-1}
-  \label{eq:11-ewma}
+  P(\text{Loss} > \mathrm{VaR}) = \alpha
+  \label{eq:11-var}
 \end{equation}
-RiskMetrics set $\lambda = 0.94$ for daily data. Yesterday's squared return gets weight 6\%, the day before $0.94 \times 6\% \approx 5.6\%$, and so on (Figure~\ref{fig:11-ewma}).
+It is a \textbf{quantile}\index{quantile|textbf} of the loss distribution. A 99\% one-day VaR is the 1st percentile of tomorrow's return, with the sign flipped. If daily returns are normal with mean zero and standard deviation\index{standard deviation} $\sigma$, then $\mathrm{VaR} = z\sigma$, where $z = 1.645$ at 95\%, 2.326 at 99\% and 3.090 at 99.9\%.
+
+\subsection{Expected shortfall (ES)}
+
+\textbf{Expected shortfall (ES)}\index{expected shortfall (ES)|textbf}, also called conditional VaR, is the average loss on the days when the VaR is exceeded:
+\begin{equation}
+  \mathrm{ES} = E[\text{Loss} \mid \text{Loss} > \mathrm{VaR}]
+  \label{eq:11-es}
+\end{equation}
+For a normal distribution\index{distribution!normal}, $\mathrm{ES} = \sigma\,\phi(z)/\alpha$, where $\phi$ is the normal density. ES always exceeds VaR at the same confidence level. VaR says where the tail starts. ES says how bad the tail is (Figure~\ref{fig:11-var-es}).
 
 \begin{figure}[htbp]
 \centering
-\begin{tikzpicture}
+\begin{tikzpicture}[declare function={npdf(\x) = exp(-\x*\x/2)/sqrt(2*pi);}]
 \begin{axis}[
-  width=0.64\linewidth, height=0.36\linewidth,
+  width=0.61\linewidth, height=0.34\linewidth,
   axis lines=left, axis line style={-stealth},
-  xmin=0, xmax=41, ymin=0, ymax=7.3,
-  xtick={0,5,...,40}, ytick={0,2,4,6},
-  xlabel={Days ago},
-  ylabel={Weight on that day's squared return (\%)},
-  legend style={draw=none, fill=none, at={(0.98,0.98)}, anchor=north east,
-                cells={anchor=west}, font=\small},
-  legend cell align=left,
+  xmin=-4.8, xmax=4, ymin=0, ymax=0.45,
+  xtick={-2.33,0,2}, xticklabels={$-2.33$,$0$,$2$},
+  ytick=\empty,
+  xlabel={Tomorrow's return, in daily standard deviations},
+  ylabel={Likelihood},
+  samples=200, clip=false,
 ]
-  % EWMA weights: (1 - lambda) * lambda^(k-1), lambda = 0.94
-  \addplot[ybar, area legend, bar width=0.5, fill=fenavy, draw=none,
-           domain=1:40, samples=40] {100*0.06*0.94^(x-1)};
-  \addlegendentry{EWMA, $\lambda = 0.94$}
-  % Historical window: 1/22 on each of the last 22 days
-  \addplot[fegray, very thick, const plot] coordinates
-    {(0.5,4.545) (22.5,4.545) (22.5,0)};
-  \addlegendentry{22-day window, equal weights}
+  \addplot[name path=curve, draw=none, domain=-4:4] {npdf(x)};
+  \path[name path=base] (axis cs:-4,0) -- (axis cs:4,0);
+  \addplot[fenavy] fill between[of=curve and base, soft clip={domain=-4:-2.33}];
+  \addplot[fegray, thick, domain=-4:4] {npdf(x)};
+
+  % 99% VaR
+  \draw[fenavy, very thick] (axis cs:-2.33,0) -- (axis cs:-2.33,0.30);
+  \node[fenavy, anchor=south, align=center] at (axis cs:-2.33,0.30)
+    {99\% VaR:\\loss of 2.33 s.d.};
+  % 99% ES
+  \draw[thick, dashed] (axis cs:-2.67,0) -- (axis cs:-2.67,0.13);
+  \draw (axis cs:-3.6,0.13) -- (axis cs:-2.67,0.13);
+  \node[anchor=south, align=center] at (axis cs:-3.3,0.13)
+    {99\% ES:\\average tail\\loss, 2.67 s.d.};
+  % Tail label
+  \draw[fenavy] (axis cs:-2.3,0.017) -- (axis cs:-0.6,0.06);
+  \node[fenavy, anchor=west] at (axis cs:-0.6,0.065) {worst 1\% of days};
 \end{axis}
 \end{tikzpicture}
-\caption{Weights on past squared returns. A 22-day historical window gives each day the same weight and then drops it abruptly. EWMA gives the most weight to yesterday and fades older days gradually, so it reacts faster to news and never drops a day all at once.}
-\label{fig:11-ewma}
+\caption{VaR and expected shortfall for normal returns. The 99\% VaR marks where the worst 1\% of days begins, 2.33 standard deviations below zero. The 99\% ES is the average loss within that tail, 2.67 standard deviations.}
+\label{fig:11-var-es}
 \end{figure}
 
-\subsection{GARCH(1,1)}
-\label{sec:11-garch}
+\subsection{Coherence}
 
-\textbf{GARCH(1,1)}\index{GARCH|textbf} (generalized autoregressive conditional heteroskedasticity\index{heteroskedasticity}) adds a pull toward a long-run level:
-\begin{equation}
-  \sigma^2_t = \omega + \alpha\,r^2_{t-1} + \beta\,\sigma^2_{t-1}
-  \label{eq:11-garch}
-\end{equation}
-Here $\alpha$ measures how strongly a new shock moves the forecast, and $\beta$ measures how long the effect lasts. Four quantities follow from the parameters:
+Artzner, Delbaen, Eber and Heath (1999) listed four properties a sensible risk measure should have. The one VaR can violate is \textbf{subadditivity}\index{subadditivity|textbf}: the risk of a combined portfolio should not exceed the sum of the risks of its parts, since diversification\index{diversification} should not add risk. ES is subadditive; VaR is not in general. VaR is subadditive for normal returns, so the failure shows up in portfolios with very skewed payoffs, such as credit and options.
 
-\begin{itemize}
-  \item \textbf{Persistence}\index{persistence|textbf} is $\alpha + \beta$, which must be below 1.
-  \item The \textbf{long-run variance}\index{GARCH!unconditional variance|textbf} is $V = \omega / (1 - \alpha - \beta)$.
-  \item Forecasts revert to $V$ geometrically: the expected variance $k$ days ahead is
-  \begin{equation}
-    E_t[\sigma^2_{t+k}] = V + (\alpha + \beta)^{k-1}\left(\sigma^2_{t+1} - V\right)
-    \label{eq:11-forecast}
-  \end{equation}
-  \item The \textbf{half-life}\index{half-life|textbf} of a volatility shock, the time for half of it to fade, is $\ln 0.5 / \ln(\alpha + \beta)$.
-\end{itemize}
+\subsection{Square-root-of-time}
 
-EWMA is the special case $\omega = 0$, $\alpha = 1 - \lambda$, $\beta = \lambda$, with persistence exactly 1, so EWMA forecasts never revert. \textbf{GJR-GARCH}\index{GARCH!GJR|textbf} adds a term $\gamma\,r^2_{t-1}\,\mathbf{1}[r_{t-1} < 0]$, where the indicator $\mathbf{1}[\cdot]$ is 1 when its condition holds and 0 otherwise, so falls raise volatility more than rises. This asymmetry is the \textbf{leverage effect}\index{leverage effect|textbf}. The parameters are estimated by \textbf{maximum likelihood}\index{maximum likelihood|textbf}: choosing the values that make the observed returns most probable under the model.
+The square-root rule used to annualize volatility (Section~\ref{sec:10-foundations}) also scales VaR across horizons. If daily returns are independent with the same variance\index{variance}, the $h$-day standard deviation is $\sqrt{h}$ times the daily one, so a 10-day VaR is about $\sqrt{10} \approx 3.16$ times the one-day VaR. Volatility clustering\index{volatility clustering} (Chapter~\ref{ch:10}) breaks the assumption: after a calm period the rule overstates risk, and after a shock it understates it.
 
-\subsection{Realized variance}
-\label{sec:11-rv}
+\subsection{Methods}
 
-\textbf{Realized variance}\index{volatility!realized|textbf} sums squared returns within a period, such as squared five-minute returns within a day. With enough intraday data it measures that day's variance almost exactly. The \textbf{HAR model}\index{HAR model|textbf} (heterogeneous autoregressive) forecasts tomorrow's realized variance by regressing it on the averages of the last day, week and month.
-
-\subsection{Implied volatility}
-\label{sec:11-iv}
-
-\textbf{Implied volatility}\index{volatility!implied|textbf} is the volatility that makes an option's market price equal its model price (Chapter~\ref{ch:14}). The \textbf{VIX}\index{VIX|textbf} is the market's 30-day implied volatility for the S\&P 500, computed from a strip of index options. It is a forecast under the \emph{risk-neutral\index{risk-neutral pricing}} measure, the probabilities that price assets as if investors did not care about risk, not the real-world probabilities. Investors pay a premium to insure against volatility, so the VIX usually exceeds the volatility that follows. The gap is the \textbf{variance risk premium}\index{variance|textbf}.
-
-\textbf{Worked example.} Yesterday's daily volatility estimate was 1.6\% (variance 0.000256), and the market then fell 3\% ($r^2 = 0.0009$).
+The three main families of VaR models are set out in Section~\ref{sec:11-how}:
 
 \begin{itemize}
-  \item EWMA with $\lambda = 0.94$: $\sigma^2 = 0.94 \times 0.000256 + 0.06 \times 0.0009 = 0.000295$. Volatility rises to 1.72\% a day, or 27\% annualized.
-  \item GARCH with $\omega = 0.000002$, $\alpha = 0.08$ and $\beta = 0.90$:
-  \begin{itemize}
-    \item $\sigma^2 = 0.000002 + 0.08 \times 0.0009 + 0.90 \times 0.000256 = 0.000304$, or 1.74\% a day.
-    \item Persistence is 0.98, so the long-run variance is $0.000002 / 0.02 = 0.0001$: 1\% a day, or 15.9\% a year. The half-life is $\ln 0.5 / \ln 0.98 \approx 34$ trading days (Figure~\ref{fig:11-garch}).
-    \item The variance over the next ten days is $10 \times 0.0001 + (0.000304 - 0.0001) \times (1 - 0.98^{10})/(1 - 0.98) = 0.00287$. Ten-day volatility is 5.4\%, or 26.9\% annualized. That is below the 27.7\% you would get by assuming today's 1.74\% persists, because the forecast is already reverting.
-  \end{itemize}
+  \item \emph{parametric}, which assumes a distribution and estimates $\sigma$;
+  \item \emph{historical simulation}, which uses the empirical quantile of past returns;
+  \item \emph{Monte Carlo\index{Monte Carlo simulation}}, which simulates from a model of the risk factors.
 \end{itemize}
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[
-  % Variance gap to the long-run level halves every 34 trading days
-  declare function={vol(\k) = sqrt(15.9^2 + (27.7^2 - 15.9^2)*0.5^((\k-1)/34));}
-]
-\begin{axis}[
-  width=0.64\linewidth, height=0.34\linewidth,
-  axis lines=left, axis line style={-stealth},
-  xmin=0, xmax=150, ymin=12, ymax=30,
-  xtick={0,20,...,140}, ytick={15,20,25,30},
-  xlabel={Trading days ahead},
-  ylabel={Forecast volatility (\% a year)},
-  clip=false,
-]
-  \addplot[fegray, dashed, domain=0:150, samples=2] {15.9};
-  \addplot[fenavy, very thick, domain=1:150, samples=150] {vol(x)};
-  \draw[fenavy, dashed] (axis cs:35,12) -- (axis cs:35,{vol(35)});
-  \node[fenavy, anchor=west] at (axis cs:4,27.4) {tomorrow: 27.7\%};
-  \node[fenavy, anchor=south west] at (axis cs:37,16.3) {half-life: 34 days};
-  \node[fegray, anchor=north east] at (axis cs:148,15.6) {long-run level, 15.9\%};
-\end{axis}
-\end{tikzpicture}
-\caption{A GARCH forecast reverting to its long-run level, from the worked example. After a 3\% fall the forecast for tomorrow is 27.7\% a year; it then decays toward 15.9\%, losing half of the gap every 34 trading days.}
-\label{fig:11-garch}
-\end{figure}
+\textbf{Worked example.} A \$10 million position in a stock index has a daily volatility of 1.2\%.
+
+\begin{itemize}
+  \item Normal 99\% one-day VaR $= 2.326 \times 1.2\% \times \$10\text{m} \approx \$279{,}000$.
+  \item Normal 99\% ES $= 1.2\% \times \phi(2.326)/0.01 \times \$10\text{m} = 2.665 \times 1.2\% \times \$10\text{m} \approx \$320{,}000$.
+  \item Normal 97.5\% ES $= 2.338 \times 1.2\% \times \$10\text{m} \approx \$281{,}000$, almost the same as the 99\% VaR. This is why regulators chose 97.5\% when they moved from VaR to ES.
+  \item 10-day VaR by the square-root rule: $\sqrt{10} \times \$279{,}000 \approx \$883{,}000$.
+  \item With 500 days of history, the 99\% historical-simulation VaR is the loss between the 5th and 6th worst days.
+\end{itemize}
+
+\textbf{Subadditivity failure.} Two bonds each default with probability 4\%, losing 100 if they do and nothing otherwise. Each bond's 95\% VaR is 0, since default is less likely than 5\%. For a portfolio of both, with independent defaults, the probability of at least one default is $1 - 0.96^2 = 7.84\%$, so the portfolio's 95\% VaR is 100. Diversifying has \emph{increased} the measured risk.
 
 \section{How it works}
 \label{sec:11-how}
 
-Three regularities in daily stock returns, all documented in Chapter~\ref{ch:03} (Section~\ref{sec:03-facts}), motivate every model in this chapter.
+Every VaR model answers two questions: how volatile will tomorrow be, and what shape does the tail have? The models in this chapter combine different answers.
 
-\begin{itemize}
-  \item \textbf{Volatility clustering.}\index{volatility clustering|textbf} Mandelbrot (1963) observed that large changes tend to be followed by large changes, of either sign, and small changes by small changes. Returns themselves have almost no autocorrelation\index{autocorrelation}, but absolute and squared returns are positively autocorrelated, and the autocorrelation decays slowly over weeks and months. A forecastable size combined with an unforecastable sign is exactly what an efficient market\index{efficient market hypothesis} with changing risk would produce.
-  \item \textbf{Fat tails.}\index{fat tails|textbf} Daily returns have far more extreme days than a normal distribution\index{distribution!normal} allows. Part of this is clustering itself: a mixture of calm and turbulent periods, each roughly normal, has fat tails overall. Even after allowing for clustering, the standardized returns $r_t / \sigma_t$ remain somewhat fat-tailed, which is why many applications use Student-$t$ shocks.
-  \item \textbf{The leverage effect.}\index{leverage effect|textbf} Volatility rises more after falls than after rises of the same size. Black (1976) attributed this to leverage, since a falling share price raises a firm's debt-to-equity ratio and so the riskiness of its equity. The effect is too large to be explained by leverage alone, and it is strongest for the index. Risk premiums and \textbf{volatility feedback}\index{volatility feedback|textbf}, in which higher expected volatility lowers prices, both contribute.
-\end{itemize}
+\begin{center}
+\small
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\toprule
+Model & Volatility & Tail shape \\
+\midrule
+Normal, rolling window & Equal-weighted past window (here 250 days) & Normal \\
+Historical simulation (HS) & Implicit in the window & Empirical quantile of past returns \\
+EWMA (RiskMetrics) & Exponentially weighted, $\lambda = 0.94$ & Normal \\
+GARCH & Estimated, mean-reverting & Normal \\
+GJR-GARCH with Student-$t$ shocks & Estimated, with leverage effect & Student-$t$, estimated \\
+Filtered historical simulation (FHS) & GJR-GARCH & Empirical quantile of past \emph{standardized} returns \\
+\bottomrule
+\end{tabularx}
+\end{center}
 
-The models differ in how they turn past returns into a forecast.
+\textbf{Historical simulation}\index{Value at Risk (VaR)!historical simulation|textbf} is the most popular method at banks (P\'erignon and Smith 2010) because it needs no distributional assumption and handles nonlinear positions, such as options, by revaluing the portfolio under each past day's market moves. Its weakness is slowness. A 250-day window gives the same weight to a crash eleven months ago as to yesterday's, and none at all to one twelve months and a day ago. When volatility jumps, HS VaR responds only as the new large losses enter the window. When they leave, it drops abruptly.
 
-\begin{itemize}
-  \item \textbf{Historical and EWMA} forecasts are smoothing rules with one choice: the window length or $\lambda$.
-  \item \textbf{GARCH}\index{GARCH|textbf} models are estimated, have a long-run level and revert toward it. At long horizons their forecasts converge to the \textbf{unconditional variance}\index{GARCH!unconditional variance|textbf}, the long-run average, which is right if volatility truly mean-reverts and costly if the long-run level itself shifts.
-  \item \textbf{HAR}\index{HAR model|textbf} captures the slow decay of volatility's memory with three regressors, one per horizon. It is linear and estimated by ordinary least squares\index{regression!ordinary least squares (OLS)}, which makes it easy to extend.
-  \item \textbf{The VIX}\index{VIX|textbf} is not a model of past returns. It is a market price that can embed information about scheduled events, such as elections and central bank meetings, that no time-series model sees. It also embeds the variance risk premium, so it is biased upward as a forecast.
-\end{itemize}
+\textbf{EWMA and GARCH}\index{EWMA|textbf} respond to volatility within days, which is Chapter~\ref{ch:10}'s central finding. But with normal shocks they understate the tail. Even after volatility clustering is removed, standardized daily returns have fatter tails than the normal distribution, so a normal 99\% VaR built on a good volatility forecast\index{volatility!forecasting} is still breached too often.
 
-Lab Figure~\ref{ch:11}.1, from the lab, shows the pattern the models exploit. On U.S. data the bars for returns hover near zero at every lag. The bars for absolute returns are positive at lag 1 and still clearly positive after 50 trading days.
+\textbf{Filtered historical simulation}\index{Value at Risk (VaR)!filtered historical simulation|textbf} (Barone-Adesi, Giannopoulos and Vosper 1999; Hull and White 1998) combines the two strengths. It divides each past return by the volatility forecast for that day, giving standardized returns that are roughly independent and identically distributed. It takes their empirical quantile, which captures the fat tails\index{fat tails} without assuming a distribution, and multiplies by today's volatility forecast. The GJR\index{GARCH!GJR}-$t$ model does the same with a parametric tail.
+
+A VaR model can fail in two distinct ways. It can be \textbf{wrong on average}, breached on 2\% of days instead of 1\%. Or it can be \textbf{right on average but wrong at the wrong times}, with breaches bunched in a few turbulent weeks. The second failure is the more dangerous, because the bunched breaches arrive exactly when capital is scarce. The backtests in Section~\ref{sec:11-backtest} test for both.
 
 \section{The claim}
 \label{sec:11-claim}
 
 \begin{callout}
-\textbf{Claim.} Today's volatility forecasts tomorrow's. Forecasts built from past returns, or from option prices, beat a constant forecast by a wide margin, out of sample\index{in-sample versus out-of-sample}, at horizons from one day to one month.
+\textbf{Claim.} A well-built 99\% one-day VaR model is breached on about 1\% of trading days, and its breaches are independent over time. Breaches neither cluster in turbulent periods nor become more likely after a breach.
 \end{callout}
 
-To test the claim we need to be precise on four points.
+This is the claim implicit in every VaR number a bank reports and in the Basel rules that used VaR to set capital. Christoffersen (1998) called the two parts \textbf{unconditional coverage}\index{coverage test!unconditional|textbf} and \textbf{independence}. Together they form \textbf{conditional coverage}\index{coverage test!conditional|textbf}: on each day, given everything known the day before, the probability of a breach is exactly 1\%.
+
+To test it we need to be precise on four points.
 
 \begin{itemize}
-  \item \textbf{What is forecast.} The target is the variance of the market's return over the next $h$ days, for $h = 1$, 5 and 22. True variance is never observed, so we use a \textbf{proxy}, an observable stand-in: the sum of squared daily returns over those days.
-  \item \textbf{Against what.} The weakest benchmark is the \textbf{long-run average}, a constant. Beating it shows that volatility is forecastable at all. The stronger benchmark is a \textbf{random walk}\index{random walk|textbf} in volatility: last month's variance continues. Beating that shows that a model adds something beyond the obvious.
-  \item \textbf{How it is scored.} We use two loss functions, MSE\index{loss function!squared-error (MSE)} and QLIKE, explained in Section~\ref{sec:11-eval}. The choice matters more than it does for return forecasts.
-  \item \textbf{What would count against it.} The claim fails if forecasts beat the long-run average only in sample, or only in calm periods. It weakens if the gain disappears at horizons beyond a few days, or if no model beats the random walk.
+  \item \textbf{Which models.} The claim is not that any VaR model works. It is that some models, built on the evidence of Chapter~\ref{ch:10}, can achieve conditional coverage. We test six, from the simplest to filtered historical simulation.
+  \item \textbf{Which portfolio.} The lab uses the U.S. stock market, a single liquid position with daily data back to 1926. Bank portfolios are more complex, and their own backtests (Section~\ref{sec:11-evidence}) are the stronger test of practice.
+  \item \textbf{Which confidence level.} The claim is stated at 99\%, the Basel level, but a model that is right at 99\% and badly wrong at 99.9\% is of limited use for the tail events that matter.
+  \item \textbf{What would count against it.} The claim fails for a model if its breach rate differs significantly from 1\%, or if breaches are significantly clustered. It weakens if every model fails in crises, even those that pass over the full sample.
 \end{itemize}
-
-A second, separate claim concerns use: that an investor who holds less of the market when forecast volatility is high earns a higher Sharpe ratio\index{Sharpe ratio}. Forecastable volatility is necessary for that claim but not sufficient. Expected returns\index{return!expected} may rise with volatility, and trading has costs.
 
 \section{The original evidence}
 \label{sec:11-evidence}
 
-\textbf{ARCH and GARCH.} Engle (1982) introduced the ARCH model, in which today's variance depends on past squared shocks. His first application was to U.K. inflation\index{inflation}, not stock returns. Bollerslev (1986) added lagged variance, producing GARCH(1,1), which captures long memory with three parameters. Within a decade GARCH-type models had been fitted to almost every financial series, with the same finding each time: persistence close to 1, so volatility shocks die out over weeks to months. Glosten, Jagannathan and Runkle (1993) added the asymmetric term that bears their initials and found strong leverage effects in U.S. stock returns. Engle shared the 2003 Nobel prize for this work.
+\textbf{RiskMetrics\index{RiskMetrics} and the Basel rules.} In 1994 J.P. Morgan published its RiskMetrics methodology and data free of charge. Its daily volatilities used the EWMA rule with $\lambda = 0.94$, and its VaR assumed normal returns. The fourth edition of the \emph{Technical Document} (1996) became the reference for the industry. In 1996 the Basel Committee allowed banks to use their own VaR models to set capital for market risk: a 99\% ten-day VaR, multiplied by at least 3. The multiplier rises with the number of breaches in a 250-day backtest, the \textbf{traffic light}\index{Basel traffic light|textbf} described in Section~\ref{sec:11-backtest}. VaR thus became both a management tool and a regulatory one, and the backtest became a test with consequences.
 
-\textbf{The low-$R^2$\index{regression!R-squared@$R^2$} puzzle and its resolution.} Early out-of-sample tests seemed discouraging. Regressions of daily squared returns on GARCH forecasts gave $R^2$ of only a few percent, and some authors concluded that GARCH forecasts were poor. Andersen and Bollerslev (1998) showed that the problem was the target, not the forecast. A single squared return is an extremely noisy measure of that day's variance, so even a perfect forecast must have a low $R^2$ against it. Measured against realized variance from intraday returns, the same GARCH forecasts explained around half of the variation.
+\textbf{The statistics of backtesting.} Kupiec (1995) proposed testing whether the breach rate equals the stated probability, and showed how little power the test has over a single year: at 99\% only 2.5 breaches are expected in 250 days, so even a badly wrong model is hard to reject. Christoffersen (1998) added the test of independence and combined the two into the conditional-coverage test.
 
-\textbf{Realized volatility and HAR.}\index{volatility!realized|textbf} Andersen, Bollerslev, Diebold and Labys (2003) treated realized variance as an observable series and modelled it directly. Simple time-series models of realized variance outperformed GARCH models estimated on daily returns. Corsi (2009) proposed the HAR model, motivated by traders who operate at daily, weekly and monthly horizons. It reproduces volatility's long memory with three regressors and has become the standard benchmark for realized-variance forecasts.
+\textbf{Banks' own VaR.} Berkowitz and O'Brien (2002) obtained daily VaR forecasts and trading results for six large U.S. banks. The banks' 99\% VaRs were generally \emph{conservative}, breached less than 1\% of the time. But the breaches that did occur clustered, most of them in the turmoil of August to October 1998. A simple GARCH model of each bank's total trading P\&L performed about as well as the banks' detailed models and responded faster to changes in volatility. P\'erignon and Smith (2010) found that historical simulation was by far the most popular method among banks, and that historical-simulation VaR contained very little information about future volatility.
 
-\textbf{Horse races.} Hansen and Lunde (2005) compared 330 models on a Deutsche mark--dollar exchange rate\index{exchange rate} and IBM stock returns. For the exchange rate, nothing significantly beat GARCH(1,1). For IBM, GARCH(1,1) was clearly inferior to models with a leverage effect. Poon and Granger (2003) reviewed 93 studies. Implied volatility generally forecast best, followed by historical volatility and GARCH roughly together, and all methods did better than a constant.
+\textbf{Model comparisons.} Studies that backtest many models on index returns reach a consistent conclusion. Methods that combine a GARCH-type volatility forecast with a fat-tailed or empirical distribution of standardized returns perform best. Plain historical simulation and normal models with slow-moving volatility perform worst (Kuester, Mittnik and Paolella 2006). McNeil and Frey (2000) proposed the conditional extreme-value approach and the exceedance-residual\index{regression!residuals} test of expected shortfall used in this chapter's lab.
 
-\section{Evaluating volatility forecasts}
-\label{sec:11-eval}
+\section{Backtesting VaR and expected shortfall}
+\label{sec:11-backtest}
 
-Scoring a volatility forecast is harder than scoring a return forecast, because the thing being forecast is never observed. Every comparison uses a proxy, such as the sum of squared daily returns. The proxy is unbiased but noisy. The question is whether the noise can change which model wins.
+A backtest compares each day's VaR forecast, made the day before, with that day's actual loss. A \textbf{breach}\index{VaR exceedance|textbf} (or exception) is a day on which the loss exceeded the VaR. The breach sequence, a string of 0s and 1s, is the raw material for every test.
 
-Patton (2011) answered it. With a noisy proxy, only some loss functions are \textbf{robust}: they rank forecasts in the same order as they would against the true variance. Two common ones are robust (Figure~\ref{fig:11-qlike}).
+\textbf{Unconditional coverage (Kupiec 1995).}\index{coverage test!unconditional|textbf} With $n$ days and $x$ breaches, the likelihood-ratio statistic compares the observed rate $x/n$ with the stated probability $\alpha$:
+\begin{equation}
+  LR_{uc} = -2\ln\!\left[(1 - \alpha)^{n-x}\,\alpha^{x}\right] + 2\ln\!\left[\left(1 - \tfrac{x}{n}\right)^{n-x}\left(\tfrac{x}{n}\right)^{x}\right]
+  \label{eq:11-kupiec}
+\end{equation}
+Under the null hypothesis\index{hypothesis testing!null hypothesis} it has a $\chi^2$ distribution with one degree of freedom. It rejects both too many breaches (risk understated) and too few (capital wasted).
 
-\begin{itemize}
-  \item \textbf{MSE}\index{loss function!squared-error (MSE)|textbf}, $(RV - F)^2$, where $RV$ is the proxy and $F$ the forecast. It is robust but dominated by the largest days. A few crisis days can decide the whole comparison.
-  \item \textbf{QLIKE}\index{loss function!QLIKE|textbf}, $\log F + RV/F$, the loss implied by the normal likelihood. It is robust and penalizes forecasts that are too \emph{low} much more than forecasts that are too high, which suits risk management. Because it depends on the ratio $RV/F$, it is not dominated by the level of volatility in crises.
-\end{itemize}
+\textbf{Independence (Christoffersen 1998).} Estimate two probabilities: of a breach after a day without one ($\pi_{01}$), and of a breach after a breach ($\pi_{11}$). If breaches are independent, they are equal. The likelihood-ratio test of $\pi_{01} = \pi_{11}$ is $\chi^2(1)$. Adding $LR_{uc}$ gives the conditional-coverage test, $\chi^2(2)$. For a correct 99\% model, $\pi_{11}$ should be about 1\%. Values of 5\% to 10\% mean the model reacts too slowly to turbulence.
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[
-  % x = forecast / realized variance; both losses measured from their minimum at x = 1
-  declare function={qlike(\x) = 1/\x + ln(\x) - 1;  mse(\x) = (\x - 1)^2;}
-]
-\begin{axis}[
-  width=0.61\linewidth, height=0.34\linewidth,
-  axis lines=left, axis line style={-stealth},
-  xmin=0.2, xmax=3.2, ymin=0, ymax=2.2,
-  xtick={0.5,1,...,3}, ytick={0,0.5,1,1.5,2},
-  xticklabel style={/pgf/number format/fixed},
-  yticklabel style={/pgf/number format/fixed},
-  xlabel={Forecast as a multiple of realized variance, $F/RV$},
-  ylabel={Loss above its minimum},
-  samples=200, clip=false,
-]
-  \addplot[fegray, thick, dashed, domain=0.2:2.48] {mse(x)};
-  \addplot[fenavy, very thick, domain=0.225:3.2] {qlike(x)};
-  \node[fegray, anchor=west] at (axis cs:2.5,2.15) {MSE};
-  \node[fenavy, anchor=west] at (axis cs:3.22,{qlike(3.2)}) {QLIKE};
-  \node[align=center] at (axis cs:0.85,1.4) {too low:\\heavily penalized};
-  \node[align=center] at (axis cs:2.65,0.9) {too high:\\mildly penalized};
-\end{axis}
-\end{tikzpicture}
-\caption{Two robust loss functions, measured from their minimum. MSE treats a forecast that is too high and one that is too low symmetrically. QLIKE punishes a forecast that is too low far more than one that is too high: underestimating risk is the costlier mistake.}
-\label{fig:11-qlike}
-\end{figure}
-
-Others are not robust. Mean absolute error and MSE on volatility rather than variance, both common in early studies, can rank a biased forecast above the true variance when the proxy is noisy. They should be avoided.
-
-Two diagnostics complement the loss comparison.
-
-\begin{itemize}
-  \item \textbf{Mincer--Zarnowitz regression.} Regress realized on forecast variance. An unbiased forecast has intercept 0 and slope 1. A slope below 1 means the forecast overreacts\index{overreaction}, which is typical of the VIX because of the variance risk premium. The $R^2$ measures informativeness but is capped by the noise in the proxy, as Andersen and Bollerslev showed.
-  \item \textbf{Diebold--Mariano test}\index{Diebold--Mariano test|textbf} (Chapter~\ref{ch:05}). Test whether the average loss difference between two models is zero, using Newey--West\index{standard error!Newey--West (HAC)} errors with $h - 1$ lags, since multi-day targets overlap.
-\end{itemize}
-
-A fair comparison also requires real-time forecasts. Every parameter must be estimated only on data available at the forecast date, as in the walk-forward\index{walk-forward evaluation} design of Chapter~\ref{ch:05}.
-
-\section{Replication lab: forecasting market volatility}
-\label{sec:11-lab}
-
-\begin{callout}
-\textbf{Lab~\ref{ch:11} at a glance.} \emph{Claim on trial\index{claims-on-trial method}:} volatility is predictable. \emph{Data:} U.S. market returns since 1926, from the daily factors in the Kenneth French\index{Kenneth French data library} library, and, from 1990, the VIX from FRED\index{FRED}; both are free. \emph{Code:} runs as a script (\texttt{python lab11.py}) or as a notebook with a prediction prompt before each step.
-\end{callout}
-
-\textbf{Part A, stylized facts\index{stylized facts of returns}.} It computes autocorrelations of daily returns and absolute returns at lags 1 to 50, and the correlation\index{correlation} between today's return and tomorrow's absolute return (Lab Figure~\ref{ch:11}.1). Expect the first to hover near zero, the second to stay positive for months, and the third to be negative: the leverage effect.
-
-\textbf{Part B, forecast comparison.} Each trading day from 1990, the lab forecasts the market's variance over the next 1, 5 and 22 days with seven methods:
+\textbf{The Basel traffic light.}\index{Basel framework|textbf} Regulators count breaches of the 99\% one-day VaR over the most recent 250 trading days (Figure~\ref{fig:11-traffic}):
 
 \begin{center}
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.20\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.33\linewidth}@{}}
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.12\linewidth}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}X@{}}
 \toprule
-Method & Forecast & Parameters \\
+Zone & Breaches & Capital multiplier & Probability of this many or fewer for a correct model \\
 \midrule
-Long-run average & Mean squared return to date & None \\
-Random walk & Last 22 days' variance continues & None \\
-EWMA & RiskMetrics, $\lambda = 0.94$ & Fixed \\
-GARCH(1,1) & Mean-reverting, normal likelihood & Re-estimated yearly on the past 20 years \\
-GJR-GARCH & GARCH with the leverage term & Re-estimated yearly \\
-HAR & Regression on 1-, 5- and 22-day averages & Re-estimated yearly by OLS \\
-VIX & $(\mathrm{VIX}/100)^2 \times h/252$ & None \\
+Green & 0--4 & 3.0 & 89.2\% \\
+Yellow & 5--9 & 3.40 to 3.85 & 99.99\% at 9 \\
+Red & 10 or more & 4.0 & n/a \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-Each method is scored against the random walk with QLIKE and MSE, with Diebold--Mariano tests and Mincer--Zarnowitz regressions. Lab Figure~\ref{ch:11}.2 plots one-month forecasts through 2007--2010 against the volatility that followed. Lab Figure~\ref{ch:11}.3 ranks the methods at each horizon.
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.64\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=-0.7, xmax=12.7, ymin=0, ymax=33,
+  xtick={0,...,12}, ytick={0,10,20,30},
+  xlabel={Breaches of a correct 99\% VaR in 250 days},
+  ylabel={Probability (\%)},
+  ybar, bar width=0.55,
+  clip=false,
+]
+  % Basel zones: green 0-4, yellow 5-9, red 10 or more
+  \fill[green!50!black!8]  (axis cs:-0.5,0) rectangle (axis cs:4.5,33);
+  \fill[yellow!50!orange!10] (axis cs:4.5,0) rectangle (axis cs:9.5,33);
+  \fill[red!8]             (axis cs:9.5,0) rectangle (axis cs:12.7,33);
+  \node at (axis cs:2,30)   {green: 89.2\%};
+  \node at (axis cs:7,30)   {yellow: 10.8\%};
+  \node at (axis cs:11.1,30) {red: $\approx 0$};
 
-\textbf{Part C, crises.} The same losses are computed within 2008--09, 2020 and 2022 (Lab Figure~\ref{ch:11}.4).
+  % Binomial(250, 0.01) probabilities
+  \addplot[fill=fenavy!70, draw=none, bar shift=0pt] coordinates
+    {(0,8.11) (1,20.47) (2,25.74) (3,21.49) (4,13.41)};
+  \addplot[fill=fenavy!40!gray, draw=none, bar shift=0pt] coordinates
+    {(5,6.66) (6,2.75) (7,0.97) (8,0.30) (9,0.08)};
+  \addplot[fill=red!60!black, draw=none, bar shift=0pt] coordinates
+    {(10,0.02) (11,0.00) (12,0.00)};
+\end{axis}
+\end{tikzpicture}
+\caption{The Basel traffic light. The bars give the probability that a correct 99\% VaR model is breached a given number of times in 250 days. It lands in the green zone 89.2\% of the time and in the yellow zone 10.8\% of the time, and almost never in the red.}
+\label{fig:11-traffic}
+\end{figure}
 
-\textbf{Part D, use.} A \textbf{volatility-managed portfolio}\index{volatility targeting|textbf} holds the market with weight proportional to 1 / last month's realized variance, scaled so its volatility matches the market's, as in Moreira and Muir (2017). The lab reports Sharpe ratio, drawdown\index{drawdown} and alpha\index{alpha} against the market, net of a cost per unit of weight change, with an optional leverage cap (Lab Figure~\ref{ch:11}.5).
+A correct model lands in the yellow zone about one year in nine and almost never in the red. The zones were designed to balance two errors: penalizing banks with good models and letting banks with bad models through.
 
-Three design choices affect the results. First, the proxy is built from daily returns, because intraday data are not freely available back to 1926. That makes every model look worse than in studies using five-minute data, but it does not bias the ranking under QLIKE. Second, the HAR model here uses squared daily returns, a much noisier input than the realized variance Corsi used, so expect it to do less well than in the literature. Third, the VIX was redefined in 2003; FRED's VIXCLS uses the current method throughout.
+\textbf{Expected shortfall.}\index{expected shortfall (ES)|textbf} In 2016 the Basel Committee's Fundamental Review of the Trading Book replaced 99\% VaR with 97.5\% ES for setting market-risk capital, because ES captures the size of tail losses and is subadditive. ES is harder to backtest. Gneiting (2011) showed that ES, unlike VaR, is not \textbf{elicitable}\index{elicitability|textbf}: no scoring function is minimized by the true ES, so forecasts cannot be ranked by average loss as VaR forecasts can. Backtests exist nonetheless. The \textbf{exceedance-residual test} of McNeil and Frey (2000) checks whether, on breach days, the loss beyond the ES averages zero. Acerbi and Sz\'ekely (2014) proposed further tests. The Basel framework still backtests VaR at 97.5\% and 99\% alongside the ES used for capital.
 
-\textbf{What the simulated run shows.} On simulated GJR-GARCH data, the lab recovers what it should. Every dynamic model beats the long-run average by a wide margin. GJR, the true model, ranks first under QLIKE at all three horizons. The simulated VIX shows the upward bias built into it. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
+\section{Lab~\thechapter: Replicating the Kupiec and Christoffersen backtests}
+\label{sec:11-lab}
+
+\begin{callout}
+\textbf{Lab~\ref{ch:11} at a glance.} \emph{Papers replicated:} Kupiec (1995); Christoffersen (1998). \emph{Claim on trial\index{claims-on-trial method}:} a well-built 99\% VaR model achieves conditional coverage. \emph{Data:} daily U.S. market returns (Mkt-RF + RF from the Kenneth French\index{Kenneth French data library} library) from 1930 to the present, about 24,000 trading days; free. \emph{Code:} runs as a script (\texttt{python lab13.py}) or as a notebook with a prediction prompt before each step.
+\end{callout}
+
+Lab~\ref{ch:11} backtests the six models of Section~\ref{sec:11-how}. Every forecast uses only data up to the day before. The GARCH models are re-estimated once a year on the previous ten years.
+
+\textbf{Part A, coverage.} For each model at 99\%: breaches against the roughly 240 expected, Kupiec and Christoffersen tests, average VaR, the worst loss as a multiple of the VaR, and the share of calendar years that would have fallen in the Basel yellow and red zones. Lab Figure~\ref{ch:11}.1 shows two models through 2007--2010, and Lab Figure~\ref{ch:11}.2 compares breach rates.
+
+\textbf{Part B, clustering.} The probability of a breach after a breach, and breaches per year against the Basel zones (Lab Figure~\ref{ch:11}.3).
+
+\textbf{Part C, stress tests.} Breaches in four crises; the ratio of actual to expected breaches at confidence levels from 95\% to 99.9\% (Lab Figure~\ref{ch:11}.4); and historical simulation with one, two and four years of data.
+
+\textbf{Part D, expected shortfall.} At 97.5\%, the ratio of the average loss on breach days to the average ES forecast, and a test of whether exceedance residuals, scaled by volatility, average zero (Lab Figure~\ref{ch:11}.5).
+
+The lab tests the claim in its simplest setting: a single linear position in a liquid market with a long history. A bank's trading book adds options, credit and illiquid positions, and those make every model harder to build. If the models struggle here, they will not do better there.
+
+\textbf{What the simulated run shows.} The simulation draws returns from a GJR-GARCH model with Student-$t$ shocks, so the GJR-$t$ model is the true model. It passes every test: 1.01\% breaches at 99\%, a breach probability after a breach of 0.8\%, and an ES ratio of 1.00. Filtered historical simulation is nearly as good. The normal and historical-simulation models are breached about twice as often as they should be, with strong clustering, and they understate ES. These results confirm that the code and the tests work. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
 
 \section{Stress tests}
 \label{sec:11-stress}
 
-\textbf{Horizon.} Forecastability is a short-horizon phenomenon. Because GARCH persistence is below 1, every GARCH forecast converges to the long-run level. Beyond a few months, a constant forecast is hard to beat, and over years, estimates of the long-run level itself drift. At one day to one month, the horizons in the lab, the evidence for forecastability is strong in the literature. The lab lets you measure how fast the advantage over the long-run average shrinks.
+\textbf{Crises.} The full-sample breach rate can hide disastrous weeks. On October 19, 1987, the Dow Jones Industrial Average fell 22.6\%, its largest one-day percentage loss. No model calibrated on the calm months before could have put that inside a 99\% VaR. Part C counts breaches in 1930--32, October 1987, the autumn of 2008 and the spring of 2020. A correct 99\% model should average about 0.2 breaches in a 22-day month. Expect every model to exceed that in these windows. The question is how many breaches each produces and how quickly it adapts.
 
-\textbf{Crises.} Volatility jumps faster than any model built on past returns can follow. In the first days of October 2008 and of March 2020, every time-series forecast was far too low. QLIKE punishes exactly that error. The models catch up within days, and because they then revert too slowly, they overpredict as the crisis fades. The VIX, as a market price, can react within the day to news and is the obvious candidate to do better at the onset. Lab Figure~\ref{ch:11}.4 tests whether it did.
+\textbf{Confidence level.} Fat tails punish models more the further into the tail they go. Under the normal distribution a 99.9\% loss is only 1.33 times a 99\% loss ($3.09/2.33$). In equity returns the ratio is larger. Normal-based models that are slightly off at 95\% can be several times off at 99.9\% (Lab Figure~\ref{ch:11}.4). The test also has very little power at 99.9\%: about 24 breaches are expected in 95 years, so a single bad week moves the ratio noticeably.
 
-\textbf{The 2022 rate shock.} In 2022 stocks fell by about a fifth, but realized volatility stayed moderate, without a single spike. This is a useful contrast with 2008 and 2020. A model that forecasts volatility well can still miss a large, slow decline, because volatility and losses are different things.
+\textbf{Window length.} A short historical-simulation window adapts faster but estimates the 1\% quantile from very few observations: with 250 days, only two or three. A long window is more stable but slower to react after a calm period. Part C compares 250, 500 and 1,000 days. The choice moves the breach rate but does not fix clustering, since no equal-weighted\index{index weighting!equal-weighted} window responds to volatility the way GARCH does.
 
-\textbf{Estimation window.} GARCH parameters estimated on 20 years that include 2008 differ from those estimated on calmer windows. Persistence near 1 means that small changes in $\alpha + \beta$ produce large changes in long-horizon forecasts. Rerun Part B with \texttt{-{}-window-years 10} and compare.
-
-\textbf{Proxy.} A sum of squared daily returns is noisy, especially at the 1-day horizon, where it is a single squared return. Andersen and Bollerslev (1998) showed that this lowers every model's $R^2$ but, with a robust loss, does not change the ranking. Liu, Patton and Sheppard (2015) compared nearly 400 realized-variance estimators and found that five-minute realized variance is hard to beat. Students with intraday data can replace the proxy and check.
+\textbf{Procyclicality.} A VaR that responds quickly to volatility, as GARCH and EWMA do, raises capital requirements and forces deleveraging in exactly the weeks when markets are falling. That is good risk measurement but can amplify a crisis if every bank does it at once. A slow VaR, such as long-window historical simulation, is less procyclical but is breached in clusters. Basel 2.5 (2009) added a \textbf{stressed VaR}\index{Value at Risk (VaR)!stressed|textbf}, calibrated to a year of significant stress, partly to make capital less dependent on recent calm.
 
 \section{Verdict}
 \label{sec:11-verdict}
 
 \begin{callout}
-\textbf{Verdict: survives, strongly, at horizons from one day to one month} (as of October 2026). The claim about \emph{using} volatility forecasts to improve a market investor's Sharpe ratio is a separate one, and it \textbf{weakens} once forecasts are made in real time and costs and leverage limits are applied.
+\textbf{Verdict: weakens} (as of October 2026). The claim holds for the right models in normal times: VaR models that combine a responsive volatility forecast with a fat-tailed distribution come close to 1\% breaches at 99\% with little clustering over long samples. It fails for the models most widely used in practice, normal and plain historical simulation, which are breached in clusters. It fails for every model in the first days of a crisis and deep in the tail.
 \end{callout}
 
-The case for the forecasting claim rests on four findings.
+What survives:
 
 \begin{itemize}
-  \item \textbf{It replicates across markets, assets and decades.} Volatility clustering appears in every liquid market studied, back to the nineteenth century. GARCH-type models fitted to them give persistence close to 1.
-  \item \textbf{It holds out of sample.} In real-time forecasts, dynamic models beat the long-run average by a wide margin. That is the result Lab~\ref{ch:11} is built to check on U.S. data since 1990.
-  \item \textbf{It survives the right loss functions.} Early doubts came from evaluating against a noisy proxy with an unsuitable loss. Andersen and Bollerslev (1998) and Patton (2011) removed both problems.
-  \item \textbf{It has a plausible mechanism.} News arrives in clusters, and uncertainty is persistent. Nothing about forecastable volatility contradicts market efficiency, since it predicts risk, not returns.
+  \item \textbf{Coverage is achievable.} Filtered historical simulation and GARCH models with fat-tailed shocks deliver close to the stated breach rate over long samples, in the literature and in tests like the lab's. The tools of Chapter~\ref{ch:10} work.
+  \item \textbf{Backtesting works as designed.} The Kupiec and Christoffersen tests, and the Basel traffic light, separate good models from bad ones over long samples. A model that clusters its breaches is caught.
 \end{itemize}
 
-The qualifications are about \emph{how much}, not \emph{whether}.
+What weakens it:
 
 \begin{itemize}
-  \item \textbf{Complex models add little over simple ones.} EWMA and GARCH(1,1) are hard to beat for many series. A leverage term helps for equity indices. HAR helps most when realized variance from intraday data is available.
-  \item \textbf{The advantage fades with horizon.} Beyond a few months, forecasts converge to a long-run level that is itself uncertain.
-  \item \textbf{Every model is late at the onset of a crisis.} Forecasts built from past returns cannot anticipate the first violent day. They are most useful after it.
-  \item \textbf{The VIX is informative but biased.} It contains the variance risk premium, so it overstates future volatility on average. It must be adjusted before it is used as a forecast.
+  \item \textbf{Practice lags the evidence.} Historical simulation, the most popular method at banks, reacts slowly and contains little information about future volatility (P\'erignon and Smith 2010). Its breaches cluster in exactly the periods when losses matter.
+  \item \textbf{Crises break every model.} No model built on past data anticipates the first day of a crash. In October 1987, in 2008 and in March 2020 breaches came in bunches.
+  \item \textbf{The tail beyond 99\% is poorly measured.} Breach rates at 99.9\% are worse for most models, and the tests have little power to tell.
+  \item \textbf{VaR says nothing about the size of the loss beyond it.} A model can pass every VaR backtest\index{Value at Risk (VaR)!backtesting} while understating how bad the bad days are. Expected shortfall addresses this, but it inherits the same volatility forecasts and is harder to backtest.
 \end{itemize}
 
-\section{What investors can use}
+The verdict would move to \emph{survives} if the models used in practice achieved conditional coverage through crises, which would require volatility forecasts faster than any yet built from daily data. It would move to \emph{fails} if even the best models failed coverage tests over long samples, which the evidence so far does not show.
+
+\section{What practitioners and investors can use}
 \label{sec:11-investors}
 
-\textbf{Risk forecasts, yes.} Any investor sizing positions, setting stop-losses or computing margin should use a volatility forecast that reacts to recent data, such as EWMA or GARCH, rather than a long-run average. This is uncontroversial and is the basis of Value at Risk (Chapter~\ref{ch:13}).
-
-\textbf{Volatility timing for returns: be skeptical.} Moreira and Muir (2017) found that scaling exposure to the market inversely to last month's variance produced an alpha of about 4.9\% a year over 1926--2015, with similar results for several factors. \textbf{Volatility-targeting}\index{volatility targeting|textbf} funds and \textbf{risk-parity}\index{risk parity|textbf} strategies, which allocate so that each asset contributes equal risk, apply versions of the idea. Three later findings temper it.
+\textbf{For anyone measuring risk:}
 
 \begin{itemize}
-  \item \textbf{Real-time feasibility.} Cederburg, O'Doherty, Wang and Yan (2020) tested 103 equity strategies. The alphas in \textbf{spanning regressions}\index{regression!spanning|textbf}, regressions of the managed portfolio on the original, were real, but exploiting them required combining the managed and unmanaged portfolios with weights estimated in sample. Implemented out of sample, the managed versions generally did no better than the originals, because the spanning regressions were unstable.
-  \item \textbf{Leverage.}\index{leverage|textbf} The managed portfolio's weight on the market often exceeds 1 in calm periods. In the lab's simulated run it averaged 1.4 and peaked near 10. Capping leverage at a realistic level reduces the gains.
-  \item \textbf{Costs and crowding\index{crowding}.} Turnover\index{turnover} is high when volatility changes quickly, and volatility-targeting funds all sell at the same time, which can deepen the declines they are trying to avoid.
+  \item \textbf{Use a responsive volatility forecast.} EWMA at the least, GARCH-type models for better results. A one-year equal-weighted window is too slow.
+  \item \textbf{Use fat tails.} Scale standardized returns by an empirical or Student-$t$ distribution rather than the normal. Filtered historical simulation does both and is easy to implement.
+  \item \textbf{Report ES alongside VaR,} and look at the largest losses directly, not only at percentiles.
+  \item \textbf{Backtest continuously.}\index{backtest|textbf} Count breaches, and also check whether they cluster. A model with the right number of breaches all in one month is not a good model.
+  \item \textbf{Stress test separately.} VaR describes ordinary bad days. Scenarios such as a repeat of October 1987, 2008 or 2022 describe the days that threaten survival, and no backtest on recent data covers them.
 \end{itemize}
 
-The benefit is clearer for momentum\index{momentum}, where crashes follow high volatility (Barroso and Santa-Clara 2015; Chapter~\ref{ch:09}), than for the market.
-
-\textbf{Questions to ask a manager who uses volatility targeting:}
+\textbf{For investors reading a bank's or fund's risk disclosures:}
 
 \begin{itemize}
-  \item What volatility forecast do you use, and how quickly does it react?
-  \item What is the maximum leverage, and what happens to turnover in a volatility spike?
-  \item Is the backtest\index{backtest} scaled using information available at the time, or using full-sample volatility?
-  \item How did the strategy perform in February 2018 and March 2020, when volatility jumped within days?
+  \item What method produces the VaR, and over what window? A historical simulation with a one-year window will look reassuring after a calm year.
+  \item How many backtesting exceptions were there last year, and when did they occur?
+  \item What is the stressed VaR or the worst scenario loss, relative to the reported VaR?
+  \item What positions are hard to value daily? Their risk may not appear in the VaR at all.
 \end{itemize}
 
 \begin{callout}
-\textbf{What Failed: selling volatility before February 5, 2018.} For years before 2018, products that bet against volatility were among the best performers in the market. The VelocityShares Daily Inverse VIX Short-Term ETN (XIV) earned the variance risk premium by shorting VIX futures, and it held \$1.9 billion in assets. On February 5, 2018, the VIX rose 115.6\%, its largest one-day increase ever. XIV lost 96.3\% of its value that day, and Credit Suisse, its issuer, closed it within weeks.
+\textbf{What Failed: bank VaR in 2007--08.} By 2007 large banks' trading risk was measured mainly by VaR and stress tests, and their market-risk capital was based on VaR. The Swiss Federal Banking Commission's investigation of UBS, the bank with the largest subprime losses in Europe, found that its super-senior CDO tranches\index{tranches} had been judged ``VaR neutral,'' so they ``were not reflected in key internal risk reports.'' The AAA ratings fed straight into the risk metrics. Risk models, including VaR, ``operated on the basis of overoptimistic assumptions,'' and stress scenarios were ``too optimistic'': ``The real shocks proved to be far greater than any shocks anticipated.'' UBS's own report to shareholders recorded that the super-senior positions, which the desk had treated as fully hedged with protection on only a small part of their value, accounted for about half of the bank's losses by the end of 2007.
 
-The episode does not contradict this chapter. Volatility forecasts are informative on average. But a forecast that volatility will stay low is weakest exactly when it matters most: at the onset of a spike. A strategy that earns a small premium most days and loses almost everything on one day can look excellent in any backtest that misses that day. Chapter~\ref{ch:13} returns to this problem.
+The failure was not that VaR was computed wrongly. It was that VaR measured the risk of positions that looked safe in recent data and could not see the risk of a market that had never been stressed. The regulatory response was the stressed VaR of Basel 2.5 and, later, the move to expected shortfall. In March 2020, regulators faced the opposite problem: banks' backtesting exceptions jumped with market volatility, and the Federal Reserve and other U.S. agencies excluded exceptions from March 6 to March 27, 2020, from the count, judging that they reflected ``widespread and unusual volatility'' (Board of Governors of the Federal Reserve System 2021).
 \end{callout}
 
 \section{Open questions}
 \label{sec:11-open}
 
 \begin{itemize}
-  \item \textbf{Does volatility timing pay after costs?} The evidence for the market is mixed. Does it hold for factors such as momentum, and in other countries?
-  \item \textbf{What is the right long-run level?} GARCH forecasts revert to a constant, but the evidence suggests slow-moving changes in average volatility, linked to the business cycle\index{business cycle} and macroeconomic uncertainty. Component GARCH and GARCH-MIDAS models try to capture this. Do they forecast better at long horizons?
-  \item \textbf{Can machine learning\index{machine learning} beat HAR?} Recent studies add many predictors, such as news, macroeconomic data and other assets' volatilities. Do the gains survive the out-of-sample discipline of Chapter~\ref{ch:05}?
-  \item \textbf{What does the VIX know?} Implied volatility combines a forecast with a risk premium. Can the two be separated well enough to improve the forecast?
+  \item \textbf{Can intraday data fix the first day of a crisis?} Realized volatility\index{volatility!realized} from intraday returns (Chapter~\ref{ch:10}) responds faster than daily GARCH. Does it reduce breach clustering at the onset of crises?
+  \item \textbf{How should ES be backtested and compared?} ES is not elicitable on its own, but it is jointly elicitable with VaR. Which tests have power at the sample sizes banks actually have?
+  \item \textbf{Is risk measurement procyclical by design?} A VaR that responds quickly forces deleveraging in falling markets. How should risk measures balance accuracy against stability?
+  \item \textbf{What about portfolios VaR handles badly?} Options, credit and illiquid assets have nonlinear or stale prices. How much worse are VaR backtests for them, and what replaces VaR there?
 \end{itemize}
 
 \section*{Exercises}
@@ -375,19 +347,19 @@ The episode does not contradict this chapter. Volatility forecasts are informati
 \subsection*{Conceptual (all readers)}
 
 \begin{enumerate}
-  \item A GARCH(1,1) model has $\omega = 0.000003$, $\alpha = 0.10$ and $\beta = 0.88$. (a) What are the long-run daily and annualized volatilities? (b) What is the half-life of a shock? (c) If tomorrow's variance forecast is 0.0004, what is the forecast volatility over the next 22 days, annualized?
-  \item Show that EWMA is GARCH(1,1) with $\omega = 0$. What does this imply for EWMA forecasts at long horizons?
-  \item A colleague argues that because volatility is forecastable, markets cannot be efficient. Explain why forecastable volatility is consistent with efficiency, and what evidence would change your answer.
+  \item A \$5 million position has a daily volatility of 1.5\%. Compute the normal 95\% and 99\% one-day VaR, the 99\% ES and the 10-day 99\% VaR by the square-root rule.
+  \item Using the two-bond example in Section~\ref{sec:11-foundations}, compute the portfolio's 95\% ES and show that ES is subadditive in this case.
+  \item A bank reports 7 breaches of its 99\% VaR in 250 days. Compute the Kupiec statistic and p-value. Which Basel zone is it in, and what is the capital multiplier?
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
   \setcounter{enumi}{3}
-  \item Part A: compute the autocorrelations of squared returns as well as absolute returns. Which decays faster, and why might extreme days explain the difference?
-  \item Part B: rank the models by MSE instead of QLIKE. Does the ranking change? Which days drive the MSE comparison?
-  \item Part B: estimate GARCH with Student-$t$ shocks, using the option \texttt{dist="t"} of \texttt{fit\_garch}. Does it forecast better than the normal version?
-  \item Part B: regress realized variance on both the GJR forecast and the VIX. Does each add information? Compare the VIX's Mincer--Zarnowitz slope with 1 and explain.
-  \item Part C: for the first ten trading days of October 2008 and of March 2020, plot each forecast against realized variance. How many days did each model take to catch up?
-  \item Part D: rescale the managed portfolio using only past data and cap the weight at 1.5. How much of the alpha survives? Compare with Cederburg et al.\ (2020).
+  \item Part A: which models pass the Kupiec test at 99\%? Which pass the Christoffersen independence test? Is there a model that passes one but not the other?
+  \item Part B: for historical simulation, compute the average number of days between breaches and compare it with the 100 days expected. What does the distribution of durations tell you?
+  \item Part C: count each model's breaches in October 1987. How many days did each model take before its VaR exceeded the losses of the following days?
+  \item Part C: rerun the backtest at 99.9\%. Which models are within a factor of two of the expected breach rate? How confident can you be, given the number of breaches expected?
+  \item Part D: do the models that pass the VaR backtest also pass the ES backtest? Is there a model that passes VaR but fails ES?
+  \item A regulator proposes requiring all banks to use filtered historical simulation. Using the evidence in this chapter, write the case for and against, including the effect on procyclicality.
 \end{enumerate}

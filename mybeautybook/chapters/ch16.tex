@@ -1,4 +1,4 @@
-% Chapter 16 -- Claim: Forward Rates Predict Future Interest Rates
+% Chapter 16 -- Claim: Selling Options Earns a Reliable Premium
 % Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -12,265 +12,276 @@
 }{}
 \makeatother
 
-\chapter{Claim: Forward Rates Predict Future Interest Rates}
+\chapter{Claim: Selling Options Earns a Reliable Premium}
 \label{ch:16}
 
-When the yield curve\index{yield curve} slopes steeply upward, commentators read it as a forecast: markets expect interest rates to rise. When it inverts, they read it as a forecast of cuts and recession. Central banks extract ``market-implied'' policy paths from forward rates\index{forward rate}, and traders quote them as the market's view.
+Once the Black--Scholes model gave every option an implied volatility, a regularity became visible: the volatility implied by index option prices was usually higher than the volatility the market went on to deliver. An investor who sells stock-index options is in the same business as an insurance company. A put option\index{option!put} is insurance against a market fall; its seller collects a premium up front and pays out when the market drops. If the insurance is priced above expected claims, the seller earns a steady profit, with the occasional very bad year. Coval and Shumway (2001) showed that index option returns are too low to be explained by their market risk, and Carr and Wu (2009) measured the \textbf{variance risk premium}\index{variance risk premium} directly and found it large and persistent.
 
-That reading rests on the oldest theory of the term structure, the \textbf{expectations hypothesis}\index{expectations hypothesis|textbf}: long rates are averages of expected future short rates, so forward rates are unbiased forecasts of where short rates are going. If it holds, a long bond and a sequence of short bonds earn the same expected return\index{return!expected}, and there is nothing to gain from choosing maturities.
+The question matters because a large industry rests on it. Whaley (2002) studied the covered-call\index{option selling!covered call} strategy and helped design the Cboe BuyWrite Index, and option-income funds, covered-call ETFs and volatility-selling strategies now hold large sums. The issue is what kind of premium they collect. A reliable premium for bearing a risk that others want to shed is one thing. A strategy that wins small most months and loses large in a few, while carrying most of the stock market's risk, is another. Israelov and Nielsen (2015) showed that much of the return of covered calls comes from their equity exposure rather than from the volatility premium.
 
-The hypothesis is also one of the most thoroughly tested claims in finance. This chapter opens Part V, on rates, credit and currencies, with that test. The answer matters for anyone who reads the yield curve, manages a bond portfolio or prices an interest-rate derivative.
+The implications are practical for anyone offered option income. The two kinds of premium can look alike in a backtest\index{backtest}, so the evidence has to separate them, and the crashes of 2008, February 2018 and March 2020 show what the tail looks like. The claim on trial\index{claims-on-trial method} is: \textbf{selling index puts or writing covered calls earns a return above the risk taken, because implied volatility exceeds realized volatility.}
+
+The lab in Section~\ref{sec:16-lab} replicates the variance-risk-premium measurement of Carr and Wu (2009) with the free VIX and daily U.S. market returns, and rebuilds put-writing and covered-call strategies that can be compared with Cboe's published PUT and BXM index histories, in order to check whether selling options earns a reliable premium and how much of it is simply stock-market risk.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item compute zero-coupon\index{yield curve!zero-coupon} yields, forward rates, holding-period returns\index{return!holding-period} and excess returns\index{return!excess} from bond prices;
-  \item use duration\index{duration} to estimate a bond's price sensitivity to its yield;
-  \item state the expectations hypothesis and define the term premium\index{term premium};
-  \item explain the Fama--Bliss\index{Fama--Bliss regression}, Campbell--Shiller\index{Campbell--Shiller decomposition} and Cochrane--Piazzesi\index{Cochrane--Piazzesi factor} tests and why they ask the same question;
-  \item summarize the evidence, including the small-sample and out-of-sample\index{in-sample versus out-of-sample} critiques;
-  \item read a market-implied rate path as a forecast plus a premium, and judge a bond strategy built on carry and roll-down\index{roll-down}.
+  \item describe call and put payoffs and use put--call parity\index{put--call parity} to show that a covered call and a cash-secured put\index{option selling!cash-secured put} are the same position;
+  \item price an option by Black--Scholes\index{Black--Scholes--Merton model}, compute its Greeks\index{Greeks}, and back out implied volatility\index{volatility!implied};
+  \item define the VIX\index{VIX} and the variance\index{variance} risk premium\index{risk premium}, and estimate a seller's expected gain from the gap between implied and realized volatility\index{volatility!realized};
+  \item state the claim that selling options earns a reliable premium, and separate the variance risk premium from the returns of option-income strategies;
+  \item measure option-strategy performance with beta\index{beta}-matched benchmarks, up and down betas\index{beta!up and down} and the manipulation-proof performance measure\index{manipulation-proof performance measure (MPPM)};
+  \item judge what an option-income fund is likely to deliver, and what can go wrong.
 \end{itemize}
 
-\section{Foundations: yields, forward rates and the term premium}
+\section{Foundations: the VIX and the option seller's payoff}
 \label{sec:16-foundations}
 
-\subsection{Zero-coupon yields}
+Chapter~\ref{ch:14} introduced option payoffs, put--call parity, the Black--Scholes--Merton model, the Greeks and implied volatility (Sections~\ref{sec:14-bsm} to~\ref{sec:14-iv}). This chapter adds the VIX and the economics of selling options.
 
-Section~\ref{sec:07-rates} introduced bond yields, the yield curve and the term spread\index{term spread}. This chapter needs a more precise version built from zero-coupon bonds. A zero-coupon bond pays \$1 at maturity $n$ and nothing before. Its price $P(n)$ defines its yield $y(n)$. With continuous compounding\index{compounding}, $P(n) = e^{-n\,y(n)}$, so the log price is
-\begin{equation}
-  p(n) = -n\,y(n)
-  \label{eq:16-logprice}
-\end{equation}
-Coupon bonds are portfolios of zeros, so the \textbf{zero-coupon yield curve}\index{yield curve!zero-coupon|textbf} (yield against maturity) summarizes all Treasury prices. The Federal Reserve publishes a fitted curve back to 1961 (G\"urkaynak, Sack and Wright 2007).
+\subsection{The VIX}
 
-\subsection{Forward rates}
+The VIX, introduced in Section~\ref{sec:10-iv}, is computed from a strip of out-of-the-money calls and puts on the S\&P 500. Its square approximates the fair strike of a 30-day \textbf{variance swap}\index{variance swap|textbf}, a contract that pays the difference between realized variance and a fixed strike. The variance risk premium of Section~\ref{sec:10-iv} is therefore the expected payoff to the seller of such a swap: the expected gap between implied (risk-neutral\index{risk-neutral pricing}) variance and the realized variance that follows.
 
-Buying an $n$-year zero and selling an $(n-1)$-year zero locks in today a rate of return for the year from $n-1$ to $n$. That rate is the \textbf{forward rate}\index{forward rate|textbf} (Figure~\ref{fig:16-forward}):
-\begin{equation}
-  f(n) = p(n-1) - p(n) = n\,y(n) - (n-1)\,y(n-1)
-  \label{eq:16-forward}
-\end{equation}
-A rising yield curve means forward rates above current yields.
-
-\begin{figure}[htbp]
-\centering
-\scalebox{0.8}{%
-\begin{tikzpicture}[x=3.2cm, y=1cm]
-  % Bars: 1-year zero (0-1), 2-year zero (0-2), forward (1-2)
-  \fill[gray!45] (0,0.6) rectangle (1,1.15);
-  \node at (0.5,0.875) {1-year zero: 4\%};
-  \fill[gray!22] (0,1.55) rectangle (2,2.1);
-  \node at (1,1.825) {2-year zero: 5\% a year};
-  \fill[fenavy] (1,2.5) rectangle (2,3.05);
-  \node[white] at (1.5,2.775) {forward: 6\%};
-
-  \node[anchor=north west, align=left] at (2.12,3.2)
-    {$f(2) = 2 \times 5\% - 1 \times 4\% = 6\%$:\\the rate locked in today\\for the second year};
-
-  % Time axis
-  \draw[-stealth] (0,0) -- (2.35,0) node[anchor=west] {years};
-  \foreach \wfT in {0,1,2} {
-    \draw (\wfT,0.08) -- (\wfT,-0.08);
-    \node[anchor=north] at (\wfT,-0.1) {\wfT};
-  }
-\end{tikzpicture}%
-}
-\caption{A forward rate from the worked example. A two-year yield of 5\% is equivalent to earning the one-year yield of 4\% in the first year and a rate locked in today, the forward rate of 6\%, in the second.}
-\label{fig:16-forward}
-\end{figure}
-
-\subsection{Holding-period returns}
-
-Buying an $n$-year bond and selling it a year later, when it is an $(n-1)$-year bond, earns the log return\index{return!log}
-\begin{equation}
-  r_{t+1}(n) = p_{t+1}(n-1) - p_t(n)
-  \label{eq:16-hpr}
-\end{equation}
-As for stocks (Section~\ref{sec:01-rf}), the excess return $rx_{t+1}(n)$ subtracts the return on the safe alternative, here the one-year yield $y_t(1)$, which is the return on a one-year bond held to maturity.
-
-\subsection{Duration}
-
-The percentage price change of a bond for a small change in its yield is approximately $-D \times \Delta y$, where $D$ is the \textbf{duration}\index{duration|textbf}. For a zero, $D$ equals its maturity. Long bonds are more sensitive to rates, which is why their returns are more volatile.
-
-\subsection{The expectations hypothesis (EH)}
-
-\textbf{The expectations hypothesis (EH)}\index{expectations hypothesis|textbf} states that the forward rate equals the expected future one-year rate, up to a constant:
-\begin{equation}
-  f_t(n) = E_t\!\left[y_{t+n-1}(1)\right] + \text{constant}
-  \label{eq:16-eh}
-\end{equation}
-Equivalently, expected excess returns on bonds of all maturities are constant over time. The \textbf{term premium}\index{term premium|textbf} is the gap between the forward rate and the expected future short rate, or between a long yield and the average expected short rate over its life. The EH says the term premium does not vary.
-
-\textbf{Worked example.} The one-year zero yields 4\% and the two-year zero 5\% (continuously compounded).
+\textbf{Worked example.} The index is at 100, the risk-free rate\index{risk-free rate} is 4\%, and a one-month at-the-money put trades at an implied volatility of 20\%.
 
 \begin{itemize}
-  \item Log prices: $p(1) = -0.04$, $p(2) = -0.10$. The one-year forward rate one year ahead is $f(2) = -0.04 + 0.10 = 6\%$.
-  \item Under the EH, the market expects the one-year rate to be 6\% next year. If it is, the two-year bond, sold next year as a one-year bond, returns $-0.06 + 0.10 = 4\%$, the same as the one-year bond: excess return zero.
-  \item If instead the one-year rate stays at 4\%, the two-year bond returns $-0.04 + 0.10 = 6\%$, an excess return of 2\%.
-  \item A steep curve therefore forecasts either rising short rates (the EH) or high excess returns on long bonds (a term premium), or some mix (Figure~\ref{fig:16-readings}). The regressions in this chapter measure the mix.
+  \item Black--Scholes price: $P = \$2.14$ per \$100 of index. The call is worth \$2.47; the difference, \$0.33, equals $100 - 100\,e^{-0.04/12}$, as parity requires.
+  \item Suppose volatility over the month turns out to be 16\%. At 16\%, the put would have been worth \$1.68. The seller's expected gain is roughly $\$2.14 - \$1.68 = \$0.46$, or vega (\$0.115 per vol point) times the 4-point gap.
+  \item That is an \emph{expected} gain. If the index falls 10\% during the month, the put pays \$10 and the seller loses $\$10 - \$2.14 = \$7.86$, about seventeen months of expected gains at \$0.46 a month (Figure~\ref{fig:16-put}).
 \end{itemize}
 
 \begin{figure}[htbp]
 \centering
-\scalebox{0.8}{%
-\begin{tikzpicture}[
-  trbox/.style={draw=fenavy, thick, rounded corners=2pt, align=center,
-                minimum width=4.2cm, minimum height=1.15cm, inner sep=4pt},
-  trarr/.style={-stealth, thick},
+\begin{tikzpicture}[declare function={profit(\s) = 2.14 - max(100 - \s, 0);}]
+\begin{axis}[
+  width=0.64\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=85, xmax=110, ymin=-13, ymax=5,
+  xtick={86,88,...,110}, ytick={-10,-5,0,5},
+  tick label style={font=\small},
+  xlabel={Index at expiry}, ylabel={Put seller's profit (\$)},
+  clip=false,
 ]
-  \node[trbox, fill=fenavy!12] (top) at (0,0)
-    {Steep yield curve:\\forward rates above short rates};
-  \node[trbox] (eh) at (-3.4,-2.4)
-    {short rates will rise\\(expectations hypothesis)};
-  \node[trbox] (tp) at (3.4,-2.4)
-    {long bonds will earn\\more (term premium)};
-  \draw[trarr] (top.south) ++(-0.8,0) -- (eh.north);
-  \draw[trarr] (top.south) ++(0.8,0) -- (tp.north);
-  \node at (0,-3.7) {the regressions in this chapter measure the mix};
-\end{tikzpicture}%
-}
-\caption{Two readings of a steep yield curve. Forward rates above short rates can mean that short rates will rise, as the expectations hypothesis says, or that long bonds will earn more than short ones, a term premium. The tests in this chapter measure how much of each.}
-\label{fig:16-readings}
+  \addplot[gray, thin, domain=85:110, samples=2] {0};
+  \addplot[fenavy, very thick] coordinates {(85,-12.86) (100,2.14) (110,2.14)};
+  \fill[fenavy] (axis cs:97.86,0)  circle (2.6pt);
+  \fill[fenavy] (axis cs:90,-7.86) circle (2.6pt);
+  \node[anchor=south east] at (axis cs:97.4,0.4) {break-even 97.86};
+  \node[anchor=south east] at (axis cs:110,2.4) {keep the \$2.14 premium};
+  \node[anchor=north west, align=left] at (axis cs:90.6,-7.3)
+    {index $-10\%$: lose \$7.86,\\about 17 months of expected gains};
+\end{axis}
+\end{tikzpicture}
+\caption{The put seller's profit at expiry in the worked example. Above the strike of 100 the seller keeps the \$2.14 premium; below the break-even of 97.86 the loss grows one for one with the fall. A 10\% fall costs \$7.86, about seventeen months of expected gains.}
+\label{fig:16-put}
 \end{figure}
 
 \section{How it works}
 \label{sec:16-how}
 
-The expectations hypothesis can be tested in three ways that look different but ask the same question.
+\textbf{Why insurance might be overpriced.} Many investors hold stock portfolios they cannot easily sell and want protection against crashes. Pension funds, insurers and structured-product issuers buy index puts; market makers\index{market maker} who sell them must hold capital against the risk and cannot fully hedge it. Bollen and Whaley (2004) and G\^arleanu, Pedersen and Poteshman (2009) showed that this net buying pressure raises option prices, especially for out-of-the-money puts. In equilibrium, sellers are paid for bearing a risk that bites in the worst states of the world, when investors' wealth is low and losses hurt most. A premium for that risk is not a free lunch. It is compensation, and it should be large precisely because the losses come at bad times.
+
+\textbf{Ways to sell volatility.} The strategies differ in how much equity risk they carry alongside the volatility exposure.
 
 \begin{center}
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.15\linewidth}>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
 \toprule
-Test & Regression & Expectations hypothesis & Alternative: time-varying term premium \\
+Strategy & Position & Equity exposure & Main risk \\
 \midrule
-Fama--Bliss, excess returns & $rx(n)$ on $f(n) - y(1)$ & Slope 0 & Slope positive (1 if forward spreads are all premium) \\
-Fama--Bliss, short rates & $y(1)$ in $n-1$ years minus $y(1)$ today, on $f(n) - y(1)$ & Slope 1 & Slope below 1 \\
-Campbell--Shiller & Change in the long yield over a year, on the scaled yield spread & Slope 1 & Slope below 1, even negative \\
+Covered call (buy-write) & Own the index, sell a call & High (beta about 0.5--0.8) & Market falls; gains capped in rallies \\
+Cash-secured put (put-write) & Hold bills, sell a put & High (same as covered call at the same strike) & Market falls \\
+Short straddle & Sell a call and a put & Low on average, changes with the market & Large moves either way \\
+Delta-hedged option & Sell an option, hedge its delta daily & Near zero & Realized volatility above implied \\
+Short variance swap & Receive fixed variance, pay realized & Near zero, but crashes raise realized variance & Volatility spikes \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-The first two are mirror images. The forward spread equals the expected change in short rates plus the expected excess return, so a spread that does not forecast rising rates must forecast excess returns. The Campbell--Shiller test asks the question through long yields: if the curve is steep because short rates are expected to rise, long yields should rise too, as the bond approaches the higher short rates. If they fall instead, the steepness was a premium.
+The first two are what most retail and institutional ``option income'' products do. The last two isolate the variance risk premium itself. Comparing them is the heart of this chapter: if the covered call's return is mostly the equity premium\index{equity premium} earned with a beta of 0.6, it is not evidence that selling options pays.
 
-\textbf{Why the premium might vary.} Bonds lose value when inflation\index{inflation} or rates rise unexpectedly. Investors demand compensation for that risk, and the compensation can change: higher in recessions, when investors are more risk-averse\index{risk aversion}, and when inflation is uncertain. Supply and demand matter too. When pension funds and central banks buy long bonds, they push the term premium down. Any of these makes the EH fail.
+\textbf{The payoff shape.} A covered call keeps the downside of the stock market but caps the upside at the strike plus the premium (Figure~\ref{fig:16-cc}). In calm or gently rising months it beats the market; in strong rallies it lags; in crashes it loses almost as much as the market, cushioned only by the premium. The return distribution is therefore \textbf{negatively skewed}\index{skewness|textbf}. Most months bring small gains, and a few bring large losses.
 
-\textbf{Why the tests are hard.} Interest rates are highly persistent, and annual returns sampled monthly overlap by eleven months. Both inflate $t$-statistics\index{t-statistic} if handled carelessly (Chapter~\ref{ch:03}). The lab uses Newey--West\index{standard error!Newey--West (HAC)} errors with 18 lags and adds out-of-sample tests (Chapter~\ref{ch:05}).
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.61\linewidth, height=0.38\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=80, xmax=120, ymin=-20, ymax=21,
+  xtick={80,85,...,120}, ytick={-20,-10,0,10,20},
+  xlabel={Index at expiry}, ylabel={Profit per \$100 of index (\$)},
+  clip=false,
+]
+  \addplot[gray, thin, domain=80:120, samples=2] {0};
+  % Index alone
+  \addplot[fegray, thick, dashed, domain=80:120, samples=2] {x - 100};
+  % Covered call: index plus the $2.47 premium, capped at the strike
+  \addplot[fenavy, very thick] coordinates {(80,-17.53) (100,2.47) (120,2.47)};
+  \node[fegray, anchor=east] at (axis cs:113,16.5) {index alone};
+  \node[fenavy, anchor=south east, align=right] at (axis cs:120,3.0)
+    {covered call:\\gain capped at \$2.47};
+  \node[fenavy, anchor=west, align=left] at (axis cs:90,-15)
+    {losses nearly as large\\as the index's};
+\end{axis}
+\end{tikzpicture}
+\caption{A one-month at-the-money covered call against the index alone, using the worked example's prices. The call premium of \$2.47 caps the gain and cushions the loss by the same amount, so the covered call keeps almost all of the index's downside.}
+\label{fig:16-cc}
+\end{figure}
+
+That shape creates a measurement problem. The Sharpe ratio uses only the mean and standard deviation, so it cannot see skewness. Selling out-of-the-money options can raise a portfolio's Sharpe ratio while making its tail much worse. Section~\ref{sec:16-measure} sets out measures that are harder to game.
 
 \section{The claim}
 \label{sec:16-claim}
 
 \begin{callout}
-\textbf{Claim (the expectations hypothesis).} Forward rates are unbiased forecasts of future short-term interest rates, up to a constant. A steep yield curve predicts rising short rates, not higher returns on long bonds.
+\textbf{Claim.} Implied volatility exceeds the volatility that follows, on average, so option sellers earn a reliable premium. Strategies that sell index options, such as covered calls and put-writing, deliver better risk-adjusted returns than holding the index.
 \end{callout}
+
+The claim has two parts that can succeed or fail separately.
+
+\begin{itemize}
+  \item \textbf{The variance risk premium.} Implied variance is, on average, above the realized variance that follows. This is a statement about prices and can be tested directly by comparing the VIX with subsequent realized volatility.
+  \item \textbf{The strategy premium.} Covered-call and put-writing strategies earn more than their risk justifies. This requires the variance premium to survive trading costs, early exercise and roll timing, and it requires an honest risk adjustment.
+\end{itemize}
 
 To test it we need to be precise on three points.
 
 \begin{itemize}
-  \item \textbf{Up to a constant.} The pure EH says forward rates equal expected short rates. Almost no one believes that, because long bonds have earned more than short ones on average. The testable version allows a constant term premium and denies only that it \emph{varies}.
-  \item \textbf{Which horizon.} The tests use one-year holding periods, the standard in the literature. Fama and Bliss also examine longer horizons.
-  \item \textbf{What would count against it.} The EH fails if forward spreads forecast excess bond returns (Fama--Bliss slope significantly above 0), if they forecast changes in short rates less than one for one, or if long yields fail to rise when the curve is steep (Campbell--Shiller slope significantly below 1). It fails convincingly if these patterns hold out of sample.
+  \item \textbf{What counts as risk.} A strategy with a beta of 0.5 should be compared with half the market plus half in bills, not with the whole market. Its negative skewness should be priced, not ignored.
+  \item \textbf{What counts as reliable.} A premium that is positive in most months but wiped out in a few is reliable in one sense and not in another. We report both the share of months positive and the size of the worst losses.
+  \item \textbf{What would count against it.} The variance risk premium fails if implied volatility is not significantly above realized volatility on average. The strategy claim fails if covered calls and put-writing earn no alpha after adjusting for beta, or if their advantage disappears once skewness is priced.
 \end{itemize}
 
 \section{The original evidence}
 \label{sec:16-evidence}
 
-\textbf{Fama and Bliss (1987).} Using discount bond prices constructed from CRSP\index{CRSP} Treasury data, Fama and Bliss found that the spread between the $n$-year forward rate and the one-year rate forecast one-year excess returns on $n$-year bonds, contradicting the EH. The same spread had little power to forecast changes in the one-year rate over the next year, but its power rose with the horizon: forward rates did contain information about short rates several years ahead, as interest rates mean-revert.
+\textbf{Option returns.} Coval and Shumway (2001) studied S\&P 500 index options and found that buying zero-beta, at-the-money \textbf{straddles} (a call and a put at the same strike) lost about 3\% a week on average. A straddle has little exposure to the direction of the market, so its losses point to a price for volatility itself. Bakshi and Kapadia (2003) found that delta-hedged option positions lost money on average, and attributed the losses to a negative market volatility risk premium: investors pay to be long volatility because volatility rises when markets fall.
 
-\textbf{Campbell and Shiller (1991).} Across maturities from a few months to ten years, the yield spread forecast long yields to move in the \emph{wrong} direction. When the curve was steep, long yields tended to fall over the following period, the opposite of what the EH requires, and the slope coefficients became more negative as maturity increased. A steep curve forecast high returns on long bonds, through rising prices.
+\textbf{The variance risk premium.} Carr and Wu (2009) showed how to compute the variance swap rate from a portfolio of options, the method behind today's VIX, and used it to measure the premium directly for five stock indexes and 35 individual stocks. For the S\&P 500, implied variance was well above realized variance on average. Bollerslev, Tauchen and Zhou (2009) found that the size of the premium also predicts stock-market returns at a quarterly horizon, better than the price--earnings ratio or the default spread, consistent with its being a price of economic uncertainty.
 
-\textbf{Cochrane and Piazzesi (2005).} Instead of one forward spread at a time, they regressed excess returns on all forward rates at once. A single factor, a tent-shaped combination of forward rates, forecast one-year excess returns on bonds of all maturities, with $R^2$\index{regression!R-squared@$R^2$} values up to 43\% in their sample. The factor was largely unrelated to the level, slope and curvature of the yield curve and rose in bad times, consistent with a risk premium\index{risk premium} that is high in recessions.
+\textbf{Covered calls and put-writing.} Cboe commissioned Robert Whaley to design the BuyWrite Index (BXM), which tracks an S\&P 500 portfolio that sells a one-month, near-the-money call each month. Whaley (2002) found that it had earned returns close to the S\&P 500's with substantially lower volatility. A later study for Cboe (Callan Associates 2006) reported that from June 1988 to August 2006 the BXM returned 11.77\% a year against 11.67\% for the S\&P 500, with a standard deviation of 9.29\% against 13.89\%. Cboe later added a PutWrite Index (PUT), which sells one-month at-the-money puts against Treasury-bill collateral. These results drew large inflows into option-income products.
 
-\textbf{The skeptics.} The evidence for the EH's failure is now widely accepted. The strength of the more ambitious claims is not. Bauer and Hamilton (2018) showed that standard tests suffer serious small-sample distortions with persistent predictors and overlapping returns\index{overlapping observations}. With more robust tests, the evidence that variables beyond level, slope and curvature forecast bond returns, including the Cochrane--Piazzesi factor, became much weaker. Thornton and Valente (2012) found that forecasts from forward rates gave little economic value out of sample to an investor choosing between bonds.
+\textbf{The skeptics.} Broadie, Chernov and Johannes (2009) argued that large average losses on index puts are not by themselves evidence of mispricing. Under standard models with jumps and reasonable risk premiums, put returns are expected to be very negative and very noisy, so short samples say little. Israelov and Nielsen (2015) decomposed covered-call returns into three exposures: the equity market, short volatility and an unintended equity reversal bet. Equity exposure drove most of the risk and return. The short-volatility component had a Sharpe ratio near 1.0 but contributed less than 10\% of the risk, and the reversal component added about a quarter of the risk with little return. A covered call, in other words, is mostly a stock-market position.
 
-\section{Replication lab: the Treasury curve since 1961}
+\section{Measuring option-strategy returns}
+\label{sec:16-measure}
+
+Option-selling strategies are the textbook case where the usual performance measures mislead. Four corrections matter.
+
+\textbf{Adjust for beta.} A covered call with a beta of 0.6 should earn about 60\% of the equity premium without any volatility premium at all. The relevant comparison is a \textbf{beta-matched} portfolio, 60\% in the market and 40\% in bills, or equivalently the CAPM alpha (Chapter~\ref{ch:18}). A covered call that matches the market's return with two-thirds of its volatility may have earned no alpha.
+
+\textbf{Look at both betas.} Selling options makes exposure asymmetric. The \textbf{down beta}, estimated in months when the market falls, is close to 1: the strategy takes most of the loss. The \textbf{up beta}, estimated in rising months, is much lower, because the call caps the gains. An investor who cares about losses more than gains should weigh the down beta.
+
+\textbf{Price the skewness.} The Sharpe ratio ignores skewness, so a strategy can raise it by selling crash insurance. Goetzmann, Ingersoll, Spiegel and Welch (2007) showed that a manager can raise a portfolio's Sharpe ratio by selling out-of-the-money options, without any skill. They proposed a \textbf{manipulation-proof performance measure (MPPM)}:
+\begin{equation}
+  \Theta = \frac{1}{(1 - \rho)\,\Delta t}\,\ln\!\left\{\frac{1}{T}\sum_{t=1}^{T}\left[\frac{1 + r_t}{1 + r_{f,t}}\right]^{1-\rho}\right\}
+  \label{eq:16-mppm}
+\end{equation}
+Here $T$ is the number of periods, $\Delta t$ the length of each period in years, and $r_t$ and $r_{f,t}$ the strategy's and the risk-free return. $\Theta$ is the certainty-equivalent excess return of an investor with constant relative risk aversion $\rho$. With $\rho = 3$, a typical value, a large negative month costs far more than a large positive month gains, so selling crash insurance cannot improve the score unless it really adds value.
+
+\textbf{Respect the sample.} A strategy that loses heavily once a decade needs several decades of data to estimate its mean (Section~\ref{sec:01-foundations}). Broadie, Chernov and Johannes (2009) showed how noisy put returns are even over twenty years. A backtest that starts after 2009 and ends before 2020, for example, would miss both of the big losses of the period since 1990.
+
+\section{Lab~\thechapter: Replicating Carr and Wu (2009) and the Cboe put-write and buy-write indices}
 \label{sec:16-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:16} at a glance.} \emph{Claim on trial\index{claims-on-trial method}:} forward rates are unbiased forecasts of future short rates. \emph{Data:} the Federal Reserve's zero-coupon Treasury yield curve (G\"urkaynak, Sack and Wright 2007), month-end yields for maturities of one to ten years; free and updated regularly. \emph{Code:} runs as a script (\texttt{python lab16.py}) or as a notebook with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:16} at a glance.} \emph{Papers replicated:} the variance risk premium of Carr and Wu (2009); the put-write and buy-write strategies studied by Whaley (2002). \emph{Claim on trial:} selling index options earns a reliable premium. \emph{Data:} daily market returns from the Kenneth French library and the VIX from FRED, which starts in 1990; both are free. Cboe's PUT and BXM index histories can be added for comparison. \emph{Code:} runs as a script (\texttt{python lab14.py}) or as a notebook with a prediction prompt before each step.
 \end{callout}
 
-\textbf{Part A, the classic tests.} Fama--Bliss regressions of one-year excess returns on forward spreads for maturities of 2 to 10 years, the companion regression of future short-rate changes on forward spreads, and Campbell--Shiller regressions for maturities of 2 to 10 years (Lab Figures~\ref{ch:16}.2 and~\ref{ch:16}.3). Standard errors\index{standard error} are Newey--West with 18 lags to account for the overlapping monthly observations.
+\textbf{Part A, the variance risk premium.} At each month end, the VIX is compared with the market's realized volatility over the next 21 trading days. The lab reports the average gap in volatility points with a Newey--West $t$-statistic, the share of months in which implied exceeded realized, the median gap and the worst months (Lab Figures~\ref{ch:16}.1 and~\ref{ch:16}.2).
 
-\textbf{Part B, Cochrane--Piazzesi.} The average excess return on 2- to 5-year bonds regressed on the one-year yield and four forward rates; the loading of each maturity on the resulting factor; and out-of-sample forecasts from 1985 with an expanding window\index{walk-forward evaluation!expanding window} and an 11-month gap so that no training target overlaps the forecast date. Three predictor sets are compared with the historical mean\index{historical-mean benchmark}: the full forward curve, a single forward spread and the level of rates alone (Lab Figure~\ref{ch:16}.4).
+\textbf{Part B, strategies.} The lab rebuilds two strategies from the data. Each month it sells a one-month option priced by Black--Scholes at the VIX and holds it to the next month end:
 
-\textbf{Part C, subperiods.} The Fama--Bliss slope for 5-year bonds, the Campbell--Shiller slope at the longest maturity and the Cochrane--Piazzesi $R^2$ in four periods: the start to 1984, 1985--2007, 2008--2015 (the zero lower bound) and 2016 onward.
+\begin{itemize}
+  \item an \textbf{at-the-money put-write}, collateralized by bills like Cboe's PUT. By put--call parity this is also an at-the-money covered call, and the lab checks that the two returns are identical;
+  \item a \textbf{covered call 2\% out of the money}, which keeps more of the market's upside.
+\end{itemize}
 
-\textbf{Part D, the investor's view.} Average excess returns by maturity, and returns after steep versus flat curves, with ``steep'' defined using only past information (Lab Figure~\ref{ch:16}.5).
+Each is compared with the market on excess return, volatility, Sharpe ratio, skewness, worst month, drawdown, beta and CAPM alpha, over its own history and over a common period (Lab Figure~\ref{ch:16}.3).
 
-Two caveats apply. The Fed's curve is a fitted curve, not a set of traded bonds, and the classic studies used discount bonds constructed from CRSP data, which are not free. Results will be similar in spirit but not identical. Ten-year yields begin in 1971, so the longest maturities use a shorter sample.
+\textbf{Part C, stress tests.} Returns in crisis periods, the five worst market months, up and down betas, and the MPPM (Lab Figure~\ref{ch:16}.4).
 
-\textbf{What the simulated run shows.} The simulation adds a time-varying term premium to the expected path of short rates, so the EH is false by construction. The lab finds what it should: Fama--Bliss slopes of about 0.6 to 0.7, significantly above zero; Campbell--Shiller slopes negative and well below 1; higher excess returns after steep curves. The tests on data where the EH holds exactly recover slopes of 0 and 1. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
+\textbf{Part D, equity versus volatility.} Each strategy's excess return is split into the part explained by beta and the alpha that remains. The lab compares it with the market scaled to the same beta, and with a pure short variance swap struck at VIX$^2$, sized to 10\% annual volatility (Lab Figure~\ref{ch:16}.5).
+
+The rebuilt strategies are deliberately simple, and that matters for interpretation. They price options at the VIX, which includes the premium on out-of-the-money puts and so usually exceeds at-the-money implied volatility. That overstates the premium a seller actually collects. They also ignore bid--ask spreads\index{bid--ask spread} and roll at month ends rather than on Cboe's third-Friday schedule. The \texttt{-{}-iv-shift} option prices the options a few points below the VIX. Comparing the rebuilt series with Cboe's indices, which use traded prices, shows how much these simplifications matter.
+
+\textbf{What the simulated run shows.} The simulation builds in a VIX 12\% above expected volatility. The lab finds the premium (implied above realized in 83\% of months), a put-write with a beta of about 0.5, strongly negative skewness and a down beta near 0.9 against an up beta near 0.15. The rebuilt put-write and covered call show positive alphas\index{alpha} when options are priced at the inflated VIX. The Cboe-like series, priced 2 points lower, show none. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
 
 \section{Stress tests}
 \label{sec:16-stress}
 
-\textbf{Subperiods.} The postwar sample contains very different monetary regimes: the inflation of the 1970s, the Volcker disinflation, the long decline in rates from the 1980s, the zero lower bound after 2008 and the rapid tightening of 2022--23. A term premium that varies with inflation uncertainty would be most visible in the first half. Part C shows whether the rejection of the EH is a product of one era.
+\textbf{Crashes.} The months that decide the verdict are few: October 1987, August 1998, September 2008 to February 2009, February and March 2020. In each, the market fell sharply, realized volatility jumped far above the implied volatility priced a month earlier, and option sellers lost most of what the market lost. A put-write cushions a crash only by one month's premium, typically 1--3\% of the strike. Lab Figure~\ref{ch:16}.2 shows the pattern for the variance premium: many small positive months and a few large negative ones.
 
-\textbf{The zero lower bound.} From 2008 to 2015 the short rate was pinned near zero. Forward rates still moved, driven by expectations of when the Fed would lift rates and by the term premium, but realized short rates did not. Regressions over this period behave differently, and the long-standing evidence may not carry over to it.
+\textbf{Skewness.}\index{skewness|textbf} On the Sharpe ratio\index{Sharpe ratio}, put-writing and covered calls often look better than the market, because they cut volatility more than they cut returns. On the MPPM with risk aversion\index{risk aversion} 3, expect the advantage to shrink, because the measure prices the crash months. A strategy whose apparent edge vanishes once skewness is priced is being paid for crash risk\index{crash risk}, not earning alpha.
 
-\textbf{Maturities.} The EH is a statement about all maturities. If it fails at two years but nearly holds at ten, or the reverse, that is informative about where the term premium lives.
+\textbf{Equity exposure.} Covered calls and put-writes have betas of roughly 0.5 to 0.7. Over a period when the equity premium was large, a beta of 0.6 alone earns most of their return. The lab's decomposition separates the two: if the alpha is small relative to the beta component, the strategy is mainly a stock investment with a different payoff shape.
 
-\textbf{Out of sample.}\index{in-sample versus out-of-sample|textbf} In-sample $R^2$ values for bond return forecasts are inflated by persistent predictors and overlapping returns. The lab's out-of-sample test, which uses only data available at each date and leaves an 11-month gap, is the honest test. A negative out-of-sample $R^2$\index{out-of-sample $R^2$} would mean that an investor would have done better using the historical mean.
+\textbf{Timing of the sample.} After a crisis, implied volatility can stay high while realized volatility subsides, which makes the premium look rich; before a crisis, it can look rich until the crash arrives. A backtest that starts just after a crisis, or ends just before one, will flatter the strategy. Exercise 4 splits the sample at 2008.
 
-\textbf{Small samples.} Bauer and Hamilton (2018) showed that standard errors can understate uncertainty badly in these regressions. Their bootstrap\index{bootstrap} tests are beyond this lab, but Exercise 4 asks how far the lab's $t$-statistics can be trusted. Treat $t$-statistics near 2 with suspicion.
+\textbf{Implementation.} Real options have bid--ask spreads, and covered-call funds pay management fees. Israelov and Nielsen (2015) found that the strategy's equity-reversal exposure, created by mechanically resetting the strike each month, adds risk without return. These frictions are small per trade but large relative to a premium of a few percent a year.
 
 \section{Verdict}
 \label{sec:16-verdict}
 
 \begin{callout}
-\textbf{Verdict: fails} (as of October 2026). Forward rates are not unbiased forecasts of future short rates. Bond risk premia vary over time, and the slope of the yield curve forecasts excess returns on long bonds, not just changes in short rates. The more ambitious claim, that a richer function of the forward curve forecasts bond returns with high $R^2$, is weaker than it once appeared, but that does not rescue the expectations hypothesis.
+\textbf{Verdict: survives for the variance risk premium; weakens for option-income strategies} (as of October 2026). Implied volatility has exceeded subsequent realized volatility on average, in most months, across decades and markets. That premium is real and is compensation for crash risk. But covered-call and put-writing strategies earn most of their return from equity exposure, carry negative skewness and lose most of what the market loses in crashes. Measured against a beta-matched portfolio and with skewness priced, their advantage is small.
 \end{callout}
-
-What fails:
-
-\begin{itemize}
-  \item \textbf{Forward spreads forecast excess returns.} In the classic studies and their updates, Fama--Bliss slopes are positive and significant. The forward spread is partly a forecast of rates and partly a premium for holding long bonds.
-  \item \textbf{Long yields move the wrong way.} Campbell--Shiller slopes are below 1, and often negative, across maturities. On average, a steep curve has been followed by falling, not rising, long yields.
-  \item \textbf{The premium is counter-cyclical.} Expected bond excess returns are higher in bad times, which the EH rules out.
-\end{itemize}
 
 What survives:
 
 \begin{itemize}
-  \item \textbf{Forward rates contain information about future short rates}, especially at horizons of several years, because rates mean-revert. They are biased forecasts, not useless ones.
-  \item \textbf{The term premium is hard to forecast precisely.} Small-sample corrections and out-of-sample tests weaken the case for large, exploitable predictability (Bauer and Hamilton 2018; Thornton and Valente 2012). The evidence is strong that the premium varies, and weaker on how well anyone can track it in real time.
+  \item \textbf{The variance risk premium.}\index{variance|textbf} Studies using the VIX, synthetic variance swaps and option returns agree that index option buyers pay more than realized volatility justifies on average (Coval and Shumway 2001; Bakshi and Kapadia 2003; Carr and Wu 2009). The premium has an economic explanation, demand for crash insurance, and predicts market returns (Bollerslev, Tauchen and Zhou 2009).
+  \item \textbf{Lower volatility for covered calls.} Covered calls and put-writes have delivered market-like returns with lower volatility over long periods. For an investor who has to hold equities, that is a real benefit.
 \end{itemize}
 
-The verdict would move to \emph{weakens} if the rejection of the EH were confined to one monetary regime and disappeared in the others.
+What weakens it:
+
+\begin{itemize}
+  \item \textbf{Most of the return is equity.} With betas of 0.5 to 0.7, the strategies earn most of the equity premium through their stock exposure. The short-volatility component is a small share of their risk (Israelov and Nielsen 2015).
+  \item \textbf{The Sharpe ratio flatters them.}\index{Sharpe ratio|textbf} Negative skewness and down betas near 1 mean that measures accounting for the tail, such as the MPPM, show a smaller advantage than the Sharpe ratio does.
+  \item \textbf{The premium is paid for crash risk.} A pure short-volatility position earns a high Sharpe ratio most of the time and suffers severe losses in volatility spikes. Whether that is attractive depends on whether the investor can survive the spikes.
+\end{itemize}
+
+The verdict on option-income strategies would move to \emph{survives} if their alpha against a beta-matched benchmark remained significant after skewness and costs over a full cycle of crises. It would move to \emph{fails} if, after accounting for beta, the premium were consistently eaten by costs and fees.
 
 \section{What investors can use}
 \label{sec:16-investors}
 
-\textbf{Read forward rates as forecasts plus a premium.} A market-implied path for policy rates, extracted from forwards or futures, includes a term premium. It overstates expected rate rises when the premium is positive and understates them when the premium is negative. Estimated term premiums, such as those published by the Federal Reserve Bank of New York from the Adrian, Crump and Moench (2013) model, are one way to separate the two, though they are model estimates with wide uncertainty.
-
-\textbf{Carry and roll-down.} A bond investor in a steep curve earns two things if rates do not change: the extra yield of the longer bond (\textbf{carry}) and the price gain as the bond rolls down to lower yields at shorter maturities (\textbf{roll-down}\index{roll-down|textbf}). The EH says these are expected to be offset by rising rates. The evidence says they are not fully offset on average. Carry and roll-down are thus a reasonable guide to expected excess returns, not a guaranteed one.
-
-\textbf{Duration is a bet.}\index{duration|textbf} Extending maturity when the curve is steep has been rewarded on average, but with the volatility\index{volatility} of long bonds. In 2022, when rates rose sharply, long Treasuries suffered some of their worst losses on record.
-
-\textbf{Questions to ask a bond manager:}
+\textbf{What an option-income fund actually delivers.} Covered-call and put-writing funds advertise high distributions. Three facts help interpret them; Israelov and Nielsen (2014) discuss these and other common misconceptions about covered calls.
 
 \begin{itemize}
-  \item How much of the portfolio's expected return comes from carry and roll-down, and what happens if rates rise by the forward rates?
-  \item Does the strategy assume forward rates are forecasts of future rates, or does it allow for a term premium?
-  \item How did the strategy perform when the curve was inverted\index{yield curve!inverted}, and in 2022?
+  \item \textbf{Distributions are not yield.} The premium a fund collects and pays out comes with a cap on the fund's gains. In a strong market, the investor gives up upside in exchange for the income. The premium is not a dividend on top of the market return; part of it is the market return, converted into a different shape.
+  \item \textbf{The fund is mostly an equity fund.} With a beta of around 0.5 to 0.7 and a down beta near 1, it will fall nearly as much as the market in a crash and rise much less in a rally. Compare it with a mix of an index fund and bills at the same beta, not with the index.
+  \item \textbf{Look at the worst months, not the Sharpe ratio.} A smooth return history can hide a tail. Ask how the fund did in 2008 and in March 2020.
+\end{itemize}
+
+\textbf{Questions to ask a manager selling volatility:}
+
+\begin{itemize}
+  \item What is the strategy's beta, and its down beta? What would a beta-matched index position have returned?
+  \item How far out of the money, and how short-dated, are the options sold? How is the strike reset?
+  \item What is the largest loss the strategy could suffer in one day, and how was that figure derived?
+  \item Is there leverage\index{leverage}, or margin that could be called in a spike?
 \end{itemize}
 
 \begin{callout}
-\textbf{What Failed: reading the yield curve as a pure forecast of policy.} Between June 2004 and June 2006 the Federal Reserve raised its policy rate from 1\% to 5.25\%. Under the expectations hypothesis, long-term yields should have risen as the path of short rates moved up. Instead, long yields fell during the first year of the tightening and ended the period little higher than where they began. In February 2005, Chairman Alan Greenspan called the behaviour of long rates a ``conundrum'' (Greenspan 2005).
+\textbf{What Failed: selling volatility on margin, February 2018.} LJM Partners ran funds that used margin to sell out-of-the-money puts and calls on S\&P 500 futures. For years the strategy produced steady returns. In February 2018, when volatility spiked, the LJM-managed funds lost more than 80\%, over \$1 billion, in two trading days. The same week, the VelocityShares inverse VIX note described in Chapter~\ref{ch:10} lost 96\% in a day.
 
-The conundrum was a puzzle only if long yields were pure forecasts of short rates. Term-premium models attributed much of the decline to a falling term premium, which various explanations linked to lower inflation uncertainty, foreign official purchases of Treasuries and demand from pension funds. Investors and policymakers who read the long end of the curve as the market's forecast of policy rates misread both the market and its signal. The same error recurs whenever a change in the term premium is taken for a change in expected policy.
+In 2021 the SEC charged LJM and two portfolio managers with misleading investors about the funds' risk management. According to the SEC, the firm had told investors it stress-tested for a worst-case daily loss of 20\% in its mutual fund, but that figure had been derived from a historical single-day loss of about 9\%, doubled and rounded up.
+
+The episode illustrates this chapter's verdict in its sharpest form. The variance risk premium is real, and selling volatility earned it for years. But the premium is payment for exactly the kind of day that ended LJM. Leverage turned a strategy that should lose heavily in a spike into one that could not survive it.
 \end{callout}
 
 \section{Open questions}
 \label{sec:16-open}
 
 \begin{itemize}
-  \item \textbf{Has central-bank bond buying changed the term premium?} Large-scale asset purchases after 2008 and in 2020 were designed to lower long yields by reducing the term premium. Did they change its behaviour or its predictability?
-  \item \textbf{Is the Cochrane--Piazzesi factor real?} Robust small-sample tests weaken it. Does it survive in other countries and in data after 2003?
-  \item \textbf{What drives the term premium?} Inflation uncertainty, risk aversion, supply and demand all play a part. Which dominates now?
-  \item \textbf{Do macroeconomic variables add to the yield curve?} Several studies find that measures of real activity forecast bond returns beyond yields. Does that evidence survive the same robust tests?
+  \item \textbf{Has the boom in short-dated options changed the premium?} Options expiring the same day (zero days to expiry, or 0DTE) made up over 61\% of S\&P 500 index option volume in May 2025, according to Cboe (Cboe Global Markets 2025). Do they change the price of one-month volatility, or the size of the variance premium?
+  \item \textbf{How large is the premium net of costs for retail investors?} Covered-call ETFs on single stocks and indexes have grown rapidly. What do they deliver after fees, spreads and taxes\index{taxes}, compared with a beta-matched index position?
+  \item \textbf{Is the premium compensation or mispricing\index{mispricing}?} Rational models with crash risk explain much of it (Broadie, Chernov and Johannes 2009). Does demand pressure from hedgers add a mispricing on top?
+  \item \textbf{Can the premium be harvested with less crash risk?} Delta-hedged\index{delta hedging} positions, variance swaps with caps, or strategies that cut exposure when volatility rises all aim to keep the premium and avoid the tail. Do they survive out of sample\index{in-sample versus out-of-sample}?
 \end{itemize}
 
 \section*{Exercises}
@@ -279,19 +290,19 @@ The conundrum was a puzzle only if long yields were pure forecasts of short rate
 \subsection*{Conceptual (all readers)}
 
 \begin{enumerate}
-  \item The 1-, 2- and 3-year zero yields are 3\%, 3.5\% and 4\% (continuously compounded). Compute the forward rates $f(2)$ and $f(3)$. Under the expectations hypothesis, what one-year rates are expected one and two years from now?
-  \item Using the yields in Exercise 1, compute the one-year excess return on the 3-year bond if the yield curve is unchanged a year from now. What would the excess return be if the expectations hypothesis held?
-  \item Show that the Fama--Bliss slopes for excess returns and for short-rate changes add up to 1 when the horizon is one year ($n = 2$).
+  \item The index is at 4,000, the risk-free rate is 5\%, and one-month implied volatility is 18\%. Price a one-month at-the-money call and put by Black--Scholes and check put--call parity.
+  \item Use put--call parity to show that a covered call and a cash-secured put with the same strike and expiry have the same payoff. Why do Cboe's BXM and PUT indices nonetheless have different returns?
+  \item A covered call has a beta of 0.6 and has returned 7\% a year when the market returned 9\% and bills 2\%. What is its CAPM alpha? What return would a beta-matched portfolio of the index and bills have earned?
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
   \setcounter{enumi}{3}
-  \item Part A: at which maturities is the Fama--Bliss slope significantly above 0? Is any significantly different from 1? Given Bauer and Hamilton's (2018) warning about small-sample distortions, which of these conclusions would you still trust, and why?
-  \item Part A: how does the Campbell--Shiller slope change with maturity? Explain in words what a negative slope means for a bond investor.
-  \item Part B: compare the in-sample and out-of-sample $R^2$ of the Cochrane--Piazzesi regression. Which of the three predictor sets does best out of sample?
-  \item Part C: in which subperiod is the evidence against the hypothesis strongest? What happened in 2008--2015?
-  \item Part D: build a strategy that holds the 5-year bond after a steep curve and the 1-year bond otherwise. Compare its average excess return and Sharpe ratio with always holding the 5-year bond.
-  \item A newspaper reports that ``markets expect three rate cuts next year,'' based on futures prices. Using this chapter's evidence, explain what the futures prices actually tell us.
+  \item Part A: in what share of months did the VIX exceed realized volatility? Compute the average gap separately for months with VIX above and below 25. Where is the premium larger? Then split the sample at 2008: how different is the premium before and after?
+  \item Part B: rerun with \texttt{-{}-iv-shift -2} and \texttt{-4}. How much of the rebuilt put-write's alpha survives? Compare with Cboe's PUT if you downloaded it.
+  \item Part C: compute the MPPM with risk aversion 1, 3 and 6. At what risk aversion does put-writing stop beating the market?
+  \item Part D: what share of each strategy's excess return comes from beta? Compare the skewness of the put-write with that of the beta-matched market.
+  \item Part D: the pure short variance swap has a high Sharpe ratio. Find its worst month. How much leverage could an investor have used before that month would have wiped out the account?
+  \item A retiree is offered an option-income fund paying an 8\% distribution. Using this chapter's evidence, write a one-page explanation of what the fund is likely to deliver and what could go wrong.
 \end{enumerate}

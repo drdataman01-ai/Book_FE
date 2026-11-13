@@ -1,4 +1,4 @@
-% Chapter 17 -- Claim: Credit Spreads Compensate Mainly for Expected Default Losses
+% Chapter 17 -- Claim: A Profitable Backtest Is Profitable to Trade
 % Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -12,270 +12,457 @@
 }{}
 \makeatother
 
-\chapter{Claim: Credit Spreads Compensate Mainly for Expected Default Losses}
+\chapter{Claim: A Profitable Backtest Is Profitable to Trade}
 \label{ch:17}
 
-A corporate bond pays more than a Treasury bond of similar maturity. The obvious explanation is that companies can default and the U.S. government, for practical purposes, does not. Investors demand a higher yield to cover the losses they expect when some borrowers fail to pay. On this view, the credit spread\index{credit spread} is an actuarial charge: default probability times loss given default\index{loss given default}.
+Most of the claims tested so far, from size and value to momentum and trend following, were documented with \textbf{paper returns}\index{return!paper versus implementable}: the returns of portfolios rebuilt every month at recorded closing prices, in any size, at no cost. Researchers have long known that this is a simplification, and the reason it matters goes back to the definition of an efficient market. Jensen (1978) argued that a market is efficient with respect to some information if no one can earn \emph{economic} profits by trading on it, which means profits after all the costs of trading. Grossman and Stiglitz (1980) went further and showed that prices cannot reflect all information perfectly, because then no one would be paid for the cost of gathering it. On this view, some return patterns should survive on paper but not after costs, since costs are exactly what keeps them from being traded away.
 
-The view is intuitive, it is how many investors think about credit, and it is how credit ratings\index{credit rating} are designed, since ratings rank bonds by their expected default losses\index{credit spread!expected-loss component}. It is also testable, because a century of default data tells us how often bonds of each rating have defaulted and how much investors recovered.
+The question became pressing in the early 2000s, when researchers began to price the trades behind the best-known anomalies\index{anomaly}. Lesmond, Schill and Zhou (2004) found that momentum\index{momentum} trades concentrate in stocks that are expensive to trade, and concluded that its profits largely disappear after costs. Korajczyk and Sadka (2004) measured how prices move when large orders are executed and found that momentum profits shrink as the size of the portfolio grows. Novy-Marx and Velikov (2016) then estimated trading costs for 23 well-known anomalies and found that most strategies that trade more than half of their portfolio each month lose their significance after costs. Frazzini, Israel and Moskowitz (2018) challenged the size of these estimates: using a large manager's own trading records, they found costs far below what the academic estimates assumed. The same patterns look profitable or unprofitable depending on whose costs are used.
 
-This chapter tests it. The answer bears on what credit investors are paid for, why spreads rise in recessions, and why highly rated structured securities proved so dangerous in 2007--08.
+This chapter opens Part VII, which returns to the classical findings with the tools of the last two decades. The answer matters for both research and practice. For research, it decides whether an anomaly is evidence against market efficiency or only a pattern that no investor could exploit. For practice, it decides which published strategies are worth running, how much money each can manage, and whether a fund that offers them can deliver its backtest. The claim on trial\index{claims-on-trial method} is the assumption behind most published backtests\index{backtest}: \textbf{a strategy that is profitable in a backtest is profitable to trade.}
+
+The lab in Section~\ref{sec:17-lab} replicates the main calculations of Novy-Marx and Velikov (2016) and Frazzini, Israel and Moskowitz (2018) for three free long--short factors from the Kenneth R. French Data Library, value, momentum and short-term reversal, plus a simulated stock universe, in order to find out which strategies stay profitable after costs, what cost level would wipe out each one, and how much money each can manage.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item define credit spreads, default probabilities, recovery rates\index{recovery rate} and loss given default;
-  \item compute the expected-loss spread and the default rate that would justify an observed spread;
-  \item explain the Merton model\index{Merton model}, in which equity is a call option\index{option!call} on the firm's assets;
-  \item distinguish real-world from risk-neutral\index{risk-neutral pricing} default probabilities, and explain why the timing of defaults matters for the spread;
-  \item state the claim that spreads mainly reflect expected losses, and summarize the evidence on the credit spread puzzle\index{credit spread puzzle} and the excess bond premium\index{excess bond premium};
-  \item judge what a credit investor is paid for, and when reaching for yield is likely to disappoint.
+  \item read a limit order book\index{order book}, and explain bid--ask spreads\index{bid--ask spread}, market orders\index{market order} and limit orders\index{limit order};
+  \item explain how long and short positions work, what short selling\index{short selling} costs, and what a zero-investment portfolio\index{long--short portfolio} is;
+  \item break trading costs into commissions, bid--ask spreads, market impact\index{market impact} and the costs of short selling, and estimate the main ones from public data;
+  \item compute a strategy's turnover\index{turnover} and explain what drives it;
+  \item convert gross returns into net returns, and compute the break-even cost\index{transaction costs!break-even} a strategy can bear;
+  \item estimate how market impact limits the money a strategy can manage;
+  \item design strategies that trade less without giving up much of their signal.
 \end{itemize}
 
-\section{Foundations: spreads, default and recovery}
+In the lab you will take three of the best-known long--short strategies, value, momentum\index{momentum} and short-term reversal\index{short-term reversal}, measure how much each trades, charge each for trading, and see how their ranking changes. A simulated market with known expected returns\index{return!expected} then shows how much cost-aware design can recover.
+
+\section{Foundations: how stocks are traded and sold short}
 \label{sec:17-foundations}
 
-\subsection{Credit spread}
+\subsection{The order book}
 
-The yield on a corporate bond minus the yield on a Treasury of similar maturity. Moody's publishes long-run yield series for seasoned \textbf{Aaa} and \textbf{Baa} bonds, the highest and lowest investment-grade ratings, back to 1919. The \textbf{Baa--Aaa spread}\index{credit spread!default spread (Baa--Aaa)|textbf} compares two corporate yields and avoids some of the differences between corporate and Treasury bonds.
+Most stocks trade on electronic exchanges that keep a \textbf{limit order book}\index{order book|textbf}: a list of standing offers to buy (\textbf{bids}) and to sell (\textbf{asks}), each at a stated price and quantity (Figure~\ref{fig:17-book}). The highest bid and the lowest ask form the \textbf{best quotes}; the gap between them is the \textbf{bid--ask spread}\index{bid--ask spread|textbf}, and their average is the \textbf{midpoint}\index{midpoint|textbf}. Spreads are quoted in \textbf{basis points}\index{basis point|textbf}, hundredths of a percent, of the midpoint: 100 basis points make 1\%.
 
-\subsection{Default probability (PD)}
-
-\textbf{Default probability (PD)} is the chance that the issuer fails to pay in a given year. Rating agencies publish historical default rates by rating. Moody's reported average annual default rates of 0.27\% for Baa issuers and essentially zero for Aaa over 1920--2006, and about 1\% for Ba, the highest speculative grade (Moody's Investors Service 2007).
-
-\subsection{Recovery rate}
-
-\textbf{Recovery rate ($R$)}\index{recovery rate|textbf} is the fraction of face value investors recover after default, measured by the bond's price shortly after default. Moody's reported an average of 38\% for senior unsecured bonds over 1982--2006. \textbf{Loss given default}\index{loss given default|textbf} is $1 - R$.
-
-\subsection{Expected-loss spread}
-
-A risk-neutral investor, one who cares only about expected payoffs, demands just enough extra yield to cover expected losses. For a one-year horizon with continuous compounding\index{compounding}:
-\begin{equation}
-  \text{spread} = -\ln\!\left[1 - \mathrm{PD}\,(1 - R)\right] \approx \mathrm{PD}\,(1 - R)
-  \label{eq:17-el}
-\end{equation}
-Any spread above this is compensation for something else: risk, illiquidity\index{illiquidity} or taxes.
-
-\subsection{Why spreads can exceed expected losses}
-
-\begin{itemize}
-  \item \textbf{Risk premium.}\index{risk premium|textbf} Defaults cluster in recessions, when investors' other wealth is also falling. Risk-averse\index{risk aversion} investors demand compensation for losses that arrive at bad times.
-  \item \textbf{Liquidity.}\index{liquidity|textbf} Corporate bonds trade less often and at wider bid--ask spreads\index{bid--ask spread} than Treasuries.
-  \item \textbf{Taxes.}\index{taxes|textbf} In the United States, interest on corporate bonds is subject to state income tax; interest on Treasuries is not.
-\end{itemize}
-
-\subsection{The Merton model}
-
-Merton (1974) treated a firm's equity as a call option on its assets, with the face value of debt as the strike (Figure~\ref{fig:17-merton}). Default occurs if asset value falls below the debt at maturity. The model links credit spreads to leverage\index{leverage} and asset volatility\index{volatility}, and its descendants, \textbf{structural models}\index{Merton model|textbf}, are the standard tool for asking whether spreads are consistent with default risk.
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feorange}{HTML}{B8481C}
 
 \begin{figure}[htbp]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.6\linewidth, height=0.34\linewidth,
-  axis lines=left, axis line style={-stealth},
-  xmin=0, xmax=2, ymin=0, ymax=1.1,
-  xtick={0,1}, xticklabels={$0$, face value of debt $F$},
-  ytick={0,1}, yticklabels={$0$,$F$},
-  xlabel={Firm's asset value at maturity, $V$},
-  ylabel={Payoff},
-  clip=false,
-]
-  % Debt: min(V, F)
-  \addplot[fenavy, very thick] coordinates {(0,0) (1,1) (2,1)};
-  % Equity: max(V - F, 0)
-  \addplot[fegray, very thick, dashed] coordinates {(0,0) (1,0) (2,1)};
-  \node[align=center] at (axis cs:0.48,0.84) {default:\\$V < F$};
-  \node[fenavy] at (axis cs:1.5,0.9) {debt: $\min(V, F)$};
-  \node[fegray, anchor=west, align=left] at (axis cs:1.6,0.36)
-    {equity: $\max(V - F, 0)$,\\a call on the assets};
-\end{axis}
-\end{tikzpicture}
-\caption{The Merton model. At maturity, debtholders receive the firm's asset value $V$ up to the face value of debt $F$, so debt pays $\min(V, F)$. Shareholders receive what is left, $\max(V - F, 0)$, the payoff of a call option on the firm's assets. If $V < F$, the firm defaults.}
-\label{fig:17-merton}
+  \centering
+  \scalebox{0.8}{%
+\begin{tikzpicture}[
+    x=0.014cm, y=0.5cm,     % x: shares; y: price levels
+    ask/.style={fill=feorange!35},
+    bid/.style={fill=fenavy!75},
+    price/.style={anchor=east, font=\small},
+  ]
+    % Asks (sellers) above the midpoint: level / price / shares
+    \foreach \wfL/\wfP/\wfQ in {1/50.02/200, 2/50.03/350, 3/50.04/300,
+                                4/50.05/450, 5/50.06/500} {
+      \fill[ask] (0,\wfL+0.5-0.38) rectangle (\wfQ,\wfL+0.5+0.38);
+      \node[price] at (-10,\wfL+0.5) {\$\wfP};
+    }
+    % Bids (buyers) below the midpoint
+    \foreach \wfL/\wfP/\wfQ in {1/49.98/250, 2/49.97/300, 3/49.96/400,
+                                4/49.95/350, 5/49.94/550} {
+      \fill[bid] (0,-\wfL-0.5-0.38) rectangle (\wfQ,-\wfL-0.5+0.38);
+      \node[price] at (-10,-\wfL-0.5) {\$\wfP};
+    }
+
+    % Best ask and best bid
+    \draw[feorange, thick] (0,1.12) rectangle (200,1.88);
+    \draw[fenavy, thick]   (0,-1.88) rectangle (250,-1.12);
+    \node[feorange, anchor=west, font=\small] at (215,1.5)
+      {best ask: buyers pay \$50.02};
+    \node[fenavy, anchor=west, font=\small] at (265,-1.5)
+      {best bid: sellers get \$49.98};
+
+    % Midpoint
+    \draw[densely dashed] (-10,0) -- (560,0);
+    \node[anchor=south east, font=\small, inner sep=2pt] at (560,0) {midpoint \$50.00};
+
+    % Spread bracket
+    \draw[decorate, decoration={brace, amplitude=4pt}]
+      (-150,-1.5) -- (-150,1.5)
+      node[midway, anchor=east, xshift=-5pt, align=right, font=\small]
+      {spread\\\$0.04\\(8 bp)};
+
+    % Headings and size axis
+    \draw[thin] (0,-6.1) -- (0,6.1);
+    \node[feorange, font=\small\bfseries, anchor=south west] at (0,6.1)
+      {Asks: sellers' limit orders};
+    \draw[-stealth, thin] (0,-6.1) -- (580,-6.1)
+      node[anchor=west, font=\small] {shares};
+    \node[fenavy, font=\small\bfseries, anchor=north west] at (0,-6.3)
+      {Bids: buyers' limit orders};
+  \end{tikzpicture}%
+}
+  \caption{A limit order book. Sellers' asks sit above the midpoint and buyers'
+    bids below it. A buyer who wants to trade at once pays the best ask,
+    \$50.02; a seller receives the best bid, \$49.98. The gap of \$0.04,
+    8 basis points of the \$50.00 midpoint, is the bid--ask spread.}
+  \label{fig:17-book}
 \end{figure}
 
-\textbf{Worked example.} A 10-year Baa bond yields 6\% and a 10-year Treasury 4\%, a spread of 2\% (Figure~\ref{fig:17-decomp}).
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.8\linewidth]{images/fig06-1-order-book.png}
+%\caption{A limit order book. Sellers' asks sit above the midpoint and buyers' bids below it. A buyer who wants to trade at once pays the best ask, \$50.02; a seller receives the best bid, \$49.98. The gap of \$0.04, 8 basis points of the \$50.00 midpoint, is the bid--ask spread.}
+%\label{fig:17-book}
+%\end{figure}
+
+\subsection{Market and limit orders}
+
+There are two basic ways to trade.
 
 \begin{itemize}
-  \item With $\mathrm{PD} = 0.27\%$ and $R = 38\%$, the expected-loss spread is $-\ln(1 - 0.0027 \times 0.62) \approx 0.17\%$. Expected losses explain about 8\% of the spread.
-  \item For expected losses to explain the whole 2\%, the annual default rate would have to be about $(1 - e^{-0.02})/0.62 \approx 3.2\%$, roughly twelve times the historical Baa average and well above the long-run average for Ba bonds.
-  \item Even a pessimistic assumption, $\mathrm{PD} = 1\%$ and $R = 20\%$, explains only 0.8\% of the 2\% spread.
+  \item A \textbf{market order}\index{market order|textbf} trades immediately against the best available quotes: a buyer pays the ask, a seller receives the bid. Market orders \emph{demand} liquidity\index{liquidity} and pay the spread.
+  \item A \textbf{limit order}\index{limit order|textbf} sets a price and waits in the book until someone trades against it. Limit orders \emph{supply} liquidity and may earn the spread, but risk not being filled, or being filled just before the price moves against them.
 \end{itemize}
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.61\linewidth, height=2.4cm,
-  axis x line*=bottom, axis y line=none,
-  xmin=0, xmax=2.2, ymin=0, ymax=1,
-  xtick={0,0.2,...,2.2},
-  xticklabel style={/pgf/number format/fixed},
-  xlabel={Spread over Treasuries (percentage points)},
-  clip=false,
-]
-  \fill[fenavy]  (axis cs:0,0.35)    rectangle (axis cs:0.17,0.75);
-  \fill[gray!35] (axis cs:0.17,0.35) rectangle (axis cs:2,0.75);
-  % Legend
-  \fill[fenavy]  (axis cs:0.02,1.55) rectangle (axis cs:0.1,1.75);
-  \node[anchor=west] at (axis cs:0.11,1.65) {expected default loss (0.17)};
-  \fill[gray!35] (axis cs:0.02,1.10) rectangle (axis cs:0.1,1.30);
-  \node[anchor=west] at (axis cs:0.11,1.20) {everything else (1.83)};
-\end{axis}
-\end{tikzpicture}
-\caption{Decomposing the worked example's 2\% Baa spread. At Moody's long-run default and recovery rates, expected default losses account for 0.17 percentage points. The remaining 1.83 points pay for something else: risk, illiquidity or taxes.}
-\label{fig:17-decomp}
-\end{figure}
+Large orders are usually broken into many small ones and executed over hours or days to limit their effect on prices.
 
-\section{How it works}
-\label{sec:17-how}
+\subsection{Who provides liquidity}
 
-A corporate bond's spread over a Treasury can be split into four pieces:
+\textbf{Market makers}\index{market maker|textbf} and high-frequency traders post bids and asks continuously and earn the spread. In return they bear \textbf{inventory risk}, the risk that prices move while they hold shares they have bought but not yet sold, and the risk of trading with better-informed investors. Spreads are wider for small, volatile and thinly traded stocks because these risks are larger there.
+
+\subsection{Long and short positions}
+
+A \textbf{long} position owns a security and gains when its price rises. A \textbf{short} position borrows shares, sells them, and must later buy them back to return them; it gains when the price falls. The short seller pays any dividends to the lender, posts \textbf{collateral}\index{collateral|textbf} (cash or securities held as security for the loan), and pays a \textbf{borrowing fee}\index{borrowing fee|textbf} set in the securities-lending market. Most large stocks are cheap to borrow; a minority are hard to borrow and expensive, and the lender can \textbf{recall} the loan, forcing the short seller to buy the shares back.
+
+\subsection{Long--short portfolios}
+
+Academic factors such as HML\index{factor!HML (value)}, introduced in Section~\ref{sec:04-factors}, are \textbf{zero-investment} portfolios: one dollar long, one dollar short, so the proceeds of the short sale pay for the long side. Their returns are the difference between the two sides, so a factor's ``return'' is a spread, not the return on capital invested. In practice a long--short fund must hold collateral and capital against both sides, and returns are quoted relative to that capital.
+
+\subsection{Turnover}
+
+\textbf{Turnover}\index{turnover|textbf} measures how much of a portfolio is traded in a period. One-sided\index{hypothesis testing!one-sided and two-sided} monthly turnover of 10\% means a tenth of the portfolio is sold, and replaced, each month. Turnover multiplies every per-trade cost: a strategy that replaces its whole portfolio monthly pays its trading costs twelve times a year on each side.
+
+\textbf{Worked example.} A stock is quoted at \$49.98 bid and \$50.02 ask. The midpoint is \$50.00 and the spread is \$0.04, or $0.04/50 = 0.0008$, 8 basis points. Buying with a market order and immediately selling would lose 8 basis points; the one-way cost\index{transaction costs!one-way and round-trip}, half the spread, is 4 basis points.
+
+\section{Paper returns versus implementable returns}
+\label{sec:17-paper}
+
+The factor returns in the Kenneth French Data Library\index{Kenneth French data library}, like most portfolio returns in academic research, are \textbf{paper returns}\index{return!paper versus implementable|textbf}. Each month the portfolio is rebuilt from the latest sorts, at closing prices, with no charge for trading. The construction is deliberately simple and transparent, which is why the data is so useful. But it answers the question ``what pattern exists in returns?'' rather than ``what could an investor have earned?''
+
+An \textbf{implementable return}, one an investor could actually have earned, differs in four ways:
+
+\begin{enumerate}
+  \item \textbf{Trading costs.}\index{transaction costs|textbf} Every purchase pays above the midpoint price and every sale receives below it; large orders also move the price.
+  \item \textbf{Short-selling costs and limits.} Selling short requires borrowing shares, which costs a fee, may be impossible for some stocks, and can be recalled.
+  \item \textbf{Timing and execution.} Signals computed from closing prices cannot be traded at those same prices. Orders take time to work, and fast-moving signals lose value while they wait.
+  \item \textbf{Scale.} A strategy that works with \$10 million may not work with \$10 billion, because the trades themselves change prices.
+\end{enumerate}
+
+None of these makes a paper return wrong. A pattern that cannot be traded profitably may still tell us something about risk or about how prices form. But a claim about profits needs an implementable return, and the two can differ by more than the whole premium.
+
+The gap is largest for strategies that trade often, in small or illiquid stocks, or on the short side. It is smallest for slow strategies in large stocks, which is one reason the market portfolio itself is so hard to beat after costs: it barely trades at all.
+
+\section{The anatomy of trading costs}
+\label{sec:17-anatomy}
+
+The cost of a trade has several parts, and they behave differently.
 
 \begin{center}
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.32\linewidth}@{}}
 \toprule
-Component & What it pays for & How to measure it \\
+Component & What it is & How it scales \\
 \midrule
-Expected default loss & The average loss from defaults & Historical default rates $\times$ loss given default \\
-Default risk premium & Bearing default losses that cluster in bad times & Residual after expected loss; structural models \\
-Liquidity premium & Costs and delays of trading corporate bonds & Bid--ask spreads, trading volume, bond-specific measures \\
-Tax premium & State taxes on corporate interest & Tax rates applied to the yield \\
+Commissions and fees & Payments to brokers and exchanges & Small for institutions today; roughly proportional to the amount traded \\
+Bid--ask spread & Buying at the ask and selling at the bid, above and below the midpoint & Proportional to the amount traded; wider for small, volatile and illiquid stocks \\
+Market impact & The price moving against an order while it is executed, because the order itself carries information or demands liquidity & Grows faster than the trade: roughly with the square root of the order's size relative to volume \\
+Delay and opportunity cost & Prices moving before the order is filled, or trades not made at all & Largest for fast signals \\
+Short-selling costs & Fees to borrow shares, the risk of recall, rules that restrict shorting & Mostly small, very large for a minority of stocks \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-The claim is that the first component dominates. The test has two steps. First, estimate expected losses from historical default and recovery data and compare them with observed spreads. If they explain most of the spread, the claim survives. Second, examine the residual\index{regression!residuals}. If it is small and stable, it might be liquidity or measurement error. If it is large, rises in recessions and forecasts economic activity, it behaves like a risk premium.
+The unit used throughout this chapter is the \textbf{one-way cost}\index{transaction costs!one-way and round-trip|textbf}: the cost of buying, or of selling, one dollar of stock, as a fraction of the dollar. For a small trade it is roughly half the bid--ask spread plus commissions. A \textbf{round trip}, buying and later selling, costs twice the one-way cost.
 
-\textbf{Real-world and risk-neutral probabilities.} Bond prices imply a \textbf{risk-neutral}\index{risk-neutral pricing|textbf} default probability: the default rate that would justify the spread for an investor who does not care about risk. Historical data give \textbf{real-world} default probabilities. The gap between the two measures how much investors charge for bearing default risk. Hull's textbooks show this gap is large for investment-grade bonds and smaller, relative to the spread, for junk bonds.
+\textbf{Costs have fallen, unevenly.} U.S. equity spreads narrowed sharply after prices moved from fractions to decimals in 2001, a change called \textbf{decimalization}\index{decimalization|textbf}, and as electronic trading spread. Large-cap stocks now trade at spreads of a few basis points; small, illiquid stocks still cost far more. This matters for interpreting long histories: a strategy tested from 1963 faced costs in its early decades that were several times today's, so applying today's costs to the whole history flatters the past, and applying the past's costs to today understates what is possible now.
 
-\textbf{Why the timing of defaults matters.} Two bonds with the same expected loss can deserve very different spreads. A bond whose defaults occur randomly over the cycle adds little risk to a diversified\index{diversification} portfolio. A bond whose defaults all arrive in recessions, when stocks are falling and jobs are at risk, is much less attractive and should pay more. Investment-grade defaults are rare in normal times and concentrated in severe downturns, which is exactly the pattern that should command a large premium.
+\textbf{Short selling.}\index{short selling|textbf} A short seller borrows shares and pays a lending fee. D'Avolio (2002) found that the large majority of U.S. stocks were cheap to borrow, but that a small set of ``special'' stocks carried high fees, and that these were often exactly the stocks with the strongest short signals. Borrowing can also be recalled at inconvenient times, and regulators can ban shorting outright, as the U.S. Securities and Exchange Commission did for financial stocks in September 2008. Miller (1977) argued that when pessimists cannot short, prices reflect only the optimists' views, so overpricing can persist; Stambaugh\index{Stambaugh bias}, Yu and Yuan (2012) found that many anomalies\index{anomaly} earn most of their profits on the short side, where these frictions bite. A long--short paper portfolio that ignores them overstates what is achievable, sometimes by most of the premium.
 
-\section{The claim}
-\label{sec:17-claim}
+The lab uses a single one-way cost and a single borrowing fee for transparency. Real costs vary across stocks and over time, and Section~\ref{sec:17-measuring} shows how they can be estimated.
 
-\begin{callout}
-\textbf{Claim.} The yield spread of corporate bonds over Treasuries mostly reflects the losses investors expect from default. Under reasonable assumptions for default rates and recoveries, expected losses account for most of the average spread.
-\end{callout}
+\section{Measuring costs from public data}
+\label{sec:17-measuring}
 
-To test it we need to be precise on three points.
+The best measure of trading costs is a trader's own record. \textbf{Implementation shortfall}\index{implementation shortfall|textbf} (Perold 1988) compares the value of a paper portfolio at the prices when the decision was made with the value of the portfolio actually achieved, capturing spreads, impact, delay and trades never completed. Most researchers do not have such records, so the field relies on estimates.
+
+\textbf{From quotes and trades.} With intraday data, such as the TAQ (Trade and Quote) database of every U.S. trade and quote, two spreads can be measured:
 
 \begin{itemize}
-  \item \textbf{Mostly.} We take ``mostly'' to mean more than half of the average spread for investment-grade bonds. The claim could hold for junk bonds and fail for investment grade, or the reverse.
-  \item \textbf{Reasonable assumptions.} Default and recovery rates vary over time and by measurement. The test uses long-run averages from rating agencies and checks how far they would have to be stretched to rescue the claim.
-  \item \textbf{What would count against it.} The claim fails if expected losses explain less than half of investment-grade spreads under any plausible assumptions, and if the remainder behaves like compensation for risk: rising in recessions and forecasting weaker economic activity.
+  \item the \textbf{quoted spread}\index{bid--ask spread!quoted|textbf}, the gap between the best bid and ask;
+  \item the \textbf{effective spread}\index{bid--ask spread!effective|textbf}, twice the difference between the trade price and the midpoint at the time of the trade.
 \end{itemize}
 
-\section{The original evidence}
-\label{sec:17-evidence}
+Effective spreads are usually smaller than quoted ones, because many trades execute inside the quotes.
 
-\textbf{Elton, Gruber, Agrawal and Mann (2001).} Using corporate bond prices and historical default and recovery rates, they found that expected default losses accounted for only a small part of the spread between corporate and Treasury yields. State taxes, which apply to corporate interest but not to Treasury interest, explained a large part. The rest moved with the risk factors that explain stock returns, evidence of a risk premium.
+\textbf{From daily data.} Several estimators infer spreads from daily prices alone, which makes them available back to the 1920s:
 
-\textbf{Collin-Dufresne, Goldstein and Martin (2001).} If spreads reflect default risk, changes in spreads should be explained by changes in the variables that drive default in structural models: leverage, asset volatility, interest rates. These explained only about a quarter of the variation in spread changes. Most of the rest was driven by a single common factor across bonds, unrelated to firm-specific default risk.
+\begin{itemize}
+  \item \textbf{Roll (1984)}\index{bid--ask spread!estimators|textbf} infers the spread from \textbf{bid--ask bounce}\index{bid--ask bounce|textbf}: because trades alternate randomly between the bid and the ask, successive price changes are negatively correlated, and the size of that correlation\index{correlation} reveals the spread.
+  \item \textbf{Hasbrouck (2009)} estimates a similar model with a Bayesian Gibbs sampler, a simulation-based estimation method, which is more robust when the Roll estimator fails.
+  \item \textbf{Corwin and Schultz (2012)} use daily high and low prices: highs are usually trades at the ask and lows at the bid, and the spread's share of the range can be separated from volatility\index{volatility} by comparing one-day and two-day ranges.
+  \item \textbf{Abdi and Ranaldo (2017)} combine closing, high and low prices for a more precise estimator.
+  \item \textbf{Amihud (2002)}\index{illiquidity|textbf} measures \textbf{illiquidity} as the average absolute return per dollar of volume: a measure of price impact rather than a spread.
+\end{itemize}
 
-\textbf{Huang and Huang (2012).} They calibrated a wide range of structural models to historical default losses and equity risk premia and asked how much of observed spreads the models could explain. For investment-grade bonds, credit risk accounted for only a small share of spreads, and an even smaller share at short maturities. For high-yield bonds, it accounted for much more. This gap became known as the \textbf{credit spread puzzle}\index{credit spread puzzle|textbf}.
+These estimators are noisy for any one stock and month, but useful averaged across portfolios, which is how Novy-Marx and Velikov (2016) used them to estimate the costs of dozens of anomalies.
 
-\textbf{Gilchrist and Zakraj\v{s}ek (2012).} They split corporate spreads into a component explained by expected default, estimated firm by firm, and a residual they called the \textbf{excess bond premium}\index{excess bond premium|textbf}. The excess bond premium, not the default component, carried most of the information about future economic activity. A rise in it predicted lower output and employment, consistent with a measure of investors' risk appetite and of the health of financial intermediaries.
+\textbf{Estimates from practice.} Frazzini, Israel and Moskowitz (2018) studied \$1.7 trillion of actual trades by a large institutional manager across 21 developed markets over 19 years, and found trading costs an order of magnitude smaller than earlier academic estimates suggested. Their result is a reminder that costs depend on who is trading and how: a patient institution that provides liquidity pays far less than the generic investor assumed by spread estimators. It is also a reminder that the evidence comes from one manager's experience, under that manager's trading methods.
 
-Some later work narrows the puzzle by modelling default risk that varies with the business cycle\index{business cycle}. None restores expected losses as the main component of investment-grade spreads.
+The practical consequence is that a cost assumption is a judgment. A careful study reports results across a range of costs, and the lab does so, from zero to 100 basis points one way.
 
-\section{Replication lab: a century of corporate spreads}
+\section{Turnover, net returns and break-even costs}
+\label{sec:17-turnover}
+
+\textbf{Turnover}\index{turnover|textbf} measures how much a portfolio trades. One-sided monthly turnover is the share of the portfolio sold, and replaced, each month: half the sum of the absolute changes in portfolio weights, measured against the weights the portfolio would have drifted to with no trading. A value-weighted\index{index weighting!value-weighted} portfolio whose membership never changes has zero turnover, however much its prices move.
+
+What drives turnover is how fast the signal changes relative to how often the portfolio is rebuilt:
+
+\begin{itemize}
+  \item \textbf{Value} sorts on book-to-market\index{book-to-market ratio} once a year. Book-to-market ratios are persistent, so most stocks stay on the same side from one year to the next.
+  \item \textbf{Momentum}\index{momentum|textbf} sorts monthly on the return from 12 months to 2 months ago. Each month's window shares ten of its eleven months with the last one, but enough stocks cross the \textbf{breakpoints}, the cut-offs between groups, to replace about a third of the portfolio each month.
+  \item \textbf{Short-term reversal}\index{short-term reversal|textbf} sorts monthly on the previous month's return, which has almost no persistence\index{persistence}. Nearly the whole portfolio is replaced every month.
+\end{itemize}
+
+\textbf{From gross to net.} A \textbf{gross} return is before costs; a \textbf{net} return is after them. A long--short portfolio with one dollar on each side and one-sided turnover $T$ sells and buys $T$ on each side, so it trades $4T$ dollars a month. At a one-way cost $c$, its monthly cost and net return are
+\begin{equation}
+  \text{cost} = 4\,T\,c, \qquad R^{\text{net}}_t = R^{\text{gross}}_t - 4\,T\,c - \frac{\text{borrow fee}}{12}
+  \label{eq:17-net}
+\end{equation}
+
+The \textbf{break-even cost}\index{transaction costs!break-even|textbf} is the one-way cost at which the average net return is zero:
+\begin{equation}
+  c^* = \frac{\text{average gross return} - \text{other costs}}{4T}
+  \label{eq:17-breakeven}
+\end{equation}
+It answers the most useful question about a strategy's costs: how cheaply must it trade to be worth trading? For example, a strategy with turnover of 10\% a month that earns 0.4\% a month gross can pay up to $0.4/(4 \times 0.10) = 1\%$ per trade before its profit is gone.
+
+Novy-Marx and Velikov (2016) estimated turnover and costs for value-weighted versions of many anomalies. Their full-sample figures for the three strategies in this chapter (Table 3 of the working-paper version), with break-even costs computed from their gross returns using Equation~\eqref{eq:17-breakeven}:
+
+\begin{center}
+\small
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.12\linewidth}@{}}
+\toprule
+Strategy & One-sided monthly turnover & Gross return (\% per month) & Estimated cost (\% per month) & Net return (\% per month) & Break-even one-way cost \\
+\midrule
+Value (book-to-market) & 2.9\% & 0.47 & 0.05 & 0.42 & about 4\% \\
+Momentum & 34.5\% & 1.33 & 0.65 & 0.68 & about 1\% \\
+Short-term reversal & 90.9\% & 0.37 & 1.65 & $-1.28$ & about 0.1\% \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The three strategies sit on very different sides of realistic costs (Figure~\ref{fig:17-breakeven}). Value could pay several percent per trade and still profit. Momentum survives costs of up to roughly one percent per trade, which a careful institution can achieve but a careless one may not. Short-term reversal, profitable on paper, would need to trade for about ten basis points per trade, below what most investors pay for the small, recently volatile stocks it buys and sells. Its paper profit is real, but tiny relative to the trading it requires.
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    % Gross return (% a month) and monthly one-way turnover, from the table.
+    % Net return = gross - 4 * turnover * cost; break-even = gross / (4 * turnover).
+    declare function={
+      valG = 0.47;  valT = 0.029;
+      momG = 1.33;  momT = 0.346;
+      revG = 0.38;  revT = 0.95;
+    }]
+  \begin{axis}[
+    width=0.61\linewidth, height=0.38\linewidth,
+    axis lines=left,
+    axis line style={-stealth, thin},
+    xmin=0, xmax=1.3, ymin=-1.6, ymax=1.45,
+    xtick={0,0.2,0.4,0.6,0.8,1,1.2},
+    ytick={-1,0,1},
+    xticklabel style={/pgf/number format/fixed},
+    xlabel={One-way trading cost (\%)},
+    ylabel={Net return (\% a month)},
+    clip=false,
+  ]
+    \addplot[gray!60, thin, domain=0:1.3, samples=2] {0};
+
+    % Value
+    \addplot[fenavy, very thick, domain=0:1.3, samples=2] {valG - 4*valT*x};
+    % Momentum
+    \addplot[thick, dashed, domain=0:1.3, samples=2] {momG - 4*momT*x};
+    % Short-term reversal (stops at the bottom of the chart)
+    \addplot[very thick, densely dotted, domain=0:0.52, samples=2] {revG - 4*revT*x};
+
+    % Break-even points
+    \fill (axis cs:{momG/(4*momT)},0) circle (2.2pt);
+    \fill (axis cs:{revG/(4*revT)},0) circle (2.2pt);
+    \node[anchor=north east, font=\small] at (axis cs:{momG/(4*momT)-0.02},-0.03)
+      {break-even $\approx 1\%$};
+    \node[anchor=south west, font=\small] at (axis cs:{revG/(4*revT)+0.03},0.03)
+      {$\approx 0.1\%$};
+
+    % Line labels
+    \node[fenavy, anchor=west, font=\small] at (axis cs:1.31,{valG-4*valT*1.3+0.05}) {value};
+    \node[anchor=west, font=\small] at (axis cs:1.31,{momG-4*momT*1.3}) {momentum};
+    \node[anchor=west, font=\small] at (axis cs:0.48,-1.05) {short-term reversal};
+  \end{axis}
+  \end{tikzpicture}
+  \caption{Net return against one-way trading cost, from the turnover and gross
+    returns in the table. Each line falls at a rate of four times the strategy's
+    turnover; it crosses zero at the break-even cost. Value's line is nearly
+    flat and crosses zero off the chart, at about 4\%.}
+  \label{fig:17-breakeven}
+\end{figure}
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.85\linewidth]{images/fig06-2-break-even.png}
+%\caption{Net return against one-way trading cost, from the turnover and gross returns in the table. Each line falls at a rate of four times the strategy's turnover; it crosses zero at the break-even cost. Value's line is nearly flat and crosses zero off the chart, at about 4\%.}
+%\label{fig:17-breakeven}
+%\end{figure}
+
+A gross ranking by Sharpe ratio\index{Sharpe ratio} or t-statistic\index{t-statistic} therefore says little about which strategy an investor should prefer. The net ranking depends on turnover as much as on the gross premium.
+
+\section{Market impact and capacity}
+\label{sec:17-capacity}
+
+Spreads are roughly a fixed cost per dollar traded. Market impact is not: the more a strategy trades relative to the market's volume, the more each dollar costs. This is what gives every strategy a \textbf{capacity}\index{capacity|textbf}, a size beyond which its net returns shrink toward zero.
+
+\textbf{Why prices move.} Kyle (1985) modeled market makers who cannot tell informed orders from uninformed ones and so move prices in the direction of every order. Large orders, which are more likely to be informed and more costly to absorb, move prices more. Empirical studies of institutional executions find that impact grows roughly with the square root of an order's size relative to daily volume (Almgren, Thum, Hauptmann and Li 2005; T\'oth et al.\ 2011). A common working model is
+\begin{equation}
+  \text{impact per dollar} \approx Y\,\sigma_{daily}\,\sqrt{\frac{Q}{V}}
+  \label{eq:17-impact}
+\end{equation}
+where $Q$ is the order size, $V$ is daily volume, $\sigma_{daily}$ is daily volatility and $Y$ is a constant of order one. The ratio $Q/V$ is the \textbf{participation rate}\index{participation rate|textbf}, the order's share of the day's trading. Trading 1\% of a day's volume in a stock with 2\% daily volatility costs about $2\% \times \sqrt{0.01} = 0.2\%$ in impact; trading 10\% costs about $2\% \times \sqrt{0.10} \approx 0.6\%$ (Figure~\ref{fig:17-impact}).
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    % Impact (%) = Y * sigma * sqrt(Q/V), with Y = 1 and sigma = 2%.
+    % x is Q/V in percent, so impact = 2 * sqrt(x/100) = 0.2 * sqrt(x).
+    declare function={impact(\x) = 0.2*sqrt(\x);}
+  ]
+  \begin{axis}[
+    width=0.55\linewidth, height=0.35\linewidth,
+    axis lines=left,
+    axis line style={-stealth, thin},
+    xmin=0, xmax=20.5, ymin=0, ymax=1,
+    xtick={0,2,...,20},
+    ytick={0,0.2,0.4,0.6,0.8,1},
+    yticklabel style={/pgf/number format/fixed},
+    tick label style={font=\small},
+    xlabel={Order size as a share of daily volume, $Q/V$ (\%)},
+    ylabel={Impact per dollar traded (\%)},
+    samples=200, domain=0:20,
+    clip=false,
+  ]
+    % If impact were linear (for comparison)
+    \addplot[gray!70, densely dashed, thin, samples=2] {0.0215*x};
+    \node[gray!40!black, font=\small, anchor=west] at (axis cs:20.2,0.43)
+      {if impact were linear};
+
+    % Square-root impact
+    \addplot[fenavy, very thick] {impact(x)};
+    \node[fenavy, font=\small, anchor=west] at (axis cs:20.2,{impact(20)})
+      {square root};
+
+    % Marked points
+    \fill[fenavy] (axis cs:1,0.2) circle (2.2pt);
+    \draw[gray!50] (axis cs:1.2,0.21) -- (axis cs:4.6,0.34);
+    \node[font=\small, anchor=west] at (axis cs:4.6,0.34) {1\% of volume: 0.2\%};
+
+    \fill[fenavy] (axis cs:10,0.632) circle (2.2pt);
+    \node[font=\small, anchor=north west] at (axis cs:10.3,0.6)
+      {10\% of volume: 0.6\%};
+  \end{axis}
+  \end{tikzpicture}
+  \caption{Square-root market impact for a stock with 2\% daily volatility,
+    from Equation~\eqref{eq:17-impact} with $Y = 1$. Ten times the order size
+    costs about three times as much per dollar, not ten times; but total
+    impact cost, per dollar times dollars, still rises faster than the order.}
+  \label{fig:17-impact}
+\end{figure}
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.85\linewidth]{images/fig06-3-impact.png}
+%\caption{Square-root market impact for a stock with 2\% daily volatility, from Equation~\eqref{eq:17-impact} with $Y = 1$. Ten times the order size costs about three times as much per dollar, not ten times; but total impact cost, per dollar times dollars, still rises faster than the order.}
+%\label{fig:17-impact}
+%\end{figure}
+
+\textbf{From impact to capacity.} A strategy managing assets $A$ with turnover $T$ trades about $2TA$ on each side every month, spread across its holdings. As $A$ grows, the participation rate $Q/V$ rises, impact per dollar rises with its square root, and total impact cost rises faster than the assets. Net return therefore falls with size, slowly at first and then quickly. Capacity can be defined as the size at which the net return is halved, or reaches zero; an investor would want to stop well before either.
+
+Three features\index{features and targets} of a strategy set its capacity:
+
+\begin{enumerate}
+  \item \textbf{Turnover.}\index{turnover|textbf} Every dollar not traded is a dollar that does not move prices.
+  \item \textbf{Liquidity of its holdings.} Strategies that concentrate in small stocks hit their limits first.
+  \item \textbf{Gross premium.} A larger premium can absorb more cost before it is gone.
+\end{enumerate}
+
+Capacity also has an industry-wide side. If many managers follow similar signals, their combined trades determine impact, and a strategy's capacity is shared among everyone trading it. Berk and Green (2004) argued that in a competitive market, money flows into skilled managers until their returns after costs are no better than the alternative, a theme Chapter~\ref{ch:03} returns to.
+
+The capacity estimates in this chapter's lab rest on stated assumptions about volume, spreads and the impact constant. They are an illustration of how capacity arises and what it depends on, not a forecast for any real fund.
+
+\section{Designing for costs}
+\label{sec:17-design}
+
+A paper portfolio is built as if trading were free, so it trades whenever the signal moves, however slightly. A portfolio designed for costs trades only when the expected gain exceeds the cost. Several simple rules capture most of the benefit.
+
+\begin{itemize}
+  \item \textbf{Buy/hold spreads (banding).} Buy a stock only when it enters the top 30\% on the signal, but keep holding it until it falls out of, say, the top 50\%. Stocks that wobble around the breakpoint no longer generate trades. Novy-Marx and Velikov (2016) found this the single most effective simple way to reduce costs.
+  \item \textbf{Slower rebalancing\index{rebalancing}.} Rebuilding the portfolio quarterly rather than monthly cuts turnover for slow signals at little cost in signal. For fast signals it gives up most of the premium.
+  \item \textbf{Partial trading.} G\^arleanu and Pedersen (2013) showed that with predictable returns\index{return predictability} and \textbf{quadratic trading costs}\index{transaction costs!quadratic|textbf}, costs that rise with the square of the amount traded, the optimal policy trades only part of the way toward the target each period, and aims at a target that anticipates where the signal is heading.
+  \item \textbf{Netting and combining signals.} A multi-signal portfolio can cross trades internally: a stock that momentum wants to sell and value wants to buy need not be traded at all.
+  \item \textbf{Liquidity screens.}\index{liquidity|textbf} Restricting the universe to larger, more liquid stocks raises capacity and lowers costs, usually at some cost in gross premium, since many anomalies are strongest in small stocks.
+\end{itemize}
+
+Each rule trades a little signal for a lot less trading. The trade-off depends on how fast the signal decays: banding costs little for momentum, whose ranks change gradually, and cannot rescue short-term reversal, whose signal is gone within a month.
+
+\textbf{Cost mitigation is also a search.} Every design choice, a band width, a rebalancing frequency, a liquidity screen, can be tuned to make a backtest look better, and the warnings about selection and overfitting\index{overfitting} in Section~\ref{sec:01-backtests} apply in full. Chen and Velikov (2023) examined 204 anomalies, accounting for effective spreads, post-publication\index{anomaly!post-publication decay} decay and the modern era of trading technology, and found that the average anomaly's expected return net of these effects was about 4 basis points a month. Strategies with impressive net returns in-sample, after cost mitigation, did not escape that conclusion. A cost-aware design should be specified in advance, and judged out of sample like any other part of the strategy.
+
+\begin{callout}
+\textbf{What Failed: buying last month's losers.} Jegadeesh (1990) and Lehmann (1990) documented that stocks with low returns over the past week or month tended to rebound, and stocks with high returns to fall back. The pattern is strong and statistically robust on paper, and the Fama--French\index{Fama--French factors} short-term reversal factor still records a positive average return. But the strategy replaces almost its whole portfolio every month, concentrating in stocks that have just moved sharply, often small and illiquid ones, exactly where spreads are widest. Novy-Marx and Velikov (2016) estimated that its costs exceeded its gross return by more than a percentage point a month. Much of the reversal itself may be compensation for providing liquidity to impatient traders (Nagel 2012), a return that accrues to market makers who face low costs, not to investors who must pay the spread. As a strategy for an ordinary investor, the claim that buying recent losers is profitable \textbf{fails} once costs are counted.
+\end{callout}
+
+\section{Lab~\thechapter: Replicating Novy-Marx and Velikov (2016)}
 \label{sec:17-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:17} at a glance.} \emph{Claim on trial\index{claims-on-trial method}:} credit spreads mainly reflect expected default losses. \emph{Data:} free monthly data from FRED\index{FRED}: Moody's seasoned Aaa and Baa yields from 1919, the 10-year Treasury yield from 1953, the NBER recession indicator and industrial production. The Gilchrist--Zakraj\v{s}ek excess bond premium, published by the Federal Reserve, can be added. \emph{Code:} runs as a script (\texttt{python lab17.py}) or as a notebook with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:17} at a glance.} \emph{Papers replicated:} Novy-Marx and Velikov (2016); a capacity analysis in the spirit of Frazzini, Israel and Moskowitz (2018). All data are free. \emph{Claim on trial:} a strategy that is profitable in a backtest is profitable to trade. \emph{Data:} three long--short factors from the Kenneth R. French Data Library, value (HML), momentum (Mom) and short-term reversal (ST Rev), from July 1963, plus a simulated stock universe. \emph{Run time:} a few seconds. \emph{Code:} repository folder \texttt{ch05-costs/}, with a guided notebook.
 \end{callout}
 
-\textbf{Part A, spreads.} The Baa--Aaa spread since 1919 and the Baa--Treasury and Aaa--Treasury spreads since 1953: averages, decade averages, and averages in recessions and expansions (Lab Figure~\ref{ch:17}.1).
+The lab takes the three factors and asks what each would have earned after costs.
 
-\textbf{Part B, decomposition.} The expected-loss spread from adjustable assumptions, by default 0.27\% a year for Baa and zero for Aaa with 38\% recovery, Moody's long-run averages. The lab reports the share of each average spread that expected loss explains, and the default rate that would be needed for expected loss to explain the whole spread at each date (Lab Figures~\ref{ch:17}.2 and~\ref{ch:17}.3).
+\textbf{Part A: gross performance.} Average returns, t-statistics and Sharpe ratios as published. On paper, all three look like discoveries.
 
-\textbf{Part C, the residual as a risk premium.} Regressions of industrial production growth over the next 12 months on each spread, and on the excess bond premium if supplied; growth by spread quintile; and the average path of the Baa--Aaa spread around the start of recessions (Lab Figure~\ref{ch:17}.4).
+\textbf{Part B: turnover.} The French library does not publish holdings, so turnover comes from two sources. The first is Novy-Marx and Velikov's estimates for value-weighted versions of the same strategies. The second is a simulated stock universe of 1,000 stocks over 40 years, with fat-tailed\index{fat tails} returns, a realistic spread of company sizes, and portfolios built exactly as the Fama--French factors are: value-weighted 30/70 sorts, value updated each June, momentum and reversal each month. Because the simulated universe has no delistings\index{delisting} or new listings, its turnover is a lower bound. In the version shipped with the lab it gives about 2\% a month for value, 25\% for momentum and 76\% for reversal, the same ordering and similar magnitudes as the published estimates, which shows that turnover follows mechanically from how each signal is built.
 
-\textbf{Part D, stress tests.} The share of the Baa--Treasury spread explained over a grid of default rates from 0.1\% to 2\% and recoveries from 20\% to 60\% (Lab Figure~\ref{ch:17}.5), spread peaks in six crises, and subperiod averages.
+\textbf{Part C: costs.} Net returns across one-way costs from 0 to 100 basis points, plus a short-borrowing fee of 0.25\% a year; break-even costs; and the ranking of the three strategies by Sharpe ratio before and after costs at a headline cost of 20 basis points. Lab Figure~\ref{ch:17}.1 plots each strategy's net return against cost, with its break-even point marked; Lab Figure~\ref{ch:17}.2 shows the growth of a dollar on paper and after costs.
 
-Three measurement issues affect the decomposition, and they work in different directions.
+\textbf{Part D: capacity.} The simulated universe is scaled to a \$50 trillion market, with daily volume of 0.4\% of each company's value, half-spreads from 2 basis points for the largest stocks to 50 for the smallest, and square-root impact. Each strategy's net return is traced as its assets grow from \$10 million to \$1 trillion. The assumptions are explicit and adjustable, and the exercises ask which matters most.
 
-\begin{itemize}
-  \item \textbf{Maturity.} Moody's yields are on long bonds, typically 20 years or more, while the Treasury benchmark is 10 years. When the Treasury curve slopes up, this widens the Baa--Treasury spread for reasons unrelated to credit. The Baa--Aaa spread avoids the problem.
-  \item \textbf{Taxes.}\index{taxes|textbf} State taxes on corporate interest widen corporate--Treasury spreads, but not the Baa--Aaa spread.
-  \item \textbf{Default timing.} Annual average default rates understate losses in the worst decades, such as the 1930s. Part D's grid includes default rates several times the average.
-\end{itemize}
+\textbf{Part E: mitigation, with known truth.} In the simulated universe, expected returns are known, so cost-mitigation rules can be compared without sampling noise. The lab compares the standard sort with buy/hold spreads of increasing width. For momentum at a one-way cost of 50 basis points, holding stocks until they leave the top 50\% cuts turnover roughly in half, from about 25\% to 12\% a month, gives up about a fifth of the expected gross return, and raises the expected net return from about 0.30\% to 0.41\% a month. For reversal, no band width rescues the strategy at that cost: the signal decays too fast for patience to pay.
 
-\textbf{What the simulated run shows.} The simulation builds the Baa--Aaa spread from a fixed expected loss of 0.15\% plus a premium that jumps in recessions. The lab recovers it: expected loss explains about a quarter of the Baa--Aaa spread, the spread is higher in recessions, and a high spread forecasts weaker output growth. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
-
-\section{Stress tests}
-\label{sec:17-stress}
-
-\textbf{Default assumptions.} The obvious defence of the claim is that historical averages understate future defaults. Part D's grid shows how far the assumptions must be stretched. With the 1920--2006 Baa average of 0.27\%, expected loss is a small fraction of a spread of one to two percentage points. To explain most of it, Baa bonds would need to default at well over 1\% a year with low recoveries, every year, which is the long-run experience of speculative-grade Ba bonds, not investment-grade Baa.
-
-\textbf{The Great Depression.} The 1930s are the worst case for investment-grade defaults in the Moody's data. A default rate several times the long-run Baa average in those years would raise the expected-loss share sharply for that decade. Even then, the claim must explain the spread in the many decades with almost no Baa defaults.
-
-\textbf{Crises.} Spreads peak in crises: the early 1930s, 1974--75, 1980--82, 2008--09 and March 2020. If spreads were expected losses, the peaks would forecast correspondingly large defaults. In 2008--09 and 2020, investment-grade defaults rose but remained far below what the peak spreads would have required. Spreads widened mainly because investors demanded more to hold risk and because dealers and funds withdrew from the market.
-
-\textbf{Rating categories.} For high-yield bonds, expected losses are a much larger share of the spread (Huang and Huang 2012). The claim may work for junk bonds and fail for investment grade. Moody's yield series cover only Aaa and Baa, so this lab cannot test it directly; Exercise 1 extends the decomposition using published default rates for lower ratings.
-
-\textbf{Liquidity.}\index{liquidity|textbf} Part of the residual is compensation for illiquidity, and it rises in crises when trading dries up. Separating liquidity from risk is difficult because both rise together in bad times. The Gilchrist--Zakraj\v{s}ek excess bond premium, which strips out firm-level default risk, is a useful check: if it forecasts output as well as the raw spread, the forecasting power does not come from expected defaults.
-
-\section{Verdict}
-\label{sec:17-verdict}
-
-\begin{callout}
-\textbf{Verdict: fails} (as of October 2026) for investment-grade bonds. Under historical default and recovery rates, expected default losses explain only a minority of investment-grade spreads, and the remainder behaves like a risk premium that rises in bad times and forecasts weaker economic activity. For high-yield bonds the claim fits better, since expected losses are a much larger share of their spreads.
-\end{callout}
-
-What fails:
-
-\begin{itemize}
-  \item \textbf{Expected losses are too small.}\index{credit spread!expected-loss component|textbf} With Moody's long-run Baa default rate of 0.27\% and 38\% recovery, expected loss is under 0.2 percentage points a year, a small fraction of typical Baa spreads. Rescuing the claim requires default rates several times higher, sustained over decades.
-  \item \textbf{Spreads move for other reasons.} Changes in default-risk variables explain only a quarter of spread changes (Collin-Dufresne, Goldstein and Martin 2001), and a common factor drives much of the rest.
-  \item \textbf{The residual is a risk premium.} It rises in recessions, peaks in crises and forecasts weaker output, which is how compensation for bearing risk in bad times should behave (Gilchrist and Zakraj\v{s}ek 2012).
-\end{itemize}
-
-What survives:
-
-\begin{itemize}
-  \item \textbf{Expected losses matter at the margin.} Lower-rated bonds have higher spreads, and expected losses rise with them. Ratings rank spreads correctly even though they do not explain their level.
-  \item \textbf{The claim fits junk bonds better.} For speculative-grade debt, expected losses are a large share of the spread.
-\end{itemize}
-
-The verdict would move to \emph{weakens} if a measure of liquidity explained most of the residual and that liquidity premium did not vary with economic conditions. The evidence so far points the other way: the residual and liquidity both rise in bad times.
+The lab, its tests and a guided notebook are in \texttt{ch05-costs} in the book's repository. The README records what has been tested and how, including that the parsers for the momentum and reversal files have been tested on the library's layout but not yet on the live files.
 
 \section{What investors can use}
 \label{sec:17-investors}
 
-\textbf{Credit is compensation for recession risk.} An investor in investment-grade bonds earns a spread well above expected default losses. That is good news on average, but it is pay for a specific risk: losses and price declines that arrive together with stock-market losses and recessions. Credit is not a substitute for Treasuries in a portfolio meant to hedge equity risk.
+The verdict on the claim: \textbf{fails} as a general rule. Whether a profitable backtest is profitable to trade depends on how much it trades, what it trades, and how much money is behind it. Slow strategies in liquid stocks survive realistic costs comfortably; fast strategies in small stocks often do not survive them at all. The claim holds only for strategies whose break-even costs sit well above what their investors actually pay, at the size they intend to run.
 
-\textbf{The limits of reaching for yield.} In low-rate periods, investors move into lower-rated or longer-maturity credit to earn more. The extra yield is real, but it is paid for bearing more of the same recession risk. A portfolio that has quietly accumulated credit exposure will behave like an equity portfolio in a downturn.
+Five questions turn the chapter into a checklist for any strategy an investor is shown:
 
-\textbf{Ratings measure expected loss, not timing.} A rating ranks bonds by how likely they are to default and how much investors will lose, on average. It says nothing about whether those losses will arrive in a recession, which is what determines the risk premium.
+\begin{enumerate}
+  \item \textbf{What is the turnover?} Ask for one-sided monthly turnover, on both sides. If the answer is not known, the strategy has not been evaluated as an investment.
+  \item \textbf{What is the break-even cost, and what will you pay?} Compare the break-even one-way cost with realistic costs for the stocks the strategy holds, in the period it will be traded. A strategy that needs costs below ten basis points is a bet on execution, not on the signal.
+  \item \textbf{What does the short side cost?} Ask how much of the return comes from the short side, what borrowing fees were assumed, and how the strategy would behave if hard-to-borrow stocks could not be shorted.
+  \item \textbf{At what size?} Ask for net returns at the assets the manager plans to run, and how the estimate of market impact was made. Capacity claims without stated assumptions are marketing.
+  \item \textbf{Were cost-saving rules chosen in advance?} Bands, rebalancing schedules and liquidity screens are sensible, but each is a parameter. Ask whether they were fixed before the backtest, and how the strategy performed after they were.
+\end{enumerate}
 
-\textbf{Questions to ask a credit manager:}
-
-\begin{itemize}
-  \item What share of the portfolio's yield above Treasuries would be lost in a recession with default rates like those of 2009?
-  \item How correlated are the portfolio's returns with stocks in bad months?
-  \item How liquid are the holdings in a crisis, and what would it cost to sell them?
-  \item For structured holdings, how do losses depend on correlations\index{correlation} between the underlying loans?
-\end{itemize}
-
-\begin{callout}
-\textbf{What Failed: highly rated structured credit before 2008.} By 2007, according to Fitch, roughly 60\% of all global structured products carried AAA ratings, compared with less than 1\% of corporate issues (Coval, Jurek and Stafford 2009). Pooling mortgages and other loans and slicing them into \textbf{tranches}\index{tranches|textbf}, claims with different priority on the pool's losses, allowed issuers to create large quantities of senior securities whose expected default losses, as estimated by rating models, were as low as those of the safest corporate bonds. They were priced accordingly, with spreads similar to other AAA debt.
-
-The mistake was the claim this chapter tests: that a spread need only compensate for expected losses. Senior tranches lose money only when many underlying loans default together, which happens in a severe recession. Their losses are therefore concentrated in exactly the worst states of the world, and they deserved much larger risk premiums than corporate bonds with the same expected loss. In 2007, Moody's downgraded 31\% of the asset-backed CDO tranches it rated, including 14\% of those initially rated AAA, and many more were downgraded in 2008. Investors who had treated rating-based expected losses as the whole story discovered that the timing of losses matters as much as their average.
-\end{callout}
-
-\section{Open questions}
-\label{sec:17-open}
-
-\begin{itemize}
-  \item \textbf{How much of the residual is liquidity rather than risk?} Both rise in bad times. Better measures of bond-level liquidity, and the growth of bond ETFs, offer new ways to separate them.
-  \item \textbf{Has the investor base changed spreads?} Insurance companies, bond funds and ETFs hold most corporate bonds. Do their constraints, such as capital rules tied to ratings or redemption pressure, create premiums unrelated to default?
-  \item \textbf{What did central-bank purchases do?} In 2020 the Federal Reserve announced purchases of corporate bonds, and spreads fell sharply. How much of the premium is the price of intermediaries' balance-sheet capacity\index{capacity}?
-  \item \textbf{Do structural models need fixing or replacing?} Models with time-varying risk and macroeconomic default risk narrow the credit spread puzzle. Do they fit the cross-section of spreads by rating and maturity as well as the average?
-\end{itemize}
+The broader lesson is that costs change the ranking of strategies, not just their level. A modest, slow premium that can be harvested cheaply may be worth more than a spectacular, fast one that cannot. Chapters~\ref{ch:18} and~\ref{ch:19} test more anomalies, and their verdicts are reported after costs as well as before.
 
 \section*{Exercises}
 \addcontentsline{toc}{section}{Exercises}
@@ -283,19 +470,20 @@ The mistake was the claim this chapter tests: that a spread need only compensate
 \subsection*{Conceptual (all readers)}
 
 \begin{enumerate}
-  \item Using Moody's long-run average annual default rates (Ba about 1.1\%, B about 3.5\%) and 38\% recovery, compute the expected-loss spread for Ba and B bonds. If typical spreads are 3\% and 5\%, what share is expected loss? Compare with the Baa result.
-  \item A 5-year Baa bond yields 5.5\% and the 5-year Treasury 4\%. What annual default rate, with 40\% recovery, would make expected losses equal the spread? What does this say about the risk-neutral and real-world default probabilities?
-  \item Explain in words why a bond whose defaults all occur in recessions should pay a higher spread than one with the same expected loss whose defaults occur at random times.
+  \item A long--short strategy has one-sided monthly turnover of 20\% and earns 0.6\% a month gross. What is its break-even one-way cost? What is its net return at a one-way cost of 30 basis points?
+  \item Explain why a value-weighted portfolio whose membership never changes has zero turnover, while an equal-weighted one with the same membership does not.
+  \item Why does market impact give a strategy a capacity, while a fixed spread does not?
+  \item A strategy earns most of its paper return on the short side. List three reasons its implementable return could be much lower than its paper return.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
-  \setcounter{enumi}{3}
-  \item Part B: with the default assumptions, what share of the Baa--Treasury and Baa--Aaa spreads does expected loss explain? Why might the two shares differ?
-  \item Part B: plot the break-even default rate. In which months was it lowest? Was it ever below the historical Baa default rate?
-  \item Part C: does the Baa--Aaa spread forecast industrial production growth? If you have the excess bond premium, does it forecast better?
-  \item Part D: find the default and recovery assumptions under which expected loss explains 75\% of the average Baa--Treasury spread. Are they plausible for investment-grade bonds?
-  \item Subtract an estimate of the state tax effect (for example, a 4\% tax rate applied to the corporate yield) and recompute the residual. How much does it shrink?
-  \item A pension fund wants to raise its yield by moving from Treasuries to Baa corporate bonds. Using this chapter's evidence, explain what the fund will be paid for and when it is likely to regret the move.
+  \setcounter{enumi}{4}
+  \item Re-run the lab from May 2001, after the move to decimal prices, with a one-way cost of 10 basis points. Does short-term reversal survive in the low-cost era?
+  \item Re-run Part C with a borrowing fee of 2\% a year. Which strategy is most exposed to shorting costs, and why?
+  \item In Part D, halve and double the impact constant and the number of days over which trades are spread. Which assumption moves capacity most? What evidence would you want before trusting it?
+  \item In Part E, add a rule that rebalances momentum only once a quarter. Compare its turnover and expected net return with banding.
+  \item Implement the Corwin--Schultz high--low spread estimator and apply it to daily data for a few stocks you can download. How does it compare with their quoted spreads?
+  \item Choose an anomaly from Chapter~\ref{ch:19}'s list. Estimate its turnover from its construction, compute its break-even cost, and judge whether it is likely to survive costs.
 \end{enumerate}

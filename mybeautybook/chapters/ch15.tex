@@ -1,4 +1,4 @@
-% Chapter 15 -- Claim: Black--Scholes Delta Hedging Removes Option Risk
+% Chapter 15 -- Claim: Credit Spreads Mainly Reflect Expected Defaults
 % Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -12,282 +12,271 @@
 }{}
 \makeatother
 
-\chapter{Claim: Black--Scholes Delta Hedging Removes Option Risk}
+\chapter{Claim: Credit Spreads Mainly Reflect Expected Defaults}
 \label{ch:15}
 
-The Black--Scholes--Merton\index{Black--Scholes--Merton model} model rests on a striking claim: an option can be manufactured. By holding the right number of shares and adjusting that number continuously, a trader can reproduce the option's payoff exactly, whatever the market does. If that is true, the option's price is not a matter of opinion about where the market is going. It is the cost of the recipe. A dealer who sells an option at that price and follows the recipe is left with no risk.
+A corporate bond pays more than a Treasury bond of similar maturity, and the obvious explanation is default. Merton (1974) made the explanation precise. Treating a firm's equity as a call option on its assets, he derived the credit spread\index{credit spread} from the firm's leverage, the volatility of its assets and the time to maturity, and founded the structural approach to credit risk. On this view the spread is largely an actuarial charge: the probability of default times the loss given default\index{loss given default}. It is how many investors think about credit, and it is how credit ratings\index{credit rating} are designed, since ratings rank bonds by their expected default losses\index{credit spread!expected-loss component}.
 
-The argument transformed finance. It created the options industry, it underpins the pricing of almost every derivative, and it is why banks can sell structured products and hedge them rather than bet on them. Chapter~\ref{ch:14} asked whether option sellers\index{option!writer} earn a premium. This chapter asks something more basic: does the recipe work? When a seller hedges as the model prescribes, on real market paths, how much risk is actually left?
+The view is testable, because a century of default data shows how often bonds of each rating have defaulted and how much investors recovered. When researchers ran the test, the numbers did not add up. Elton, Gruber, Agrawal and Mann (2001) found that expected default losses account for only a small part of corporate spreads, with taxes and a risk premium making up much of the rest. Collin-Dufresne, Goldstein and Martin (2001) found that changes in spreads are driven largely by a common factor unrelated to firm-specific default risk, and Huang and Huang (2012) showed that structural models calibrated to actual default rates explain only a small fraction of investment-grade spreads. This gap became known as the \textbf{credit spread puzzle}\index{credit spread puzzle}. Gilchrist and Zakraj\v{s}ek (2012) separated the spread into a default component and an excess bond premium, and found that the premium predicts recessions.
+
+The answer bears on what credit investors are paid for, why spreads rise in recessions, and why highly rated structured securities proved so dangerous in 2007--08, when products designed around expected losses met a collapse in risk appetite. The claim on trial\index{claims-on-trial method} is: \textbf{the extra yield on corporate bonds over Treasuries is mostly payment for expected default losses.}
+
+The lab in Section~\ref{sec:15-lab} replicates the decomposition of Elton et al.\ (2001) on a century of Moody's corporate yields from FRED, with published default and recovery rates, and adds the excess bond premium of Gilchrist and Zakraj\v{s}ek (2012), which the Federal Reserve publishes free, in order to check how much of the spread reflects expected defaults and what the rest is paying for.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item explain the replication\index{replication} argument behind Black--Scholes and the assumptions it needs;
-  \item decompose a delta-hedged\index{delta hedging} option's daily P\&L into gamma\index{Greeks!gamma} and theta\index{Greeks!theta}, and compute the break-even daily move;
-  \item estimate the error from hedging at discrete intervals, and explain why it shrinks with the square root of the hedging frequency;
-  \item explain the volatility smile\index{volatility smile} and why it is evidence against the model's assumptions;
-  \item state the claim that delta hedging removes option risk, and test it by hedging along real and simulated market paths;
-  \item judge what risks a ``fully hedged'' option seller or structured-product issuer still carries.
+  \item define credit spreads, default probabilities, recovery rates\index{recovery rate} and loss given default;
+  \item compute the expected-loss spread and the default rate that would justify an observed spread;
+  \item explain the Merton model\index{Merton model}, in which equity is a call option\index{option!call} on the firm's assets;
+  \item distinguish real-world from risk-neutral\index{risk-neutral pricing} default probabilities, and explain why the timing of defaults matters for the spread;
+  \item state the claim that spreads mainly reflect expected losses, and summarize the evidence on the credit spread puzzle\index{credit spread puzzle} and the excess bond premium\index{excess bond premium};
+  \item judge what a credit investor is paid for, and when reaching for yield is likely to disappoint.
 \end{itemize}
 
-\section{Foundations: replication and the Greeks}
+\section{Foundations: spreads, default and recovery}
 \label{sec:15-foundations}
 
-\subsection{Replication}
+\subsection{Credit spread}
 
-Chapter~\ref{ch:14} stated the Black--Scholes--Merton model and its assumptions (Section~\ref{sec:14-bsm}): a geometric Brownian motion with constant volatility\index{volatility} $\sigma$, continuous and costless trading, and a constant risk-free rate\index{risk-free rate}. This chapter tests the argument behind the model. Under those assumptions, a portfolio of $\Delta = \partial V/\partial S$ shares and a bond, rebalanced\index{rebalancing} continuously, has exactly the same value as the option at every moment. Because the option can be replicated, its price must equal the cost of the replicating portfolio. Otherwise there would be an \textbf{arbitrage}\index{arbitrage|textbf}, a riskless profit. The resulting price depends on $\sigma$ but not on the stock's expected return\index{return!expected}.
+The yield on a corporate bond minus the yield on a Treasury of similar maturity. Moody's publishes long-run yield series for seasoned \textbf{Aaa} and \textbf{Baa} bonds, the highest and lowest investment-grade ratings, back to 1919. The \textbf{Baa--Aaa spread}\index{credit spread!default spread (Baa--Aaa)|textbf} compares two corporate yields and avoids some of the differences between corporate and Treasury bonds.
 
-\subsection{Delta hedging}
+\subsection{Default probability (PD)}
 
-\textbf{Delta hedging}\index{delta hedging|textbf} is the same recipe run in reverse. A dealer who sells an option holds $\Delta$ shares to offset it. Over a short interval, the option's value changes by roughly
+\textbf{Default probability (PD)} is the chance that the issuer fails to pay in a given year. Rating agencies publish historical default rates by rating. Moody's reported average annual default rates of 0.27\% for Baa issuers and essentially zero for Aaa over 1920--2006, and about 1\% for Ba, the highest speculative grade (Moody's Investors Service 2007).
+
+\subsection{Recovery rate}
+
+\textbf{Recovery rate ($R$)}\index{recovery rate|textbf} is the fraction of face value investors recover after default, measured by the bond's price shortly after default. Moody's reported an average of 38\% for senior unsecured bonds over 1982--2006. \textbf{Loss given default}\index{loss given default|textbf} is $1 - R$.
+
+\subsection{Expected-loss spread}
+
+A risk-neutral investor, one who cares only about expected payoffs, demands just enough extra yield to cover expected losses. For a one-year horizon with continuous compounding\index{compounding}:
 \begin{equation}
-  dV \approx \Delta\,dS + \tfrac{1}{2}\Gamma\,dS^2 + \Theta\,dt
-  \label{eq:15-taylor}
+  \text{spread} = -\ln\!\left[1 - \mathrm{PD}\,(1 - R)\right] \approx \mathrm{PD}\,(1 - R)
+  \label{eq:15-el}
 \end{equation}
-where $\Delta$, $\Gamma$ and $\Theta$ are the delta\index{Greeks!delta}, gamma and theta of Section~\ref{sec:14-greeks}. The shares offset the first term, delta. They cannot offset the second, gamma, which is the curvature $\partial^2 V/\partial S^2$. The third, theta, is the time decay that the option seller earns.
+Any spread above this is compensation for something else: risk, illiquidity\index{illiquidity} or taxes.
 
-\subsection{The hedging P\&L}
+\subsection{Why spreads can exceed expected losses}
 
-For a seller who hedges at the implied volatility\index{volatility!implied} $\sigma$, the profit over one day is approximately
-\begin{equation}
-  \text{P\&L} \approx \tfrac{1}{2}\,\Gamma S^2 \left(\sigma^2 \Delta t - r^2\right)
-  \label{eq:15-pnl}
-\end{equation}
-where $r$ is that day's return and $\Delta t$ is one day as a fraction of a year. The seller earns theta on quiet days and loses on days when the stock moves more than the implied volatility predicts. Summed over the option's life, the hedged P\&L is a gamma-weighted bet that realized variance\index{volatility!realized} will be below implied variance\index{variance}. In the Black--Scholes world, realized variance equals $\sigma^2$ on average, so the bet is fair and, with continuous hedging, riskless.
+\begin{itemize}
+  \item \textbf{Risk premium.}\index{risk premium|textbf} Defaults cluster in recessions, when investors' other wealth is also falling. Risk-averse\index{risk aversion} investors demand compensation for losses that arrive at bad times.
+  \item \textbf{Liquidity.}\index{liquidity|textbf} Corporate bonds trade less often and at wider bid--ask spreads\index{bid--ask spread} than Treasuries.
+  \item \textbf{Taxes.}\index{taxes|textbf} In the United States, interest on corporate bonds is subject to state income tax; interest on Treasuries is not.
+\end{itemize}
 
-\subsection{Discrete hedging}
+\subsection{The Merton model}
 
-Real hedgers rebalance at intervals. Even in the Black--Scholes world this leaves an error whose standard deviation\index{standard deviation} falls with the square root of the number of rebalances. Kamal and Derman (1999) showed that for an at-the-money\index{option!moneyness} option hedged $N$ times it is about
-\begin{equation}
-  \mathrm{sd}(\text{hedging error}) \approx \sqrt{\frac{\pi}{4}}\;\frac{\sigma \times \text{vega}}{\sqrt{N}}
-  \label{eq:15-kd}
-\end{equation}
-where vega\index{Greeks!vega} is measured per unit of $\sigma$. That is about a fifth of the premium for a one-month option hedged daily. Quadrupling the hedging frequency halves the error (Figure~\ref{fig:15-freq}).
+Merton (1974) treated a firm's equity as a call option on its assets, with the face value of debt as the strike (Figure~\ref{fig:15-merton}). Default occurs if asset value falls below the debt at maturity. The model links credit spreads to leverage\index{leverage} and asset volatility\index{volatility}, and its descendants, \textbf{structural models}\index{Merton model|textbf}, are the standard tool for asking whether spreads are consistent with default risk.
 
 \begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[
-  % Kamal--Derman: hedging error ~ 0.82 / sqrt(N) of the premium
-  declare function={err(\n) = 82/sqrt(\n);}
-]
+\begin{tikzpicture}
 \begin{axis}[
-  width=0.64\linewidth, height=0.34\linewidth,
-  xmode=log,
+  width=0.6\linewidth, height=0.34\linewidth,
   axis lines=left, axis line style={-stealth},
-  xmin=1, xmax=200, ymin=0, ymax=95,
-  xtick={1,4,21,84},
-  xticklabels={1, 4 (weekly), 21 (daily), 84 (4 a day)},
-  ytick={0,20,...,80},
-  xlabel={Rebalances over a one-month option's life, $N$},
-  ylabel={Hedging error (\% of premium)},
-  samples=100, domain=1:200, clip=false,
+  xmin=0, xmax=2, ymin=0, ymax=1.1,
+  xtick={0,1}, xticklabels={$0$, face value of debt $F$},
+  ytick={0,1}, yticklabels={$0$,$F$},
+  xlabel={Firm's asset value at maturity, $V$},
+  ylabel={Payoff},
+  clip=false,
 ]
-  \addplot[fenavy, very thick] {err(x)};
-  \fill[fenavy] (axis cs:4,41)  circle (2.6pt);
-  \fill[fenavy] (axis cs:21,{err(21)}) circle (2.6pt);
-  \fill[fenavy] (axis cs:84,{err(84)}) circle (2.6pt);
-  \node[anchor=south west] at (axis cs:4.4,41)  {41\%};
-  \node[anchor=south west] at (axis cs:23,{err(21)}) {18\%};
-  \node[anchor=south west] at (axis cs:92,{err(84)}) {9\%};
+  % Debt: min(V, F)
+  \addplot[fenavy, very thick] coordinates {(0,0) (1,1) (2,1)};
+  % Equity: max(V - F, 0)
+  \addplot[fegray, very thick, dashed] coordinates {(0,0) (1,0) (2,1)};
+  \node[align=center] at (axis cs:0.48,0.84) {default:\\$V < F$};
+  \node[fenavy] at (axis cs:1.5,0.9) {debt: $\min(V, F)$};
+  \node[fegray, anchor=west, align=left] at (axis cs:1.6,0.36)
+    {equity: $\max(V - F, 0)$,\\a call on the assets};
 \end{axis}
 \end{tikzpicture}
-\caption{Hedging error in the Black--Scholes world, by the Kamal--Derman approximation, for a one-month at-the-money option at 20\% volatility. Hedging weekly leaves an error of about 41\% of the premium, daily about 18\%, and four times a day about 9\%. Each quadrupling of the frequency halves the error.}
-\label{fig:15-freq}
+\caption{The Merton model. At maturity, debtholders receive the firm's asset value $V$ up to the face value of debt $F$, so debt pays $\min(V, F)$. Shareholders receive what is left, $\max(V - F, 0)$, the payoff of a call option on the firm's assets. If $V < F$, the firm defaults.}
+\label{fig:15-merton}
 \end{figure}
 
-\subsection{The volatility smile}
-
-If Black--Scholes were right, every option on the same asset would have the same implied volatility. Section~\ref{sec:14-iv} described the skew, the higher implied volatilities of low-strike index puts, which is also called the \textbf{smile}\index{volatility smile|textbf} when both wings are raised. For this chapter, the skew matters as the market's admission that returns are not lognormal with constant volatility, which is the assumption that delta hedging relies on.
-
-\textbf{Worked example.} The index is at 100, the risk-free rate is 4\%, and a one-month at-the-money call is sold at 20\% implied volatility (Figure~\ref{fig:15-pnl}).
+\textbf{Worked example.} A 10-year Baa bond yields 6\% and a 10-year Treasury 4\%, a spread of 2\% (Figure~\ref{fig:15-decomp}).
 
 \begin{itemize}
-  \item Price \$2.47, delta 0.53, gamma 0.069, theta $-\$0.063$ a day. The dealer sells the call and buys 0.53 units of the index.
-  \item If the index is unchanged the next day, the dealer earns the theta: about \$0.063.
-  \item If the index moves 3 points either way, the gamma loss is $\tfrac{1}{2} \times 0.069 \times 3^2 = \$0.31$, and the dealer loses about $\$0.31 - \$0.063 = \$0.25$ before rebalancing.
-  \item The break-even daily move is $\sqrt{2 \times 0.063/0.069} \approx 1.35$ points, close to the 1.26-point daily standard deviation that 20\% annual volatility implies. Hedging is a wager that daily moves will average less than that.
+  \item With $\mathrm{PD} = 0.27\%$ and $R = 38\%$, the expected-loss spread is $-\ln(1 - 0.0027 \times 0.62) \approx 0.17\%$. Expected losses explain about 8\% of the spread.
+  \item For expected losses to explain the whole 2\%, the annual default rate would have to be about $(1 - e^{-0.02})/0.62 \approx 3.2\%$, roughly twelve times the historical Baa average and well above the long-run average for Ba bonds.
+  \item Even a pessimistic assumption, $\mathrm{PD} = 1\%$ and $R = 20\%$, explains only 0.8\% of the 2\% spread.
 \end{itemize}
 
 \begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[
-  % One-day P&L of a delta-hedged short call: theta - (1/2) gamma dS^2,
-  % with theta = 0.063 and break-even at a move of 1.35 points
-  declare function={pnl(\d) = 0.063 - 0.063*(\d/1.35)^2;}
-]
+\begin{tikzpicture}
 \begin{axis}[
-  width=0.61\linewidth, height=0.34\linewidth,
-  axis lines=left, axis line style={-stealth},
-  xmin=-4, xmax=4, ymin=-0.55, ymax=0.15,
-  xtick={-4,...,4}, ytick={-0.4,-0.2,0},
-  yticklabel style={/pgf/number format/fixed},
-  xlabel={Index move over one day (points)},
-  ylabel={Hedged seller's P\&L (\$)},
-  samples=150, domain=-4:4, clip=false,
+  width=0.61\linewidth, height=2.4cm,
+  axis x line*=bottom, axis y line=none,
+  xmin=0, xmax=2.2, ymin=0, ymax=1,
+  xtick={0,0.2,...,2.2},
+  xticklabel style={/pgf/number format/fixed},
+  xlabel={Spread over Treasuries (percentage points)},
+  clip=false,
 ]
-  \addplot[gray, thin, samples=2] {0};
-  \addplot[fenavy, very thick] {pnl(x)};
-  \foreach \wfX in {-1.35,0,1.35,3} {
-    \edef\wfTmp{\noexpand\fill[fenavy] (axis cs:\wfX,{pnl(\wfX)}) circle (2.6pt);}
-    \wfTmp
-  }
-  \node[anchor=south] at (axis cs:0,0.085) {theta: $+\$0.063$};
-  \node[anchor=south west] at (axis cs:1.5,0.02) {break-even $\pm 1.35$};
-  \node[anchor=west] at (axis cs:3.12,{pnl(3)}) {3-point move: $-\$0.25$};
+  \fill[fenavy]  (axis cs:0,0.35)    rectangle (axis cs:0.17,0.75);
+  \fill[gray!35] (axis cs:0.17,0.35) rectangle (axis cs:2,0.75);
+  % Legend
+  \fill[fenavy]  (axis cs:0.02,1.55) rectangle (axis cs:0.1,1.75);
+  \node[anchor=west] at (axis cs:0.11,1.65) {expected default loss (0.17)};
+  \fill[gray!35] (axis cs:0.02,1.10) rectangle (axis cs:0.1,1.30);
+  \node[anchor=west] at (axis cs:0.11,1.20) {everything else (1.83)};
 \end{axis}
 \end{tikzpicture}
-\caption{The delta-hedged call seller's P\&L over one day in the worked example. The seller earns \$0.063 of theta if the index is unchanged, breaks even on a move of about 1.35 points either way, and loses \$0.25 on a 3-point move. The loss grows with the square of the move.}
-\label{fig:15-pnl}
+\caption{Decomposing the worked example's 2\% Baa spread. At Moody's long-run default and recovery rates, expected default losses account for 0.17 percentage points. The remaining 1.83 points pay for something else: risk, illiquidity or taxes.}
+\label{fig:15-decomp}
 \end{figure}
 
 \section{How it works}
 \label{sec:15-how}
 
-The replication argument can fail in four ways, and each leaves a different fingerprint on the hedging P\&L\index{hedging P\&L}.
+A corporate bond's spread over a Treasury can be split into four pieces:
 
 \begin{center}
 \small
 \begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
 \toprule
-Assumption & What happens in practice & Effect on a hedged option seller \\
+Component & What it pays for & How to measure it \\
 \midrule
-Continuous trading & Hedgers rebalance daily or less often & Random errors that shrink with hedging frequency; present even when the model is right \\
-Constant, known volatility & Volatility changes and clusters (Chapter~\ref{ch:11}) & P\&L tracks realized minus implied variance; losses when volatility rises \\
-Continuous price paths & Prices jump, as in October 1987 or March 2020 & Large losses on jump days that no rebalancing frequency can prevent \\
-No trading costs & Every rebalance pays a spread & A steady drag that grows with hedging frequency \\
+Expected default loss & The average loss from defaults & Historical default rates $\times$ loss given default \\
+Default risk premium & Bearing default losses that cluster in bad times & Residual after expected loss; structural models \\
+Liquidity premium & Costs and delays of trading corporate bonds & Bid--ask spreads, trading volume, bond-specific measures \\
+Tax premium & State taxes on corporate interest & Tax rates applied to the yield \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-The first is a property of the model itself: it would occur even if Black--Scholes were exactly right. The others are failures of its assumptions. A test of the claim must separate them, and the cleanest way is to run the same hedging strategy twice, once on real market paths and once on simulated paths that obey the model exactly. The difference between the two is the cost of the model's being wrong.
+The claim is that the first component dominates. The test has two steps. First, estimate expected losses from historical default and recovery data and compare them with observed spreads. If they explain most of the spread, the claim survives. Second, examine the residual\index{regression!residuals}. If it is small and stable, it might be liquidity or measurement error. If it is large, rises in recessions and forecasts economic activity, it behaves like a risk premium.
 
-\textbf{Jumps are the hardest problem.} Over a day in which the market falls 20\%, the change in the option's value is far from the delta-hedge's change. The gamma term $\tfrac{1}{2}\Gamma\,dS^2$ is enormous, and rebalancing more often does not help, because the jump happens between rebalances. A seller of options is short gamma, so a jump in either direction is a loss.
+\textbf{Real-world and risk-neutral probabilities.} Bond prices imply a \textbf{risk-neutral}\index{risk-neutral pricing|textbf} default probability: the default rate that would justify the spread for an investor who does not care about risk. Historical data give \textbf{real-world} default probabilities. The gap between the two measures how much investors charge for bearing default risk. Hull's textbooks show this gap is large for investment-grade bonds and smaller, relative to the spread, for junk bonds.
 
-\textbf{Volatility changes}\index{volatility|textbf} are a second-order version of the same problem. If realized volatility over the month is twice the implied volatility used to price and hedge the option, the seller loses roughly vega times the gap, regardless of how often the hedge is adjusted.
-
-\textbf{The smile is the market's response.} After October 1987, dealers began to charge more for the risks that delta hedging cannot remove: crashes and volatility spikes. They did so by raising the implied volatility of out-of-the-money puts, the options that pay off in crashes. The smile is thus both evidence against the Black--Scholes assumptions and the price of the residual\index{regression!residuals} risk that delta hedging leaves.
+\textbf{Why the timing of defaults matters.} Two bonds with the same expected loss can deserve very different spreads. A bond whose defaults occur randomly over the cycle adds little risk to a diversified\index{diversification} portfolio. A bond whose defaults all arrive in recessions, when stocks are falling and jobs are at risk, is much less attractive and should pay more. Investment-grade defaults are rare in normal times and concentrated in severe downturns, which is exactly the pattern that should command a large premium.
 
 \section{The claim}
 \label{sec:15-claim}
 
 \begin{callout}
-\textbf{Claim.} An option seller who delta-hedges as Black--Scholes prescribes is left with little risk. Hedging removes most of the variance of the unhedged position, and what remains is small, symmetric and shrinks as hedging becomes more frequent.
+\textbf{Claim.} The yield spread of corporate bonds over Treasuries mostly reflects the losses investors expect from default. Under reasonable assumptions for default rates and recoveries, expected losses account for most of the average spread.
 \end{callout}
 
-This is the claim that justifies treating an option's Black--Scholes price as its cost of production. To test it we need to be precise on four points.
+To test it we need to be precise on three points.
 
 \begin{itemize}
-  \item \textbf{Little risk relative to what.} The benchmark is the unhedged short option. A hedge that removes 90\% of its variance and leaves errors of a fifth of the premium, as in the Black--Scholes world with daily hedging, meets the claim. A hedge that leaves occasional losses of several times the premium does not.
-  \item \textbf{Which volatility.} The seller must price and hedge at some volatility. We use the VIX\index{VIX}, the market's implied volatility, so the test is whether hedging at the market's price leaves little risk.
-  \item \textbf{Which statistic.} The standard deviation of the hedging error captures day-to-day risk. The 1\% quantile\index{quantile} and the worst month capture tail risk. The claim requires both to be small.
-  \item \textbf{What would count against it.} The claim fails if hedging on real paths leaves much more risk than on Black--Scholes paths, if the remaining errors are fat-tailed\index{fat tails}, or if more frequent hedging fails to reduce them.
+  \item \textbf{Mostly.} We take ``mostly'' to mean more than half of the average spread for investment-grade bonds. The claim could hold for junk bonds and fail for investment grade, or the reverse.
+  \item \textbf{Reasonable assumptions.} Default and recovery rates vary over time and by measurement. The test uses long-run averages from rating agencies and checks how far they would have to be stretched to rescue the claim.
+  \item \textbf{What would count against it.} The claim fails if expected losses explain less than half of investment-grade spreads under any plausible assumptions, and if the remainder behaves like compensation for risk: rising in recessions and forecasting weaker economic activity.
 \end{itemize}
 
 \section{The original evidence}
 \label{sec:15-evidence}
 
-\textbf{The model.} Black and Scholes (1973) derived the option price from a hedging argument, and Merton (1973) generalized it and set out the conditions under which it holds. Early empirical tests, including their own (Black and Scholes 1972), found the model a useful approximation with systematic deviations from market prices. Within a few years Black--Scholes prices and deltas were standard on trading floors.
+\textbf{Elton, Gruber, Agrawal and Mann (2001).} Using corporate bond prices and historical default and recovery rates, they found that expected default losses accounted for only a small part of the spread between corporate and Treasury yields. State taxes, which apply to corporate interest but not to Treasury interest, explained a large part. The rest moved with the risk factors that explain stock returns, evidence of a risk premium.
 
-\textbf{Transaction costs.}\index{transaction costs|textbf} Leland (1985) showed that with proportional trading costs, perfect replication is impossible: hedging continuously would cost an infinite amount. He proposed hedging at discrete intervals with an adjusted volatility, raised for an option seller to cover the expected costs, and showed that the adjustment grows as the hedging interval shrinks. Even in principle, the seller faces a trade-off between hedging error and trading costs.
+\textbf{Collin-Dufresne, Goldstein and Martin (2001).} If spreads reflect default risk, changes in spreads should be explained by changes in the variables that drive default in structural models: leverage, asset volatility, interest rates. These explained only about a quarter of the variation in spread changes. Most of the rest was driven by a single common factor across bonds, unrelated to firm-specific default risk.
 
-\textbf{The smile after 1987.}\index{volatility smile|textbf} Rubinstein (1994) documented that before October 1987, implied volatilities of S\&P 500 index options were roughly the same across strikes, as Black--Scholes requires. After the crash, a pronounced skew appeared, with low-strike puts priced at much higher implied volatilities, and it has persisted ever since. He developed implied binomial trees to fit it. The smile is direct evidence that the market does not price options as if Black--Scholes held.
+\textbf{Huang and Huang (2012).} They calibrated a wide range of structural models to historical default losses and equity risk premia and asked how much of observed spreads the models could explain. For investment-grade bonds, credit risk accounted for only a small share of spreads, and an even smaller share at short maturities. For high-yield bonds, it accounted for much more. This gap became known as the \textbf{credit spread puzzle}\index{credit spread puzzle|textbf}.
 
-\textbf{Better models.} Bakshi, Cao and Chen (1997) tested models with stochastic volatility, jumps and stochastic interest rates on S\&P 500 options. Adding stochastic volatility and jumps improved pricing. For hedging, modelling stochastic volatility alone gave the best performance; jumps helped pricing but not hedging, because a jump cannot be hedged with the underlying asset at all.
+\textbf{Gilchrist and Zakraj\v{s}ek (2012).} They split corporate spreads into a component explained by expected default, estimated firm by firm, and a residual they called the \textbf{excess bond premium}\index{excess bond premium|textbf}. The excess bond premium, not the default component, carried most of the information about future economic activity. A rise in it predicted lower output and employment, consistent with a measure of investors' risk appetite and of the health of financial intermediaries.
 
-\textbf{Portfolio insurance.} The most consequential test of dynamic replication was not an academic study. In the 1980s, portfolio insurance programmes used dynamic trading in index futures to replicate a protective put on large equity portfolios. The Brady Commission (Presidential Task Force on Market Mechanisms 1988) estimated that \$60 to \$90 billion of equity assets were under portfolio insurance when the market crashed in October 1987. The What Failed box in Section~\ref{sec:15-investors} tells what happened.
+Some later work narrows the puzzle by modelling default risk that varies with the business cycle\index{business cycle}. None restores expected losses as the main component of investment-grade spreads.
 
-\section{Replication lab: hedging options along real paths}
+\section{Lab~\thechapter: Replicating the Elton et al.\ (2001) spread decomposition}
 \label{sec:15-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:15} at a glance.} \emph{Claim on trial\index{claims-on-trial method}:} delta hedging removes option risk. \emph{Data:} daily market returns from the Kenneth French\index{Kenneth French data library} library and the VIX from FRED\index{FRED}, from 1990; both are free. \emph{Code:} runs as a script (\texttt{python lab15.py}) or as a notebook with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:15} at a glance.} \emph{Papers replicated:} Elton, Gruber, Agrawal and Mann (2001); the excess bond premium of Gilchrist and Zakraj\v{s}ek (2012). \emph{Claim on trial\index{claims-on-trial method}:} credit spreads mainly reflect expected default losses. \emph{Data:} free monthly data from FRED\index{FRED}: Moody's seasoned Aaa and Baa yields from 1919, the 10-year Treasury yield from 1953, the NBER recession indicator and industrial production. The Gilchrist--Zakraj\v{s}ek excess bond premium, published by the Federal Reserve, can be added. \emph{Code:} runs as a script (\texttt{python lab17.py}) or as a notebook with a prediction prompt before each step.
 \end{callout}
 
-At each month end the lab sells a one-month at-the-money call on the market at its Black--Scholes price, using the VIX as the implied volatility. It buys $\Delta$ units of the index, finances them at the risk-free rate, rebalances on a schedule, and pays the option's payoff at expiry. The final value is the \textbf{hedging P\&L}\index{hedging P\&L|textbf}, expressed as a share of the premium. The same strategy is then run on 20 simulated geometric Brownian motion paths per month, using that month's implied volatility, where the Black--Scholes assumptions hold exactly.
+\textbf{Part A, spreads.} The Baa--Aaa spread since 1919 and the Baa--Treasury and Aaa--Treasury spreads since 1953: averages, decade averages, and averages in recessions and expansions (Lab Figure~\ref{ch:15}.1).
 
-\textbf{Part A, residual risk.} Mean, standard deviation, skewness\index{skewness}, 1\% quantile and worst month of the hedged P\&L for daily, two-day, weekly, two-weekly and no hedging, on real and simulated paths, and the share of the unhedged risk removed (Lab Figure~\ref{ch:15}.1).
+\textbf{Part B, decomposition.} The expected-loss spread from adjustable assumptions, by default 0.27\% a year for Baa and zero for Aaa with 38\% recovery, Moody's long-run averages. The lab reports the share of each average spread that expected loss explains, and the default rate that would be needed for expected loss to explain the whole spread at each date (Lab Figures~\ref{ch:15}.2 and~\ref{ch:15}.3).
 
-\textbf{Part B, source.} A regression of the actual P\&L on the gamma--theta approximation of Equation~\eqref{eq:15-pnl} summed over the month (Lab Figure~\ref{ch:15}.3), and on the gap between implied and realized variance.
+\textbf{Part C, the residual as a risk premium.} Regressions of industrial production growth over the next 12 months on each spread, and on the excess bond premium if supplied; growth by spread quintile; and the average path of the Baa--Aaa spread around the start of recessions (Lab Figure~\ref{ch:15}.4).
 
-\textbf{Part C, frictions.} Hedging frequency (Lab Figure~\ref{ch:15}.4) and transaction costs of 0 to 10 basis points\index{basis point} per unit of index traded (Lab Figure~\ref{ch:15}.5).
+\textbf{Part D, stress tests.} The share of the Baa--Treasury spread explained over a grid of default rates from 0.1\% to 2\% and recoveries from 20\% to 60\% (Lab Figure~\ref{ch:15}.5), spread peaks in six crises, and subperiod averages.
 
-\textbf{Part D, tail.} The worst months, with the market move, implied and realized volatility and the largest daily move, and the share of all losses that came from the worst 5\% of months (Lab Figure~\ref{ch:15}.2).
+Three measurement issues affect the decomposition, and they work in different directions.
 
-Two design choices matter for interpretation. First, pricing at the VIX overstates at-the-money implied volatility, as Chapter~\ref{ch:14} explained, so the \emph{mean} hedged P\&L includes the variance risk premium\index{risk premium} plus some overstatement. The \emph{spread} of the P\&L, which is what the claim is about, is little affected. Second, a delta-hedged call and a delta-hedged put with the same strike are the same position, so the lab uses calls only.
+\begin{itemize}
+  \item \textbf{Maturity.} Moody's yields are on long bonds, typically 20 years or more, while the Treasury benchmark is 10 years. When the Treasury curve slopes up, this widens the Baa--Treasury spread for reasons unrelated to credit. The Baa--Aaa spread avoids the problem.
+  \item \textbf{Taxes.}\index{taxes|textbf} State taxes on corporate interest widen corporate--Treasury spreads, but not the Baa--Aaa spread.
+  \item \textbf{Default timing.} Annual average default rates understate losses in the worst decades, such as the 1930s. Part D's grid includes default rates several times the average.
+\end{itemize}
 
-\textbf{What the simulated run shows.} On the simulated Black--Scholes paths, daily hedging leaves a mean P\&L near zero and a standard deviation of about 17\% of the premium, in line with the Kamal--Derman formula, and the error falls steadily as hedging becomes more frequent. On the simulated GARCH\index{GARCH} paths with fat tails, which play the role of real paths in the test run, daily hedging still removes most of the unhedged risk. But the residual is larger, negatively skewed and concentrated: the worst 5\% of months produced most of the losses. The gamma--theta approximation explains most of the P\&L, and the largest deviations from it come in months with big daily moves. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
+\textbf{What the simulated run shows.} The simulation builds the Baa--Aaa spread from a fixed expected loss of 0.15\% plus a premium that jumps in recessions. The lab recovers it: expected loss explains about a quarter of the Baa--Aaa spread, the spread is higher in recessions, and a high spread forecasts weaker output growth. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
 
 \section{Stress tests}
 \label{sec:15-stress}
 
-\textbf{Hedging frequency.} In the Black--Scholes world, hedging four times as often halves the error (Figure~\ref{fig:15-freq}). On real paths, the part of the error that comes from discrete rebalancing\index{delta hedging!discrete rebalancing} falls in the same way, but the parts that come from jumps and volatility changes do not. If the lab finds that moving from weekly to daily hedging reduces risk much less on real paths than on simulated ones, the residual is dominated by risks that rebalancing cannot remove.
+\textbf{Default assumptions.} The obvious defence of the claim is that historical averages understate future defaults. Part D's grid shows how far the assumptions must be stretched. With the 1920--2006 Baa average of 0.27\%, expected loss is a small fraction of a spread of one to two percentage points. To explain most of it, Baa bonds would need to default at well over 1\% a year with low recoveries, every year, which is the long-run experience of speculative-grade Ba bonds, not investment-grade Baa.
 
-\textbf{Transaction costs.}\index{transaction costs|textbf} Every rebalance pays a spread. With costs of a few basis points per unit of index traded, daily hedging can consume a large share of the seller's margin, which is why dealers hedge less often than the model prescribes and why Leland's adjusted volatility exists. The lab's cost experiment shows how quickly the trade-off bites.
+\textbf{The Great Depression.} The 1930s are the worst case for investment-grade defaults in the Moody's data. A default rate several times the long-run Baa average in those years would raise the expected-loss share sharply for that decade. Even then, the claim must explain the spread in the many decades with almost no Baa defaults.
 
-\textbf{Crash months.} The months that matter are those with jumps: October 1987 (before the lab's sample), August 1998, October 2008, August 2011, August 2015, February 2018 and March 2020. In each, a one-month option sold at the start of the month at the prevailing implied volatility faced daily moves far larger than that volatility implied. Expect the hedged seller's worst months to be these, with losses of a multiple of the premium even with daily hedging.
+\textbf{Crises.} Spreads peak in crises: the early 1930s, 1974--75, 1980--82, 2008--09 and March 2020. If spreads were expected losses, the peaks would forecast correspondingly large defaults. In 2008--09 and 2020, investment-grade defaults rose but remained far below what the peak spreads would have required. Spreads widened mainly because investors demanded more to hold risk and because dealers and funds withdrew from the market.
 
-\textbf{Realized versus implied volatility.} The gamma--theta approximation says the hedged P\&L is a bet that realized variance will be below implied. When implied volatility is above realized, as it is in most months (Chapter~\ref{ch:14}), the hedged seller earns a profit. That profit is not evidence that hedging removed risk. It is the variance risk premium, earned by bearing the risk that remains. A hedge that leaves a positive mean and a fat left tail has turned an option position into a short-volatility position, not into a riskless one.
+\textbf{Rating categories.} For high-yield bonds, expected losses are a much larger share of the spread (Huang and Huang 2012). The claim may work for junk bonds and fail for investment grade. Moody's yield series cover only Aaa and Baa, so this lab cannot test it directly; Exercise 1 extends the decomposition using published default rates for lower ratings.
 
-\textbf{Model risk in the hedge ratio.} Black--Scholes deltas assume volatility does not change when the price moves. For stock indexes, volatility tends to rise when prices fall (Chapter~\ref{ch:11}). Hull and White (2017) showed that adjusting the delta for this relation, a \textbf{minimum-variance delta}\index{delta hedging!minimum-variance delta|textbf}, reduces hedging errors for index options. The size of the improvement is itself a measure of how wrong the Black--Scholes hedge ratio is.
+\textbf{Liquidity.}\index{liquidity|textbf} Part of the residual is compensation for illiquidity, and it rises in crises when trading dries up. Separating liquidity from risk is difficult because both rise together in bad times. The Gilchrist--Zakraj\v{s}ek excess bond premium, which strips out firm-level default risk, is a useful check: if it forecasts output as well as the raw spread, the forecasting power does not come from expected defaults.
 
 \section{Verdict}
 \label{sec:15-verdict}
 
 \begin{callout}
-\textbf{Verdict: fails as a description of practice} (as of October 2026). Black--Scholes delta hedging removes most of the day-to-day risk of an option position, but what it leaves is not little and not symmetric. The residual is a bet on realized versus implied volatility, with fat-tailed losses in months with jumps and volatility spikes, and those losses cannot be eliminated by hedging more often.
+\textbf{Verdict: fails} (as of October 2026) for investment-grade bonds. Under historical default and recovery rates, expected default losses explain only a minority of investment-grade spreads, and the remainder behaves like a risk premium that rises in bad times and forecasts weaker economic activity. For high-yield bonds the claim fits better, since expected losses are a much larger share of their spreads.
 \end{callout}
-
-What survives:
-
-\begin{itemize}
-  \item \textbf{Delta hedging works as a first approximation.} It removes most of the variance of an unhedged option position. It is the reason dealers can sell options without betting on market direction, and the reason Black--Scholes remains the industry's common language, even as a quoting convention.
-  \item \textbf{The hedging P\&L is understood.}\index{hedging P\&L|textbf} The gamma--theta approximation explains most of it. A trader knows what bet the hedged book contains: short realized volatility, long implied.
-\end{itemize}
 
 What fails:
 
 \begin{itemize}
-  \item \textbf{The residual is large and fat-tailed.} On real paths, hedging leaves more risk than on Black--Scholes paths, and the worst months bring losses of a multiple of the premium.
-  \item \textbf{More frequent hedging cannot fix it.} Jumps happen between rebalances. Volatility changes are not hedged by the underlying at all. Hedging more often raises costs without removing these risks.
-  \item \textbf{The market knows.} The volatility smile that has existed since 1987 is the market's price for the risks delta hedging leaves. If the claim were true, the smile would not exist.
+  \item \textbf{Expected losses are too small.}\index{credit spread!expected-loss component|textbf} With Moody's long-run Baa default rate of 0.27\% and 38\% recovery, expected loss is under 0.2 percentage points a year, a small fraction of typical Baa spreads. Rescuing the claim requires default rates several times higher, sustained over decades.
+  \item \textbf{Spreads move for other reasons.} Changes in default-risk variables explain only a quarter of spread changes (Collin-Dufresne, Goldstein and Martin 2001), and a common factor drives much of the rest.
+  \item \textbf{The residual is a risk premium.} It rises in recessions, peaks in crises and forecasts weaker output, which is how compensation for bearing risk in bad times should behave (Gilchrist and Zakraj\v{s}ek 2012).
 \end{itemize}
 
-The verdict would move to \emph{weakens} if a simple extension, such as hedging with a minimum-variance delta or adding a small position in other options to hedge vega and gamma, removed most of the tail. That is how dealers actually hedge, and it is why they never rely on delta alone.
+What survives:
+
+\begin{itemize}
+  \item \textbf{Expected losses matter at the margin.} Lower-rated bonds have higher spreads, and expected losses rise with them. Ratings rank spreads correctly even though they do not explain their level.
+  \item \textbf{The claim fits junk bonds better.} For speculative-grade debt, expected losses are a large share of the spread.
+\end{itemize}
+
+The verdict would move to \emph{weakens} if a measure of liquidity explained most of the residual and that liquidity premium did not vary with economic conditions. The evidence so far points the other way: the residual and liquidity both rise in bad times.
 
 \section{What investors can use}
 \label{sec:15-investors}
 
-\textbf{The residual risks inside structured products.} A bank that sells a structured note with a capped equity return or a principal guarantee is short options, and it hedges them dynamically. The hedge removes most of the market risk, but the bank keeps the risks this chapter identifies: jumps, volatility changes and the cost of rebalancing. It charges for them, which is part of why such products are expensive. When an investor buys one, the fee includes the price of risks the bank cannot hedge away.
+\textbf{Credit is compensation for recession risk.} An investor in investment-grade bonds earns a spread well above expected default losses. That is good news on average, but it is pay for a specific risk: losses and price declines that arrive together with stock-market losses and recessions. Credit is not a substitute for Treasuries in a portfolio meant to hedge equity risk.
 
-\textbf{Option-based funds.} A fund that sells options and delta-hedges them is not market-neutral\index{market-neutral} in the sense that matters. It is short volatility: it earns steady returns in calm markets and loses heavily in jumps. Its track record will look smooth until a crash.
+\textbf{The limits of reaching for yield.} In low-rate periods, investors move into lower-rated or longer-maturity credit to earn more. The extra yield is real, but it is paid for bearing more of the same recession risk. A portfolio that has quietly accumulated credit exposure will behave like an equity portfolio in a downturn.
 
-\textbf{Why the smile exists.} The higher implied volatility of out-of-the-money index puts is not a quirk. It is the price of crash risk\index{crash risk}, which delta hedging cannot remove. An investor buying downside protection pays it; an investor selling protection is paid it for bearing the jumps.
+\textbf{Ratings measure expected loss, not timing.} A rating ranks bonds by how likely they are to default and how much investors will lose, on average. It says nothing about whether those losses will arrive in a recession, which is what determines the risk premium.
 
-\textbf{Questions to ask a manager or a structured-product issuer:}
+\textbf{Questions to ask a credit manager:}
 
 \begin{itemize}
-  \item How are the option positions hedged: delta only, or also vega and gamma with other options?
-  \item What happens to the hedge in a one-day move of 10\% or 20\%?
-  \item How often is the hedge rebalanced, and what does rebalancing cost?
-  \item What was the strategy's worst month, and was it in a crash?
+  \item What share of the portfolio's yield above Treasuries would be lost in a recession with default rates like those of 2009?
+  \item How correlated are the portfolio's returns with stocks in bad months?
+  \item How liquid are the holdings in a crisis, and what would it cost to sell them?
+  \item For structured holdings, how do losses depend on correlations\index{correlation} between the underlying loans?
 \end{itemize}
 
 \begin{callout}
-\textbf{What Failed: portfolio insurance, October 1987.} Portfolio insurance, developed by Hayne Leland and Mark Rubinstein, replicated a protective put on an equity portfolio by dynamic trading: selling stock-index futures as the market fell and buying them back as it rose, exactly as delta hedging prescribes. By October 1987, according to the Brady Commission, \$60 to \$90 billion of equity assets were under portfolio insurance.
+\textbf{What Failed: highly rated structured credit before 2008.} By 2007, according to Fitch, roughly 60\% of all global structured products carried AAA ratings, compared with less than 1\% of corporate issues (Coval, Jurek and Stafford 2009). Pooling mortgages and other loans and slicing them into \textbf{tranches}\index{tranches|textbf}, claims with different priority on the pool's losses, allowed issuers to create large quantities of senior securities whose expected default losses, as estimated by rating models, were as low as those of the safest corporate bonds. They were priced accordingly, with spreads similar to other AAA debt.
 
-On October 19, 1987, the market fell more than 20\% in a day. The strategy required insurers to sell at every step down. According to the Brady Commission, portfolio insurers sold the equivalent of about \$4 billion of stock in index futures, more than 40\% of futures volume excluding locals' trades, and just under \$2 billion of stock directly on the New York Stock Exchange. Prices moved faster than the trades could be executed, so the hedge was always behind. Insurers could not trade at the prices their models assumed, so the protection they delivered fell short of the puts they were replicating, and the Brady Commission concluded that their mechanical selling added to the pressure on prices.
-
-The failure was the replication assumption itself: continuous trading at continuous prices. A real put would have paid off regardless of how the market got there. A replicated put depended on trading through the fall, and the market did not allow it. The volatility skew that appeared after the crash has been the market's price for that lesson ever since.
+The mistake was the claim this chapter tests: that a spread need only compensate for expected losses. Senior tranches lose money only when many underlying loans default together, which happens in a severe recession. Their losses are therefore concentrated in exactly the worst states of the world, and they deserved much larger risk premiums than corporate bonds with the same expected loss. In 2007, Moody's downgraded 31\% of the asset-backed CDO tranches it rated, including 14\% of those initially rated AAA, and many more were downgraded in 2008. Investors who had treated rating-based expected losses as the whole story discovered that the timing of losses matters as much as their average.
 \end{callout}
 
 \section{Open questions}
 \label{sec:15-open}
 
 \begin{itemize}
-  \item \textbf{How much of the hedging error is compensation for bearing jump risk?} If the mean hedged P\&L of option sellers is positive, is it just enough to pay for the jumps, or more?
-  \item \textbf{How much better do practical hedges do?} Minimum-variance deltas, vega hedges with other options and stochastic-volatility models all reduce hedging error. How much of the tail do they remove on real paths?
-  \item \textbf{Do short-dated options change the picture?} Options expiring within a day have enormous gamma near expiry. Does dealers' hedging of them amplify intraday moves?
-  \item \textbf{Can machine-learning hedges beat Black--Scholes?} ``Deep hedging'' learns hedging rules directly from data with costs and constraints. Do its gains survive out of sample\index{in-sample versus out-of-sample} and in crashes?
+  \item \textbf{How much of the residual is liquidity rather than risk?} Both rise in bad times. Better measures of bond-level liquidity, and the growth of bond ETFs, offer new ways to separate them.
+  \item \textbf{Has the investor base changed spreads?} Insurance companies, bond funds and ETFs hold most corporate bonds. Do their constraints, such as capital rules tied to ratings or redemption pressure, create premiums unrelated to default?
+  \item \textbf{What did central-bank purchases do?} In 2020 the Federal Reserve announced purchases of corporate bonds, and spreads fell sharply. How much of the premium is the price of intermediaries' balance-sheet capacity\index{capacity}?
+  \item \textbf{Do structural models need fixing or replacing?} Models with time-varying risk and macroeconomic default risk narrow the credit spread puzzle. Do they fit the cross-section of spreads by rating and maturity as well as the average?
 \end{itemize}
 
 \section*{Exercises}
@@ -296,19 +285,19 @@ The failure was the replication assumption itself: continuous trading at continu
 \subsection*{Conceptual (all readers)}
 
 \begin{enumerate}
-  \item For the worked example in Section~\ref{sec:15-foundations}, compute the hedged seller's P\&L over one day if the index moves 1, 2 and 4 points. At what daily move does the seller break even?
-  \item Using the Kamal--Derman approximation, Equation~\eqref{eq:15-kd}, compute the standard deviation of the hedging error, as a share of the premium, for a one-month at-the-money option hedged daily, weekly and four times a day.
-  \item Show that a delta-hedged call and a delta-hedged put with the same strike and expiry have the same hedged P\&L.
+  \item Using Moody's long-run average annual default rates (Ba about 1.1\%, B about 3.5\%) and 38\% recovery, compute the expected-loss spread for Ba and B bonds. If typical spreads are 3\% and 5\%, what share is expected loss? Compare with the Baa result.
+  \item A 5-year Baa bond yields 5.5\% and the 5-year Treasury 4\%. What annual default rate, with 40\% recovery, would make expected losses equal the spread? What does this say about the risk-neutral and real-world default probabilities?
+  \item Explain in words why a bond whose defaults all occur in recessions should pay a higher spread than one with the same expected loss whose defaults occur at random times.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
   \setcounter{enumi}{3}
-  \item Part A: compare the share of unhedged risk removed by daily hedging on real and Black--Scholes paths. Compare the 1\% quantiles. Which comparison is more informative about the claim?
-  \item Part B: what share of the variance of the hedged P\&L does the gamma--theta approximation explain? Find the months with the largest residuals. What happened in them?
-  \item Part C: at what transaction cost does weekly hedging give a higher mean P\&L than daily hedging? What is the effect on the 1\% quantile?
-  \item Part D: compute the share of all hedging losses that came from the worst 5\% of months. Compare it with the Black--Scholes paths.
-  \item Price the option at the VIX but hedge using trailing 21-day realized volatility. How does the P\&L distribution change?
-  \item A structured-product salesperson says the bank's position is ``fully hedged.'' Using this chapter's evidence, explain what risks the bank still carries and how it charges for them.
+  \item Part B: with the default assumptions, what share of the Baa--Treasury and Baa--Aaa spreads does expected loss explain? Why might the two shares differ?
+  \item Part B: plot the break-even default rate. In which months was it lowest? Was it ever below the historical Baa default rate?
+  \item Part C: does the Baa--Aaa spread forecast industrial production growth? If you have the excess bond premium, does it forecast better?
+  \item Part D: find the default and recovery assumptions under which expected loss explains 75\% of the average Baa--Treasury spread. Are they plausible for investment-grade bonds?
+  \item Subtract an estimate of the state tax effect (for example, a 4\% tax rate applied to the corporate yield) and recompute the residual. How much does it shrink?
+  \item A pension fund wants to raise its yield by moving from Treasuries to Baa corporate bonds. Using this chapter's evidence, explain what the fund will be paid for and when it is likely to regret the move.
 \end{enumerate}
