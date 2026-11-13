@@ -1,0 +1,254 @@
+\relax 
+\providecommand\zref@newlabel[2]{}
+\providecommand\hyper@newdestlabel[2]{}
+\@writefile{toc}{\contentsline {chapter}{\numberline {12}Claim: Optimized Portfolios Beat Naive Ones}{143}{chapter.12}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\newlabel{ch:12}{{12}{143}{Claim: Optimized Portfolios Beat Naive Ones}{chapter.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {12.1}Foundations: mean-variance optimization}{144}{section.12.1}\protected@file@percent }
+\newlabel{sec:12-foundations}{{12.1}{144}{Foundations: mean-variance optimization}{section.12.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.1.1}The investor's problem}{144}{subsection.12.1.1}\protected@file@percent }
+\newlabel{sec:12-problem}{{12.1.1}{144}{The investor's problem}{subsection.12.1.1}{}}
+\newlabel{eq:12-mv-objective}{{12.1}{144}{The investor's problem}{equation.12.1.1}{}}
+\newlabel{eq:12-mv-one}{{12.2}{144}{The investor's problem}{equation.12.1.2}{}}
+\newlabel{eq:12-mv}{{12.3}{144}{The investor's problem}{equation.12.1.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.1.2}The efficient frontier}{144}{subsection.12.1.2}\protected@file@percent }
+\newlabel{sec:12-frontier}{{12.1.2}{144}{The efficient frontier}{subsection.12.1.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12.1}{\ignorespaces The efficient frontier. Each gray dot is a single asset, and the curve shows the lowest volatility that any mix of the risky assets can achieve for each expected return. Only the upper half of the curve (solid) is efficient, because each portfolio on the lower half (dashed) is beaten by one directly above it with the same risk and a higher return. The open circle shows the same problem for a portfolio inside the curve: the arrow points to a frontier portfolio with the same volatility and a higher expected return. The two navy dots mark the global minimum-variance portfolio $\mathbf  {w}_{MV}$ of Equation~\eqref  {eq:12-minvar}, at the tip of the curve, and the tangency portfolio $\mathbf  {w}_T$ of Equation~\eqref  {eq:12-tangency}. When investors can also hold Treasury bills, the best combinations lie on the straight line from the origin through the tangency portfolio, whose slope is the highest attainable Sharpe ratio. A more risk-averse investor (high $\gamma $) holds part of wealth in bills, while a less risk-averse investor (low $\gamma $) borrows to hold more of the tangency portfolio. The numbers are illustrative.}}{145}{figure.caption.35}\protected@file@percent }
+\newlabel{fig:12-frontier}{{12.1}{145}{The efficient frontier. Each gray dot is a single asset, and the curve shows the lowest volatility that any mix of the risky assets can achieve for each expected return. Only the upper half of the curve (solid) is efficient, because each portfolio on the lower half (dashed) is beaten by one directly above it with the same risk and a higher return. The open circle shows the same problem for a portfolio inside the curve: the arrow points to a frontier portfolio with the same volatility and a higher expected return. The two navy dots mark the global minimum-variance portfolio $\mathbf {w}_{MV}$ of Equation~\eqref {eq:12-minvar}, at the tip of the curve, and the tangency portfolio $\mathbf {w}_T$ of Equation~\eqref {eq:12-tangency}. When investors can also hold Treasury bills, the best combinations lie on the straight line from the origin through the tangency portfolio, whose slope is the highest attainable Sharpe ratio. A more risk-averse investor (high $\gamma $) holds part of wealth in bills, while a less risk-averse investor (low $\gamma $) borrows to hold more of the tangency portfolio. The numbers are illustrative}{figure.caption.35}{}}
+\newlabel{sec:12-frontier-derivation}{{12.1.2}{145}{The efficient frontier}{figure.caption.35}{}}
+\newlabel{eq:12-two-mean}{{12.4}{145}{The efficient frontier}{equation.12.1.4}{}}
+\newlabel{eq:12-two-var}{{12.5}{145}{The efficient frontier}{equation.12.1.5}{}}
+\newlabel{eq:12-tangency}{{12.6}{146}{The efficient frontier}{equation.12.1.6}{}}
+\newlabel{eq:12-minvar}{{12.7}{146}{The efficient frontier}{equation.12.1.7}{}}
+\newlabel{eq:12-frontier-problem}{{12.8}{146}{The efficient frontier}{equation.12.1.8}{}}
+\newlabel{eq:12-frontier}{{12.9}{146}{The efficient frontier}{equation.12.1.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.1.3}Equal weighting (1/N)}{146}{subsection.12.1.3}\protected@file@percent }
+\newlabel{sec:12-equal}{{12.1.3}{146}{Equal weighting (1/N)}{subsection.12.1.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.1.4}Why the test must be out of sample}{147}{subsection.12.1.4}\protected@file@percent }
+\newlabel{sec:12-oos}{{12.1.4}{147}{Why the test must be out of sample}{subsection.12.1.4}{}}
+\newlabel{eq:12-minvar-hat}{{12.10}{147}{Why the test must be out of sample}{equation.12.1.10}{}}
+\newlabel{eq:12-oos-return}{{12.11}{147}{Why the test must be out of sample}{equation.12.1.11}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {12.2}How it works: why optimization fails and how it is repaired}{148}{section.12.2}\protected@file@percent }
+\newlabel{sec:12-how}{{12.2}{148}{How it works: why optimization fails and how it is repaired}{section.12.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.2.1}Noisy inputs, unstable weights}{148}{subsection.12.2.1}\protected@file@percent }
+\newlabel{sec:12-estimation}{{12.2.1}{148}{Noisy inputs, unstable weights}{subsection.12.2.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12.2}{\ignorespaces The standard error of an average return with 20\% volatility. With ten years of data it is 6.3\% a year; even 90 years leave it at 2.1\%. Differences in expected return between similar assets are far smaller than this, so the optimizer's most important input is mostly noise.}}{148}{figure.caption.36}\protected@file@percent }
+\newlabel{fig:12-se}{{12.2}{148}{The standard error of an average return with 20\% volatility. With ten years of data it is 6.3\% a year; even 90 years leave it at 2.1\%. Differences in expected return between similar assets are far smaller than this, so the optimizer's most important input is mostly noise}{figure.caption.36}{}}
+\newlabel{eq:12-two-weights}{{12.12}{149}{Noisy inputs, unstable weights}{equation.12.2.12}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12.3}{\ignorespaces Tangency weights in the worked example as the correlation between the two assets rises, with expected returns fixed at 8\% and 6\%. At a correlation of 0.5 the split is 71/29; B's weight reaches zero at 0.75; at 0.9 the optimizer holds 186\% in A and shorts 86\% of B.}}{149}{figure.caption.37}\protected@file@percent }
+\newlabel{fig:12-weights}{{12.3}{149}{Tangency weights in the worked example as the correlation between the two assets rises, with expected returns fixed at 8\% and 6\%. At a correlation of 0.5 the split is 71/29; B's weight reaches zero at 0.75; at 0.9 the optimizer holds 186\% in A and shorts 86\% of B}{figure.caption.37}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.2.2}Repairs}{150}{subsection.12.2.2}\protected@file@percent }
+\newlabel{sec:12-repairs}{{12.2.2}{150}{Repairs}{subsection.12.2.2}{}}
+\newlabel{eq:12-shrink}{{12.13}{150}{Repairs}{equation.12.2.13}{}}
+\newlabel{eq:12-rc}{{12.14}{150}{Repairs}{equation.12.2.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.2.3}When optimized portfolios help and when they hurt}{150}{subsection.12.2.3}\protected@file@percent }
+\newlabel{sec:12-regimes}{{12.2.3}{150}{When optimized portfolios help and when they hurt}{subsection.12.2.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12.1}{\ignorespaces How common allocation rules tend to behave in different markets.}}{151}{table.caption.38}\protected@file@percent }
+\newlabel{tab:12-regimes}{{12.1}{151}{How common allocation rules tend to behave in different markets}{table.caption.38}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.2.4}How practitioners use optimization}{151}{subsection.12.2.4}\protected@file@percent }
+\newlabel{sec:12-practice}{{12.2.4}{151}{How practitioners use optimization}{subsection.12.2.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {12.3}The claim}{152}{section.12.3}\protected@file@percent }
+\newlabel{sec:12-claim}{{12.3}{152}{The claim}{section.12.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {12.4}The original evidence}{152}{section.12.4}\protected@file@percent }
+\newlabel{sec:12-evidence}{{12.4}{152}{The original evidence}{section.12.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {12.5}Lab~12: Replicating DeMiguel, Garlappi and Uppal (2009)}{153}{section.12.5}\protected@file@percent }
+\newlabel{sec:12-lab}{{12.5}{153}{Lab~\thechapter : Replicating DeMiguel, Garlappi and Uppal (2009)}{section.12.5}{}}
+\newlabel{eq:12-ce}{{12.15}{154}{Lab~\thechapter : Replicating DeMiguel, Garlappi and Uppal (2009)}{equation.12.5.15}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {12.6}Stress tests}{155}{section.12.6}\protected@file@percent }
+\newlabel{sec:12-stress}{{12.6}{155}{Stress tests}{section.12.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {12.7}Verdict}{155}{section.12.7}\protected@file@percent }
+\newlabel{sec:12-verdict}{{12.7}{155}{Verdict}{section.12.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {12.8}What investors can use}{156}{section.12.8}\protected@file@percent }
+\newlabel{sec:12-investors}{{12.8}{156}{What investors can use}{section.12.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {12.9}Open questions}{157}{section.12.9}\protected@file@percent }
+\newlabel{sec:12-open}{{12.9}{157}{Open questions}{section.12.9}{}}
+\@writefile{toc}{\contentsline {section}{Exercises}{157}{section.12.9}\protected@file@percent }
+\@setckpt{chapters/ch12}{
+\setcounter{page}{158}
+\setcounter{equation}{15}
+\setcounter{enumi}{9}
+\setcounter{enumii}{0}
+\setcounter{enumiii}{0}
+\setcounter{enumiv}{0}
+\setcounter{footnote}{0}
+\setcounter{mpfootnote}{0}
+\setcounter{part}{4}
+\setcounter{chapter}{12}
+\setcounter{section}{9}
+\setcounter{subsection}{0}
+\setcounter{subsubsection}{0}
+\setcounter{paragraph}{0}
+\setcounter{subparagraph}{0}
+\setcounter{figure}{3}
+\setcounter{table}{1}
+\setcounter{@bropd@c}{0}
+\setcounter{@bropd@d}{0}
+\setcounter{@bropd@e}{0}
+\setcounter{@bropd@f}{0}
+\setcounter{r@tfl@t}{0}
+\setcounter{parentequation}{0}
+\setcounter{@pps}{0}
+\setcounter{@ppsavesec}{0}
+\setcounter{@ppsaveapp}{0}
+\setcounter{@todonotes@numberoftodonotes}{0}
+\setcounter{section@level}{0}
+\setcounter{Item}{233}
+\setcounter{Hfootnote}{0}
+\setcounter{bookmark@seq@number}{218}
+\setcounter{hdr@segments}{0}
+\setcounter{caption@flags}{2}
+\setcounter{continuedfloat}{0}
+\setcounter{tcbbreakpart}{2}
+\setcounter{tcblayer}{0}
+\setcounter{tcolorbox@number}{75}
+\setcounter{tcbrastercolumn}{1}
+\setcounter{tcbrasterrow}{1}
+\setcounter{tcbrasternum}{1}
+\setcounter{tcbraster}{0}
+\setcounter{lstnumber}{1}
+\setcounter{tcblisting}{0}
+\setcounter{lastpagecount}{0}
+\setcounter{thmt@dummyctr}{0}
+\setcounter{mdf@globalstyle@cnt}{2}
+\setcounter{mdfcountframes}{0}
+\setcounter{mdf@env@i}{0}
+\setcounter{mdf@env@ii}{0}
+\setcounter{mdf@zref@counter}{0}
+\setcounter{bclogocompteur}{0}
+\setcounter{ttlp@side}{0}
+\setcounter{AM@survey}{0}
+\setcounter{LT@tables}{3}
+\setcounter{LT@chunks}{5}
+\setcounter{idxcols}{2}
+\setcounter{defi}{0}
+\setcounter{thm}{0}
+\setcounter{lem}{0}
+\setcounter{prop}{0}
+\setcounter{exam}{0}
+\setcounter{cor}{0}
+\setcounter{tcbprob}{0}
+\setcounter{tcblem}{0}
+\setcounter{tcbcor}{0}
+\setcounter{tcbprop}{0}
+\setcounter{tcbdefi}{0}
+\setcounter{tcbexam}{0}
+\setcounter{tcbexer}{0}
+\setcounter{tcbthm}{0}
+\setcounter{tcbconj}{0}
+\setcounter{tabx@nest}{0}
+\setcounter{listtotal}{0}
+\setcounter{listcount}{0}
+\setcounter{liststart}{0}
+\setcounter{liststop}{0}
+\setcounter{citecount}{0}
+\setcounter{citetotal}{0}
+\setcounter{multicitecount}{0}
+\setcounter{multicitetotal}{0}
+\setcounter{instcount}{0}
+\setcounter{maxnames}{3}
+\setcounter{minnames}{1}
+\setcounter{maxitems}{3}
+\setcounter{minitems}{1}
+\setcounter{citecounter}{0}
+\setcounter{maxcitecounter}{0}
+\setcounter{savedcitecounter}{0}
+\setcounter{uniquelist}{0}
+\setcounter{uniquename}{0}
+\setcounter{refsection}{0}
+\setcounter{refsegment}{0}
+\setcounter{maxextratitle}{0}
+\setcounter{maxextratitleyear}{0}
+\setcounter{maxextraname}{0}
+\setcounter{maxextradate}{0}
+\setcounter{maxextraalpha}{0}
+\setcounter{abbrvpenalty}{50}
+\setcounter{highnamepenalty}{50}
+\setcounter{lownamepenalty}{25}
+\setcounter{maxparens}{3}
+\setcounter{parenlevel}{0}
+\setcounter{blx@maxsection}{0}
+\setcounter{mincomprange}{10}
+\setcounter{maxcomprange}{100000}
+\setcounter{mincompwidth}{1}
+\setcounter{afterword}{0}
+\setcounter{savedafterword}{0}
+\setcounter{annotator}{0}
+\setcounter{savedannotator}{0}
+\setcounter{author}{0}
+\setcounter{savedauthor}{0}
+\setcounter{bookauthor}{0}
+\setcounter{savedbookauthor}{0}
+\setcounter{commentator}{0}
+\setcounter{savedcommentator}{0}
+\setcounter{editor}{0}
+\setcounter{savededitor}{0}
+\setcounter{editora}{0}
+\setcounter{savededitora}{0}
+\setcounter{editorb}{0}
+\setcounter{savededitorb}{0}
+\setcounter{editorc}{0}
+\setcounter{savededitorc}{0}
+\setcounter{foreword}{0}
+\setcounter{savedforeword}{0}
+\setcounter{holder}{0}
+\setcounter{savedholder}{0}
+\setcounter{introduction}{0}
+\setcounter{savedintroduction}{0}
+\setcounter{namea}{0}
+\setcounter{savednamea}{0}
+\setcounter{nameb}{0}
+\setcounter{savednameb}{0}
+\setcounter{namec}{0}
+\setcounter{savednamec}{0}
+\setcounter{translator}{0}
+\setcounter{savedtranslator}{0}
+\setcounter{shortauthor}{0}
+\setcounter{savedshortauthor}{0}
+\setcounter{shorteditor}{0}
+\setcounter{savedshorteditor}{0}
+\setcounter{labelname}{0}
+\setcounter{savedlabelname}{0}
+\setcounter{institution}{0}
+\setcounter{savedinstitution}{0}
+\setcounter{lista}{0}
+\setcounter{savedlista}{0}
+\setcounter{listb}{0}
+\setcounter{savedlistb}{0}
+\setcounter{listc}{0}
+\setcounter{savedlistc}{0}
+\setcounter{listd}{0}
+\setcounter{savedlistd}{0}
+\setcounter{liste}{0}
+\setcounter{savedliste}{0}
+\setcounter{listf}{0}
+\setcounter{savedlistf}{0}
+\setcounter{location}{0}
+\setcounter{savedlocation}{0}
+\setcounter{organization}{0}
+\setcounter{savedorganization}{0}
+\setcounter{origlocation}{0}
+\setcounter{savedoriglocation}{0}
+\setcounter{origpublisher}{0}
+\setcounter{savedorigpublisher}{0}
+\setcounter{publisher}{0}
+\setcounter{savedpublisher}{0}
+\setcounter{language}{0}
+\setcounter{savedlanguage}{0}
+\setcounter{origlanguage}{0}
+\setcounter{savedoriglanguage}{0}
+\setcounter{pageref}{0}
+\setcounter{savedpageref}{0}
+\setcounter{textcitecount}{0}
+\setcounter{textcitetotal}{0}
+\setcounter{textcitemaxnames}{0}
+\setcounter{biburlbigbreakpenalty}{100}
+\setcounter{biburlbreakpenalty}{200}
+\setcounter{biburlnumpenalty}{0}
+\setcounter{biburlucpenalty}{0}
+\setcounter{biburllcpenalty}{0}
+\setcounter{smartand}{1}
+\setcounter{bbx:relatedcount}{0}
+\setcounter{bbx:relatedtotal}{0}
+\setcounter{lstlisting}{0}
+}
