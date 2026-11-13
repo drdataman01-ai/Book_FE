@@ -1,4 +1,4 @@
-% Chapter 10 -- Claim: Volatility Is Predictable
+% Chapter 13 -- Claim: Diversification Fails When You Need It Most
 % Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -12,365 +12,278 @@
 }{}
 \makeatother
 
-\chapter{Claim: Volatility Is Predictable}
-\label{ch:10}
+\chapter{Claim: Diversification Fails When You Need It Most}
+\label{ch:13}
 
-Mandelbrot (1963) observed that in commodity prices large changes tend to be followed by large changes, of either sign, and small changes by small changes. For two decades the observation had no model. Engle (1982) supplied one, the autoregressive conditional heteroskedasticity, or ARCH, model, in which today's variance depends on yesterday's squared shocks, and Bollerslev (1986) generalized it into GARCH, which became the standard model of financial volatility. The pattern is easy to see in market history. A quiet day tends to follow another quiet day, and a violent day another violent one; the 1987 crash, the autumn of 2008 and March 2020 each arrived as a run of violent days.
+Diversification\index{diversification} is often called the only free lunch in finance. Combine assets that do not move in lockstep, and the portfolio's risk falls below the average risk of its parts at no cost in expected return\index{return!expected}. Every balanced fund, target-date fund and pension portfolio rests on that arithmetic. The crash of October 1987, when markets around the world fell together, raised a doubt that has never gone away: perhaps correlations\index{correlation} rise exactly when diversification is needed.
 
-The claim carries a great deal of weight. Option prices, risk limits, Value at Risk\index{Value at Risk (VaR)}, margin requirements\index{margin} and volatility-targeting\index{volatility targeting} funds all assume that volatility\index{volatility} can be forecast. Yet in the 1990s the evidence looked weak: GARCH forecasts explained only a few percent of the variation in squared daily returns. Andersen and Bollerslev (1998) showed that the fault lay with the yardstick, because a single squared return is a very noisy measure of a day's variance, and that forecasts look good when judged against realized variance\index{realized variance} built from intraday data. Hansen and Lunde (2005) found that a simple GARCH(1,1) is hard to beat, Corsi (2009) introduced the HAR model, and Moreira and Muir (2017) argued that investors can earn higher Sharpe ratios by scaling their exposure to forecast volatility, a claim that Cederburg, O'Doherty, Wang and Yan (2020) challenged.
+Testing the doubt turned out to be subtle. Longin and Solnik (2001) used extreme-value methods on international equity markets and found that correlations rise in large market falls but not in large rises. Ang and Chen (2002) found the same asymmetry for U.S. stock portfolios. Forbes and Rigobon (2002) then showed that a correlation measured in a turbulent period is biased upward simply because volatility is higher, so part of the apparent ``contagion'' is a statistical artefact. Campbell, Sunderam and Viceira (2017) turned to the other pillar of diversification, government bonds, and showed that the correlation between stocks and bonds changed sign around 2000 as the inflation regime changed. In 2022, when inflation returned, stocks and Treasury bonds fell together.
 
-Part III asked whether anything forecasts the \emph{level} of returns, and the answers were mostly modest. This chapter asks about their \emph{size}, and the contrast is the point: the same out-of-sample tools that rejected most return forecasts find strong evidence here. The open question is less \emph{whether} than \emph{how well}, \emph{at what horizon}, \emph{by which model}, and whether an investor can turn the forecasts into better returns. The claim on trial\index{claims-on-trial method} is: \textbf{tomorrow's volatility can be forecast well from today's information, and the forecasts are good enough to improve a portfolio.}
+The implications reach every asset allocator. If correlations rise in crises, risk models built on calm-period data understate losses, and investors need assets that hedge specifically in bad times. If the rise is mostly an artefact, the free lunch is safer than its critics claim. The claim on trial\index{claims-on-trial method} is: \textbf{correlations between stocks, and between stocks and bonds, rise in crashes, so diversification fails in exactly the periods it is meant for.}
 
-The lab in Section~\ref{sec:10-lab} replicates the proxy result of Andersen and Bollerslev (1998) and the model comparison of Hansen and Lunde (2005) on free daily U.S. market returns since 1926 and the VIX since 1990, and then rebuilds the volatility-managed portfolios of Moreira and Muir (2017), in order to check how predictable volatility is, which model forecasts it best, and whether the forecasts are useful to an investor.
+The lab in Section~\ref{sec:13-lab} replicates the exceedance correlations of Longin and Solnik (2001) and the correction of Forbes and Rigobon (2002) with free U.S., international and industry returns from the Kenneth R. French Data Library, and follows the stock--bond correlation of Campbell, Sunderam and Viceira (2017) with FRED yields and inflation, in order to check whether diversification really fails in crises and which assets still protected investors when it mattered.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item annualize a daily volatility and explain why models work in variance\index{variance};
-  \item compute historical, EWMA\index{EWMA} and GARCH\index{GARCH} volatility forecasts\index{volatility!forecasting}, the long-run variance\index{GARCH!unconditional variance} and the half-life\index{half-life} of a shock;
-  \item explain realized variance\index{volatility!realized}, the HAR\index{HAR model} model, implied volatility\index{volatility!implied}, the VIX\index{VIX} and the variance risk premium\index{risk premium};
-  \item state the claim that volatility is predictable in a form that can fail, and summarize the evidence for it;
-  \item evaluate volatility forecasts with robust loss functions\index{loss function} such as QLIKE\index{loss function!QLIKE}, and with Mincer--Zarnowitz and Diebold--Mariano\index{Diebold--Mariano test} tests;
-  \item judge whether volatility timing improves an investor's returns once forecasts are made in real time and costs and leverage\index{leverage} limits apply.
+  \item compute portfolio volatility\index{volatility} from correlations, and explain why average correlation sets a floor on diversification;
+  \item measure the diversification ratio\index{diversification!ratio};
+  \item explain why measured correlation rises with volatility, and apply the Forbes--Rigobon\index{correlation!Forbes--Rigobon correction} correction;
+  \item interpret exceedance correlations\index{correlation!exceedance} and tail dependence\index{tail dependence} against a normal benchmark;
+  \item explain why the stock--bond correlation\index{correlation!stock--bond} changes sign with the inflation\index{inflation} regime;
+  \item separate the statistical claim (correlations rise in crises) from the economic one (diversified portfolios fail), and judge a portfolio by its losses in bad months.
 \end{itemize}
 
-\section{Foundations: measuring and modelling volatility}
-\label{sec:10-foundations}
+\section{Foundations: correlation, diversification and how crisis correlations are measured}
+\label{sec:13-foundations}
 
-\subsection{Volatility and variance}
+\subsection{Correlation and diversification}
 
-Volatility, the standard deviation\index{standard deviation} of returns, and its annualization were introduced in Section~\ref{sec:01-expret}. This chapter works mostly with daily data, so a daily standard deviation $\sigma_d$ is annualized as $\sigma_d\sqrt{252}$, since there are about 252 trading days in a year; a 1\% daily volatility is therefore about 16\% a year. The square root assumes returns are uncorrelated from day to day, which is close to true for daily stock returns (Section~\ref{sec:10-how}). Variance is volatility squared. Most models work in variance, because variances of uncorrelated returns add: the variance over the next $h$ days is the sum of the daily variances.
-
-\subsection{Historical volatility}
-
-\textbf{Historical volatility}\index{volatility!historical|textbf} is the sample standard deviation over a past window, such as the last 22 trading days (about one month). It weights every day in the window equally and drops days abruptly when they leave it. Because daily mean returns are tiny compared with daily volatility, practitioners usually set the mean to zero and estimate variance as the average squared return.
-
-\subsection{EWMA}
-
-\textbf{EWMA}\index{EWMA|textbf} (exponentially weighted moving average), popularized by J.P. Morgan's RiskMetrics\index{RiskMetrics} in 1994, weights recent days more heavily:
+For two assets with weights $w_1$ and $w_2$, volatilities $\sigma_1$ and $\sigma_2$ and correlation $\rho$, portfolio variance\index{variance} is
 \begin{equation}
-  \sigma^2_t = \lambda\,\sigma^2_{t-1} + (1 - \lambda)\,r^2_{t-1}
-  \label{eq:10-ewma}
+  \sigma_p^2 = w_1^2\sigma_1^2 + w_2^2\sigma_2^2 + 2w_1w_2\rho\,\sigma_1\sigma_2
+  \label{eq:13-var2}
 \end{equation}
-RiskMetrics set $\lambda = 0.94$ for daily data. Yesterday's squared return gets weight 6\%, the day before $0.94 \times 6\% \approx 5.6\%$, and so on (Figure~\ref{fig:10-ewma}).
-
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.64\linewidth, height=0.36\linewidth,
-  axis lines=left, axis line style={-stealth},
-  xmin=0, xmax=41, ymin=0, ymax=7.3,
-  xtick={0,5,...,40}, ytick={0,2,4,6},
-  xlabel={Days ago},
-  ylabel={Weight on that day's squared return (\%)},
-  legend style={draw=none, fill=none, at={(0.98,0.98)}, anchor=north east,
-                cells={anchor=west}, font=\small},
-  legend cell align=left,
-]
-  % EWMA weights: (1 - lambda) * lambda^(k-1), lambda = 0.94
-  \addplot[ybar, area legend, bar width=0.5, fill=fenavy, draw=none,
-           domain=1:40, samples=40] {100*0.06*0.94^(x-1)};
-  \addlegendentry{EWMA, $\lambda = 0.94$}
-  % Historical window: 1/22 on each of the last 22 days
-  \addplot[fegray, very thick, const plot] coordinates
-    {(0.5,4.545) (22.5,4.545) (22.5,0)};
-  \addlegendentry{22-day window, equal weights}
-\end{axis}
-\end{tikzpicture}
-\caption{Weights on past squared returns. A 22-day historical window gives each day the same weight and then drops it abruptly. EWMA gives the most weight to yesterday and fades older days gradually, so it reacts faster to news and never drops a day all at once.}
-\label{fig:10-ewma}
-\end{figure}
-
-\subsection{GARCH(1,1)}
-\label{sec:10-garch}
-
-\textbf{GARCH(1,1)}\index{GARCH|textbf} (generalized autoregressive conditional heteroskedasticity\index{heteroskedasticity}) adds a pull toward a long-run level:
+The lower the correlation, the lower the portfolio's risk. With $N$ assets of equal volatility $\sigma$ and equal pairwise correlation $\rho$, an equally weighted portfolio has variance
 \begin{equation}
-  \sigma^2_t = \omega + \alpha\,r^2_{t-1} + \beta\,\sigma^2_{t-1}
-  \label{eq:10-garch}
+  \sigma_p^2 = \sigma^2\left[\rho + \frac{1 - \rho}{N}\right]
+  \label{eq:13-varN}
 \end{equation}
-Here $\alpha$ measures how strongly a new shock moves the forecast, and $\beta$ measures how long the effect lasts. Four quantities follow from the parameters:
+As $N$ grows, the variance falls toward $\rho\sigma^2$. The average correlation therefore sets a floor on how much risk diversification can remove (Figure~\ref{fig:13-floor}). The \textbf{diversification ratio}\index{diversification!ratio|textbf}, the weighted average of the assets' volatilities divided by the portfolio's volatility, measures the benefit. A ratio of 1 means none.
 
-\begin{itemize}
-  \item \textbf{Persistence}\index{persistence|textbf} is $\alpha + \beta$, which must be below 1.
-  \item The \textbf{long-run variance}\index{GARCH!unconditional variance|textbf} is $V = \omega / (1 - \alpha - \beta)$.
-  \item Forecasts revert to $V$ geometrically: the expected variance $k$ days ahead is
-  \begin{equation}
-    E_t[\sigma^2_{t+k}] = V + (\alpha + \beta)^{k-1}\left(\sigma^2_{t+1} - V\right)
-    \label{eq:10-forecast}
-  \end{equation}
-  \item The \textbf{half-life}\index{half-life|textbf} of a volatility shock, the time for half of it to fade, is $\ln 0.5 / \ln(\alpha + \beta)$.
-\end{itemize}
-
-EWMA is the special case $\omega = 0$, $\alpha = 1 - \lambda$, $\beta = \lambda$, with persistence exactly 1, so EWMA forecasts never revert. \textbf{GJR-GARCH}\index{GARCH!GJR|textbf} adds a term $\gamma\,r^2_{t-1}\,\mathbf{1}[r_{t-1} < 0]$, where the indicator $\mathbf{1}[\cdot]$ is 1 when its condition holds and 0 otherwise, so falls raise volatility more than rises. This asymmetry is the \textbf{leverage effect}\index{leverage effect|textbf}. The parameters are estimated by \textbf{maximum likelihood}\index{maximum likelihood|textbf}: choosing the values that make the observed returns most probable under the model.
-
-\subsection{Realized variance}
-\label{sec:10-rv}
-
-\textbf{Realized variance}\index{volatility!realized|textbf} sums squared returns within a period, such as squared five-minute returns within a day. With enough intraday data it measures that day's variance almost exactly. The \textbf{HAR model}\index{HAR model|textbf} (heterogeneous autoregressive) forecasts tomorrow's realized variance by regressing it on the averages of the last day, week and month.
-
-\subsection{Implied volatility}
-\label{sec:10-iv}
-
-\textbf{Implied volatility}\index{volatility!implied|textbf} is the volatility that makes an option's market price equal its model price (Chapter~\ref{ch:16}). The \textbf{VIX}\index{VIX|textbf} is the market's 30-day implied volatility for the S\&P 500, computed from a strip of index options. It is a forecast under the \emph{risk-neutral\index{risk-neutral pricing}} measure, the probabilities that price assets as if investors did not care about risk, not the real-world probabilities. Investors pay a premium to insure against volatility, so the VIX usually exceeds the volatility that follows. The gap is the \textbf{variance risk premium}\index{variance|textbf}.
-
-\textbf{Worked example.} Yesterday's daily volatility estimate was 1.6\% (variance 0.000256), and the market then fell 3\% ($r^2 = 0.0009$).
-
-\begin{itemize}
-  \item EWMA with $\lambda = 0.94$: $\sigma^2 = 0.94 \times 0.000256 + 0.06 \times 0.0009 = 0.000295$. Volatility rises to 1.72\% a day, or 27\% annualized.
-  \item GARCH with $\omega = 0.000002$, $\alpha = 0.08$ and $\beta = 0.90$:
-  \begin{itemize}
-    \item $\sigma^2 = 0.000002 + 0.08 \times 0.0009 + 0.90 \times 0.000256 = 0.000304$, or 1.74\% a day.
-    \item Persistence is 0.98, so the long-run variance is $0.000002 / 0.02 = 0.0001$: 1\% a day, or 15.9\% a year. The half-life is $\ln 0.5 / \ln 0.98 \approx 34$ trading days (Figure~\ref{fig:10-garch}).
-    \item The variance over the next ten days is $10 \times 0.0001 + (0.000304 - 0.0001) \times (1 - 0.98^{10})/(1 - 0.98) = 0.00287$. Ten-day volatility is 5.4\%, or 26.9\% annualized. That is below the 27.7\% you would get by assuming today's 1.74\% persists, because the forecast is already reverting.
-  \end{itemize}
-\end{itemize}
+\textbf{Worked example.} Ten industries each have 20\% volatility. At an average correlation of 0.6, an equally weighted portfolio has volatility $20\% \times \sqrt{0.6 + 0.4/10} = 16.0\%$. If the correlation rises to 0.8, the volatility rises to $20\% \times \sqrt{0.8 + 0.2/10} = 18.1\%$. A rise in correlation of that size wipes out half of the diversification benefit, from 4 points of volatility to under 2.
 
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[
-  % Variance gap to the long-run level halves every 34 trading days
-  declare function={vol(\k) = sqrt(15.9^2 + (27.7^2 - 15.9^2)*0.5^((\k-1)/34));}
+  % Equally weighted portfolio of N assets, each with 20% volatility
+  declare function={pvol(\n,\r) = 20*sqrt(1/\n + (1 - 1/\n)*\r);}
 ]
 \begin{axis}[
-  width=0.64\linewidth, height=0.34\linewidth,
+  width=0.54\linewidth, height=0.34\linewidth,
   axis lines=left, axis line style={-stealth},
-  xmin=0, xmax=150, ymin=12, ymax=30,
-  xtick={0,20,...,140}, ytick={15,20,25,30},
-  xlabel={Trading days ahead},
-  ylabel={Forecast volatility (\% a year)},
-  clip=false,
+  xmin=1, xmax=50, ymin=14, ymax=20.5,
+  xtick={5,10,...,50}, ytick={14,16,18,20},
+  xlabel={Number of assets, $N$},
+  ylabel={Portfolio volatility (\%)},
+  samples at={1,...,50}, clip=false,
 ]
-  \addplot[fegray, dashed, domain=0:150, samples=2] {15.9};
-  \addplot[fenavy, very thick, domain=1:150, samples=150] {vol(x)};
-  \draw[fenavy, dashed] (axis cs:35,12) -- (axis cs:35,{vol(35)});
-  \node[fenavy, anchor=west] at (axis cs:4,27.4) {tomorrow: 27.7\%};
-  \node[fenavy, anchor=south west] at (axis cs:37,16.3) {half-life: 34 days};
-  \node[fegray, anchor=north east] at (axis cs:148,15.6) {long-run level, 15.9\%};
+  % Floors set by the average correlation
+  \addplot[densely dotted, domain=1:50, samples=2] {20*sqrt(0.8)};
+  \addplot[densely dotted, domain=1:50, samples=2] {20*sqrt(0.6)};
+  \addplot[fegray, very thick, dashed] {pvol(x,0.8)};
+  \addplot[fenavy, very thick] {pvol(x,0.6)};
+  \fill[fegray] (axis cs:10,{pvol(10,0.8)}) circle (2.4pt);
+  \fill[fenavy] (axis cs:10,{pvol(10,0.6)}) circle (2.4pt);
+  \node[anchor=south west] at (axis cs:10.3,{pvol(10,0.8)+0.05}) {18.1\%};
+  \node[anchor=south west] at (axis cs:10.3,{pvol(10,0.6)+0.05}) {16.0\%};
+  \node[fegray, anchor=west, align=left] at (axis cs:51,17.9) {$\rho = 0.8$:\\floor 17.9\%};
+  \node[fenavy, anchor=west, align=left] at (axis cs:51,15.5) {$\rho = 0.6$:\\floor 15.5\%};
 \end{axis}
 \end{tikzpicture}
-\caption{A GARCH forecast reverting to its long-run level, from the worked example. After a 3\% fall the forecast for tomorrow is 27.7\% a year; it then decays toward 15.9\%, losing half of the gap every 34 trading days.}
-\label{fig:10-garch}
+\caption{Volatility of an equally weighted portfolio of assets with 20\% volatility each. Adding assets helps only down to a floor set by the average correlation: 15.5\% at a correlation of 0.6 and 17.9\% at 0.8. With ten assets, as in the worked example, a rise from 0.6 to 0.8 lifts volatility from 16.0\% to 18.1\%.}
+\label{fig:13-floor}
 \end{figure}
+
+\subsection{Why measured correlation rises when volatility rises}
+
+Suppose $y = \beta x + e$, with the noise $e$ unchanged when $x$ becomes more volatile. The correlation of $x$ and $y$ is
+\begin{equation}
+  \rho = \frac{\beta\sigma_x}{\sqrt{\beta^2\sigma_x^2 + \sigma_e^2}}
+  \label{eq:13-bias}
+\end{equation}
+which rises with $\sigma_x$ even though the link between the two markets, $\beta$, has not changed (Figure~\ref{fig:13-bias}). Correlations measured in turbulent periods are therefore \textbf{biased upward} (Boyer, Gibson and Loretan 1999).
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  % y = x + e with sigma_e = 20%: measured correlation = sigma_x / sqrt(sigma_x^2 + 20^2)
+  declare function={rho(\s) = \s/sqrt(\s*\s + 400);}
+]
+\begin{axis}[
+  width=0.58\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=0, xmax=42, ymin=0, ymax=1,
+  xtick={0,5,...,40}, ytick={0,0.2,...,1},
+  yticklabel style={/pgf/number format/fixed},
+  xlabel={Volatility of market $x$, $\sigma_x$ (\%)},
+  ylabel={Measured correlation of $x$ and $y$},
+  samples=150, domain=2:42, clip=false,
+]
+  \addplot[fenavy, very thick] {rho(x)};
+  \fill (axis cs:15,0.6) circle (2.4pt);
+  \fill (axis cs:30,{rho(30)}) circle (2.4pt);
+  \node[anchor=north west] at (axis cs:15.5,0.58) {calm, $\sigma_x = 15\%$: 0.60};
+  \node[anchor=north west] at (axis cs:30.5,{rho(30)-0.02}) {turbulent, $\sigma_x = 30\%$: 0.83};
+  \node[anchor=west] at (axis cs:2,0.93) {same link throughout: $y = x + e$, $\sigma_e = 20\%$};
+\end{axis}
+\end{tikzpicture}
+\caption{The volatility bias in measured correlation. The link between the two markets never changes ($y = x + e$, with noise of 20\%), yet the measured correlation rises from 0.60 when $x$ has 15\% volatility to 0.83 when it has 30\%.}
+\label{fig:13-bias}
+\end{figure}
+
+\subsection{The Forbes--Rigobon correction}
+
+Forbes and Rigobon (2002) proposed a correction. If $\rho_c$ is the correlation measured in a period when the variance of $x$ is higher by a factor $1 + \delta$, the correlation that would hold at normal variance is
+\begin{equation}
+  \rho^* = \frac{\rho_c}{\sqrt{1 + \delta\,(1 - \rho_c^2)}}
+  \label{eq:13-fr}
+\end{equation}
+For example, a crisis correlation of 0.8, measured when variance is four times its normal level ($\delta = 3$), corresponds to $0.8/\sqrt{1 + 3 \times 0.36} = 0.55$ in normal times. The correction assumes the extra volatility starts in $x$. If the link itself strengthens in crises, the correction removes part of a real change.
+
+\subsection{Conditioning on the tails}
+
+Truncating a sample also changes its correlation. For a bivariate normal distribution\index{distribution!normal}, the correlation among observations where both variables are below some threshold is lower than the full-sample correlation, and falls further as the threshold moves into the tail. \textbf{Exceedance correlations}\index{correlation!exceedance|textbf} (Longin and Solnik 2001; Ang and Chen 2002) are measured over observations where both returns are beyond a quantile\index{quantile}, and are compared with what a normal distribution with the same overall correlation would produce. The gap between the two, not the raw level, is the evidence of asymmetry.
+
+\subsection{Tail dependence}
+
+\textbf{Tail dependence}\index{tail dependence|textbf} asks how likely one asset is to have an extreme loss when another does: $P(Y \text{ in its worst } p\text{-tail} \mid X \text{ in its worst } p\text{-tail})$. For independent assets the answer is $p$. For a normal distribution it falls toward $p$ as $p$ shrinks. Fat-tailed\index{fat tails} joint distributions, modelled with \textbf{copulas}\index{copula|textbf} (functions that join marginal distributions into a joint one) such as the Student $t$ or Clayton, keep it higher.
+
+\subsection{The stock--bond correlation}
+
+Government bonds hedge stocks when bad economic news lowers both expected profits and interest rates. They fail as hedges when inflation news dominates, because rising inflation hurts both bond prices and, through higher discount rates\index{discount rate}, stock prices. The sign of the stock--bond correlation has changed over the decades.
 
 \section{How it works}
-\label{sec:10-how}
+\label{sec:13-how}
 
-Three regularities in daily stock returns, which Part A of this chapter's lab measures, motivate every model in this chapter.
-
-\begin{itemize}
-  \item \textbf{Volatility clustering.}\index{volatility clustering|textbf} Mandelbrot (1963) observed that large changes tend to be followed by large changes, of either sign, and small changes by small changes. Returns themselves have almost no autocorrelation\index{autocorrelation}, but absolute and squared returns are positively autocorrelated, and the autocorrelation decays slowly over weeks and months. A forecastable size combined with an unforecastable sign is exactly what an efficient market\index{efficient market hypothesis} with changing risk would produce.
-  \item \textbf{Fat tails.}\index{fat tails|textbf} Daily returns have far more extreme days than a normal distribution\index{distribution!normal} allows. Part of this is clustering itself: a mixture of calm and turbulent periods, each roughly normal, has fat tails overall. Even after allowing for clustering, the standardized returns $r_t / \sigma_t$ remain somewhat fat-tailed, which is why many applications use Student-$t$ shocks.
-  \item \textbf{The leverage effect.}\index{leverage effect|textbf} Volatility rises more after falls than after rises of the same size. Black (1976) attributed this to leverage, since a falling share price raises a firm's debt-to-equity ratio and so the riskiness of its equity. The effect is too large to be explained by leverage alone, and it is strongest for the index. Risk premiums and \textbf{volatility feedback}\index{volatility feedback|textbf}, in which higher expected volatility lowers prices, both contribute.
-\end{itemize}
-
-The models differ in how they turn past returns into a forecast.
+Three different things can make diversification look weaker in a crisis, and they have different implications for investors.
 
 \begin{itemize}
-  \item \textbf{Historical and EWMA} forecasts are smoothing rules with one choice: the window length or $\lambda$.
-  \item \textbf{GARCH}\index{GARCH|textbf} models are estimated, have a long-run level and revert toward it. At long horizons their forecasts converge to the \textbf{unconditional variance}\index{GARCH!unconditional variance|textbf}, the long-run average, which is right if volatility truly mean-reverts and costly if the long-run level itself shifts.
-  \item \textbf{HAR}\index{HAR model|textbf} captures the slow decay of volatility's memory with three regressors, one per horizon. It is linear and estimated by ordinary least squares\index{regression!ordinary least squares (OLS)}, which makes it easy to extend.
-  \item \textbf{The VIX}\index{VIX|textbf} is not a model of past returns. It is a market price that can embed information about scheduled events, such as elections and central bank meetings, that no time-series model sees. It also embeds the variance risk premium, so it is biased upward as a forecast.
+  \item \textbf{A measurement effect.} When volatility rises, measured correlation rises even if the underlying relationship is unchanged. This part is an artefact, and correcting for it shrinks the apparent increase.
+  \item \textbf{A common shock.} In a crisis, one factor, such as a global panic, a funding squeeze or a recession scare, comes to dominate returns. Assets that usually move on separate news now move on the same news. This is a real change, and it is the one that hurts investors.
+  \item \textbf{A change of regime.} Some relationships flip sign with the economic environment. The stock--bond correlation is the main example: negative when growth shocks dominate, positive when inflation shocks dominate.
 \end{itemize}
 
-Lab Figure~\ref{ch:10}.1, from the lab, shows the pattern the models exploit. On U.S. data the bars for returns hover near zero at every lag. The bars for absolute returns are positive at lag 1 and still clearly positive after 50 trading days.
+What matters to an investor is not the correlation itself but the return of the portfolio in bad times. A portfolio can lose less than stocks in a crash even if correlations rise, provided some assets fall less than others. Diversification fails in the investor's sense only when every holding falls about as much as the riskiest one.
+
+The mechanisms also differ by asset. International stocks share the global equity factor, so their correlation with U.S. stocks is high to begin with and may rise further in sell-offs. Industries within one market are even more closely linked. Treasury bonds and commodities respond to different forces, and their link to stocks can change sign.
 
 \section{The claim}
-\label{sec:10-claim}
+\label{sec:13-claim}
 
 \begin{callout}
-\textbf{Claim.} Today's volatility forecasts tomorrow's. Forecasts built from past returns, or from option prices, beat a constant forecast by a wide margin, out of sample\index{in-sample versus out-of-sample}, at horizons from one day to one month.
+\textbf{Claim.} Correlations rise in crises, so diversification fails exactly when investors need it most.
 \end{callout}
 
-To test the claim we need to be precise on four points.
+The claim has two parts, and each can be tested separately:
 
 \begin{itemize}
-  \item \textbf{What is forecast.} The target is the variance of the market's return over the next $h$ days, for $h = 1$, 5 and 22. True variance is never observed, so we use a \textbf{proxy}, an observable stand-in: the sum of squared daily returns over those days.
-  \item \textbf{Against what.} The weakest benchmark is the \textbf{long-run average}, a constant. Beating it shows that volatility is forecastable at all. The stronger benchmark is a \textbf{random walk}\index{random walk|textbf} in volatility: last month's variance continues. Beating that shows that a model adds something beyond the obvious.
-  \item \textbf{How it is scored.} We use two loss functions, MSE\index{loss function!squared-error (MSE)} and QLIKE, explained in Section~\ref{sec:10-eval}. The choice matters more than it does for return forecasts.
-  \item \textbf{What would count against it.} The claim fails if forecasts beat the long-run average only in sample, or only in calm periods. It weakens if the gain disappears at horizons beyond a few days, or if no model beats the random walk.
+  \item \textbf{The statistical part:} correlations between risky assets are higher in down markets and turbulent periods than in calm ones, by more than the volatility bias and the normal distribution would imply.
+  \item \textbf{The economic part:} as a result, diversified portfolios offer little protection in the worst months.
 \end{itemize}
 
-A second, separate claim concerns use: that an investor who holds less of the market when forecast volatility is high earns a higher Sharpe ratio\index{Sharpe ratio}. Forecastable volatility is necessary for that claim but not sufficient. Expected returns\index{return!expected} may rise with volatility, and trading has costs.
+The first part can be true while the second is false. That happens if diversifiers such as Treasury bonds keep their low or negative correlation with stocks while equity correlations rise.
 
 \section{The original evidence}
-\label{sec:10-evidence}
+\label{sec:13-evidence}
 
-\textbf{ARCH and GARCH.} Engle (1982) introduced the ARCH model, in which today's variance depends on past squared shocks. His first application was to U.K. inflation\index{inflation}, not stock returns. Bollerslev (1986) added lagged variance, producing GARCH(1,1), which captures long memory with three parameters. Within a decade GARCH-type models had been fitted to almost every financial series, with the same finding each time: persistence close to 1, so volatility shocks die out over weeks to months. Glosten, Jagannathan and Runkle (1993) added the asymmetric term that bears their initials and found strong leverage effects in U.S. stock returns. Engle shared the 2003 Nobel prize for this work.
+\textbf{International equity markets (Longin and Solnik 2001).} Using monthly returns for the U.S., the U.K., France, Germany and Japan from 1959 to 1996, Longin and Solnik applied extreme value theory to the tails of the joint distribution. They found that the correlation of large negative returns rises in bear markets but not in bull markets. Multivariate normality was rejected for the negative tail but not for the positive one. They concluded that the market's direction, not volatility alone, drives the increase. They also warned that simply conditioning on large absolute returns can create a spurious rise in correlation.
 
-\textbf{The low-$R^2$\index{regression!R-squared@$R^2$} puzzle and its resolution.} Early out-of-sample tests seemed discouraging. Regressions of daily squared returns on GARCH forecasts gave $R^2$ of only a few percent, and some authors concluded that GARCH forecasts were poor. Andersen and Bollerslev (1998) showed that the problem was the target, not the forecast. A single squared return is an extremely noisy measure of that day's variance, so even a perfect forecast must have a low $R^2$ against it. Measured against realized variance from intraday returns, the same GARCH forecasts explained around half of the variation.
+\textbf{U.S. stocks (Ang and Chen 2002).} Ang and Chen found that correlations between U.S. stock portfolios and the market are much greater for downside moves than for upside moves, especially extreme ones. Conditional on the downside, correlations in the data differed from those implied by a normal distribution by 11.6\%. Small stocks, value stocks\index{value versus growth} and past losers\index{winners and losers} showed the most asymmetry. Among the models they tried, regime-switching models captured the asymmetry best; GARCH\index{GARCH} models did poorly.
 
-\textbf{Realized volatility and HAR.}\index{volatility!realized|textbf} Andersen, Bollerslev, Diebold and Labys (2003) treated realized variance as an observable series and modelled it directly. Simple time-series models of realized variance outperformed GARCH models estimated on daily returns. Corsi (2009) proposed the HAR model, motivated by traders who operate at daily, weekly and monthly horizons. It reproduces volatility's long memory with three regressors and has become the standard benchmark for realized-variance forecasts.
+\textbf{Contagion or interdependence (Forbes and Rigobon 2002).} Forbes and Rigobon studied three crises: the 1987 U.S. crash, the 1994 Mexican peso collapse and the 1997 East Asian crisis. With unadjusted correlations, several countries showed evidence of \textbf{contagion}\index{contagion|textbf}, meaning correlations that rose in the crisis. After correcting for the higher volatility, there was virtually none. They concluded that the high co-movement reflected strong linkages that existed all along, which they called \textbf{interdependence}\index{interdependence|textbf}.
 
-\textbf{Horse races.} Hansen and Lunde (2005) compared 330 models on a Deutsche mark--dollar exchange rate\index{exchange rate} and IBM stock returns. For the exchange rate, nothing significantly beat GARCH(1,1). For IBM, GARCH(1,1) was clearly inferior to models with a leverage effect. Poon and Granger (2003) reviewed 93 studies. Implied volatility generally forecast best, followed by historical volatility and GARCH roughly together, and all methods did better than a constant.
+\textbf{Investor-focused evidence (Page and Panariello 2018).} Using monthly data from 1970 to mid-2017, Page and Panariello reported that the correlation between U.S. and non-U.S. developed stocks was $-17\%$ during the strongest U.S. rallies and $+87\%$ during the worst 1\% of U.S. sell-offs. They found a similar pattern for real estate, corporate and high-yield\index{credit rating} bonds, emerging markets and hedge funds. Treasury bonds usually decoupled from stocks in sell-offs, but the authors noted that the stock--bond correlation can turn positive when inflation or interest rates drive markets. Their correlations are conditioned on U.S. returns alone, so part of the asymmetry may reflect the truncation effect described in Section~\ref{sec:13-foundations}.
 
-\section{Evaluating volatility forecasts}
-\label{sec:10-eval}
+\textbf{The stock--bond correlation (Campbell, Sunderam and Viceira 2017).} Campbell, Sunderam and Viceira found that the covariance between Treasury bond and stock returns was slightly positive on average over 1953 to 2009 but varied a great deal. It was unusually high in the early 1980s and negative in the 2000s, especially in the 2000--02 and 2007--09 downturns. They linked the change to how inflation and real rates co-move with the real economy.
 
-Scoring a volatility forecast is harder than scoring a return forecast, because the thing being forecast is never observed. Every comparison uses a proxy, such as the sum of squared daily returns. The proxy is unbiased but noisy. The question is whether the noise can change which model wins.
+The evidence supports the statistical part of the claim for equities, with caveats about measurement. It contradicts any simple version for bonds, whose hedging value depends on the inflation regime.
 
-Patton (2011) answered it. With a noisy proxy, only some loss functions are \textbf{robust}: they rank forecasts in the same order as they would against the true variance. Two common ones are robust (Figure~\ref{fig:10-qlike}).
-
-\begin{itemize}
-  \item \textbf{MSE}\index{loss function!squared-error (MSE)|textbf}, $(RV - F)^2$, where $RV$ is the proxy and $F$ the forecast. It is robust but dominated by the largest days. A few crisis days can decide the whole comparison.
-  \item \textbf{QLIKE}\index{loss function!QLIKE|textbf}, $\log F + RV/F$, the loss implied by the normal likelihood. It is robust and penalizes forecasts that are too \emph{low} much more than forecasts that are too high, which suits risk management. Because it depends on the ratio $RV/F$, it is not dominated by the level of volatility in crises.
-\end{itemize}
-
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[
-  % x = forecast / realized variance; both losses measured from their minimum at x = 1
-  declare function={qlike(\x) = 1/\x + ln(\x) - 1;  mse(\x) = (\x - 1)^2;}
-]
-\begin{axis}[
-  width=0.61\linewidth, height=0.34\linewidth,
-  axis lines=left, axis line style={-stealth},
-  xmin=0.2, xmax=3.2, ymin=0, ymax=2.2,
-  xtick={0.5,1,...,3}, ytick={0,0.5,1,1.5,2},
-  xticklabel style={/pgf/number format/fixed},
-  yticklabel style={/pgf/number format/fixed},
-  xlabel={Forecast as a multiple of realized variance, $F/RV$},
-  ylabel={Loss above its minimum},
-  samples=200, clip=false,
-]
-  \addplot[fegray, thick, dashed, domain=0.2:2.48] {mse(x)};
-  \addplot[fenavy, very thick, domain=0.225:3.2] {qlike(x)};
-  \node[fegray, anchor=west] at (axis cs:2.5,2.15) {MSE};
-  \node[fenavy, anchor=west] at (axis cs:3.22,{qlike(3.2)}) {QLIKE};
-  \node[align=center] at (axis cs:0.85,1.4) {too low:\\heavily penalized};
-  \node[align=center] at (axis cs:2.65,0.9) {too high:\\mildly penalized};
-\end{axis}
-\end{tikzpicture}
-\caption{Two robust loss functions, measured from their minimum. MSE treats a forecast that is too high and one that is too low symmetrically. QLIKE punishes a forecast that is too low far more than one that is too high: underestimating risk is the costlier mistake.}
-\label{fig:10-qlike}
-\end{figure}
-
-Others are not robust. Mean absolute error and MSE on volatility rather than variance, both common in early studies, can rank a biased forecast above the true variance when the proxy is noisy. They should be avoided.
-
-Two diagnostics complement the loss comparison.
-
-\begin{itemize}
-  \item \textbf{Mincer--Zarnowitz regression.} Regress realized on forecast variance. An unbiased forecast has intercept 0 and slope 1. A slope below 1 means the forecast overreacts\index{overreaction}, which is typical of the VIX because of the variance risk premium. The $R^2$ measures informativeness but is capped by the noise in the proxy, as Andersen and Bollerslev showed.
-  \item \textbf{Diebold--Mariano test}\index{Diebold--Mariano test|textbf} (Chapter~\ref{ch:09}). Test whether the average loss difference between two models is zero, using Newey--West\index{standard error!Newey--West (HAC)} errors with $h - 1$ lags, since multi-day targets overlap.
-\end{itemize}
-
-A fair comparison also requires real-time forecasts. Every parameter must be estimated only on data available at the forecast date, as in the walk-forward\index{walk-forward evaluation} design of Chapter~\ref{ch:09}.
-
-\section{Lab~\thechapter: Replicating Andersen and Bollerslev (1998), Hansen and Lunde (2005) and Moreira and Muir (2017)}
-\label{sec:10-lab}
+\section{Lab~\thechapter: Replicating Longin and Solnik (2001) and Forbes and Rigobon (2002)}
+\label{sec:13-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:10} at a glance.} \emph{Papers replicated:} Andersen and Bollerslev (1998); Hansen and Lunde (2005); Moreira and Muir (2017). \emph{Claim on trial\index{claims-on-trial method}:} volatility is predictable. \emph{Data:} U.S. market returns since 1926, from the daily factors in the Kenneth French\index{Kenneth French data library} library, and, from 1990, the VIX from FRED\index{FRED}; both are free. \emph{Code:} runs as a script (\texttt{python lab11.py}) or as a notebook with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:13} at a glance.} \emph{Papers replicated:} Longin and Solnik (2001); Forbes and Rigobon (2002); the stock--bond correlation of Campbell, Sunderam and Viceira (2017). \emph{Claim on trial\index{claims-on-trial method}:} diversification fails when it is needed most. \emph{Data:} U.S. market excess returns\index{return!excess} from 1926, international developed-market returns from 1990 and 10 industry portfolios, all from the Kenneth R. French Data Library\index{Kenneth French data library}; the 10-year Treasury yield (GS10, from 1953), consumer prices (CPIAUCSL) and the spot oil price (WTISPLC) from FRED\index{FRED}. All are free. \emph{Code:} runs as a script (\texttt{python lab19.py}) or as a notebook (\texttt{lab19\_walkthrough.ipynb}) with a prediction prompt before each step.
 \end{callout}
 
-\textbf{Part A, stylized facts\index{stylized facts of returns}.} It computes autocorrelations of daily returns and absolute returns at lags 1 to 50, and the correlation\index{correlation} between today's return and tomorrow's absolute return (Lab Figure~\ref{ch:10}.1). Expect the first to hover near zero, the second to stay positive for months, and the third to be negative: the leverage effect.
+Bond returns are built from yields by buying a 10-year par bond each month and selling it a month later at the new yield.
 
-\textbf{Part B, forecast comparison.} Each trading day from 1990, the lab forecasts the market's variance over the next 1, 5 and 22 days with seven methods:
+The lab has four parts:
 
-\begin{center}
-\small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.20\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.33\linewidth}@{}}
-\toprule
-Method & Forecast & Parameters \\
-\midrule
-Long-run average & Mean squared return to date & None \\
-Random walk & Last 22 days' variance continues & None \\
-EWMA & RiskMetrics, $\lambda = 0.94$ & Fixed \\
-GARCH(1,1) & Mean-reverting, normal likelihood & Re-estimated yearly on the past 20 years \\
-GJR-GARCH & GARCH with the leverage term & Re-estimated yearly \\
-HAR & Regression on 1-, 5- and 22-day averages & Re-estimated yearly by OLS \\
-VIX & $(\mathrm{VIX}/100)^2 \times h/252$ & None \\
-\bottomrule
-\end{tabularx}
-\end{center}
+\begin{itemize}
+  \item \textbf{Part A} measures the correlation of U.S. stocks with international stocks, bonds and oil, and the average pairwise correlation of the ten industries. It reports each in calm months, in high-volatility months (the top fifth by trailing 12-month U.S. volatility), after the Forbes--Rigobon correction and in the worst 10\% of U.S. months. It also plots exceedance correlations against a normal benchmark (Lab Figures~\ref{ch:13}.1 and~\ref{ch:13}.2).
+  \item \textbf{Part B} measures tail dependence at the 5\%, 10\% and 20\% levels, against a normal distribution with the same correlation.
+  \item \textbf{Part C} tracks the rolling 36-month stock--bond correlation and relates it to inflation. It reports results by decade and by inflation regime, and for 2022 (Lab Figure~\ref{ch:13}.3).
+  \item \textbf{Part D} compares 100\% stocks, a 60/40 stock--bond portfolio and an equal-weight mix of U.S. stocks, international stocks, bonds and oil. It reports average returns in the worst and best 5\% of stock months, drawdowns\index{drawdown}, five crisis periods and the diversification ratio (Lab Figures~\ref{ch:13}.4 and~\ref{ch:13}.5).
+\end{itemize}
 
-Each method is scored against the random walk with QLIKE and MSE, with Diebold--Mariano tests and Mincer--Zarnowitz regressions. Lab Figure~\ref{ch:10}.2 plots one-month forecasts through 2007--2010 against the volatility that followed. Lab Figure~\ref{ch:10}.3 ranks the methods at each horizon.
+The command \texttt{python lab19.py -{}-source sim} tests the code on simulated data.
 
-\textbf{Part C, crises.} The same losses are computed within 2008--09, 2020 and 2022 (Lab Figure~\ref{ch:10}.4).
+\textbf{What the simulated run shows.} The lab was run end to end only on simulated data. The simulation was built so that the true correlation between U.S. and international stocks rises from 0.60 in calm regimes to 0.75 in stress, and so that the stock--bond correlation rises with inflation. The results test the code and illustrate the measurement problems; they say nothing about real markets.
 
-\textbf{Part D, use.} A \textbf{volatility-managed portfolio}\index{volatility targeting|textbf} holds the market with weight proportional to 1 / last month's realized variance, scaled so its volatility matches the market's, as in Moreira and Muir (2017). The lab reports Sharpe ratio, drawdown\index{drawdown} and alpha\index{alpha} against the market, net of a cost per unit of weight change, with an optional leverage cap (Lab Figure~\ref{ch:10}.5).
+\begin{itemize}
+  \item The raw correlation between U.S. and international stocks rose from 0.61 in calm months to 0.70 in high-volatility months. The Forbes--Rigobon correction brought it down to 0.47, below the calm level, even though the simulation contained a true increase. The correction overshoots when the link itself strengthens in a crisis.
+  \item In the worst 10\% of U.S. months, the same correlation was 0.45, lower than in calm months, because conditioning on one tail truncates the data.
+  \item The average industry correlation rose from 0.68 to 0.80 in high-volatility months, and fell to 0.61 after correction.
+  \item The stock--bond correlation was $-0.17$ when prior inflation was below 3\% and $+0.17$ when it was 3\% or more.
+  \item In the worst 5\% of stock months, when stocks lost 8.5\% on average, the 60/40 portfolio lost 5.0\% and the equal-weight mix 4.7\%. The 60/40 diversification ratio fell from 1.26 in calm months to 1.16 in high-volatility months: smaller, but not zero.
+\end{itemize}
 
-Three design choices affect the results. First, the proxy is built from daily returns, because intraday data are not freely available back to 1926. That makes every model look worse than in studies using five-minute data, but it does not bias the ranking under QLIKE. Second, the HAR model here uses squared daily returns, a much noisier input than the realized variance Corsi used, so expect it to do less well than in the literature. Third, the VIX was redefined in 2003; FRED's VIXCLS uses the current method throughout.
-
-\textbf{What the simulated run shows.} On simulated GJR-GARCH data, the lab recovers what it should. Every dynamic model beats the long-run average by a wide margin. GJR, the true model, ranks first under QLIKE at all three horizons. The simulated VIX shows the upward bias built into it. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
+On real data the lab answers the question the simulation cannot: whether the rise in correlations survives the correction, and whether diversified portfolios still cushioned the worst months.
 
 \section{Stress tests}
-\label{sec:10-stress}
+\label{sec:13-stress}
 
-\textbf{Horizon.} Forecastability is a short-horizon phenomenon. Because GARCH persistence is below 1, every GARCH forecast converges to the long-run level. Beyond a few months, a constant forecast is hard to beat, and over years, estimates of the long-run level itself drift. At one day to one month, the horizons in the lab, the evidence for forecastability is strong in the literature. The lab lets you measure how fast the advantage over the long-run average shrinks.
+\textbf{The definition of a crisis.} Results depend on how bad times are defined: high volatility, falling markets, recessions or a list of named crises. Correlations conditioned on direction (Longin and Solnik's bear markets) and on volatility (Forbes and Rigobon's turmoil) answer different questions. The lab offers both, and Exercise 4 adds recessions.
 
-\textbf{Crises.} Volatility jumps faster than any model built on past returns can follow. In the first days of October 2008 and of March 2020, every time-series forecast was far too low. QLIKE punishes exactly that error. The models catch up within days, and because they then revert too slowly, they overpredict as the crisis fades. The VIX, as a market price, can react within the day to news and is the obvious candidate to do better at the onset. Lab Figure~\ref{ch:10}.4 tests whether it did.
+\textbf{The correction's assumption.} The Forbes--Rigobon adjustment assumes the extra volatility comes from the conditioning market and that the link between markets is fixed. If a crisis strengthens the link, the correction removes part of a real change, as the simulated run showed. The raw and corrected numbers are best read as upper and lower bounds.
 
-\textbf{The 2022 rate shock.} In 2022 stocks fell by about a fifth, but realized volatility stayed moderate, without a single spike. This is a useful contrast with 2008 and 2020. A model that forecasts volatility well can still miss a large, slow decline, because volatility and losses are different things.
+\textbf{Frequency.} Monthly data smooth over the days when correlations spike. Daily correlations in October 1987 or March 2020 were higher than monthly ones. For a long-horizon investor, though, monthly or quarterly co-movement matters more than daily.
 
-\textbf{Estimation window.} GARCH parameters estimated on 20 years that include 2008 differ from those estimated on calmer windows. Persistence near 1 means that small changes in $\alpha + \beta$ produce large changes in long-horizon forecasts. Rerun Part B with \texttt{-{}-window-years 10} and compare.
+\textbf{Sample period.} International data begin in 1990, after the long era of capital controls ended. The stock--bond correlation depends heavily on whether the sample includes the high-inflation 1970s and early 1980s. A sample running from 2000 to 2021 shows bonds as a strong hedge; one including 1965--1985 or 2022 does not.
 
-\textbf{Proxy.} A sum of squared daily returns is noisy, especially at the 1-day horizon, where it is a single squared return. Andersen and Bollerslev (1998) showed that this lowers every model's $R^2$ but, with a robust loss, does not change the ranking. Liu, Patton and Sheppard (2015) compared nearly 400 realized-variance estimators and found that five-minute realized variance is hard to beat. Students with intraday data can replace the proxy and check.
+\textbf{Bond construction.} Returns built from constant-maturity yields approximate a bond index. They miss the coupon effects and roll of actual bonds but capture the duration\index{duration} risk that dominated 2022.
+
+\textbf{Statistical power.}\index{statistical power|textbf} High-volatility months are a fifth of the sample, and extreme tails much less. With about 70 high-volatility months for international stocks, a correlation of 0.7 has a standard error\index{standard error} near 0.06, so differences of a few hundredths are noise.
 
 \section{Verdict}
-\label{sec:10-verdict}
+\label{sec:13-verdict}
 
 \begin{callout}
-\textbf{Verdict: survives, strongly, at horizons from one day to one month} (as of October 2026). The claim about \emph{using} volatility forecasts to improve a market investor's Sharpe ratio is a separate one, and it \textbf{weakens} once forecasts are made in real time and costs and leverage limits are applied.
+\textbf{Verdict: weakens} (as of October 2026). The statistical part of the claim holds for equities. Correlations among stock markets, and among industries within one market, are higher in falling markets than a normal distribution implies, and the asymmetry survives methods designed to avoid the volatility bias (Longin and Solnik 2001; Ang and Chen 2002). Part of the increase that investors notice in crises is a measurement effect, as Forbes and Rigobon showed, but not all of it. The economic part is overstated.
 \end{callout}
 
-The case for the forecasting claim rests on four findings.
-
 \begin{itemize}
-  \item \textbf{It replicates across markets, assets and decades.} Volatility clustering appears in every liquid market studied, back to the nineteenth century. GARCH-type models fitted to them give persistence close to 1.
-  \item \textbf{It holds out of sample.} In real-time forecasts, dynamic models beat the long-run average by a wide margin. That is the result Lab~\ref{ch:10} is built to check on U.S. data since 1990.
-  \item \textbf{It survives the right loss functions.} Early doubts came from evaluating against a noisy proxy with an unsuitable loss. Andersen and Bollerslev (1998) and Patton (2011) removed both problems.
-  \item \textbf{It has a plausible mechanism.} News arrives in clusters, and uncertainty is persistent. Nothing about forecastable volatility contradicts market efficiency, since it predicts risk, not returns.
+  \item \textbf{Diversifying across equities alone does fail in crises.} Adding international stocks or more industries buys little protection when it is most wanted.
+  \item \textbf{Diversifying across asset classes has usually worked.} Treasury bonds rose in most stock-market crashes of the last forty years, and a 60/40 portfolio typically lost a fraction of what stocks lost in the worst months.
+  \item \textbf{That protection is not a law.} It depends on the inflation regime. When inflation is high or rising, as in the 1970s and in 2022, stocks and bonds can fall together.
 \end{itemize}
 
-The qualifications are about \emph{how much}, not \emph{whether}.
-
-\begin{itemize}
-  \item \textbf{Complex models add little over simple ones.} EWMA and GARCH(1,1) are hard to beat for many series. A leverage term helps for equity indices. HAR helps most when realized variance from intraday data is available.
-  \item \textbf{The advantage fades with horizon.} Beyond a few months, forecasts converge to a long-run level that is itself uncertain.
-  \item \textbf{Every model is late at the onset of a crisis.} Forecasts built from past returns cannot anticipate the first violent day. They are most useful after it.
-  \item \textbf{The VIX is informative but biased.} It contains the variance risk premium, so it overstates future volatility on average. It must be adjusted before it is used as a forecast.
-\end{itemize}
+The claim is therefore true for the diversification most investors rely on least (within equities), and conditional for the diversification they rely on most (stocks and bonds). The verdict would move to \emph{survives} if real-data results showed stock--bond protection failing in growth-driven crises as well, and to \emph{fails} if equity correlations showed no asymmetry after correction.
 
 \section{What investors can use}
-\label{sec:10-investors}
-
-\textbf{Risk forecasts, yes.} Any investor sizing positions, setting stop-losses or computing margin should use a volatility forecast that reacts to recent data, such as EWMA or GARCH, rather than a long-run average. This is uncontroversial and is the basis of Value at Risk (Chapter~\ref{ch:11}).
-
-\textbf{Volatility timing for returns: be skeptical.} Moreira and Muir (2017) found that scaling exposure to the market inversely to last month's variance produced an alpha of about 4.9\% a year over 1926--2015, with similar results for several factors. \textbf{Volatility-targeting}\index{volatility targeting|textbf} funds and \textbf{risk-parity}\index{risk parity|textbf} strategies, which allocate so that each asset contributes equal risk, apply versions of the idea. Three later findings temper it.
+\label{sec:13-investors}
 
 \begin{itemize}
-  \item \textbf{Real-time feasibility.} Cederburg, O'Doherty, Wang and Yan (2020) tested 103 equity strategies. The alphas in \textbf{spanning regressions}\index{regression!spanning|textbf}, regressions of the managed portfolio on the original, were real, but exploiting them required combining the managed and unmanaged portfolios with weights estimated in sample. Implemented out of sample, the managed versions generally did no better than the originals, because the spanning regressions were unstable.
-  \item \textbf{Leverage.}\index{leverage|textbf} The managed portfolio's weight on the market often exceeds 1 in calm periods. In the lab's simulated run it averaged 1.4 and peaked near 10. Capping leverage at a realistic level reduces the gains.
-  \item \textbf{Costs and crowding\index{crowding}.} Turnover\index{turnover} is high when volatility changes quickly, and volatility-targeting funds all sell at the same time, which can deepen the declines they are trying to avoid.
+  \item \textbf{Use stress correlations, not average ones.} Plan with the correlations seen in the worst months, not the full-sample figure. For equities, assume they move closer together in a sell-off.
+  \item \textbf{Diversify across risks, not labels.} Ten equity funds in different regions or styles are mostly one bet on the global equity factor. Real diversification needs assets driven by different forces, such as interest rates or inflation.
+  \item \textbf{Know what your hedge hedges.} Long-term Treasury bonds hedge recessions and deflationary panics. They do not hedge inflation shocks. Cash, short-term bonds, inflation-linked bonds and some commodities behave differently.
+  \item \textbf{Judge by portfolio losses.} Ask what the whole portfolio lost in past crises, not whether correlations rose.
+  \item \textbf{Rebalance.}\index{rebalancing|textbf} Diversified portfolios that rebalance sell what held up and buy what fell, which helps recoveries even when diversification disappointed in the fall.
 \end{itemize}
 
-The benefit is clearer for momentum\index{momentum}, where crashes follow high volatility (Barroso and Santa-Clara 2015; Chapter~\ref{ch:05}), than for the market.
-
-\textbf{Questions to ask a manager who uses volatility targeting:}
+\textbf{Questions to ask a manager or adviser:}
 
 \begin{itemize}
-  \item What volatility forecast do you use, and how quickly does it react?
-  \item What is the maximum leverage, and what happens to turnover in a volatility spike?
-  \item Is the backtest\index{backtest} scaled using information available at the time, or using full-sample volatility?
-  \item How did the strategy perform in February 2018 and March 2020, when volatility jumped within days?
+  \item What did this portfolio lose in 2008, in March 2020 and in 2022?
+  \item Which correlations do you use to estimate risk, and from which periods?
+  \item Which of the holdings would be expected to rise if stocks fell 30\% because of a recession? And if they fell because of an inflation shock?
+  \item How much of the portfolio's risk comes from the equity factor?
+  \item Are any reported correlations based on smoothed or appraisal-based prices?
 \end{itemize}
 
 \begin{callout}
-\textbf{What Failed: selling volatility before February 5, 2018.} For years before 2018, products that bet against volatility were among the best performers in the market. The VelocityShares Daily Inverse VIX Short-Term ETN (XIV) earned the variance risk premium by shorting VIX futures, and it held \$1.9 billion in assets. On February 5, 2018, the VIX rose 115.6\%, its largest one-day increase ever. XIV lost 96.3\% of its value that day, and Credit Suisse, its issuer, closed it within weeks.
-
-The episode does not contradict this chapter. Volatility forecasts are informative on average. But a forecast that volatility will stay low is weakest exactly when it matters most: at the onset of a spike. A strategy that earns a small premium most days and loses almost everything on one day can look excellent in any backtest that misses that day. Chapter~\ref{ch:11} returns to this problem.
+\textbf{What Failed: bonds as the hedge in 2022.} For most of the two decades before 2022, Treasury bonds rose when stocks fell, and the 60/40 portfolio became the default allocation. Then inflation reached its highest levels in forty years and the Federal Reserve raised rates rapidly. In 2022 the S\&P 500 fell 18.1\% and the U.S. dollar bond market about 13\%. According to Dimensional (Dimensional Fund Advisors 2023), a 60/40 portfolio lost 11\% over the year, with a drawdown of 19\% at its low point, and many bond indices had their worst year on record. Nothing in the correlation had been wrong; it had been estimated in a period dominated by growth shocks and low, stable inflation. When the dominant shock changed, so did the sign. Investors who treated a negative stock--bond correlation as a constant learned that it was a feature\index{features and targets} of a regime.
 \end{callout}
 
 \section{Open questions}
-\label{sec:10-open}
+\label{sec:13-open}
 
 \begin{itemize}
-  \item \textbf{Does volatility timing pay after costs?} The evidence for the market is mixed. Does it hold for factors such as momentum, and in other countries?
-  \item \textbf{What is the right long-run level?} GARCH forecasts revert to a constant, but the evidence suggests slow-moving changes in average volatility, linked to the business cycle\index{business cycle} and macroeconomic uncertainty. Component GARCH and GARCH-MIDAS models try to capture this. Do they forecast better at long horizons?
-  \item \textbf{Can machine learning\index{machine learning} beat HAR?} Recent studies add many predictors, such as news, macroeconomic data and other assets' volatilities. Do the gains survive the out-of-sample discipline of Chapter~\ref{ch:09}?
-  \item \textbf{What does the VIX know?} Implied volatility combines a forecast with a risk premium. Can the two be separated well enough to improve the forecast?
+  \item \textbf{Which regime are we in?} Can the stock--bond correlation be forecast from inflation, inflation uncertainty or central-bank credibility well enough to adjust allocations in time?
+  \item \textbf{Better crisis correlations.} Do regime-switching, copula or dynamic conditional correlation models forecast crisis co-movement out of sample\index{in-sample versus out-of-sample}, or only describe it after the fact?
+  \item \textbf{Private assets.} Smoothed valuations make private equity and real estate look like diversifiers. How large is their true crisis correlation with public stocks?
+  \item \textbf{New hedges.} Have trend-following\index{trend following}, long-volatility or tail-hedging strategies delivered crisis protection at an acceptable cost? Chapter~\ref{ch:16}'s evidence on option selling is the mirror image of this question.
 \end{itemize}
 
 \section*{Exercises}
@@ -379,19 +292,19 @@ The episode does not contradict this chapter. Volatility forecasts are informati
 \subsection*{Conceptual (all readers)}
 
 \begin{enumerate}
-  \item A GARCH(1,1) model has $\omega = 0.000003$, $\alpha = 0.10$ and $\beta = 0.88$. (a) What are the long-run daily and annualized volatilities? (b) What is the half-life of a shock? (c) If tomorrow's variance forecast is 0.0004, what is the forecast volatility over the next 22 days, annualized?
-  \item Show that EWMA is GARCH(1,1) with $\omega = 0$. What does this imply for EWMA forecasts at long horizons?
-  \item A colleague argues that because volatility is forecastable, markets cannot be efficient. Explain why forecastable volatility is consistent with efficiency, and what evidence would change your answer.
+  \item Twenty assets each have 25\% volatility. Compute the volatility of an equally weighted portfolio when the average correlation is 0.3 and when it is 0.7. What share of the diversification benefit is lost?
+  \item A correlation of 0.75 is measured in a crisis when the variance of the conditioning market is three times its normal level. Apply the Forbes--Rigobon correction. What correlation in normal times does it imply?
+  \item Using $y = \beta x + e$ with $\beta = 0.6$, $\sigma_e = 15\%$ and $\sigma_x = 15\%$, compute the correlation of $x$ and $y$. Recompute with $\sigma_x = 30\%$. Explain why the correlation changed even though $\beta$ did not.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
   \setcounter{enumi}{3}
-  \item Part A: compute the autocorrelations of squared returns as well as absolute returns. Which decays faster, and why might extreme days explain the difference?
-  \item Part B: rank the models by MSE instead of QLIKE. Does the ranking change? Which days drive the MSE comparison?
-  \item Part B: estimate GARCH with Student-$t$ shocks, using the option \texttt{dist="t"} of \texttt{fit\_garch}. Does it forecast better than the normal version?
-  \item Part B: regress realized variance on both the GJR forecast and the VIX. Does each add information? Compare the VIX's Mincer--Zarnowitz slope with 1 and explain.
-  \item Part C: for the first ten trading days of October 2008 and of March 2020, plot each forecast against realized variance. How many days did each model take to catch up?
-  \item Part D: rescale the managed portfolio using only past data and cap the weight at 1.5. How much of the alpha survives? Compare with Cederburg et al.\ (2020).
+  \item Part A: run on real data. For which pairs does the high-volatility correlation exceed the calm one after the Forbes--Rigobon correction? Then define bad times as NBER recession months (FRED series USREC) instead of high-volatility months. Do the conclusions change?
+  \item Compare the exceedance correlations of U.S. and international stocks with the normal benchmark (Lab Figure~\ref{ch:13}.1). Is the gap larger in the lower tail than the upper tail?
+  \item Part C: compute the stock--bond correlation for 1965--1985 and for 2000--2021. Relate the difference to average inflation in each period.
+  \item Part D: list the five worst months for U.S. stocks since 1953. What did bonds do in each?
+  \item Forbes and Rigobon say ``no contagion, only interdependence''. Why might an investor care little about the distinction?
+  \item A client says, ``Bonds failed in 2022, so they are useless as a hedge.'' Using the chapter's evidence, write a short reply.
 \end{enumerate}

@@ -1,7 +1,8 @@
-% Chapter 8 -- Claim: Simple Trading Rules Beat Buy-and-Hold
-% Requires: amsmath, amssymb, booktabs, array, tabularx, tcolorbox (breakable, skins), hyperref or url.
+% Chapter 11 -- Claim: Value-at-Risk Models Measure Risk Reliably
+% Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
 \makeatletter
 \@ifundefined{callout}{%
   \newtcolorbox{callout}{breakable, enhanced,
@@ -11,269 +12,354 @@
 }{}
 \makeatother
 
-\chapter{Claim: Simple Trading Rules Beat Buy-and-Hold}
-\label{ch:08}
+\chapter{Claim: Value-at-Risk Models Measure Risk Reliably}
+\label{ch:11}
 
-``The trend is your friend'' is one of the oldest sayings on Wall Street. It tells a trader to buy what has been rising, sell what has been falling, and stay with the move until it ends. To an efficient-markets economist the saying sounds like superstition: if past prices could predict future prices, traders would use them until the prediction disappeared (Section~\ref{sec:01-efficient-markets}). For decades academic studies agreed, finding that technical trading rules did not beat buy-and-hold once costs were counted. Brock, Lakonishok and LeBaron (1992) reopened the question. They tested 26 simple moving-average and breakout rules on 90 years of the Dow Jones Industrial Average and found that the days after buy signals earned much more than the days after sell signals.
+In the early 1990s large banks needed a single number that summarized the market risk of a trading book. J.P. Morgan's RiskMetrics system, made public in 1994, popularized one: \textbf{Value at Risk}\index{Value at Risk (VaR)}, the loss that should be exceeded only on a stated fraction of days. A bank that reports a one-day 99\% VaR of \$50 million is claiming that it will lose more than \$50 million on about one trading day in a hundred. In 1996 the Basel Committee on Banking Supervision allowed banks to set their capital for market risk with their own VaR models, provided the models passed a regular backtest.
 
-The finding mattered because it challenged the weak form of market efficiency with rules anyone could follow, and because a large industry already traded on such rules. It also raised a methodological problem that became central to empirical finance. Trend rules come in thousands of variants, and any of them can be tuned on the past. Sullivan, Timmermann and White (1999) applied White's Reality Check, a test that accounts for the whole universe of rules a researcher might have tried, and found that the best rule's success on the Dow did not carry into the following decade. Moskowitz, Ooi and Pedersen (2012) then documented \emph{time-series momentum} in 58 futures markets, and Huang, Li, Wang and Zhou (2020) questioned how strong that evidence is once each market is tested on its own.
+That decision raised a statistical question with real money attached: how can anyone tell whether a VaR model is right? VaR is unusual among the claims in this book because it is a forecast that checks itself. Every day produces a test, because either the loss exceeded the VaR or it did not. Kupiec (1995) proposed a test of whether breaches occur as often as the model promises, and Christoffersen (1998) added a test of whether they arrive independently or in clusters, since a model that is right on average but wrong in every crisis is of little use. The crisis of 2007--09, when breaches came in runs, led regulators to replace VaR with expected shortfall in the Fundamental Review of the Trading Book.
 
-The implications are practical. Managed-futures funds, often called commodity trading advisors, run large sums on trend rules and market them as protection in crises, so whether trends are real decides whether their investors are paid for anything. For research, the chapter shows how to judge a claim that was found by searching. The claim on trial\index{claims-on-trial method} is: \textbf{simple trend rules on an asset's own past prices earn returns that survive a full accounting for the number of rules tried.}
+The implications go beyond banks. Every investor who sets a risk limit, a stop-loss or a leverage ratio from a model is relying on the same kind of forecast. The claim on trial\index{claims-on-trial method} is: \textbf{a well-built 99\% VaR model is breached about 1\% of the time, with breaches that are independent over time.}
 
-The lab in Section~\ref{sec:08-lab} replicates the 26 rules of Brock, Lakonishok and LeBaron (1992) on the free daily U.S. market series of the Kenneth R. French Data Library since 1926, applies the Reality Check of Sullivan, Timmermann and White (1999) to the full rule universe, and rebuilds the time-series momentum of Moskowitz, Ooi and Pedersen (2012) with AQR's free factor data and FRED series, in order to check whether trend signals still predict returns after data snooping, costs and publication.
+The lab in Section~\ref{sec:11-lab} replicates the backtests of Kupiec (1995) and Christoffersen (1998) on six common VaR models, using free daily U.S. market returns since 1930, in order to check whether any of them measures risk reliably and how they fail in crises.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item define moving-average, fixed-length and trading-range breakout rules, and compute their signals by hand;
-  \item explain the difference between time-series momentum\index{momentum!time-series} and the cross-sectional momentum of Chapter~\ref{ch:05};
-  \item size positions to a volatility target\index{volatility targeting} using only past data;
-  \item test the best of many rules with White's Reality Check\index{Reality Check} and Hansen's SPA test\index{SPA test};
-  \item explain why trend following tends to profit in long bear markets, and why that pattern looks like owning an option straddle\index{straddle};
-  \item state the claim in a form that can fail, and test it after publication, after costs and asset by asset.
+  \item compute a parametric VaR and expected shortfall\index{expected shortfall (ES)}, and scale them across horizons with the square-root-of-time\index{Value at Risk (VaR)!square-root-of-time rule} rule, knowing when it fails;
+  \item explain coherence\index{coherent risk measure} and show with an example how VaR can fail subadditivity\index{subadditivity};
+  \item compare parametric, historical simulation\index{Value at Risk (VaR)!historical simulation}, GARCH\index{GARCH} and filtered historical simulation\index{Value at Risk (VaR)!filtered historical simulation} VaR models;
+  \item state the claim of conditional coverage\index{coverage test!conditional} and summarize the evidence from banks and from model comparisons;
+  \item backtest\index{backtest} a VaR model with the Kupiec\index{Kupiec test} and Christoffersen\index{Christoffersen test} tests and the Basel\index{Basel framework} traffic light\index{Basel traffic light}, and backtest expected shortfall;
+  \item judge a bank's or fund's risk disclosures and know what VaR cannot tell you.
 \end{itemize}
 
-\section{Foundations: technical rules and time-series momentum}
-\label{sec:08-foundations}
+\section{Foundations: VaR, expected shortfall and their properties}
+\label{sec:11-foundations}
 
-\subsection{Moving-average and trading-range breakout rules}
+\subsection{Value at Risk}
 
-A \textbf{moving average}\index{moving average|textbf} is the average of the most recent prices. Write $P_t$ for the price (or index level) on day $t$. The $n$-day moving average is
+For a confidence level $1 - \alpha$ and a horizon (one day, ten days), VaR is the loss that is exceeded with probability $\alpha$:
 \begin{equation}
-  MA_t(n) = \frac{1}{n} \sum_{i=0}^{n-1} P_{t-i}.
-  \label{eq:08-ma}
+  P(\text{Loss} > \mathrm{VaR}) = \alpha
+  \label{eq:11-var}
 \end{equation}
-A one-day moving average is just today's price. A long moving average, such as 200 days, moves slowly and shows the general direction of the market. A short one, such as 1 or 5 days, follows the price closely.
+It is a \textbf{quantile}\index{quantile|textbf} of the loss distribution. A 99\% one-day VaR is the 1st percentile of tomorrow's return, with the sign flipped. If daily returns are normal with mean zero and standard deviation\index{standard deviation} $\sigma$, then $\mathrm{VaR} = z\sigma$, where $z = 1.645$ at 95\%, 2.326 at 99\% and 3.090 at 99.9\%.
 
-A \textbf{moving-average rule}\index{technical trading rule!moving average|textbf} compares a short average with a long one. It gives a buy signal when the short average is above the long one by more than a band $b$, and a sell signal when it is below by more than the band:
+\subsection{Expected shortfall (ES)}
+
+\textbf{Expected shortfall (ES)}\index{expected shortfall (ES)|textbf}, also called conditional VaR, is the average loss on the days when the VaR is exceeded:
 \begin{equation}
-  \text{buy if } MA_t(s) > (1+b)\,MA_t(l), \qquad \text{sell if } MA_t(s) < (1-b)\,MA_t(l),
-  \label{eq:08-marule}
+  \mathrm{ES} = E[\text{Loss} \mid \text{Loss} > \mathrm{VaR}]
+  \label{eq:11-es}
 \end{equation}
-where $s$ is the short window and $l$ the long one. Inside the band no new signal is given. The band filters out ``whipsaws,'' the many small crossings that happen when the two averages are close. A rule is described by its two windows and its band, so ``1--200, 1\%'' means today's price against the 200-day average with a 1\% band.
+For a normal distribution\index{distribution!normal}, $\mathrm{ES} = \sigma\,\phi(z)/\alpha$, where $\phi$ is the normal density. ES always exceeds VaR at the same confidence level. VaR says where the tail starts. ES says how bad the tail is (Figure~\ref{fig:11-var-es}).
 
-Brock, Lakonishok and LeBaron used the rule in two ways. In the \textbf{variable-length moving average} (VMA) version, the investor holds the position for as long as the signal lasts. In the \textbf{fixed-length moving average} (FMA) version, the investor acts only when the short average crosses the long one and then holds for a fixed ten days, which lets the researcher measure what happens after a crossing.
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[declare function={npdf(\x) = exp(-\x*\x/2)/sqrt(2*pi);}]
+\begin{axis}[
+  width=0.61\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=-4.8, xmax=4, ymin=0, ymax=0.45,
+  xtick={-2.33,0,2}, xticklabels={$-2.33$,$0$,$2$},
+  ytick=\empty,
+  xlabel={Tomorrow's return, in daily standard deviations},
+  ylabel={Likelihood},
+  samples=200, clip=false,
+]
+  \addplot[name path=curve, draw=none, domain=-4:4] {npdf(x)};
+  \path[name path=base] (axis cs:-4,0) -- (axis cs:4,0);
+  \addplot[fenavy] fill between[of=curve and base, soft clip={domain=-4:-2.33}];
+  \addplot[fegray, thick, domain=-4:4] {npdf(x)};
 
-A \textbf{trading-range breakout rule}\index{technical trading rule!trading-range breakout|textbf} uses recent highs and lows instead of averages. Traders call the recent high a \textbf{resistance level} and the recent low a \textbf{support level}. The rule buys when the price rises above the maximum of the past $n$ days and sells when it falls below the minimum:
-\begin{equation}
-  \text{buy if } P_t > (1+b)\max_{1\le i\le n} P_{t-i}, \qquad \text{sell if } P_t < (1-b)\min_{1\le i\le n} P_{t-i}.
-  \label{eq:08-trb}
-\end{equation}
+  % 99% VaR
+  \draw[fenavy, very thick] (axis cs:-2.33,0) -- (axis cs:-2.33,0.30);
+  \node[fenavy, anchor=south, align=center] at (axis cs:-2.33,0.30)
+    {99\% VaR:\\loss of 2.33 s.d.};
+  % 99% ES
+  \draw[thick, dashed] (axis cs:-2.67,0) -- (axis cs:-2.67,0.13);
+  \draw (axis cs:-3.6,0.13) -- (axis cs:-2.67,0.13);
+  \node[anchor=south, align=center] at (axis cs:-3.3,0.13)
+    {99\% ES:\\average tail\\loss, 2.67 s.d.};
+  % Tail label
+  \draw[fenavy] (axis cs:-2.3,0.017) -- (axis cs:-0.6,0.06);
+  \node[fenavy, anchor=west] at (axis cs:-0.6,0.065) {worst 1\% of days};
+\end{axis}
+\end{tikzpicture}
+\caption{VaR and expected shortfall for normal returns. The 99\% VaR marks where the worst 1\% of days begins, 2.33 standard deviations below zero. The 99\% ES is the average loss within that tail, 2.67 standard deviations.}
+\label{fig:11-var-es}
+\end{figure}
 
-\textbf{Worked example.} Suppose an index closes at 104 today. Its 200-day average is 100 and its 50-day high is 103. The 1--200 rule with a 1\% band compares 104 with $1.01 \times 100 = 101$ and signals a buy. The 50-day breakout rule with a 1\% band compares 104 with $1.01 \times 103 = 104.03$ and gives no signal, because the price has not cleared the band.
+\subsection{Coherence}
 
-\subsection{Time-series versus cross-sectional momentum}
+Artzner, Delbaen, Eber and Heath (1999) listed four properties a sensible risk measure should have. The one VaR can violate is \textbf{subadditivity}\index{subadditivity|textbf}: the risk of a combined portfolio should not exceed the sum of the risks of its parts, since diversification\index{diversification} should not add risk. ES is subadditive; VaR is not in general. VaR is subadditive for normal returns, so the failure shows up in portfolios with very skewed payoffs, such as credit and options.
 
-Chapter~\ref{ch:05} studied \textbf{cross-sectional momentum}: it ranks stocks against each other and buys the relative winners. \textbf{Time-series momentum}\index{momentum!time-series|textbf} looks at each asset on its own. It asks only whether the asset's own excess return over the look-back period was positive or negative, and holds it long or short accordingly. In a year when every market rises, cross-sectional momentum is still long half the assets and short the other half, while time-series momentum is long all of them.
+\subsection{Square-root-of-time}
 
-Moskowitz, Ooi and Pedersen define the strategy for asset $s$ as follows. At the end of month $t$, look at the asset's excess return over the past twelve months, $r^s_{t-12,t}$. If it is positive, go long for one month; if it is negative, go short. The position is scaled by the asset's volatility, as described in the next subsection. The monthly return is
-\begin{equation}
-  r^{\text{TSMOM},s}_{t,t+1} = \operatorname{sign}\left(r^s_{t-12,t}\right) \frac{40\%}{\sigma^s_t}\, r^s_{t,t+1},
-  \label{eq:08-tsmom}
-\end{equation}
-where $\sigma^s_t$ is the asset's annualized volatility estimated with data up to month $t$. A twelve-month time-series momentum signal is a close cousin of a moving-average rule: an asset whose price is above its level of a year ago is usually also above its long moving average. Both rules ask the same question, ``has the price been going up?'', in slightly different ways.
+The square-root rule used to annualize volatility (Section~\ref{sec:10-foundations}) also scales VaR across horizons. If daily returns are independent with the same variance\index{variance}, the $h$-day standard deviation is $\sqrt{h}$ times the daily one, so a 10-day VaR is about $\sqrt{10} \approx 3.16$ times the one-day VaR. Volatility clustering\index{volatility clustering} (Chapter~\ref{ch:10}) breaks the assumption: after a calm period the rule overstates risk, and after a shock it understates it.
 
-\subsection{Volatility targeting across assets}
+\subsection{Methods}
 
-A trend-following portfolio may hold a Treasury bond, whose volatility is about 5\% a year, next to crude oil, whose volatility can exceed 40\%. If both received the same dollar amount, oil would dominate the portfolio's risk. \textbf{Volatility targeting}\index{volatility targeting|textbf} sizes each position so that each contributes about the same risk. Moskowitz, Ooi and Pedersen estimate each asset's variance with an exponentially weighted average of past squared daily returns,
-\begin{equation}
-  \left(\sigma^s_t\right)^2 = 261 \sum_{i=0}^{\infty} (1-\delta)\,\delta^i \left(r^s_{t-1-i} - \bar r^s_t\right)^2,
-  \label{eq:08-ewma}
-\end{equation}
-where 261 annualizes a daily variance and $\delta$ is chosen so that the average age of the data, $\delta/(1-\delta)$, is 60 days. This is the EWMA estimator that Chapter~\ref{ch:10} develops further. The position in Equation~\eqref{eq:08-tsmom} is then $40\%/\sigma^s_t$, which targets an annual volatility of 40\% for each asset. With dozens of assets that do not move together, the diversified portfolio's volatility is far lower, about 12\% a year in their sample.
+The three main families of VaR models are set out in Section~\ref{sec:11-how}:
 
-Two rules keep the test honest. The volatility estimate must use only data available before the position is taken, and the target must be fixed in advance, not chosen after seeing which value worked best.
+\begin{itemize}
+  \item \emph{parametric}, which assumes a distribution and estimates $\sigma$;
+  \item \emph{historical simulation}, which uses the empirical quantile of past returns;
+  \item \emph{Monte Carlo\index{Monte Carlo simulation}}, which simulates from a model of the risk factors.
+\end{itemize}
 
-\subsection{Rule universes and the SPA test}
+\textbf{Worked example.} A \$10 million position in a stock index has a daily volatility of 1.2\%.
 
-A single rule tested once is one hypothesis. Technical analysis offers thousands: every pair of window lengths, every band, every holding period and every family of rules. Sullivan, Timmermann and White (1999) built a universe of 7,846 rules from five families: filter rules, moving averages, support and resistance, channel breakouts and on-balance volume. The best rule in such a universe will look good by chance alone, exactly as the best of 1,000 random strategies did in Lab~\ref{ch:01}.
+\begin{itemize}
+  \item Normal 99\% one-day VaR $= 2.326 \times 1.2\% \times \$10\text{m} \approx \$279{,}000$.
+  \item Normal 99\% ES $= 1.2\% \times \phi(2.326)/0.01 \times \$10\text{m} = 2.665 \times 1.2\% \times \$10\text{m} \approx \$320{,}000$.
+  \item Normal 97.5\% ES $= 2.338 \times 1.2\% \times \$10\text{m} \approx \$281{,}000$, almost the same as the 99\% VaR. This is why regulators chose 97.5\% when they moved from VaR to ES.
+  \item 10-day VaR by the square-root rule: $\sqrt{10} \times \$279{,}000 \approx \$883{,}000$.
+  \item With 500 days of history, the 99\% historical-simulation VaR is the loss between the 5th and 6th worst days.
+\end{itemize}
 
-White's Reality Check (Section~\ref{sec:09-reality}) answers the right question: could the best rule have done this well if no rule had any real ability? It compares the best rule's performance with the distribution of the \emph{best} performance across all rules in bootstrap samples where the true performance of every rule is set to zero. The bootstrap must keep the dependence in daily returns, so it resamples blocks of days; Sullivan, Timmermann and White used the stationary bootstrap of Politis and Romano (1994), with blocks of random length averaging ten days.
-
-The Reality Check has one weakness. Adding many hopeless rules to the universe makes it harder to declare the best rule significant, even though the hopeless rules are irrelevant. Hansen's (2005) \textbf{Superior Predictive Ability} (SPA) test\index{SPA test|textbf} fixes this. It divides each rule's average performance by its own standard error, and it largely ignores rules that clearly do worse than the benchmark when it builds the null distribution. The SPA test therefore has more power when a universe contains many poor rules, which is the usual case.
+\textbf{Subadditivity failure.} Two bonds each default with probability 4\%, losing 100 if they do and nothing otherwise. Each bond's 95\% VaR is 0, since default is less likely than 5\%. For a portfolio of both, with independent defaults, the probability of at least one default is $1 - 0.96^2 = 7.84\%$, so the portfolio's 95\% VaR is 100. Diversifying has \emph{increased} the measured risk.
 
 \section{How it works}
-\label{sec:08-how}
+\label{sec:11-how}
 
-\textbf{Why trends might exist.} Several explanations have been proposed, and they are not mutually exclusive.
-
-\begin{itemize}
-  \item \textbf{Slow reaction to news.} Investors anchor on old prices and update their views gradually, so prices react to news too little at first and keep moving as the news sinks in. This is the underreaction\index{underreaction} story of Chapter~\ref{ch:05}.
-  \item \textbf{Herding and feedback.} Once a move is under way, other investors chase it, and the move overshoots. This explains why trends eventually partly reverse, as Moskowitz, Ooi and Pedersen found after about a year.
-  \item \textbf{Investors who do not trade for profit.} Central banks smooth exchange rates and interest rates, and hedgers such as airlines and farmers trade to reduce risk rather than to earn a return. Their trades can slow the adjustment of prices. Moskowitz, Ooi and Pedersen found that speculators in futures markets tend to follow trends, and that they profit at the expense of hedgers.
-\end{itemize}
-
-\textbf{Why trend following likes extreme markets.} A trend rule is long after prices have risen and short after they have fallen. In a long, steady decline, such as 2008 or the bear markets of the 1970s, it turns short early and profits as the decline continues. In a long, steady rise it is long. It loses in markets that move back and forth, when every signal arrives just before the price turns. The payoff therefore looks like that of an option \textbf{straddle}\index{straddle|textbf}, a combination of a call and a put that profits from a large move in either direction. Fung and Hsieh (2001) first described trend followers' returns in these terms. Moskowitz, Ooi and Pedersen confirmed the pattern: regressing the strategy's quarterly return on the market's return and its square gave an insignificant linear term and a significant positive square term, a ``smile.''
-
-The straddle pattern explains the appeal of trend following as a \textbf{diversifier}\index{diversification}. It tends to do well when a stock portfolio does badly over several months. The pattern has a limit: a straddle profits from large moves that last long enough for the rule to react. A sudden one-day crash, such as October 1987, or a sharp turn, such as March 2009, can hurt a trend follower who was positioned the other way.
-
-\section{The claim}
-\label{sec:08-claim}
-
-Stated so that it can fail:
-
-\begin{callout}
-\textbf{Simple trend rules, which buy assets whose prices have been rising and sell assets whose prices have been falling, earn returns above a buy-and-hold benchmark, and the best of them remain significant after accounting for the number of rules tried, after publication, and after trading costs.}
-\end{callout}
-
-The claim has two forms. The \textbf{strong form} is that classic technical rules on a single stock index, such as the Dow, beat buy-and-hold. The \textbf{weak form} is that a diversified time-series momentum portfolio across many asset classes earns a positive risk-adjusted return. The tests follow:
-
-\begin{itemize}
-  \item \textbf{Search.} Is the best rule still significant after the Reality Check and the SPA test?
-  \item \textbf{Time.} Did the rules keep working after the samples that established them, and after they were published?
-  \item \textbf{Breadth.} Is the evidence strong asset by asset, or only in a pooled test?
-  \item \textbf{Costs.} Trend rules trade often. Does the profit survive realistic costs?
-\end{itemize}
-
-\section{The original evidence}
-\label{sec:08-evidence}
-
-\subsection{Brock, Lakonishok and LeBaron (1992)}
-
-Brock, Lakonishok and LeBaron\index{Brock, Lakonishok and LeBaron|textbf} tested 26 rules on the daily Dow Jones Industrial Average from 1897 to 1986. Ten were variable-length moving-average rules (the window pairs 1--50, 1--150, 5--150, 1--200 and 2--200, each with no band and with a 1\% band), ten were the same rules in fixed-length form with a ten-day holding period, and six were trading-range breakout rules with windows of 50, 150 and 200 days, with and without a 1\% band.
-
-The results were striking for their time. Returns after buy signals were consistently higher than returns after sell signals. For the fixed-length rules, the average ten-day return after a buy signal was about 0.53\%, the average after a sell signal was about $-0.40\%$, and the average ten-day return over the whole sample was 0.17\%. Returns after sell signals were also more volatile. A negative expected return after sell signals is hard to explain with any model in which investors are paid for risk.
-
-The authors used a bootstrap to check the results. They fitted four standard models of returns to the data, a random walk, an AR(1), a GARCH-in-mean and an exponential GARCH, simulated many artificial Dow histories from each, and applied the rules to the simulated data. None of the four models produced the buy--sell differences seen in the real data.
-
-\subsection{Sullivan, Timmermann and White (1999)}
-
-Sullivan, Timmermann and White asked the question that Brock, Lakonishok and LeBaron could not: how many rules had the profession tried before settling on these 26? They extended the Dow data to 1996, built the universe of 7,846 rules described in Section~\ref{sec:08-foundations}, and applied White's Reality Check.
-
-In the original 1897--1986 sample the answer favored technical analysis. The best of Brock, Lakonishok and LeBaron's own rules, a 50-day variable moving average with a 1\% band, earned about 10\% a year, and the best rule in the full universe, a 5-day moving average, earned about 19\% a year. Both had Reality Check $p$-values close to zero.
-
-The ten years after the original sample told a different story. From 1987 to 1996 the best rule in the full universe had a $p$-value of 0.34, and the best of the original 26 had a $p$-value of 0.15. On S\&P 500 futures from 1984 to 1996, no rule beat the benchmark. The rules had worked in the sample in which they were discovered and not in the decade that followed.
-
-\subsection{Moskowitz, Ooi and Pedersen (2012) and Hurst, Ooi and Pedersen (2017)}
-
-Moskowitz, Ooi and Pedersen\index{Moskowitz, Ooi and Pedersen|textbf} moved the question from one stock index to many markets. They studied 58 liquid futures and forward contracts: 24 commodities, 12 currency pairs, 9 equity indices and 13 government bond futures. Their price data begin in 1965, and they evaluated the strategy from 1985 to 2009, when many more markets were available.
-
-Three findings stand out. First, in a pooled regression of each asset's volatility-scaled monthly return on its own past returns, the coefficients were positive for the first twelve months of past returns and mostly negative beyond, so trends persisted for about a year and then partly reversed. Second, the twelve-month strategy of Equation~\eqref{eq:08-tsmom} had a positive average return in every one of the 58 contracts, and 52 were significant at the 5\% level. Third, the diversified portfolio had a Sharpe ratio above one and an alpha of about 1.6\% a month against a global stock index and the size, value and momentum factors. It performed best in extreme market quarters, up or down.
-
-Hurst, Ooi and Pedersen (2017) pushed the test back in time. They combined one-, three- and twelve-month signals in 67 markets, including commodities, equity indices, bond markets and currency pairs, and simulated the strategy from 1880 to 2016, with higher assumed trading costs in the early decades and after a 2\% management fee and a 20\% performance fee. The strategy earned positive returns in every decade, had low correlations with stocks and bonds, and made money in most of the ten largest drawdowns of a 60/40 stock--bond portfolio.
-
-\subsection{Huang, Li, Wang and Zhou (2020)}
-
-Huang, Li, Wang and Zhou\index{time-series momentum!critique} challenged the statistical evidence. Their argument has three parts.
-
-\begin{itemize}
-  \item \textbf{The pooled regression overstates the evidence.} A regression that stacks all assets together can find a significant slope even when no single asset is predictable, for example when assets with higher average returns also tend to have positive past returns. When Huang and coauthors bootstrapped the pooled $t$-statistic, it was no longer significant.
-  \item \textbf{Asset by asset, the evidence is weak.} Running the predictive regression separately for each of their 55 assets, most slopes were insignificant, and only a few assets showed significant out-of-sample predictability.
-  \item \textbf{A simpler strategy does as well.} A ``time-series history'' strategy, which goes long an asset whose average return over its whole past is positive and short otherwise, earned about the same as time-series momentum. That strategy needs no predictability at all. It profits from the fact that assets with positive average returns in the past, such as stock indices and bonds, kept earning positive average returns.
-\end{itemize}
-
-Their conclusion was that the strategy is profitable but that the profit need not come from trends. Defenders of trend following reply that the strategy's value lies in its behavior in crises, not only in its average return, and that a diversified portfolio of weak signals can be valuable even when each signal is hard to detect on its own (Section~\ref{sec:08-stress}).
-
-\section{Lab~\thechapter: Replicating Brock--Lakonishok--LeBaron and Moskowitz--Ooi--Pedersen}
-\label{sec:08-lab}
-
-\begin{callout}
-\textbf{Lab~\ref{ch:08} at a glance.} \emph{Papers replicated:} Brock, Lakonishok and LeBaron (1992); Sullivan, Timmermann and White (1999); Moskowitz, Ooi and Pedersen (2012). \emph{Claim on trial\index{claims-on-trial method}:} simple trend rules beat buy-and-hold after correcting for the number of rules tried. \emph{Data:} the daily U.S. market index built from the Kenneth R. French Data Library\index{Kenneth French data library}, from July 1926, and optionally the daily Dow Jones Industrial Average from a free source such as Stooq; AQR's free \emph{Time Series Momentum: Factors, Monthly} data set; and, for a small multi-asset test, the 10-year Treasury yield (GS10), the H.10 exchange rates, three-month interbank rates and the WTI oil price from FRED\index{FRED}, which earlier labs already use. \emph{Code:} runs as a script or as a notebook, with a prediction prompt before each step.
-\end{callout}
-
-The lab has five parts. Each signal uses only prices up to the day, or month, before the position is taken.
-
-\begin{itemize}
-  \item \textbf{Part A, the 26 rules.} The lab applies Brock, Lakonishok and LeBaron's ten variable-length, ten fixed-length and six breakout rules to the daily U.S. market. For each rule it reports the number of buy and sell days, the mean daily return after buy and after sell signals, and the buy--sell difference with its $t$-statistic. It does this separately for 1926--1986, the overlap with the original sample, and for 1987 to the present, the period after publication.
-  \item \textbf{Part B, the search correction.} The lab builds a universe of a few thousand moving-average and breakout rules by varying the windows, bands and holding periods. It computes each rule's excess return over buy-and-hold and applies White's Reality Check and Hansen's SPA test, using the stationary bootstrap with an average block length of ten days and 1,000 bootstrap samples. Again the two periods are reported separately.
-  \item \textbf{Part C, time-series momentum across asset classes.} The lab reads AQR's monthly time-series momentum factors for equity indices, bonds, currencies and commodities, and for the diversified portfolio. It reports the average return, Sharpe ratio and alpha against the market, before and after the original sample ended in 2009.
-  \item \textbf{Part D, the smile.} Using the AQR diversified factor and the U.S. market return, the lab regresses quarterly trend returns on the market's return and its square, as in Moskowitz, Ooi and Pedersen, and lists the strategy's return in the ten worst quarters for U.S. stocks.
-  \item \textbf{Part E, asset by asset.} With free data the lab builds a small universe of about a dozen assets: U.S. stocks, a 10-year Treasury bond built from yields as in Lab~\ref{ch:13}, nine currencies against the dollar with their interest differentials as in Lab~\ref{ch:06}, and spot crude oil. It runs Huang and coauthors' tests on this universe: separate predictive regressions for each asset, the pooled regression with a bootstrap $p$-value, and a comparison of time-series momentum with the time-series history strategy.
-\end{itemize}
-
-\textbf{What readers will find.} Lab Figure~\ref{ch:08}.1 compares the buy--sell differences of the 26 rules before and after 1987. Lab Figure~\ref{ch:08}.2 shows the Reality Check and SPA $p$-values for the best rule in a rolling ten-year window. Lab Figure~\ref{ch:08}.3 plots quarterly trend returns against market returns, with the fitted smile. The test of the claim is whether the best rule survives the search correction after 1986, and whether the diversified strategy's return holds up after 2009 and asset by asset.
-
-\emph{[Draft note: the figures and numbers are generated by running the lab on data at the time of publication. The book prints the results; the text above does not anticipate them.]}
-
-\section{Stress tests}
-\label{sec:08-stress}
-
-\textbf{1. After publication.} The cleanest test of a trading rule is the period after the paper that made it famous. For the stock-index rules that period begins in 1992, or in 1987 if one counts from the end of the sample. For time-series momentum it begins in 2010. Industry reports and the AQR data show that diversified trend strategies had a weak decade after 2009, with long flat periods, before a strong year in 2022 when inflation surged and bonds and stocks fell together. A strategy that works in one regime and stalls in another is not disproved by a flat decade, but the post-publication record is the evidence an investor should weigh most.
-
-\textbf{2. Costs and a one-day lag.} The stock-index rules switch between long and short many times a year, and most of their profit comes from short holding periods. Bajgrowicz and Scaillet (2012) found that even low transaction costs offset the in-sample performance of the best rules on the Dow, and the lab measures how much a cost of 0.1\% per switch, or trading at the next day's close instead of today's, takes away. Time-series momentum with a twelve-month signal changes position far less often than daily rules, and it trades liquid futures, so its costs are much lower. Hurst, Ooi and Pedersen assumed costs six times higher before 1993 to reflect older markets and still found positive net returns.
-
-\textbf{3. Asset by asset or pooled.} A pooled test can find a significant result when no single asset is significant, and Huang and coauthors argue that this is what happened. The answer depends on what the investor holds. An investor who trades a single market needs that market to be predictable. An investor who holds a diversified portfolio of fifty markets benefits from many weak signals combined, in the same way that Chapter~\ref{ch:01} showed a higher Sharpe ratio requires fewer years to detect. The lab reports both views.
-
-\textbf{4. Is it trend or carry?} The time-series history strategy of Huang and coauthors earns its return by holding assets that have had positive average returns, mainly stocks and bonds. If trend following's return over a long sample is mostly that, then its value lies elsewhere: in its tendency to turn short during long declines. Part D tests that tendency directly.
-
-\textbf{5. Data snooping in the defense.} The one-, three- and twelve-month windows, the 40\% target and the 60-day volatility estimate are themselves choices. They were made by researchers who knew the history. The lab lets readers vary each choice and reports how sensitive the results are, in the spirit of the robustness grids in Chapter~\ref{ch:24}.
-
-\section{Verdict}
-\label{sec:08-verdict}
-
-Based on the published evidence, to be confirmed by readers' runs of Lab~\ref{ch:08} on data through 2025: \textbf{fails for classic rules on a single stock index; survives, weakened, for diversified time-series momentum.}
+Every VaR model answers two questions: how volatile will tomorrow be, and what shape does the tail have? The models in this chapter combine different answers.
 
 \begin{center}
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.24\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.24\linewidth}@{}}
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
 \toprule
-Test & Finding & Effect on the claim \\
+Model & Volatility & Tail shape \\
 \midrule
-Stock-index rules, original sample & Large buy--sell differences, significant even after the Reality Check & Supports \\
-Stock-index rules, after 1986 & Best rule no longer significant; costs and a one-day lag remove much of the profit & Strong form fails \\
-Many markets, original sample & Positive in all 58 contracts; Sharpe ratio above one & Supports weak form \\
-A century of data & Positive in every decade since 1880, after fees & Supports weak form \\
-Asset by asset & Most single-asset slopes insignificant; pooled test overstated & Weakens \\
-After 2009 & A long weak period, then strong gains in 2022 & Weakens, not decisive \\
-Crisis behavior & Profits in most long equity drawdowns & Supports its use as a diversifier \\
+Normal, rolling window & Equal-weighted past window (here 250 days) & Normal \\
+Historical simulation (HS) & Implicit in the window & Empirical quantile of past returns \\
+EWMA (RiskMetrics) & Exponentially weighted, $\lambda = 0.94$ & Normal \\
+GARCH & Estimated, mean-reverting & Normal \\
+GJR-GARCH with Student-$t$ shocks & Estimated, with leverage effect & Student-$t$, estimated \\
+Filtered historical simulation (FHS) & GJR-GARCH & Empirical quantile of past \emph{standardized} returns \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-The trend is not a reliable friend for someone who trades a single stock index with a classic moving-average rule. Those rules worked in the century in which they were found, and not after. Diversified trend following across many asset classes has a much stronger record, including more than a century of simulated history and a decade of live trading after publication. Its average return, however, is smaller and less certain than the original studies suggested, and part of it may come from holding assets that simply rose over time. Its most dependable feature is its tendency to make money during long market declines. The verdict is dated by the sample tested.
+\textbf{Historical simulation}\index{Value at Risk (VaR)!historical simulation|textbf} is the most popular method at banks (P\'erignon and Smith 2010) because it needs no distributional assumption and handles nonlinear positions, such as options, by revaluing the portfolio under each past day's market moves. Its weakness is slowness. A 250-day window gives the same weight to a crash eleven months ago as to yesterday's, and none at all to one twelve months and a day ago. When volatility jumps, HS VaR responds only as the new large losses enter the window. When they leave, it drops abruptly.
 
-\section{What investors can use}
-\label{sec:08-investors}
+\textbf{EWMA and GARCH}\index{EWMA|textbf} respond to volatility within days, which is Chapter~\ref{ch:10}'s central finding. But with normal shocks they understate the tail. Even after volatility clustering is removed, standardized daily returns have fatter tails than the normal distribution, so a normal 99\% VaR built on a good volatility forecast\index{volatility!forecasting} is still breached too often.
 
-\textbf{Use trend as a diversifier, not as a stand-alone bet.} A modest allocation to a diversified trend strategy has historically reduced the drawdowns of a stock--bond portfolio. It is not a strategy that wins every year, and it can go through years of flat or negative returns.
+\textbf{Filtered historical simulation}\index{Value at Risk (VaR)!filtered historical simulation|textbf} (Barone-Adesi, Giannopoulos and Vosper 1999; Hull and White 1998) combines the two strengths. It divides each past return by the volatility forecast for that day, giving standardized returns that are roughly independent and identically distributed. It takes their empirical quantile, which captures the fat tails\index{fat tails} without assuming a distribution, and multiplies by today's volatility forecast. The GJR\index{GARCH!GJR}-$t$ model does the same with a parametric tail.
 
-\textbf{Prefer breadth and patience.} A trend strategy that holds many markets in several asset classes and uses slow signals is more robust than one that trades a single market with fast signals. Fast rules generate more trades, higher costs and more room for overfitting.
+A VaR model can fail in two distinct ways. It can be \textbf{wrong on average}, breached on 2\% of days instead of 1\%. Or it can be \textbf{right on average but wrong at the wrong times}, with breaches bunched in a few turbulent weeks. The second failure is the more dangerous, because the bunched breaches arrive exactly when capital is scarce. The backtests in Section~\ref{sec:11-backtest} test for both.
 
-\textbf{Check fees carefully.} Trend-following funds have often charged high fees. Simple rules on liquid futures are cheap to run, so the fee should be judged against what a transparent rule would deliver.
-
-\textbf{Questions to ask a trend-following manager:}
-
-\begin{enumerate}
-  \item How many signal variants did you test before choosing the ones you use, and were the choices fixed before the backtest\index{backtest}?
-  \item How did the strategy perform after 2009, and in 2022?
-  \item What would the strategy have done in a one-day crash such as October 1987, and in a sharp rebound such as March 2009?
-  \item How much of the long-run return comes from being long stocks and bonds on average?
-  \item What are the turnover, trading costs and fees, and what is the return after all three?
-\end{enumerate}
+\section{The claim}
+\label{sec:11-claim}
 
 \begin{callout}
-\textbf{What Failed: fast trend rules on a single stock index.} For decades, newsletters and trading systems sold moving-average rules for timing the stock market, often with backtests on the Dow going back to the early twentieth century. The rules that looked best were short-window rules that traded many times a year. Sullivan, Timmermann and White's test showed what happened next: from 1987 to 1996 the best rules were no longer significant, and on S\&P 500 futures, the market where the rules could actually be traded cheaply, no rule beat the benchmark. The failure was in treating the best rule in a long backtest as a rule with real predictive power. The claim that a fast moving-average rule on a single index beats buy-and-hold \textbf{fails}.
+\textbf{Claim.} A well-built 99\% one-day VaR model is breached on about 1\% of trading days, and its breaches are independent over time. Breaches neither cluster in turbulent periods nor become more likely after a breach.
+\end{callout}
+
+This is the claim implicit in every VaR number a bank reports and in the Basel rules that used VaR to set capital. Christoffersen (1998) called the two parts \textbf{unconditional coverage}\index{coverage test!unconditional|textbf} and \textbf{independence}. Together they form \textbf{conditional coverage}\index{coverage test!conditional|textbf}: on each day, given everything known the day before, the probability of a breach is exactly 1\%.
+
+To test it we need to be precise on four points.
+
+\begin{itemize}
+  \item \textbf{Which models.} The claim is not that any VaR model works. It is that some models, built on the evidence of Chapter~\ref{ch:10}, can achieve conditional coverage. We test six, from the simplest to filtered historical simulation.
+  \item \textbf{Which portfolio.} The lab uses the U.S. stock market, a single liquid position with daily data back to 1926. Bank portfolios are more complex, and their own backtests (Section~\ref{sec:11-evidence}) are the stronger test of practice.
+  \item \textbf{Which confidence level.} The claim is stated at 99\%, the Basel level, but a model that is right at 99\% and badly wrong at 99.9\% is of limited use for the tail events that matter.
+  \item \textbf{What would count against it.} The claim fails for a model if its breach rate differs significantly from 1\%, or if breaches are significantly clustered. It weakens if every model fails in crises, even those that pass over the full sample.
+\end{itemize}
+
+\section{The original evidence}
+\label{sec:11-evidence}
+
+\textbf{RiskMetrics\index{RiskMetrics} and the Basel rules.} In 1994 J.P. Morgan published its RiskMetrics methodology and data free of charge. Its daily volatilities used the EWMA rule with $\lambda = 0.94$, and its VaR assumed normal returns. The fourth edition of the \emph{Technical Document} (1996) became the reference for the industry. In 1996 the Basel Committee allowed banks to use their own VaR models to set capital for market risk: a 99\% ten-day VaR, multiplied by at least 3. The multiplier rises with the number of breaches in a 250-day backtest, the \textbf{traffic light}\index{Basel traffic light|textbf} described in Section~\ref{sec:11-backtest}. VaR thus became both a management tool and a regulatory one, and the backtest became a test with consequences.
+
+\textbf{The statistics of backtesting.} Kupiec (1995) proposed testing whether the breach rate equals the stated probability, and showed how little power the test has over a single year: at 99\% only 2.5 breaches are expected in 250 days, so even a badly wrong model is hard to reject. Christoffersen (1998) added the test of independence and combined the two into the conditional-coverage test.
+
+\textbf{Banks' own VaR.} Berkowitz and O'Brien (2002) obtained daily VaR forecasts and trading results for six large U.S. banks. The banks' 99\% VaRs were generally \emph{conservative}, breached less than 1\% of the time. But the breaches that did occur clustered, most of them in the turmoil of August to October 1998. A simple GARCH model of each bank's total trading P\&L performed about as well as the banks' detailed models and responded faster to changes in volatility. P\'erignon and Smith (2010) found that historical simulation was by far the most popular method among banks, and that historical-simulation VaR contained very little information about future volatility.
+
+\textbf{Model comparisons.} Studies that backtest many models on index returns reach a consistent conclusion. Methods that combine a GARCH-type volatility forecast with a fat-tailed or empirical distribution of standardized returns perform best. Plain historical simulation and normal models with slow-moving volatility perform worst (Kuester, Mittnik and Paolella 2006). McNeil and Frey (2000) proposed the conditional extreme-value approach and the exceedance-residual\index{regression!residuals} test of expected shortfall used in this chapter's lab.
+
+\section{Backtesting VaR and expected shortfall}
+\label{sec:11-backtest}
+
+A backtest compares each day's VaR forecast, made the day before, with that day's actual loss. A \textbf{breach}\index{VaR exceedance|textbf} (or exception) is a day on which the loss exceeded the VaR. The breach sequence, a string of 0s and 1s, is the raw material for every test.
+
+\textbf{Unconditional coverage (Kupiec 1995).}\index{coverage test!unconditional|textbf} With $n$ days and $x$ breaches, the likelihood-ratio statistic compares the observed rate $x/n$ with the stated probability $\alpha$:
+\begin{equation}
+  LR_{uc} = -2\ln\!\left[(1 - \alpha)^{n-x}\,\alpha^{x}\right] + 2\ln\!\left[\left(1 - \tfrac{x}{n}\right)^{n-x}\left(\tfrac{x}{n}\right)^{x}\right]
+  \label{eq:11-kupiec}
+\end{equation}
+Under the null hypothesis\index{hypothesis testing!null hypothesis} it has a $\chi^2$ distribution with one degree of freedom. It rejects both too many breaches (risk understated) and too few (capital wasted).
+
+\textbf{Independence (Christoffersen 1998).} Estimate two probabilities: of a breach after a day without one ($\pi_{01}$), and of a breach after a breach ($\pi_{11}$). If breaches are independent, they are equal. The likelihood-ratio test of $\pi_{01} = \pi_{11}$ is $\chi^2(1)$. Adding $LR_{uc}$ gives the conditional-coverage test, $\chi^2(2)$. For a correct 99\% model, $\pi_{11}$ should be about 1\%. Values of 5\% to 10\% mean the model reacts too slowly to turbulence.
+
+\textbf{The Basel traffic light.}\index{Basel framework|textbf} Regulators count breaches of the 99\% one-day VaR over the most recent 250 trading days (Figure~\ref{fig:11-traffic}):
+
+\begin{center}
+\small
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.12\linewidth}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Zone & Breaches & Capital multiplier & Probability of this many or fewer for a correct model \\
+\midrule
+Green & 0--4 & 3.0 & 89.2\% \\
+Yellow & 5--9 & 3.40 to 3.85 & 99.99\% at 9 \\
+Red & 10 or more & 4.0 & n/a \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.64\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=-0.7, xmax=12.7, ymin=0, ymax=33,
+  xtick={0,...,12}, ytick={0,10,20,30},
+  xlabel={Breaches of a correct 99\% VaR in 250 days},
+  ylabel={Probability (\%)},
+  ybar, bar width=0.55,
+  clip=false,
+]
+  % Basel zones: green 0-4, yellow 5-9, red 10 or more
+  \fill[green!50!black!8]  (axis cs:-0.5,0) rectangle (axis cs:4.5,33);
+  \fill[yellow!50!orange!10] (axis cs:4.5,0) rectangle (axis cs:9.5,33);
+  \fill[red!8]             (axis cs:9.5,0) rectangle (axis cs:12.7,33);
+  \node at (axis cs:2,30)   {green: 89.2\%};
+  \node at (axis cs:7,30)   {yellow: 10.8\%};
+  \node at (axis cs:11.1,30) {red: $\approx 0$};
+
+  % Binomial(250, 0.01) probabilities
+  \addplot[fill=fenavy!70, draw=none, bar shift=0pt] coordinates
+    {(0,8.11) (1,20.47) (2,25.74) (3,21.49) (4,13.41)};
+  \addplot[fill=fenavy!40!gray, draw=none, bar shift=0pt] coordinates
+    {(5,6.66) (6,2.75) (7,0.97) (8,0.30) (9,0.08)};
+  \addplot[fill=red!60!black, draw=none, bar shift=0pt] coordinates
+    {(10,0.02) (11,0.00) (12,0.00)};
+\end{axis}
+\end{tikzpicture}
+\caption{The Basel traffic light. The bars give the probability that a correct 99\% VaR model is breached a given number of times in 250 days. It lands in the green zone 89.2\% of the time and in the yellow zone 10.8\% of the time, and almost never in the red.}
+\label{fig:11-traffic}
+\end{figure}
+
+A correct model lands in the yellow zone about one year in nine and almost never in the red. The zones were designed to balance two errors: penalizing banks with good models and letting banks with bad models through.
+
+\textbf{Expected shortfall.}\index{expected shortfall (ES)|textbf} In 2016 the Basel Committee's Fundamental Review of the Trading Book replaced 99\% VaR with 97.5\% ES for setting market-risk capital, because ES captures the size of tail losses and is subadditive. ES is harder to backtest. Gneiting (2011) showed that ES, unlike VaR, is not \textbf{elicitable}\index{elicitability|textbf}: no scoring function is minimized by the true ES, so forecasts cannot be ranked by average loss as VaR forecasts can. Backtests exist nonetheless. The \textbf{exceedance-residual test} of McNeil and Frey (2000) checks whether, on breach days, the loss beyond the ES averages zero. Acerbi and Sz\'ekely (2014) proposed further tests. The Basel framework still backtests VaR at 97.5\% and 99\% alongside the ES used for capital.
+
+\section{Lab~\thechapter: Replicating the Kupiec and Christoffersen backtests}
+\label{sec:11-lab}
+
+\begin{callout}
+\textbf{Lab~\ref{ch:11} at a glance.} \emph{Papers replicated:} Kupiec (1995); Christoffersen (1998). \emph{Claim on trial\index{claims-on-trial method}:} a well-built 99\% VaR model achieves conditional coverage. \emph{Data:} daily U.S. market returns (Mkt-RF + RF from the Kenneth French\index{Kenneth French data library} library) from 1930 to the present, about 24,000 trading days; free. \emph{Code:} runs as a script (\texttt{python lab13.py}) or as a notebook with a prediction prompt before each step.
+\end{callout}
+
+Lab~\ref{ch:11} backtests the six models of Section~\ref{sec:11-how}. Every forecast uses only data up to the day before. The GARCH models are re-estimated once a year on the previous ten years.
+
+\textbf{Part A, coverage.} For each model at 99\%: breaches against the roughly 240 expected, Kupiec and Christoffersen tests, average VaR, the worst loss as a multiple of the VaR, and the share of calendar years that would have fallen in the Basel yellow and red zones. Lab Figure~\ref{ch:11}.1 shows two models through 2007--2010, and Lab Figure~\ref{ch:11}.2 compares breach rates.
+
+\textbf{Part B, clustering.} The probability of a breach after a breach, and breaches per year against the Basel zones (Lab Figure~\ref{ch:11}.3).
+
+\textbf{Part C, stress tests.} Breaches in four crises; the ratio of actual to expected breaches at confidence levels from 95\% to 99.9\% (Lab Figure~\ref{ch:11}.4); and historical simulation with one, two and four years of data.
+
+\textbf{Part D, expected shortfall.} At 97.5\%, the ratio of the average loss on breach days to the average ES forecast, and a test of whether exceedance residuals, scaled by volatility, average zero (Lab Figure~\ref{ch:11}.5).
+
+The lab tests the claim in its simplest setting: a single linear position in a liquid market with a long history. A bank's trading book adds options, credit and illiquid positions, and those make every model harder to build. If the models struggle here, they will not do better there.
+
+\textbf{What the simulated run shows.} The simulation draws returns from a GJR-GARCH model with Student-$t$ shocks, so the GJR-$t$ model is the true model. It passes every test: 1.01\% breaches at 99\%, a breach probability after a breach of 0.8\%, and an ES ratio of 1.00. Filtered historical simulation is nearly as good. The normal and historical-simulation models are breached about twice as often as they should be, with strong clustering, and they understate ES. These results confirm that the code and the tests work. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
+
+\section{Stress tests}
+\label{sec:11-stress}
+
+\textbf{Crises.} The full-sample breach rate can hide disastrous weeks. On October 19, 1987, the Dow Jones Industrial Average fell 22.6\%, its largest one-day percentage loss. No model calibrated on the calm months before could have put that inside a 99\% VaR. Part C counts breaches in 1930--32, October 1987, the autumn of 2008 and the spring of 2020. A correct 99\% model should average about 0.2 breaches in a 22-day month. Expect every model to exceed that in these windows. The question is how many breaches each produces and how quickly it adapts.
+
+\textbf{Confidence level.} Fat tails punish models more the further into the tail they go. Under the normal distribution a 99.9\% loss is only 1.33 times a 99\% loss ($3.09/2.33$). In equity returns the ratio is larger. Normal-based models that are slightly off at 95\% can be several times off at 99.9\% (Lab Figure~\ref{ch:11}.4). The test also has very little power at 99.9\%: about 24 breaches are expected in 95 years, so a single bad week moves the ratio noticeably.
+
+\textbf{Window length.} A short historical-simulation window adapts faster but estimates the 1\% quantile from very few observations: with 250 days, only two or three. A long window is more stable but slower to react after a calm period. Part C compares 250, 500 and 1,000 days. The choice moves the breach rate but does not fix clustering, since no equal-weighted\index{index weighting!equal-weighted} window responds to volatility the way GARCH does.
+
+\textbf{Procyclicality.} A VaR that responds quickly to volatility, as GARCH and EWMA do, raises capital requirements and forces deleveraging in exactly the weeks when markets are falling. That is good risk measurement but can amplify a crisis if every bank does it at once. A slow VaR, such as long-window historical simulation, is less procyclical but is breached in clusters. Basel 2.5 (2009) added a \textbf{stressed VaR}\index{Value at Risk (VaR)!stressed|textbf}, calibrated to a year of significant stress, partly to make capital less dependent on recent calm.
+
+\section{Verdict}
+\label{sec:11-verdict}
+
+\begin{callout}
+\textbf{Verdict: weakens} (as of October 2026). The claim holds for the right models in normal times: VaR models that combine a responsive volatility forecast with a fat-tailed distribution come close to 1\% breaches at 99\% with little clustering over long samples. It fails for the models most widely used in practice, normal and plain historical simulation, which are breached in clusters. It fails for every model in the first days of a crisis and deep in the tail.
+\end{callout}
+
+What survives:
+
+\begin{itemize}
+  \item \textbf{Coverage is achievable.} Filtered historical simulation and GARCH models with fat-tailed shocks deliver close to the stated breach rate over long samples, in the literature and in tests like the lab's. The tools of Chapter~\ref{ch:10} work.
+  \item \textbf{Backtesting works as designed.} The Kupiec and Christoffersen tests, and the Basel traffic light, separate good models from bad ones over long samples. A model that clusters its breaches is caught.
+\end{itemize}
+
+What weakens it:
+
+\begin{itemize}
+  \item \textbf{Practice lags the evidence.} Historical simulation, the most popular method at banks, reacts slowly and contains little information about future volatility (P\'erignon and Smith 2010). Its breaches cluster in exactly the periods when losses matter.
+  \item \textbf{Crises break every model.} No model built on past data anticipates the first day of a crash. In October 1987, in 2008 and in March 2020 breaches came in bunches.
+  \item \textbf{The tail beyond 99\% is poorly measured.} Breach rates at 99.9\% are worse for most models, and the tests have little power to tell.
+  \item \textbf{VaR says nothing about the size of the loss beyond it.} A model can pass every VaR backtest\index{Value at Risk (VaR)!backtesting} while understating how bad the bad days are. Expected shortfall addresses this, but it inherits the same volatility forecasts and is harder to backtest.
+\end{itemize}
+
+The verdict would move to \emph{survives} if the models used in practice achieved conditional coverage through crises, which would require volatility forecasts faster than any yet built from daily data. It would move to \emph{fails} if even the best models failed coverage tests over long samples, which the evidence so far does not show.
+
+\section{What practitioners and investors can use}
+\label{sec:11-investors}
+
+\textbf{For anyone measuring risk:}
+
+\begin{itemize}
+  \item \textbf{Use a responsive volatility forecast.} EWMA at the least, GARCH-type models for better results. A one-year equal-weighted window is too slow.
+  \item \textbf{Use fat tails.} Scale standardized returns by an empirical or Student-$t$ distribution rather than the normal. Filtered historical simulation does both and is easy to implement.
+  \item \textbf{Report ES alongside VaR,} and look at the largest losses directly, not only at percentiles.
+  \item \textbf{Backtest continuously.}\index{backtest|textbf} Count breaches, and also check whether they cluster. A model with the right number of breaches all in one month is not a good model.
+  \item \textbf{Stress test separately.} VaR describes ordinary bad days. Scenarios such as a repeat of October 1987, 2008 or 2022 describe the days that threaten survival, and no backtest on recent data covers them.
+\end{itemize}
+
+\textbf{For investors reading a bank's or fund's risk disclosures:}
+
+\begin{itemize}
+  \item What method produces the VaR, and over what window? A historical simulation with a one-year window will look reassuring after a calm year.
+  \item How many backtesting exceptions were there last year, and when did they occur?
+  \item What is the stressed VaR or the worst scenario loss, relative to the reported VaR?
+  \item What positions are hard to value daily? Their risk may not appear in the VaR at all.
+\end{itemize}
+
+\begin{callout}
+\textbf{What Failed: bank VaR in 2007--08.} By 2007 large banks' trading risk was measured mainly by VaR and stress tests, and their market-risk capital was based on VaR. The Swiss Federal Banking Commission's investigation of UBS, the bank with the largest subprime losses in Europe, found that its super-senior CDO tranches\index{tranches} had been judged ``VaR neutral,'' so they ``were not reflected in key internal risk reports.'' The AAA ratings fed straight into the risk metrics. Risk models, including VaR, ``operated on the basis of overoptimistic assumptions,'' and stress scenarios were ``too optimistic'': ``The real shocks proved to be far greater than any shocks anticipated.'' UBS's own report to shareholders recorded that the super-senior positions, which the desk had treated as fully hedged with protection on only a small part of their value, accounted for about half of the bank's losses by the end of 2007.
+
+The failure was not that VaR was computed wrongly. It was that VaR measured the risk of positions that looked safe in recent data and could not see the risk of a market that had never been stressed. The regulatory response was the stressed VaR of Basel 2.5 and, later, the move to expected shortfall. In March 2020, regulators faced the opposite problem: banks' backtesting exceptions jumped with market volatility, and the Federal Reserve and other U.S. agencies excluded exceptions from March 6 to March 27, 2020, from the count, judging that they reflected ``widespread and unusual volatility'' (Board of Governors of the Federal Reserve System 2021).
 \end{callout}
 
 \section{Open questions}
-\label{sec:08-open}
+\label{sec:11-open}
 
 \begin{itemize}
-  \item \textbf{Has trend following become crowded?} Assets in managed-futures funds grew sharply after 2008. Did the extra money weaken trends, and is that why returns were lower after 2009?
-  \item \textbf{Trend or carry?} How much of trend following's long-run return is predictability, and how much is the average return of the assets it tends to hold?
-  \item \textbf{Which window?} Short windows react faster to turning points but trade more. Is there a principled way to choose, or to combine, look-back periods without overfitting?
-  \item \textbf{Will the crisis behavior continue?} Trend following profited in long declines such as 2008 and 2022. Will it do so in the next crisis, which may be faster or shaped differently?
+  \item \textbf{Can intraday data fix the first day of a crisis?} Realized volatility\index{volatility!realized} from intraday returns (Chapter~\ref{ch:10}) responds faster than daily GARCH. Does it reduce breach clustering at the onset of crises?
+  \item \textbf{How should ES be backtested and compared?} ES is not elicitable on its own, but it is jointly elicitable with VaR. Which tests have power at the sample sizes banks actually have?
+  \item \textbf{Is risk measurement procyclical by design?} A VaR that responds quickly forces deleveraging in falling markets. How should risk measures balance accuracy against stability?
+  \item \textbf{What about portfolios VaR handles badly?} Options, credit and illiquid assets have nonlinear or stale prices. How much worse are VaR backtests for them, and what replaces VaR there?
 \end{itemize}
 
 \section*{Exercises}
+\addcontentsline{toc}{section}{Exercises}
 
 \subsection*{Conceptual (all readers)}
 
 \begin{enumerate}
-  \item An index is at 1,050. Its 200-day moving average is 1,030 and its 50-day high is 1,060. What signals do the 1--200 rule with a 1\% band and the 50-day breakout rule with a 1\% band give?
-  \item In a year when every asset class rises, what does a time-series momentum strategy hold? What does the cross-sectional momentum strategy of Chapter~\ref{ch:05} hold?
-  \item Explain why the payoff of a trend-following strategy resembles an option straddle. When does the analogy break down?
-  \item Why does adding many poor rules to a universe make White's Reality Check less powerful, and how does Hansen's SPA test address the problem?
-  \item Huang and coauthors' time-series history strategy needs no predictability. Explain how it can still earn a positive return.
+  \item A \$5 million position has a daily volatility of 1.5\%. Compute the normal 95\% and 99\% one-day VaR, the 99\% ES and the 10-day 99\% VaR by the square-root rule.
+  \item Using the two-bond example in Section~\ref{sec:11-foundations}, compute the portfolio's 95\% ES and show that ES is subadditive in this case.
+  \item A bank reports 7 breaches of its 99\% VaR in 250 days. Compute the Kupiec statistic and p-value. Which Basel zone is it in, and what is the capital multiplier?
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
-  \setcounter{enumi}{5}
-  \item In Part A, charge 0.1\% for every switch between long and short and trade at the next day's close. How many of the 26 rules still beat buy-and-hold after 1986?
-  \item In Part B, double the size of the rule universe by adding filter rules. How do the Reality Check and SPA $p$-values of the best rule change?
-  \item In Part C, split the post-2009 period into 2010--2021 and 2022 to the present. How much of the post-publication return comes from 2022?
-  \item In Part E, change the look-back from 12 months to 3 and to 24 months. Does any single asset become significant?
-  \item Combine the AQR diversified trend factor with the U.S. market in an 80/20 portfolio. Compare its Sharpe ratio and maximum drawdown with the market alone, before and after 2009.
+  \setcounter{enumi}{3}
+  \item Part A: which models pass the Kupiec test at 99\%? Which pass the Christoffersen independence test? Is there a model that passes one but not the other?
+  \item Part B: for historical simulation, compute the average number of days between breaches and compare it with the 100 days expected. What does the distribution of durations tell you?
+  \item Part C: count each model's breaches in October 1987. How many days did each model take before its VaR exceeded the losses of the following days?
+  \item Part C: rerun the backtest at 99.9\%. Which models are within a factor of two of the expected breach rate? How confident can you be, given the number of breaches expected?
+  \item Part D: do the models that pass the VaR backtest also pass the ES backtest? Is there a model that passes VaR but fails ES?
+  \item A regulator proposes requiring all banks to use filtered historical simulation. Using the evidence in this chapter, write the case for and against, including the effect on procyclicality.
 \end{enumerate}

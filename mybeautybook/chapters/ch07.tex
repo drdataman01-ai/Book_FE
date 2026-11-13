@@ -1,4 +1,4 @@
-% Chapter 7 -- Claim: Forward Rates Predict Future Interest Rates
+% Chapter 10 -- Claim: Volatility Is Predictable
 % Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -12,267 +12,365 @@
 }{}
 \makeatother
 
-\chapter{Claim: Forward Rates Predict Future Interest Rates}
-\label{ch:07}
+\chapter{Claim: Volatility Is Predictable}
+\label{ch:10}
 
-The oldest theory of interest rates says that the shape of the yield curve\index{yield curve} is a forecast. Under the \textbf{expectations hypothesis}\index{expectations hypothesis|textbf}, long rates are averages of expected future short rates, so a steep curve forecasts rising rates and an inverted curve forecasts falling ones. Forward rates\index{forward rate} are then unbiased forecasts of where short rates are going, and a long bond and a sequence of short bonds earn the same expected return\index{return!expected}. In the 1980s, new databases of zero-coupon bond prices made the theory testable with precision. Fama and Bliss (1987) found that the gap between forward and spot rates predicts the extra return on long bonds over the next year, and forecasts changes in short rates only at horizons of several years. Campbell and Shiller (1991) found that when the curve is steep, long yields tend to fall, the opposite of what the theory requires.
+Mandelbrot (1963) observed that in commodity prices large changes tend to be followed by large changes, of either sign, and small changes by small changes. For two decades the observation had no model. Engle (1982) supplied one, the autoregressive conditional heteroskedasticity, or ARCH, model, in which today's variance depends on yesterday's squared shocks, and Bollerslev (1986) generalized it into GARCH, which became the standard model of financial volatility. The pattern is easy to see in market history. A quiet day tends to follow another quiet day, and a violent day another violent one; the 1987 crash, the autumn of 2008 and March 2020 each arrived as a run of violent days.
 
-The question matters because markets and central banks read the curve every day. Commentators treat an inverted curve as a forecast of rate cuts and recession, central banks extract ``market-implied'' policy paths from forward rates, and bond investors choose maturities on the basis of what the curve seems to promise. If the expectations hypothesis fails, part of the slope is a \textbf{term premium}\index{term premium}, a reward for bearing interest-rate risk that changes over time. Cochrane and Piazzesi (2005) showed that a single combination of forward rates predicts bond excess returns well, which made the term premium itself a measurable object.
+The claim carries a great deal of weight. Option prices, risk limits, Value at Risk\index{Value at Risk (VaR)}, margin requirements\index{margin} and volatility-targeting\index{volatility targeting} funds all assume that volatility\index{volatility} can be forecast. Yet in the 1990s the evidence looked weak: GARCH forecasts explained only a few percent of the variation in squared daily returns. Andersen and Bollerslev (1998) showed that the fault lay with the yardstick, because a single squared return is a very noisy measure of a day's variance, and that forecasts look good when judged against realized variance\index{realized variance} built from intraday data. Hansen and Lunde (2005) found that a simple GARCH(1,1) is hard to beat, Corsi (2009) introduced the HAR model, and Moreira and Muir (2017) argued that investors can earn higher Sharpe ratios by scaling their exposure to forecast volatility, a claim that Cederburg, O'Doherty, Wang and Yan (2020) challenged.
 
-The implications are direct. A forecaster who reads the curve as a forecast of rates will be wrong in a predictable way, an investor can tilt toward long bonds when the predicted premium is high, and a central bank must separate expected policy from risk compensation before reading the market's view. The claim on trial\index{claims-on-trial method} is the expectations hypothesis: \textbf{forward rates are unbiased forecasts of future short rates, so long bonds earn no predictable excess return.}
+Part III asked whether anything forecasts the \emph{level} of returns, and the answers were mostly modest. This chapter asks about their \emph{size}, and the contrast is the point: the same out-of-sample tools that rejected most return forecasts find strong evidence here. The open question is less \emph{whether} than \emph{how well}, \emph{at what horizon}, \emph{by which model}, and whether an investor can turn the forecasts into better returns. The claim on trial\index{claims-on-trial method} is: \textbf{tomorrow's volatility can be forecast well from today's information, and the forecasts are good enough to improve a portfolio.}
 
-The lab in Section~\ref{sec:07-lab} replicates the regressions of Fama and Bliss (1987), Campbell and Shiller (1991) and Cochrane and Piazzesi (2005) on the Federal Reserve's free zero-coupon Treasury curve since 1961, in place of the commercial bond files the original papers used, in order to check whether the expectations hypothesis fails as clearly today as it did in the original samples.
+The lab in Section~\ref{sec:10-lab} replicates the proxy result of Andersen and Bollerslev (1998) and the model comparison of Hansen and Lunde (2005) on free daily U.S. market returns since 1926 and the VIX since 1990, and then rebuilds the volatility-managed portfolios of Moreira and Muir (2017), in order to check how predictable volatility is, which model forecasts it best, and whether the forecasts are useful to an investor.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item compute zero-coupon\index{yield curve!zero-coupon} yields, forward rates, holding-period returns\index{return!holding-period} and excess returns\index{return!excess} from bond prices;
-  \item use duration\index{duration} to estimate a bond's price sensitivity to its yield;
-  \item state the expectations hypothesis and define the term premium\index{term premium};
-  \item explain the Fama--Bliss\index{Fama--Bliss regression}, Campbell--Shiller\index{Campbell--Shiller decomposition} and Cochrane--Piazzesi\index{Cochrane--Piazzesi factor} tests and why they ask the same question;
-  \item summarize the evidence, including the small-sample and out-of-sample\index{in-sample versus out-of-sample} critiques;
-  \item read a market-implied rate path as a forecast plus a premium, and judge a bond strategy built on carry and roll-down\index{roll-down}.
+  \item annualize a daily volatility and explain why models work in variance\index{variance};
+  \item compute historical, EWMA\index{EWMA} and GARCH\index{GARCH} volatility forecasts\index{volatility!forecasting}, the long-run variance\index{GARCH!unconditional variance} and the half-life\index{half-life} of a shock;
+  \item explain realized variance\index{volatility!realized}, the HAR\index{HAR model} model, implied volatility\index{volatility!implied}, the VIX\index{VIX} and the variance risk premium\index{risk premium};
+  \item state the claim that volatility is predictable in a form that can fail, and summarize the evidence for it;
+  \item evaluate volatility forecasts with robust loss functions\index{loss function} such as QLIKE\index{loss function!QLIKE}, and with Mincer--Zarnowitz and Diebold--Mariano\index{Diebold--Mariano test} tests;
+  \item judge whether volatility timing improves an investor's returns once forecasts are made in real time and costs and leverage\index{leverage} limits apply.
 \end{itemize}
 
-\section{Foundations: yields, forward rates and the term premium}
-\label{sec:07-foundations}
+\section{Foundations: measuring and modelling volatility}
+\label{sec:10-foundations}
 
-\subsection{Zero-coupon yields}
+\subsection{Volatility and variance}
 
-This chapter needs bond yields, the yield curve and the term spread\index{term spread}, built precisely from zero-coupon bonds. A zero-coupon bond pays \$1 at maturity $n$ and nothing before. Its price $P(n)$ defines its yield $y(n)$. With continuous compounding\index{compounding}, $P(n) = e^{-n\,y(n)}$, so the log price is
+Volatility, the standard deviation\index{standard deviation} of returns, and its annualization were introduced in Section~\ref{sec:01-expret}. This chapter works mostly with daily data, so a daily standard deviation $\sigma_d$ is annualized as $\sigma_d\sqrt{252}$, since there are about 252 trading days in a year; a 1\% daily volatility is therefore about 16\% a year. The square root assumes returns are uncorrelated from day to day, which is close to true for daily stock returns (Section~\ref{sec:10-how}). Variance is volatility squared. Most models work in variance, because variances of uncorrelated returns add: the variance over the next $h$ days is the sum of the daily variances.
+
+\subsection{Historical volatility}
+
+\textbf{Historical volatility}\index{volatility!historical|textbf} is the sample standard deviation over a past window, such as the last 22 trading days (about one month). It weights every day in the window equally and drops days abruptly when they leave it. Because daily mean returns are tiny compared with daily volatility, practitioners usually set the mean to zero and estimate variance as the average squared return.
+
+\subsection{EWMA}
+
+\textbf{EWMA}\index{EWMA|textbf} (exponentially weighted moving average), popularized by J.P. Morgan's RiskMetrics\index{RiskMetrics} in 1994, weights recent days more heavily:
 \begin{equation}
-  p(n) = -n\,y(n)
-  \label{eq:07-logprice}
+  \sigma^2_t = \lambda\,\sigma^2_{t-1} + (1 - \lambda)\,r^2_{t-1}
+  \label{eq:10-ewma}
 \end{equation}
-Coupon bonds are portfolios of zeros, so the \textbf{zero-coupon yield curve}\index{yield curve!zero-coupon|textbf} (yield against maturity) summarizes all Treasury prices. The Federal Reserve publishes a fitted curve back to 1961 (G\"urkaynak, Sack and Wright 2007).
-
-\subsection{Forward rates}
-
-Buying an $n$-year zero and selling an $(n-1)$-year zero locks in today a rate of return for the year from $n-1$ to $n$. That rate is the \textbf{forward rate}\index{forward rate|textbf} (Figure~\ref{fig:07-forward}):
-\begin{equation}
-  f(n) = p(n-1) - p(n) = n\,y(n) - (n-1)\,y(n-1)
-  \label{eq:07-forward}
-\end{equation}
-A rising yield curve means forward rates above current yields.
+RiskMetrics set $\lambda = 0.94$ for daily data. Yesterday's squared return gets weight 6\%, the day before $0.94 \times 6\% \approx 5.6\%$, and so on (Figure~\ref{fig:10-ewma}).
 
 \begin{figure}[htbp]
 \centering
-\scalebox{0.8}{%
-\begin{tikzpicture}[x=3.2cm, y=1cm]
-  % Bars: 1-year zero (0-1), 2-year zero (0-2), forward (1-2)
-  \fill[gray!45] (0,0.6) rectangle (1,1.15);
-  \node at (0.5,0.875) {1-year zero: 4\%};
-  \fill[gray!22] (0,1.55) rectangle (2,2.1);
-  \node at (1,1.825) {2-year zero: 5\% a year};
-  \fill[fenavy] (1,2.5) rectangle (2,3.05);
-  \node[white] at (1.5,2.775) {forward: 6\%};
-
-  \node[anchor=north west, align=left] at (2.12,3.2)
-    {$f(2) = 2 \times 5\% - 1 \times 4\% = 6\%$:\\the rate locked in today\\for the second year};
-
-  % Time axis
-  \draw[-stealth] (0,0) -- (2.35,0) node[anchor=west] {years};
-  \foreach \wfT in {0,1,2} {
-    \draw (\wfT,0.08) -- (\wfT,-0.08);
-    \node[anchor=north] at (\wfT,-0.1) {\wfT};
-  }
-\end{tikzpicture}%
-}
-\caption{A forward rate from the worked example. A two-year yield of 5\% is equivalent to earning the one-year yield of 4\% in the first year and a rate locked in today, the forward rate of 6\%, in the second.}
-\label{fig:07-forward}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.64\linewidth, height=0.36\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=0, xmax=41, ymin=0, ymax=7.3,
+  xtick={0,5,...,40}, ytick={0,2,4,6},
+  xlabel={Days ago},
+  ylabel={Weight on that day's squared return (\%)},
+  legend style={draw=none, fill=none, at={(0.98,0.98)}, anchor=north east,
+                cells={anchor=west}, font=\small},
+  legend cell align=left,
+]
+  % EWMA weights: (1 - lambda) * lambda^(k-1), lambda = 0.94
+  \addplot[ybar, area legend, bar width=0.5, fill=fenavy, draw=none,
+           domain=1:40, samples=40] {100*0.06*0.94^(x-1)};
+  \addlegendentry{EWMA, $\lambda = 0.94$}
+  % Historical window: 1/22 on each of the last 22 days
+  \addplot[fegray, very thick, const plot] coordinates
+    {(0.5,4.545) (22.5,4.545) (22.5,0)};
+  \addlegendentry{22-day window, equal weights}
+\end{axis}
+\end{tikzpicture}
+\caption{Weights on past squared returns. A 22-day historical window gives each day the same weight and then drops it abruptly. EWMA gives the most weight to yesterday and fades older days gradually, so it reacts faster to news and never drops a day all at once.}
+\label{fig:10-ewma}
 \end{figure}
 
-\subsection{Holding-period returns}
+\subsection{GARCH(1,1)}
+\label{sec:10-garch}
 
-Buying an $n$-year bond and selling it a year later, when it is an $(n-1)$-year bond, earns the log return\index{return!log}
+\textbf{GARCH(1,1)}\index{GARCH|textbf} (generalized autoregressive conditional heteroskedasticity\index{heteroskedasticity}) adds a pull toward a long-run level:
 \begin{equation}
-  r_{t+1}(n) = p_{t+1}(n-1) - p_t(n)
-  \label{eq:07-hpr}
+  \sigma^2_t = \omega + \alpha\,r^2_{t-1} + \beta\,\sigma^2_{t-1}
+  \label{eq:10-garch}
 \end{equation}
-As for stocks (Section~\ref{sec:01-rf}), the excess return $rx_{t+1}(n)$ subtracts the return on the safe alternative, here the one-year yield $y_t(1)$, which is the return on a one-year bond held to maturity.
-
-\subsection{Duration}
-
-The percentage price change of a bond for a small change in its yield is approximately $-D \times \Delta y$, where $D$ is the \textbf{duration}\index{duration|textbf}. For a zero, $D$ equals its maturity. Long bonds are more sensitive to rates, which is why their returns are more volatile.
-
-\subsection{The expectations hypothesis (EH)}
-
-\textbf{The expectations hypothesis (EH)}\index{expectations hypothesis|textbf} states that the forward rate equals the expected future one-year rate, up to a constant:
-\begin{equation}
-  f_t(n) = E_t\!\left[y_{t+n-1}(1)\right] + \text{constant}
-  \label{eq:07-eh}
-\end{equation}
-Equivalently, expected excess returns on bonds of all maturities are constant over time. The \textbf{term premium}\index{term premium|textbf} is the gap between the forward rate and the expected future short rate, or between a long yield and the average expected short rate over its life. The EH says the term premium does not vary.
-
-\textbf{Worked example.} The one-year zero yields 4\% and the two-year zero 5\% (continuously compounded).
+Here $\alpha$ measures how strongly a new shock moves the forecast, and $\beta$ measures how long the effect lasts. Four quantities follow from the parameters:
 
 \begin{itemize}
-  \item Log prices: $p(1) = -0.04$, $p(2) = -0.10$. The one-year forward rate one year ahead is $f(2) = -0.04 + 0.10 = 6\%$.
-  \item Under the EH, the market expects the one-year rate to be 6\% next year. If it is, the two-year bond, sold next year as a one-year bond, returns $-0.06 + 0.10 = 4\%$, the same as the one-year bond: excess return zero.
-  \item If instead the one-year rate stays at 4\%, the two-year bond returns $-0.04 + 0.10 = 6\%$, an excess return of 2\%.
-  \item A steep curve therefore forecasts either rising short rates (the EH) or high excess returns on long bonds (a term premium), or some mix (Figure~\ref{fig:07-readings}). The regressions in this chapter measure the mix.
+  \item \textbf{Persistence}\index{persistence|textbf} is $\alpha + \beta$, which must be below 1.
+  \item The \textbf{long-run variance}\index{GARCH!unconditional variance|textbf} is $V = \omega / (1 - \alpha - \beta)$.
+  \item Forecasts revert to $V$ geometrically: the expected variance $k$ days ahead is
+  \begin{equation}
+    E_t[\sigma^2_{t+k}] = V + (\alpha + \beta)^{k-1}\left(\sigma^2_{t+1} - V\right)
+    \label{eq:10-forecast}
+  \end{equation}
+  \item The \textbf{half-life}\index{half-life|textbf} of a volatility shock, the time for half of it to fade, is $\ln 0.5 / \ln(\alpha + \beta)$.
+\end{itemize}
+
+EWMA is the special case $\omega = 0$, $\alpha = 1 - \lambda$, $\beta = \lambda$, with persistence exactly 1, so EWMA forecasts never revert. \textbf{GJR-GARCH}\index{GARCH!GJR|textbf} adds a term $\gamma\,r^2_{t-1}\,\mathbf{1}[r_{t-1} < 0]$, where the indicator $\mathbf{1}[\cdot]$ is 1 when its condition holds and 0 otherwise, so falls raise volatility more than rises. This asymmetry is the \textbf{leverage effect}\index{leverage effect|textbf}. The parameters are estimated by \textbf{maximum likelihood}\index{maximum likelihood|textbf}: choosing the values that make the observed returns most probable under the model.
+
+\subsection{Realized variance}
+\label{sec:10-rv}
+
+\textbf{Realized variance}\index{volatility!realized|textbf} sums squared returns within a period, such as squared five-minute returns within a day. With enough intraday data it measures that day's variance almost exactly. The \textbf{HAR model}\index{HAR model|textbf} (heterogeneous autoregressive) forecasts tomorrow's realized variance by regressing it on the averages of the last day, week and month.
+
+\subsection{Implied volatility}
+\label{sec:10-iv}
+
+\textbf{Implied volatility}\index{volatility!implied|textbf} is the volatility that makes an option's market price equal its model price (Chapter~\ref{ch:16}). The \textbf{VIX}\index{VIX|textbf} is the market's 30-day implied volatility for the S\&P 500, computed from a strip of index options. It is a forecast under the \emph{risk-neutral\index{risk-neutral pricing}} measure, the probabilities that price assets as if investors did not care about risk, not the real-world probabilities. Investors pay a premium to insure against volatility, so the VIX usually exceeds the volatility that follows. The gap is the \textbf{variance risk premium}\index{variance|textbf}.
+
+\textbf{Worked example.} Yesterday's daily volatility estimate was 1.6\% (variance 0.000256), and the market then fell 3\% ($r^2 = 0.0009$).
+
+\begin{itemize}
+  \item EWMA with $\lambda = 0.94$: $\sigma^2 = 0.94 \times 0.000256 + 0.06 \times 0.0009 = 0.000295$. Volatility rises to 1.72\% a day, or 27\% annualized.
+  \item GARCH with $\omega = 0.000002$, $\alpha = 0.08$ and $\beta = 0.90$:
+  \begin{itemize}
+    \item $\sigma^2 = 0.000002 + 0.08 \times 0.0009 + 0.90 \times 0.000256 = 0.000304$, or 1.74\% a day.
+    \item Persistence is 0.98, so the long-run variance is $0.000002 / 0.02 = 0.0001$: 1\% a day, or 15.9\% a year. The half-life is $\ln 0.5 / \ln 0.98 \approx 34$ trading days (Figure~\ref{fig:10-garch}).
+    \item The variance over the next ten days is $10 \times 0.0001 + (0.000304 - 0.0001) \times (1 - 0.98^{10})/(1 - 0.98) = 0.00287$. Ten-day volatility is 5.4\%, or 26.9\% annualized. That is below the 27.7\% you would get by assuming today's 1.74\% persists, because the forecast is already reverting.
+  \end{itemize}
 \end{itemize}
 
 \begin{figure}[htbp]
 \centering
-\scalebox{0.8}{%
 \begin{tikzpicture}[
-  trbox/.style={draw=fenavy, thick, rounded corners=2pt, align=center,
-                minimum width=4.2cm, minimum height=1.15cm, inner sep=4pt},
-  trarr/.style={-stealth, thick},
+  % Variance gap to the long-run level halves every 34 trading days
+  declare function={vol(\k) = sqrt(15.9^2 + (27.7^2 - 15.9^2)*0.5^((\k-1)/34));}
 ]
-  \node[trbox, fill=fenavy!12] (top) at (0,0)
-    {Steep yield curve:\\forward rates above short rates};
-  \node[trbox] (eh) at (-3.4,-2.4)
-    {short rates will rise\\(expectations hypothesis)};
-  \node[trbox] (tp) at (3.4,-2.4)
-    {long bonds will earn\\more (term premium)};
-  \draw[trarr] (top.south) ++(-0.8,0) -- (eh.north);
-  \draw[trarr] (top.south) ++(0.8,0) -- (tp.north);
-  \node at (0,-3.7) {the regressions in this chapter measure the mix};
-\end{tikzpicture}%
-}
-\caption{Two readings of a steep yield curve. Forward rates above short rates can mean that short rates will rise, as the expectations hypothesis says, or that long bonds will earn more than short ones, a term premium. The tests in this chapter measure how much of each.}
-\label{fig:07-readings}
+\begin{axis}[
+  width=0.64\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=0, xmax=150, ymin=12, ymax=30,
+  xtick={0,20,...,140}, ytick={15,20,25,30},
+  xlabel={Trading days ahead},
+  ylabel={Forecast volatility (\% a year)},
+  clip=false,
+]
+  \addplot[fegray, dashed, domain=0:150, samples=2] {15.9};
+  \addplot[fenavy, very thick, domain=1:150, samples=150] {vol(x)};
+  \draw[fenavy, dashed] (axis cs:35,12) -- (axis cs:35,{vol(35)});
+  \node[fenavy, anchor=west] at (axis cs:4,27.4) {tomorrow: 27.7\%};
+  \node[fenavy, anchor=south west] at (axis cs:37,16.3) {half-life: 34 days};
+  \node[fegray, anchor=north east] at (axis cs:148,15.6) {long-run level, 15.9\%};
+\end{axis}
+\end{tikzpicture}
+\caption{A GARCH forecast reverting to its long-run level, from the worked example. After a 3\% fall the forecast for tomorrow is 27.7\% a year; it then decays toward 15.9\%, losing half of the gap every 34 trading days.}
+\label{fig:10-garch}
 \end{figure}
 
 \section{How it works}
-\label{sec:07-how}
+\label{sec:10-how}
 
-The expectations hypothesis can be tested in three ways that look different but ask the same question.
+Three regularities in daily stock returns, which Part A of this chapter's lab measures, motivate every model in this chapter.
+
+\begin{itemize}
+  \item \textbf{Volatility clustering.}\index{volatility clustering|textbf} Mandelbrot (1963) observed that large changes tend to be followed by large changes, of either sign, and small changes by small changes. Returns themselves have almost no autocorrelation\index{autocorrelation}, but absolute and squared returns are positively autocorrelated, and the autocorrelation decays slowly over weeks and months. A forecastable size combined with an unforecastable sign is exactly what an efficient market\index{efficient market hypothesis} with changing risk would produce.
+  \item \textbf{Fat tails.}\index{fat tails|textbf} Daily returns have far more extreme days than a normal distribution\index{distribution!normal} allows. Part of this is clustering itself: a mixture of calm and turbulent periods, each roughly normal, has fat tails overall. Even after allowing for clustering, the standardized returns $r_t / \sigma_t$ remain somewhat fat-tailed, which is why many applications use Student-$t$ shocks.
+  \item \textbf{The leverage effect.}\index{leverage effect|textbf} Volatility rises more after falls than after rises of the same size. Black (1976) attributed this to leverage, since a falling share price raises a firm's debt-to-equity ratio and so the riskiness of its equity. The effect is too large to be explained by leverage alone, and it is strongest for the index. Risk premiums and \textbf{volatility feedback}\index{volatility feedback|textbf}, in which higher expected volatility lowers prices, both contribute.
+\end{itemize}
+
+The models differ in how they turn past returns into a forecast.
+
+\begin{itemize}
+  \item \textbf{Historical and EWMA} forecasts are smoothing rules with one choice: the window length or $\lambda$.
+  \item \textbf{GARCH}\index{GARCH|textbf} models are estimated, have a long-run level and revert toward it. At long horizons their forecasts converge to the \textbf{unconditional variance}\index{GARCH!unconditional variance|textbf}, the long-run average, which is right if volatility truly mean-reverts and costly if the long-run level itself shifts.
+  \item \textbf{HAR}\index{HAR model|textbf} captures the slow decay of volatility's memory with three regressors, one per horizon. It is linear and estimated by ordinary least squares\index{regression!ordinary least squares (OLS)}, which makes it easy to extend.
+  \item \textbf{The VIX}\index{VIX|textbf} is not a model of past returns. It is a market price that can embed information about scheduled events, such as elections and central bank meetings, that no time-series model sees. It also embeds the variance risk premium, so it is biased upward as a forecast.
+\end{itemize}
+
+Lab Figure~\ref{ch:10}.1, from the lab, shows the pattern the models exploit. On U.S. data the bars for returns hover near zero at every lag. The bars for absolute returns are positive at lag 1 and still clearly positive after 50 trading days.
+
+\section{The claim}
+\label{sec:10-claim}
+
+\begin{callout}
+\textbf{Claim.} Today's volatility forecasts tomorrow's. Forecasts built from past returns, or from option prices, beat a constant forecast by a wide margin, out of sample\index{in-sample versus out-of-sample}, at horizons from one day to one month.
+\end{callout}
+
+To test the claim we need to be precise on four points.
+
+\begin{itemize}
+  \item \textbf{What is forecast.} The target is the variance of the market's return over the next $h$ days, for $h = 1$, 5 and 22. True variance is never observed, so we use a \textbf{proxy}, an observable stand-in: the sum of squared daily returns over those days.
+  \item \textbf{Against what.} The weakest benchmark is the \textbf{long-run average}, a constant. Beating it shows that volatility is forecastable at all. The stronger benchmark is a \textbf{random walk}\index{random walk|textbf} in volatility: last month's variance continues. Beating that shows that a model adds something beyond the obvious.
+  \item \textbf{How it is scored.} We use two loss functions, MSE\index{loss function!squared-error (MSE)} and QLIKE, explained in Section~\ref{sec:10-eval}. The choice matters more than it does for return forecasts.
+  \item \textbf{What would count against it.} The claim fails if forecasts beat the long-run average only in sample, or only in calm periods. It weakens if the gain disappears at horizons beyond a few days, or if no model beats the random walk.
+\end{itemize}
+
+A second, separate claim concerns use: that an investor who holds less of the market when forecast volatility is high earns a higher Sharpe ratio\index{Sharpe ratio}. Forecastable volatility is necessary for that claim but not sufficient. Expected returns\index{return!expected} may rise with volatility, and trading has costs.
+
+\section{The original evidence}
+\label{sec:10-evidence}
+
+\textbf{ARCH and GARCH.} Engle (1982) introduced the ARCH model, in which today's variance depends on past squared shocks. His first application was to U.K. inflation\index{inflation}, not stock returns. Bollerslev (1986) added lagged variance, producing GARCH(1,1), which captures long memory with three parameters. Within a decade GARCH-type models had been fitted to almost every financial series, with the same finding each time: persistence close to 1, so volatility shocks die out over weeks to months. Glosten, Jagannathan and Runkle (1993) added the asymmetric term that bears their initials and found strong leverage effects in U.S. stock returns. Engle shared the 2003 Nobel prize for this work.
+
+\textbf{The low-$R^2$\index{regression!R-squared@$R^2$} puzzle and its resolution.} Early out-of-sample tests seemed discouraging. Regressions of daily squared returns on GARCH forecasts gave $R^2$ of only a few percent, and some authors concluded that GARCH forecasts were poor. Andersen and Bollerslev (1998) showed that the problem was the target, not the forecast. A single squared return is an extremely noisy measure of that day's variance, so even a perfect forecast must have a low $R^2$ against it. Measured against realized variance from intraday returns, the same GARCH forecasts explained around half of the variation.
+
+\textbf{Realized volatility and HAR.}\index{volatility!realized|textbf} Andersen, Bollerslev, Diebold and Labys (2003) treated realized variance as an observable series and modelled it directly. Simple time-series models of realized variance outperformed GARCH models estimated on daily returns. Corsi (2009) proposed the HAR model, motivated by traders who operate at daily, weekly and monthly horizons. It reproduces volatility's long memory with three regressors and has become the standard benchmark for realized-variance forecasts.
+
+\textbf{Horse races.} Hansen and Lunde (2005) compared 330 models on a Deutsche mark--dollar exchange rate\index{exchange rate} and IBM stock returns. For the exchange rate, nothing significantly beat GARCH(1,1). For IBM, GARCH(1,1) was clearly inferior to models with a leverage effect. Poon and Granger (2003) reviewed 93 studies. Implied volatility generally forecast best, followed by historical volatility and GARCH roughly together, and all methods did better than a constant.
+
+\section{Evaluating volatility forecasts}
+\label{sec:10-eval}
+
+Scoring a volatility forecast is harder than scoring a return forecast, because the thing being forecast is never observed. Every comparison uses a proxy, such as the sum of squared daily returns. The proxy is unbiased but noisy. The question is whether the noise can change which model wins.
+
+Patton (2011) answered it. With a noisy proxy, only some loss functions are \textbf{robust}: they rank forecasts in the same order as they would against the true variance. Two common ones are robust (Figure~\ref{fig:10-qlike}).
+
+\begin{itemize}
+  \item \textbf{MSE}\index{loss function!squared-error (MSE)|textbf}, $(RV - F)^2$, where $RV$ is the proxy and $F$ the forecast. It is robust but dominated by the largest days. A few crisis days can decide the whole comparison.
+  \item \textbf{QLIKE}\index{loss function!QLIKE|textbf}, $\log F + RV/F$, the loss implied by the normal likelihood. It is robust and penalizes forecasts that are too \emph{low} much more than forecasts that are too high, which suits risk management. Because it depends on the ratio $RV/F$, it is not dominated by the level of volatility in crises.
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  % x = forecast / realized variance; both losses measured from their minimum at x = 1
+  declare function={qlike(\x) = 1/\x + ln(\x) - 1;  mse(\x) = (\x - 1)^2;}
+]
+\begin{axis}[
+  width=0.61\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=0.2, xmax=3.2, ymin=0, ymax=2.2,
+  xtick={0.5,1,...,3}, ytick={0,0.5,1,1.5,2},
+  xticklabel style={/pgf/number format/fixed},
+  yticklabel style={/pgf/number format/fixed},
+  xlabel={Forecast as a multiple of realized variance, $F/RV$},
+  ylabel={Loss above its minimum},
+  samples=200, clip=false,
+]
+  \addplot[fegray, thick, dashed, domain=0.2:2.48] {mse(x)};
+  \addplot[fenavy, very thick, domain=0.225:3.2] {qlike(x)};
+  \node[fegray, anchor=west] at (axis cs:2.5,2.15) {MSE};
+  \node[fenavy, anchor=west] at (axis cs:3.22,{qlike(3.2)}) {QLIKE};
+  \node[align=center] at (axis cs:0.85,1.4) {too low:\\heavily penalized};
+  \node[align=center] at (axis cs:2.65,0.9) {too high:\\mildly penalized};
+\end{axis}
+\end{tikzpicture}
+\caption{Two robust loss functions, measured from their minimum. MSE treats a forecast that is too high and one that is too low symmetrically. QLIKE punishes a forecast that is too low far more than one that is too high: underestimating risk is the costlier mistake.}
+\label{fig:10-qlike}
+\end{figure}
+
+Others are not robust. Mean absolute error and MSE on volatility rather than variance, both common in early studies, can rank a biased forecast above the true variance when the proxy is noisy. They should be avoided.
+
+Two diagnostics complement the loss comparison.
+
+\begin{itemize}
+  \item \textbf{Mincer--Zarnowitz regression.} Regress realized on forecast variance. An unbiased forecast has intercept 0 and slope 1. A slope below 1 means the forecast overreacts\index{overreaction}, which is typical of the VIX because of the variance risk premium. The $R^2$ measures informativeness but is capped by the noise in the proxy, as Andersen and Bollerslev showed.
+  \item \textbf{Diebold--Mariano test}\index{Diebold--Mariano test|textbf} (Chapter~\ref{ch:09}). Test whether the average loss difference between two models is zero, using Newey--West\index{standard error!Newey--West (HAC)} errors with $h - 1$ lags, since multi-day targets overlap.
+\end{itemize}
+
+A fair comparison also requires real-time forecasts. Every parameter must be estimated only on data available at the forecast date, as in the walk-forward\index{walk-forward evaluation} design of Chapter~\ref{ch:09}.
+
+\section{Lab~\thechapter: Replicating Andersen and Bollerslev (1998), Hansen and Lunde (2005) and Moreira and Muir (2017)}
+\label{sec:10-lab}
+
+\begin{callout}
+\textbf{Lab~\ref{ch:10} at a glance.} \emph{Papers replicated:} Andersen and Bollerslev (1998); Hansen and Lunde (2005); Moreira and Muir (2017). \emph{Claim on trial\index{claims-on-trial method}:} volatility is predictable. \emph{Data:} U.S. market returns since 1926, from the daily factors in the Kenneth French\index{Kenneth French data library} library, and, from 1990, the VIX from FRED\index{FRED}; both are free. \emph{Code:} runs as a script (\texttt{python lab11.py}) or as a notebook with a prediction prompt before each step.
+\end{callout}
+
+\textbf{Part A, stylized facts\index{stylized facts of returns}.} It computes autocorrelations of daily returns and absolute returns at lags 1 to 50, and the correlation\index{correlation} between today's return and tomorrow's absolute return (Lab Figure~\ref{ch:10}.1). Expect the first to hover near zero, the second to stay positive for months, and the third to be negative: the leverage effect.
+
+\textbf{Part B, forecast comparison.} Each trading day from 1990, the lab forecasts the market's variance over the next 1, 5 and 22 days with seven methods:
 
 \begin{center}
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.15\linewidth}>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.20\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.33\linewidth}@{}}
 \toprule
-Test & Regression & Expectations hypothesis & Alternative: time-varying term premium \\
+Method & Forecast & Parameters \\
 \midrule
-Fama--Bliss, excess returns & $rx(n)$ on $f(n) - y(1)$ & Slope 0 & Slope positive (1 if forward spreads are all premium) \\
-Fama--Bliss, short rates & $y(1)$ in $n-1$ years minus $y(1)$ today, on $f(n) - y(1)$ & Slope 1 & Slope below 1 \\
-Campbell--Shiller & Change in the long yield over a year, on the scaled yield spread & Slope 1 & Slope below 1, even negative \\
+Long-run average & Mean squared return to date & None \\
+Random walk & Last 22 days' variance continues & None \\
+EWMA & RiskMetrics, $\lambda = 0.94$ & Fixed \\
+GARCH(1,1) & Mean-reverting, normal likelihood & Re-estimated yearly on the past 20 years \\
+GJR-GARCH & GARCH with the leverage term & Re-estimated yearly \\
+HAR & Regression on 1-, 5- and 22-day averages & Re-estimated yearly by OLS \\
+VIX & $(\mathrm{VIX}/100)^2 \times h/252$ & None \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-The first two are mirror images. The forward spread equals the expected change in short rates plus the expected excess return, so a spread that does not forecast rising rates must forecast excess returns. The Campbell--Shiller test asks the question through long yields: if the curve is steep because short rates are expected to rise, long yields should rise too, as the bond approaches the higher short rates. If they fall instead, the steepness was a premium.
+Each method is scored against the random walk with QLIKE and MSE, with Diebold--Mariano tests and Mincer--Zarnowitz regressions. Lab Figure~\ref{ch:10}.2 plots one-month forecasts through 2007--2010 against the volatility that followed. Lab Figure~\ref{ch:10}.3 ranks the methods at each horizon.
 
-\textbf{Why the premium might vary.} Bonds lose value when inflation\index{inflation} or rates rise unexpectedly. Investors demand compensation for that risk, and the compensation can change: higher in recessions, when investors are more risk-averse\index{risk aversion}, and when inflation is uncertain. Supply and demand matter too. When pension funds and central banks buy long bonds, they push the term premium down. Any of these makes the EH fail.
+\textbf{Part C, crises.} The same losses are computed within 2008--09, 2020 and 2022 (Lab Figure~\ref{ch:10}.4).
 
-\textbf{Why the tests are hard.} Interest rates are highly persistent, and annual returns sampled monthly overlap by eleven months. Both inflate $t$-statistics\index{t-statistic} if handled carelessly (Chapter~\ref{ch:04}). The lab uses Newey--West\index{standard error!Newey--West (HAC)} errors with 18 lags and adds out-of-sample tests (Chapter~\ref{ch:09}).
+\textbf{Part D, use.} A \textbf{volatility-managed portfolio}\index{volatility targeting|textbf} holds the market with weight proportional to 1 / last month's realized variance, scaled so its volatility matches the market's, as in Moreira and Muir (2017). The lab reports Sharpe ratio, drawdown\index{drawdown} and alpha\index{alpha} against the market, net of a cost per unit of weight change, with an optional leverage cap (Lab Figure~\ref{ch:10}.5).
 
-\section{The claim}
-\label{sec:07-claim}
+Three design choices affect the results. First, the proxy is built from daily returns, because intraday data are not freely available back to 1926. That makes every model look worse than in studies using five-minute data, but it does not bias the ranking under QLIKE. Second, the HAR model here uses squared daily returns, a much noisier input than the realized variance Corsi used, so expect it to do less well than in the literature. Third, the VIX was redefined in 2003; FRED's VIXCLS uses the current method throughout.
 
-\begin{callout}
-\textbf{Claim (the expectations hypothesis).} Forward rates are unbiased forecasts of future short-term interest rates, up to a constant. A steep yield curve predicts rising short rates, not higher returns on long bonds.
-\end{callout}
-
-To test it we need to be precise on three points.
-
-\begin{itemize}
-  \item \textbf{Up to a constant.} The pure EH says forward rates equal expected short rates. Almost no one believes that, because long bonds have earned more than short ones on average. The testable version allows a constant term premium and denies only that it \emph{varies}.
-  \item \textbf{Which horizon.} The tests use one-year holding periods, the standard in the literature. Fama and Bliss also examine longer horizons.
-  \item \textbf{What would count against it.} The EH fails if forward spreads forecast excess bond returns (Fama--Bliss slope significantly above 0), if they forecast changes in short rates less than one for one, or if long yields fail to rise when the curve is steep (Campbell--Shiller slope significantly below 1). It fails convincingly if these patterns hold out of sample.
-\end{itemize}
-
-\section{The original evidence}
-\label{sec:07-evidence}
-
-\textbf{Fama and Bliss (1987).} Using discount bond prices constructed from CRSP\index{CRSP} Treasury data, Fama and Bliss found that the spread between the $n$-year forward rate and the one-year rate forecast one-year excess returns on $n$-year bonds, contradicting the EH. The same spread had little power to forecast changes in the one-year rate over the next year, but its power rose with the horizon: forward rates did contain information about short rates several years ahead, as interest rates mean-revert.
-
-\textbf{Campbell and Shiller (1991).} Across maturities from a few months to ten years, the yield spread forecast long yields to move in the \emph{wrong} direction. When the curve was steep, long yields tended to fall over the following period, the opposite of what the EH requires, and the slope coefficients became more negative as maturity increased. A steep curve forecast high returns on long bonds, through rising prices.
-
-\textbf{Cochrane and Piazzesi (2005).} Instead of one forward spread at a time, they regressed excess returns on all forward rates at once. A single factor, a tent-shaped combination of forward rates, forecast one-year excess returns on bonds of all maturities, with $R^2$\index{regression!R-squared@$R^2$} values up to 43\% in their sample. The factor was largely unrelated to the level, slope and curvature of the yield curve and rose in bad times, consistent with a risk premium\index{risk premium} that is high in recessions.
-
-\textbf{The skeptics.} The evidence for the EH's failure is now widely accepted. The strength of the more ambitious claims is not. Bauer and Hamilton (2018) showed that standard tests suffer serious small-sample distortions with persistent predictors and overlapping returns\index{overlapping observations}. With more robust tests, the evidence that variables beyond level, slope and curvature forecast bond returns, including the Cochrane--Piazzesi factor, became much weaker. Thornton and Valente (2012) found that forecasts from forward rates gave little economic value out of sample to an investor choosing between bonds.
-
-\section{Lab~\thechapter: Replicating Fama and Bliss (1987), Campbell and Shiller (1991) and Cochrane and Piazzesi (2005)}
-\label{sec:07-lab}
-
-\begin{callout}
-\textbf{Lab~\ref{ch:07} at a glance.} \emph{Papers replicated:} Fama and Bliss (1987); Campbell and Shiller (1991); Cochrane and Piazzesi (2005). \emph{Claim on trial\index{claims-on-trial method}:} forward rates are unbiased forecasts of future short rates. \emph{Data:} the Federal Reserve's zero-coupon Treasury yield curve (G\"urkaynak, Sack and Wright 2007), month-end yields for maturities of one to ten years; free and updated regularly. \emph{Code:} runs as a script (\texttt{python lab16.py}) or as a notebook with a prediction prompt before each step.
-\end{callout}
-
-\textbf{Part A, the classic tests.} Fama--Bliss regressions of one-year excess returns on forward spreads for maturities of 2 to 10 years, the companion regression of future short-rate changes on forward spreads, and Campbell--Shiller regressions for maturities of 2 to 10 years (Lab Figures~\ref{ch:07}.2 and~\ref{ch:07}.3). Standard errors\index{standard error} are Newey--West with 18 lags to account for the overlapping monthly observations.
-
-\textbf{Part B, Cochrane--Piazzesi.} The average excess return on 2- to 5-year bonds regressed on the one-year yield and four forward rates; the loading of each maturity on the resulting factor; and out-of-sample forecasts from 1985 with an expanding window\index{walk-forward evaluation!expanding window} and an 11-month gap so that no training target overlaps the forecast date. Three predictor sets are compared with the historical mean\index{historical-mean benchmark}: the full forward curve, a single forward spread and the level of rates alone (Lab Figure~\ref{ch:07}.4).
-
-\textbf{Part C, subperiods.} The Fama--Bliss slope for 5-year bonds, the Campbell--Shiller slope at the longest maturity and the Cochrane--Piazzesi $R^2$ in four periods: the start to 1984, 1985--2007, 2008--2015 (the zero lower bound) and 2016 onward.
-
-\textbf{Part D, the investor's view.} Average excess returns by maturity, and returns after steep versus flat curves, with ``steep'' defined using only past information (Lab Figure~\ref{ch:07}.5).
-
-Two caveats apply. The Fed's curve is a fitted curve, not a set of traded bonds, and the classic studies used discount bonds constructed from CRSP data, which are not free. Results will be similar in spirit but not identical. Ten-year yields begin in 1971, so the longest maturities use a shorter sample.
-
-\textbf{What the simulated run shows.} The simulation adds a time-varying term premium to the expected path of short rates, so the EH is false by construction. The lab finds what it should: Fama--Bliss slopes of about 0.6 to 0.7, significantly above zero; Campbell--Shiller slopes negative and well below 1; higher excess returns after steep curves. The tests on data where the EH holds exactly recover slopes of 0 and 1. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
+\textbf{What the simulated run shows.} On simulated GJR-GARCH data, the lab recovers what it should. Every dynamic model beats the long-run average by a wide margin. GJR, the true model, ranks first under QLIKE at all three horizons. The simulated VIX shows the upward bias built into it. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
 
 \section{Stress tests}
-\label{sec:07-stress}
+\label{sec:10-stress}
 
-\textbf{Subperiods.} The postwar sample contains very different monetary regimes: the inflation of the 1970s, the Volcker disinflation, the long decline in rates from the 1980s, the zero lower bound after 2008 and the rapid tightening of 2022--23. A term premium that varies with inflation uncertainty would be most visible in the first half. Part C shows whether the rejection of the EH is a product of one era.
+\textbf{Horizon.} Forecastability is a short-horizon phenomenon. Because GARCH persistence is below 1, every GARCH forecast converges to the long-run level. Beyond a few months, a constant forecast is hard to beat, and over years, estimates of the long-run level itself drift. At one day to one month, the horizons in the lab, the evidence for forecastability is strong in the literature. The lab lets you measure how fast the advantage over the long-run average shrinks.
 
-\textbf{The zero lower bound.} From 2008 to 2015 the short rate was pinned near zero. Forward rates still moved, driven by expectations of when the Fed would lift rates and by the term premium, but realized short rates did not. Regressions over this period behave differently, and the long-standing evidence may not carry over to it.
+\textbf{Crises.} Volatility jumps faster than any model built on past returns can follow. In the first days of October 2008 and of March 2020, every time-series forecast was far too low. QLIKE punishes exactly that error. The models catch up within days, and because they then revert too slowly, they overpredict as the crisis fades. The VIX, as a market price, can react within the day to news and is the obvious candidate to do better at the onset. Lab Figure~\ref{ch:10}.4 tests whether it did.
 
-\textbf{Maturities.} The EH is a statement about all maturities. If it fails at two years but nearly holds at ten, or the reverse, that is informative about where the term premium lives.
+\textbf{The 2022 rate shock.} In 2022 stocks fell by about a fifth, but realized volatility stayed moderate, without a single spike. This is a useful contrast with 2008 and 2020. A model that forecasts volatility well can still miss a large, slow decline, because volatility and losses are different things.
 
-\textbf{Out of sample.}\index{in-sample versus out-of-sample|textbf} In-sample $R^2$ values for bond return forecasts are inflated by persistent predictors and overlapping returns. The lab's out-of-sample test, which uses only data available at each date and leaves an 11-month gap, is the honest test. A negative out-of-sample $R^2$\index{out-of-sample $R^2$} would mean that an investor would have done better using the historical mean.
+\textbf{Estimation window.} GARCH parameters estimated on 20 years that include 2008 differ from those estimated on calmer windows. Persistence near 1 means that small changes in $\alpha + \beta$ produce large changes in long-horizon forecasts. Rerun Part B with \texttt{-{}-window-years 10} and compare.
 
-\textbf{Small samples.} Bauer and Hamilton (2018) showed that standard errors can understate uncertainty badly in these regressions. Their bootstrap\index{bootstrap} tests are beyond this lab, but Exercise 4 asks how far the lab's $t$-statistics can be trusted. Treat $t$-statistics near 2 with suspicion.
+\textbf{Proxy.} A sum of squared daily returns is noisy, especially at the 1-day horizon, where it is a single squared return. Andersen and Bollerslev (1998) showed that this lowers every model's $R^2$ but, with a robust loss, does not change the ranking. Liu, Patton and Sheppard (2015) compared nearly 400 realized-variance estimators and found that five-minute realized variance is hard to beat. Students with intraday data can replace the proxy and check.
 
 \section{Verdict}
-\label{sec:07-verdict}
+\label{sec:10-verdict}
 
 \begin{callout}
-\textbf{Verdict: fails} (as of October 2026). Forward rates are not unbiased forecasts of future short rates. Bond risk premia vary over time, and the slope of the yield curve forecasts excess returns on long bonds, not just changes in short rates. The more ambitious claim, that a richer function of the forward curve forecasts bond returns with high $R^2$, is weaker than it once appeared, but that does not rescue the expectations hypothesis.
+\textbf{Verdict: survives, strongly, at horizons from one day to one month} (as of October 2026). The claim about \emph{using} volatility forecasts to improve a market investor's Sharpe ratio is a separate one, and it \textbf{weakens} once forecasts are made in real time and costs and leverage limits are applied.
 \end{callout}
 
-What fails:
+The case for the forecasting claim rests on four findings.
 
 \begin{itemize}
-  \item \textbf{Forward spreads forecast excess returns.} In the classic studies and their updates, Fama--Bliss slopes are positive and significant. The forward spread is partly a forecast of rates and partly a premium for holding long bonds.
-  \item \textbf{Long yields move the wrong way.} Campbell--Shiller slopes are below 1, and often negative, across maturities. On average, a steep curve has been followed by falling, not rising, long yields.
-  \item \textbf{The premium is counter-cyclical.} Expected bond excess returns are higher in bad times, which the EH rules out.
+  \item \textbf{It replicates across markets, assets and decades.} Volatility clustering appears in every liquid market studied, back to the nineteenth century. GARCH-type models fitted to them give persistence close to 1.
+  \item \textbf{It holds out of sample.} In real-time forecasts, dynamic models beat the long-run average by a wide margin. That is the result Lab~\ref{ch:10} is built to check on U.S. data since 1990.
+  \item \textbf{It survives the right loss functions.} Early doubts came from evaluating against a noisy proxy with an unsuitable loss. Andersen and Bollerslev (1998) and Patton (2011) removed both problems.
+  \item \textbf{It has a plausible mechanism.} News arrives in clusters, and uncertainty is persistent. Nothing about forecastable volatility contradicts market efficiency, since it predicts risk, not returns.
 \end{itemize}
 
-What survives:
+The qualifications are about \emph{how much}, not \emph{whether}.
 
 \begin{itemize}
-  \item \textbf{Forward rates contain information about future short rates}, especially at horizons of several years, because rates mean-revert. They are biased forecasts, not useless ones.
-  \item \textbf{The term premium is hard to forecast precisely.} Small-sample corrections and out-of-sample tests weaken the case for large, exploitable predictability (Bauer and Hamilton 2018; Thornton and Valente 2012). The evidence is strong that the premium varies, and weaker on how well anyone can track it in real time.
+  \item \textbf{Complex models add little over simple ones.} EWMA and GARCH(1,1) are hard to beat for many series. A leverage term helps for equity indices. HAR helps most when realized variance from intraday data is available.
+  \item \textbf{The advantage fades with horizon.} Beyond a few months, forecasts converge to a long-run level that is itself uncertain.
+  \item \textbf{Every model is late at the onset of a crisis.} Forecasts built from past returns cannot anticipate the first violent day. They are most useful after it.
+  \item \textbf{The VIX is informative but biased.} It contains the variance risk premium, so it overstates future volatility on average. It must be adjusted before it is used as a forecast.
 \end{itemize}
-
-The verdict would move to \emph{weakens} if the rejection of the EH were confined to one monetary regime and disappeared in the others.
 
 \section{What investors can use}
-\label{sec:07-investors}
+\label{sec:10-investors}
 
-\textbf{Read forward rates as forecasts plus a premium.} A market-implied path for policy rates, extracted from forwards or futures, includes a term premium. It overstates expected rate rises when the premium is positive and understates them when the premium is negative. Estimated term premiums, such as those published by the Federal Reserve Bank of New York from the Adrian, Crump and Moench (2013) model, are one way to separate the two, though they are model estimates with wide uncertainty.
+\textbf{Risk forecasts, yes.} Any investor sizing positions, setting stop-losses or computing margin should use a volatility forecast that reacts to recent data, such as EWMA or GARCH, rather than a long-run average. This is uncontroversial and is the basis of Value at Risk (Chapter~\ref{ch:11}).
 
-\textbf{Carry and roll-down.} A bond investor in a steep curve earns two things if rates do not change: the extra yield of the longer bond (\textbf{carry}) and the price gain as the bond rolls down to lower yields at shorter maturities (\textbf{roll-down}\index{roll-down|textbf}). The EH says these are expected to be offset by rising rates. The evidence says they are not fully offset on average. Carry and roll-down are thus a reasonable guide to expected excess returns, not a guaranteed one.
-
-\textbf{Duration is a bet.}\index{duration|textbf} Extending maturity when the curve is steep has been rewarded on average, but with the volatility\index{volatility} of long bonds. In 2022, when rates rose sharply, long Treasuries suffered some of their worst losses on record.
-
-\textbf{Questions to ask a bond manager:}
+\textbf{Volatility timing for returns: be skeptical.} Moreira and Muir (2017) found that scaling exposure to the market inversely to last month's variance produced an alpha of about 4.9\% a year over 1926--2015, with similar results for several factors. \textbf{Volatility-targeting}\index{volatility targeting|textbf} funds and \textbf{risk-parity}\index{risk parity|textbf} strategies, which allocate so that each asset contributes equal risk, apply versions of the idea. Three later findings temper it.
 
 \begin{itemize}
-  \item How much of the portfolio's expected return comes from carry and roll-down, and what happens if rates rise by the forward rates?
-  \item Does the strategy assume forward rates are forecasts of future rates, or does it allow for a term premium?
-  \item How did the strategy perform when the curve was inverted\index{yield curve!inverted}, and in 2022?
+  \item \textbf{Real-time feasibility.} Cederburg, O'Doherty, Wang and Yan (2020) tested 103 equity strategies. The alphas in \textbf{spanning regressions}\index{regression!spanning|textbf}, regressions of the managed portfolio on the original, were real, but exploiting them required combining the managed and unmanaged portfolios with weights estimated in sample. Implemented out of sample, the managed versions generally did no better than the originals, because the spanning regressions were unstable.
+  \item \textbf{Leverage.}\index{leverage|textbf} The managed portfolio's weight on the market often exceeds 1 in calm periods. In the lab's simulated run it averaged 1.4 and peaked near 10. Capping leverage at a realistic level reduces the gains.
+  \item \textbf{Costs and crowding\index{crowding}.} Turnover\index{turnover} is high when volatility changes quickly, and volatility-targeting funds all sell at the same time, which can deepen the declines they are trying to avoid.
+\end{itemize}
+
+The benefit is clearer for momentum\index{momentum}, where crashes follow high volatility (Barroso and Santa-Clara 2015; Chapter~\ref{ch:05}), than for the market.
+
+\textbf{Questions to ask a manager who uses volatility targeting:}
+
+\begin{itemize}
+  \item What volatility forecast do you use, and how quickly does it react?
+  \item What is the maximum leverage, and what happens to turnover in a volatility spike?
+  \item Is the backtest\index{backtest} scaled using information available at the time, or using full-sample volatility?
+  \item How did the strategy perform in February 2018 and March 2020, when volatility jumped within days?
 \end{itemize}
 
 \begin{callout}
-\textbf{What Failed: reading the yield curve as a pure forecast of policy.} Between June 2004 and June 2006 the Federal Reserve raised its policy rate from 1\% to 5.25\%. Under the expectations hypothesis, long-term yields should have risen as the path of short rates moved up. Instead, long yields fell during the first year of the tightening and ended the period little higher than where they began. In February 2005, Chairman Alan Greenspan called the behaviour of long rates a ``conundrum'' (Greenspan 2005).
+\textbf{What Failed: selling volatility before February 5, 2018.} For years before 2018, products that bet against volatility were among the best performers in the market. The VelocityShares Daily Inverse VIX Short-Term ETN (XIV) earned the variance risk premium by shorting VIX futures, and it held \$1.9 billion in assets. On February 5, 2018, the VIX rose 115.6\%, its largest one-day increase ever. XIV lost 96.3\% of its value that day, and Credit Suisse, its issuer, closed it within weeks.
 
-The conundrum was a puzzle only if long yields were pure forecasts of short rates. Term-premium models attributed much of the decline to a falling term premium, which various explanations linked to lower inflation uncertainty, foreign official purchases of Treasuries and demand from pension funds. Investors and policymakers who read the long end of the curve as the market's forecast of policy rates misread both the market and its signal. The same error recurs whenever a change in the term premium is taken for a change in expected policy.
+The episode does not contradict this chapter. Volatility forecasts are informative on average. But a forecast that volatility will stay low is weakest exactly when it matters most: at the onset of a spike. A strategy that earns a small premium most days and loses almost everything on one day can look excellent in any backtest that misses that day. Chapter~\ref{ch:11} returns to this problem.
 \end{callout}
 
 \section{Open questions}
-\label{sec:07-open}
+\label{sec:10-open}
 
 \begin{itemize}
-  \item \textbf{Has central-bank bond buying changed the term premium?} Large-scale asset purchases after 2008 and in 2020 were designed to lower long yields by reducing the term premium. Did they change its behaviour or its predictability?
-  \item \textbf{Is the Cochrane--Piazzesi factor real?} Robust small-sample tests weaken it. Does it survive in other countries and in data after 2003?
-  \item \textbf{What drives the term premium?} Inflation uncertainty, risk aversion, supply and demand all play a part. Which dominates now?
-  \item \textbf{Do macroeconomic variables add to the yield curve?} Several studies find that measures of real activity forecast bond returns beyond yields. Does that evidence survive the same robust tests?
+  \item \textbf{Does volatility timing pay after costs?} The evidence for the market is mixed. Does it hold for factors such as momentum, and in other countries?
+  \item \textbf{What is the right long-run level?} GARCH forecasts revert to a constant, but the evidence suggests slow-moving changes in average volatility, linked to the business cycle\index{business cycle} and macroeconomic uncertainty. Component GARCH and GARCH-MIDAS models try to capture this. Do they forecast better at long horizons?
+  \item \textbf{Can machine learning\index{machine learning} beat HAR?} Recent studies add many predictors, such as news, macroeconomic data and other assets' volatilities. Do the gains survive the out-of-sample discipline of Chapter~\ref{ch:09}?
+  \item \textbf{What does the VIX know?} Implied volatility combines a forecast with a risk premium. Can the two be separated well enough to improve the forecast?
 \end{itemize}
 
 \section*{Exercises}
@@ -281,19 +379,19 @@ The conundrum was a puzzle only if long yields were pure forecasts of short rate
 \subsection*{Conceptual (all readers)}
 
 \begin{enumerate}
-  \item The 1-, 2- and 3-year zero yields are 3\%, 3.5\% and 4\% (continuously compounded). Compute the forward rates $f(2)$ and $f(3)$. Under the expectations hypothesis, what one-year rates are expected one and two years from now?
-  \item Using the yields in Exercise 1, compute the one-year excess return on the 3-year bond if the yield curve is unchanged a year from now. What would the excess return be if the expectations hypothesis held?
-  \item Show that the Fama--Bliss slopes for excess returns and for short-rate changes add up to 1 when the horizon is one year ($n = 2$).
+  \item A GARCH(1,1) model has $\omega = 0.000003$, $\alpha = 0.10$ and $\beta = 0.88$. (a) What are the long-run daily and annualized volatilities? (b) What is the half-life of a shock? (c) If tomorrow's variance forecast is 0.0004, what is the forecast volatility over the next 22 days, annualized?
+  \item Show that EWMA is GARCH(1,1) with $\omega = 0$. What does this imply for EWMA forecasts at long horizons?
+  \item A colleague argues that because volatility is forecastable, markets cannot be efficient. Explain why forecastable volatility is consistent with efficiency, and what evidence would change your answer.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
   \setcounter{enumi}{3}
-  \item Part A: at which maturities is the Fama--Bliss slope significantly above 0? Is any significantly different from 1? Given Bauer and Hamilton's (2018) warning about small-sample distortions, which of these conclusions would you still trust, and why?
-  \item Part A: how does the Campbell--Shiller slope change with maturity? Explain in words what a negative slope means for a bond investor.
-  \item Part B: compare the in-sample and out-of-sample $R^2$ of the Cochrane--Piazzesi regression. Which of the three predictor sets does best out of sample?
-  \item Part C: in which subperiod is the evidence against the hypothesis strongest? What happened in 2008--2015?
-  \item Part D: build a strategy that holds the 5-year bond after a steep curve and the 1-year bond otherwise. Compare its average excess return and Sharpe ratio with always holding the 5-year bond.
-  \item A newspaper reports that ``markets expect three rate cuts next year,'' based on futures prices. Using this chapter's evidence, explain what the futures prices actually tell us.
+  \item Part A: compute the autocorrelations of squared returns as well as absolute returns. Which decays faster, and why might extreme days explain the difference?
+  \item Part B: rank the models by MSE instead of QLIKE. Does the ranking change? Which days drive the MSE comparison?
+  \item Part B: estimate GARCH with Student-$t$ shocks, using the option \texttt{dist="t"} of \texttt{fit\_garch}. Does it forecast better than the normal version?
+  \item Part B: regress realized variance on both the GJR forecast and the VIX. Does each add information? Compare the VIX's Mincer--Zarnowitz slope with 1 and explain.
+  \item Part C: for the first ten trading days of October 2008 and of March 2020, plot each forecast against realized variance. How many days did each model take to catch up?
+  \item Part D: rescale the managed portfolio using only past data and cap the weight at 1.5. How much of the alpha survives? Compare with Cederburg et al.\ (2020).
 \end{enumerate}

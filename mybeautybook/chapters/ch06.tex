@@ -1,312 +1,284 @@
-% Chapter 6 -- Claim: High-Interest Currencies Depreciate Enough to Offset Their Yield
-% Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
-% Defines the callout box only if the preamble has not.
-\providecolor{fenavy}{HTML}{1B2A6B}
-\providecolor{feshade}{HTML}{F3F5FA}
-\makeatletter
-\@ifundefined{callout}{%
-  \newtcolorbox{callout}{breakable, enhanced,
-    colback=white, colframe=gray!70, boxrule=0.5pt, arc=1mm,
-    borderline west={2.5pt}{0pt}{gray!70},
-    left=8pt, right=8pt, top=4pt, bottom=4pt}%
-}{}
-\makeatother
+\chapter{Claim: Valuations Predict the Equity Premium Out of Sample}
+\label{ch:09}
 
-\chapter{Claim: High-Interest Currencies Depreciate Enough to Offset Their Yield}
-\label{ch:06}
+In the 1980s the view that stock returns are unpredictable gave way to a new consensus. Fama and French (1988) and Campbell and Shiller (1988) found that the dividend--price ratio predicts the stock market's return over the following years, and later papers added interest rates, yield spreads, inflation, corporate issuance and other variables. By the early 2000s predictability of the equity premium was widely taught as a fact, and it had reshaped asset-pricing theory: if expected returns vary over time, then risk premiums, not only cash flows, move prices.
 
-When the Bretton Woods system of fixed exchange rates ended in 1973, economists gained a new laboratory. If investors are risk-neutral and rational, a currency that pays a higher interest rate must be expected to fall by just enough to offset its yield advantage; otherwise everyone would borrow in the low-rate currency and lend in the high-rate one until the opportunity disappeared. This is \textbf{uncovered interest parity}\index{uncovered interest parity (UIP)|textbf}, and it underpins much of international macroeconomics. Fama (1984) tested it with the floating rates of the 1970s. He regressed the change in each exchange rate on the gap between the forward and spot rates, which equals the interest differential, and found a slope below zero rather than the predicted one: high-interest currencies tended to rise, not fall.
+Almost all of that evidence came from regressions fitted to the whole history. Goyal and Welch (2008) asked a sharper question: would an investor who had used these variables in real time, knowing only what was known at each date, have forecast better than someone who simply assumed the average past return? For most predictors the answer was no, and several did worse than the historical mean. Campbell and Thompson (2008) replied that small, sensible restrictions, such as ruling out negative forecasts of the premium, recover a modest but useful predictability. The debate turned on method as much as on data, and it established the out-of-sample test as the standard for every forecasting claim.
 
-The result became the \textbf{forward premium puzzle}\index{forward premium puzzle}, one of the most persistent findings in finance, and it has a practical counterpart in the carry trade\index{carry trade}. In 2007 a Japanese household could borrow yen at less than 1\% and deposit Australian dollars at more than 6\%, and Japanese retail investors, nicknamed ``Mrs.\ Watanabe,'' did so on a large scale alongside hedge funds. Later research asked why the trade pays. Brunnermeier, Nagel and Pedersen (2008) showed that carry returns are exposed to sudden crashes, when funding currencies such as the yen jump in value. Lustig, Roussanov and Verdelhan (2011) sorted currencies into portfolios by interest rate and found a common risk factor that explains much of the return.
+The implications reach investors and researchers. An investor who times the market on valuation ratios is betting that in-sample predictability survives out of sample; a pension fund that sets contributions on an estimate of the equity premium needs to know which estimate is reliable; and every later claim in this book about forecasting, from volatility to machine learning, is judged with the tools this chapter builds. The claim on trial\index{claims-on-trial method} is: \textbf{a predictor that is statistically significant in sample will forecast the equity premium better than the historical mean out of sample, and well enough to be worth using.}
 
-The implications reach central banks, companies and investors. If interest parity fails, a central bank that raises rates may strengthen its currency rather than see it fall, a company that leaves its foreign revenue unhedged is taking a predictable bet, and an investor in carry is paid for bearing crash risk rather than finding a free lunch. The claim on trial\index{claims-on-trial method} is the textbook one: \textbf{high-interest currencies depreciate enough to offset their yield, so the carry trade earns nothing on average.}
-
-The lab in Section~\ref{sec:06-lab} replicates the Fama (1984) regression for nine currencies against the dollar, using free FRED exchange rates and interbank interest rates in place of forward rates, which covered interest parity allows. It then builds the carry portfolios of Lustig, Roussanov and Verdelhan (2011), in order to check whether uncovered interest parity holds today and what the carry trade's returns and crashes look like.
+The lab in Section~\ref{sec:09-lab} replicates the horse race of Goyal and Welch (2008) with their free, updated predictor file, applies the sign restrictions of Campbell and Thompson (2008), and uses White's Reality Check to account for the number of predictors tried, in order to check whether any predictor beats the historical mean when it is used as an investor would have used it.
 
 By the end of the chapter you will be able to:
-
 \begin{itemize}
-  \item quote exchange rates and measure currency returns in logs;
-  \item compute a forward exchange rate from covered interest parity\index{covered interest parity (CIP)}, and explain why arbitrage\index{arbitrage} enforces it;
-  \item state uncovered interest parity and compute the profit or loss on a carry trade;
-  \item run and interpret the Fama regression, and explain the forward premium puzzle\index{forward premium puzzle};
-  \item compare the risk-premium, crash-risk and slow-adjustment explanations, and the evidence for each;
-  \item judge what a currency carry fund is paid for and how it loses money.
+  \item explain why in-sample $R^2$ flatters complex models, and why in-sample significance is a poor guide to out-of-sample performance;
+  \item design a walk-forward evaluation using expanding or rolling windows with strict point-in-time information sets;
+  \item recognize and prevent data leakage, applying purging and embargoing for overlapping targets and cross-validation;
+  \item select natural hard-to-beat benchmarks and evaluate out-of-sample explanatory power ($R^2_{\text{OS}}$);
+  \item execute hypothesis tests for forecast accuracy using Diebold--Mariano (for non-nested models) and Clark--West (for nested models);
+  \item evaluate economic significance through certainty-equivalent return (CER) gains;
+  \item apply White's (2000) Reality Check and Hansen's (2005) SPA test to evaluate data mining across multiple candidate forecasting models;
+  \item analyze post-publication decay (McLean and Pontiff 2016) as a natural experiment;
+  \item summarize the Goyal--Welch critique and evaluate the effectiveness of restricted and combined forecasts.
 \end{itemize}
 
-\section{Foundations: exchange rates, forwards and interest parity}
-\label{sec:06-foundations}
+In the lab you will replicate Goyal and Welch's study with updated data, evaluating 14 classic predictors walk-forward from 1965 to the present, and apply White's Reality Check to a universe of predictive rules.
 
-\subsection{Exchange rates}
+\section{Foundations: The Basics of Forecasting}
+\label{sec:09-foundations}
 
-The \textbf{spot rate}\index{spot rate|textbf} $S$ is the price of one currency in terms of another. In this chapter $S$ is the number of U.S. dollars per unit of foreign currency, so a rise in $S$ means the foreign currency has \textbf{appreciated}. Changes are measured in logs: $\Delta s_{t+1} = \ln(S_{t+1}/S_t)$.
+\subsection{Information Sets}
+A forecast made at time $t$ for target $t+1$ must rely exclusively on the information set $\mathcal{F}_t$ available at date $t$: past prices, published macroeconomic releases, and models estimated on past data.
 
-\subsection{Forward rates and covered interest parity (CIP)}
-
-A forward contract fixes today the exchange rate $F$ for a trade at a future date. An investor can earn the dollar interest rate $i$ either directly, or by converting dollars to foreign currency, earning the foreign rate $i^*$, and converting back at the forward rate\index{forward rate}. Arbitrage makes the two equal:
-\begin{equation}
-  \frac{F}{S} = \frac{1 + i}{1 + i^*}, \qquad \text{or in logs,} \qquad f - s \approx i - i^*
-  \label{eq:06-cip}
-\end{equation}
-The forward rate is below the spot rate for a high-interest currency: the \textbf{forward discount}\index{forward discount|textbf} equals the interest differential. CIP held closely until 2008 and has shown small but persistent deviations since (Du, Tepper and Verdelhan 2018).
-
-\subsection{Uncovered interest parity (UIP)}
-
-\textbf{Uncovered interest parity (UIP)}\index{uncovered interest parity (UIP)|textbf} goes further. It says the \emph{expected} future spot rate equals the forward rate, so the high-interest currency is expected to depreciate by the interest differential:
-\begin{equation}
-  E_t[\Delta s_{t+1}] = i_t - i^*_t
-  \label{eq:06-uip}
-\end{equation}
-UIP has no arbitrage behind it. Holding a foreign currency unhedged is risky, so UIP holds only if investors require no premium for that risk.
-
-\subsection{The carry trade}
-
-Borrow in a low-interest currency, convert and invest in a high-interest currency, and convert back later without hedging. Its excess return\index{return!excess} is the interest differential plus the change in the exchange rate:
-\begin{equation}
-  rx_{t+1} = (i^*_t - i_t) + \Delta s_{t+1}
-  \label{eq:06-carry}
-\end{equation}
-Under UIP its expected value is zero. Equivalently, the carry trade is buying high-interest currencies forward at a discount and hoping they do not fall by as much as the discount.
-
-\textbf{Worked example.} The U.S. one-year rate is 1\%, the Australian rate 5\%, and the spot rate is \$0.70 per Australian dollar (Figure~\ref{fig:06-carry}).
-
+\subsection{Data Splits: Training, Validation, and Test}
+Forecasters divide data into three distinct chronological partitions:
 \begin{itemize}
-  \item CIP: the one-year forward rate is $0.70 \times 1.01/1.05 \approx \$0.673$.
-  \item UIP: the expected spot rate in a year is also \$0.673, a 3.8\% depreciation.
-  \item Carry trade: borrow \$1 million at 1\%, buy A\$1.429 million, invest at 5\% to get A\$1.5 million.
-  \begin{itemize}
-    \item Spot unchanged at \$0.70: proceeds \$1.05 million, repay \$1.01 million, profit \$40,000.
-    \item Spot falls to \$0.673, as UIP predicts: proceeds \$1.01 million, profit zero.
-    \item Spot falls 10\% to \$0.63: proceeds \$945,000, loss \$65,000.
-  \end{itemize}
+  \item \textbf{Training set}: used to estimate model parameters;
+  \item \textbf{Validation set}: used to tune hyperparameters or select models;
+  \item \textbf{Test set}: held out until final evaluation to measure performance out of sample.
 \end{itemize}
 
-\begin{figure}[htbp]
+\subsection{In-Sample $R^2$ and Its Flattery}
+For a model fitted to $T$ observations, the in-sample $R^2$ is:
+\begin{equation}
+  R^2 = 1 - \frac{\sum_{t=1}^T (y_t - \hat{y}_t)^2}{\sum_{t=1}^T (y_t - \bar{y})^2}
+  \label{eq:09-r2}
+\end{equation}
+Because OLS explicitly minimizes the sum of squared residuals, in-sample $R^2$ can never decrease when candidate regressors are added. Consequently, in-sample $R^2$ flatters overfitted models, necessitating out-of-sample evaluation.
+
+\section{In-Sample Fit versus Out-of-Sample Performance}
+\label{sec:09-insample}
+
+The standard time-series predictive regression evaluates next-period excess return:
+\begin{equation}
+  r_{t+1} = \alpha + \beta x_t + \varepsilon_{t+1}
+  \label{eq:09-pred}
+\end{equation}
+Goyal and Welch (2008) tested whether real-time recursive forecasts from Equation~\eqref{eq:09-pred} beat the simple historical mean $\bar{r}_t$. Most failed. Three primary forces open the gap between fit and forecast:
+\begin{enumerate}
+  \item \textbf{Estimation Error:} In finite samples with low signal-to-noise ratios, sampling noise in $\hat{\alpha}$ and $\hat{\beta}$ dominates the forecast.
+  \item \textbf{Structural Instability:} Economic relationships evolve over time due to structural shifts, learning, and institutional changes.
+  \item \textbf{Selection Bias:} Published predictors were selected because they fit historical data in-sample.
+\end{enumerate}
+In addition, Stambaugh (1999) bias inflates in-sample $t$-statistics when predictors $x_t$ are highly persistent ($\rho \approx 1$) and predictor shocks correlate with return shocks.
+
+\section{Walk-Forward Evaluation: Expanding and Rolling Windows}
+\label{sec:09-walkforward}
+
+A walk-forward evaluation replays history recursively:
+\begin{enumerate}
+  \item Select an initial forecast date $t_0$, establishing an initial estimation window.
+  \item Estimate parameters using data available up to $t$.
+  \item Forecast target $\hat{r}_{t+1}$ and record the benchmark forecast $\bar{r}_t$.
+  \item Advance to $t+1$, update the training window, and repeat until the sample end.
+\end{enumerate}
+
+\begin{table}[htbp]
 \centering
-\begin{tikzpicture}[
-  % Profit ($ thousands) = 1500 x (spot - 0.6733): +40k if unchanged at 0.70,
-  % zero at the UIP forecast 0.673, -65k after a 10% fall to 0.63
-  declare function={carry(\s) = 1500*(\s - 0.67333);}
-]
-\begin{axis}[
-  width=0.61\linewidth, height=0.34\linewidth,
-  axis lines=left, axis line style={-stealth},
-  xmin=0.6, xmax=0.75, ymin=-110, ymax=120,
-  xtick={0.6,0.62,...,0.74}, ytick={-100,0,100},
-  xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=2},
-  xlabel={Spot rate in one year (\$ per Australian dollar)},
-  ylabel={Carry profit (\$ thousands)},
-  clip=false,
-]
-  \addplot[gray, thin, domain=0.6:0.75, samples=2] {0};
-  \addplot[fenavy, very thick, domain=0.6:0.75, samples=2] {carry(x)};
-  \fill[fenavy] (axis cs:0.70,40)  circle (2.6pt);
-  \fill[fenavy] (axis cs:0.67333,0) circle (2.6pt);
-  \fill[fenavy] (axis cs:0.63,-65) circle (2.6pt);
-  \node[anchor=south east] at (axis cs:0.697,42) {unchanged: $+\$40$k};
-  \node[anchor=north west] at (axis cs:0.676,-3) {UIP forecast 0.673: zero};
-  \node[anchor=west] at (axis cs:0.633,-70) {$-10\%$: $-\$65$k};
-\end{axis}
-\end{tikzpicture}
-\caption{Profit on the worked example's carry trade against the spot rate a year later. The trade earns \$40,000 if the Australian dollar is unchanged, breaks even at the UIP forecast of \$0.673, and loses \$65,000 if the currency falls 10\%.}
-\label{fig:06-carry}
-\end{figure}
+\small
+\caption{Expanding vs. Rolling Window Architectures}
+\label{tab:09-windows}
+\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.18\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.24\linewidth}>{\raggedright\arraybackslash}p{0.24\linewidth}@{}}
+\toprule
+Window Type & Training Data Used at Date $t$ & Key Advantage & Primary Limitation \\
+\midrule
+\textbf{Expanding} & All observations from start to $t$ & Uses maximum data; minimizes parameter estimation noise. & Adapts slowly if underlying data-generating process changes. \\
+\textbf{Rolling} & Fixed window of most recent $w$ observations & Adapts quickly to structural shifts. & Subject to higher parameter estimation error; sensitive to choice of $w$. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-\section{How it works}
-\label{sec:06-how}
-
-UIP can be tested in two ways, one for each currency and one across currencies.
-
-\textbf{The Fama regression.} Regress the change in the exchange rate on the lagged interest differential:
+Out-of-sample forecast accuracy is evaluated using the Campbell and Thompson (2008) out-of-sample $R^2$:
 \begin{equation}
-  \Delta s_{t+1} = a + b\,(i_t - i^*_t) + e_{t+1}
-  \label{eq:06-fama}
+  R^2_{\text{OS}} = 1 - \frac{\sum_{t} \left( r_{t+1} - \hat{r}_{t+1} \right)^2}{\sum_{t} \left( r_{t+1} - \bar{r}_t \right)^2}
+  \label{eq:09-r2os}
 \end{equation}
-UIP implies $b = 1$: a one-point interest advantage for the foreign currency predicts a one-point depreciation. If $b = 0$, exchange rates are a random walk and the carry trade earns the whole differential. If $b < 0$, high-interest currencies tend to \emph{appreciate}, and the carry trade earns more than the differential (Figure~\ref{fig:06-fama}). This is the \textbf{forward premium puzzle}.
+$R^2_{\text{OS}} > 0$ indicates that model forecasts achieve lower mean squared error than the historical mean.
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.46\linewidth, height=0.34\linewidth,
-  axis lines=left, axis line style={-stealth},
-  xmin=-0.5, xmax=4.5, ymin=-4.5, ymax=4.5,
-  xtick={0,1,...,4}, ytick={-4,-2,0,2,4},
-  xlabel={Foreign interest advantage, $i^* - i$ (\%)},
-  ylabel={Expected change in foreign currency (\%)},
-  clip=false,
-]
-  \addplot[gray, thin, domain=-0.5:4.5, samples=2] {0};
-  % Typical estimate b = -0.9: the currency rises by 0.9 x its advantage
-  \addplot[thick, densely dotted, domain=0:4.3, samples=2] {0.9*x};
-  % Random walk b = 0
-  \addplot[fegray, thick, dashed, domain=0:4.3, samples=2] {0};
-  % UIP b = 1: falls by its interest advantage
-  \addplot[fenavy, very thick, domain=0:4.3, samples=2] {-x};
-  \node[anchor=west, align=left] at (axis cs:4.6,3.87)
-    {typical estimate\\($b \approx -0.9$):\\rises instead};
-  \node[fegray, anchor=west, align=left] at (axis cs:4.6,0)
-    {random walk\\($b = 0$)};
-  \node[fenavy, anchor=west, align=left] at (axis cs:4.6,-4.3)
-    {UIP ($b = 1$):\\falls by its\\interest advantage};
-\end{axis}
-\end{tikzpicture}
-\caption{Three readings of the Fama regression. Under UIP ($b = 1$), a currency with a higher interest rate falls by its interest advantage. Under a random walk ($b = 0$), it is expected not to move. The typical estimate ($b \approx -0.9$, Froot and Thaler 1990) implies that it rises instead.}
-\label{fig:06-fama}
-\end{figure}
-
-\textbf{Carry portfolios.} Each month, sort currencies by their interest rate, buy the highest-yielding ones and sell the lowest. If UIP holds, the portfolio earns nothing on average. Portfolios diversify away currency-specific noise and are what investors actually trade.
-
-\textbf{Why UIP might fail.} There are three broad explanations.
-
+\subsection{Theoretical Restrictions}
+Campbell and Thompson (2008) showed that imposing economic restrictions improves out-of-sample performance:
 \begin{itemize}
-  \item \textbf{A risk premium.} High-interest currencies tend to fall in global downturns, when investors flee to the dollar, yen and Swiss franc. Investors demand a premium for holding them. Lustig, Roussanov and Verdelhan (2011) argue that carry returns compensate for exposure to a global risk factor.
-  \item \textbf{Crash risk.} Carry returns may be steady most of the time and then collapse when carry traders all unwind at once, as funding dries up. The premium pays for those crashes (Brunnermeier, Nagel and Pedersen 2008).
-  \item \textbf{Slow adjustment.} Investors may underreact to interest-rate changes, so currencies move toward UIP only gradually. That would be a mispricing rather than a risk premium, and should shrink as more capital pursues it.
+  \item Set $\hat{\beta} = 0$ if the estimated slope sign contradicts economic theory.
+  \item Truncate negative equity premium forecasts at zero ($\hat{r}_{t+1} = \max(0, \hat{r}_{t+1})$).
 \end{itemize}
 
-These explanations make different predictions. A risk premium should show up as losses in bad times for the world economy. Crash risk should show up as negative skewness and losses concentrated in a few episodes. Slow adjustment should show up as a premium that declines over time and does not depend on market conditions.
+\section{Data Leakage: Look-Ahead, Publication Lags, Purging, and Embargoing}
+\label{sec:09-leakage}
 
-\section{The claim}
-\label{sec:06-claim}
+Data leakage occurs whenever future information enters model training or specification:
+\begin{itemize}
+  \item \textbf{Full-Sample Estimation \& Preprocessing:} Estimating coefficients, standardizing features, or setting winsorizing cutoffs using full-sample statistics.
+  \item \textbf{Hindsight Model Selection:} Choosing variables or hyperparameters based on full-sample metrics.
+  \item \textbf{Publication Lags \& Revisions:} Ignoring release delays (e.g., CPI releases arrive weeks after month-end; macroeconomic data undergo revisions). Point-in-time archives (such as ALFRED) must be used.
+  \item \textbf{Overlapping Targets \& Purging:} When predicting multi-period targets ($k$-period returns), training observations whose target windows overlap the forecast date contain future information. López de Prado (2018) defines \textbf{purging} as dropping these overlapping observations from the training set.
+  \item \textbf{Cross-Validation \& Embargoing:} In $k$-fold cross-validation, training data follow test folds. \textbf{Embargoing} drops a block of training data immediately after the test fold to eliminate serial correlation leakage.
+\end{itemize}
+
+\section{Benchmarks That Are Hard to Beat}
+\label{sec:09-benchmarks}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Natural Hard-to-Beat Forecasting Benchmarks}
+\label{tab:09-benchmarks}
+\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.30\linewidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Target Quantity & Natural Benchmark & Rationale \\
+\midrule
+Equity Premium & Historical mean return ($\bar{r}_t$) & Minimal estimation noise; avoids unstable parameter fits. \\
+Exchange Rates / Prices & Random Walk ($y_{t+1} = y_t$) & Meese and Rogoff (1983) empirical result. \\
+Interest Rates / Yields & Random Walk or Forward Rate & Yields are highly persistent. \\
+Volatility & Realized Volatility / EWMA & Volatility exhibits strong clustering. \\
+Macroeconomic Variables & Survey Consensus / Last Value & Professional surveys aggregate public information efficiently. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Measuring Forecast Accuracy: Diebold--Mariano and Clark--West}
+\label{sec:09-accuracy}
+
+\subsection{Non-Nested Model Comparison: Diebold--Mariano Test}
+Diebold and Mariano (1995) test equal predictive accuracy between two non-nested forecasts based on loss differentials $d_t = e^2_{\text{bench},t} - e^2_{\text{model},t}$. The test statistic is a $t$-test on $\bar{d}$ using Newey--West HAC standard errors, with Harvey, Leybourne, and Newbold (1997) small-sample corrections.
+
+\subsection{Nested Model Comparison: Clark--West Test}
+When a predictive regression is compared against the historical mean, the models are nested. Under the null hypothesis ($\beta=0$), estimating $\beta$ introduces parameter estimation noise that elevates the model's mean squared error above the benchmark. The uncorrected Diebold--Mariano test is therefore undersized and biased against discovering true predictability.
+
+Clark and West (2007) adjust for estimation noise by defining the adjusted loss differential:
+\begin{equation}
+  f_t = (r_{t+1} - \bar r_t)^2 - \left[(r_{t+1} - \hat r_{t+1})^2 - (\bar r_t - \hat r_{t+1})^2\right]
+  \label{eq:09-cw}
+\end{equation}
+A one-sided $t$-test on the mean of $f_t$ tests whether the predictor carries significant predictive information.
+
+\subsection{Economic Value: Certainty-Equivalent Return (CER)}
+For a mean-variance investor with risk aversion $\gamma$, portfolio weight in equities is $w_t = \frac{\hat{r}_{t+1}}{\gamma \hat{\sigma}^2_{t+1}}$. The gain in Certainty-Equivalent Return ($\Delta \text{CER}$) measures the risk-free return premium the investor would accept to replace benchmark-based allocation with model-based forecasts. Campbell and Thompson (2008) provide the approximation $\Delta E[R] \approx R^2_{\text{OS}} / S^2$, where $S$ is the benchmark Sharpe ratio.
+
+\section{Multiple Testing in Next-Period Forecasting: White's Reality Check}
+\label{sec:09-reality}
+
+When a researcher tests $N$ candidate forecasting rules or models, selecting the top performer induces data-mining bias. White (2000) introduced the \textbf{Reality Check for Data Mining} to test the null hypothesis that the best model among $N$ candidates does not outperform the benchmark:
+\begin{equation}
+  H_0: \max_{k=1, \dots, N} E[d_k] \le 0
+  \label{eq:09-white-null}
+\end{equation}
+where $d_{k,t} = e^2_{\text{bench},t} - e^2_{k,t}$ represents the performance differential of model $k$ relative to the benchmark.
+
+\subsection{The Reality Check Protocol}
+\begin{enumerate}
+  \item Compute observed mean performance differentials $\bar{d}_k = \frac{1}{T} \sum_{t=1}^T d_{k,t}$ for all $k = 1, \dots, N$, and record $V^{\text{obs}} = \max_k \bar{d}_k$.
+  \item Resample performance series jointly using the stationary block bootstrap (Politis and Romano 1994) across $B$ bootstrap iterations.
+  \item Construct the null distribution by centering bootstrapped statistics:
+  \begin{equation}
+    V^{*,b} = \max_{k=1, \dots, N} \left( \bar{d}_{k}^{*,b} - \bar{d}_k \right)
+  \end{equation}
+  \item Calculate the $p$-value as the proportion of bootstrap iterations where $V^{*,b} \ge V^{\text{obs}}$.
+\end{enumerate}
+Hansen (2005) refined this test into the Superior Predictive Ability (SPA) test, which reduces sensitivity to poor candidate models.
 
 \begin{callout}
-\textbf{Claim (uncovered interest parity).} The currency of a high-interest country is expected to depreciate by its interest advantage, so borrowing in low-interest currencies and lending in high-interest ones earns nothing on average.
+\noindent \textbf{What Failed: A Century of Technical Trading Rules}
+
+Brock, Lakonishok, and LeBaron (1992) documented significant profits from moving-average and trading-range rules applied to the Dow Jones Index from 1897 to 1986. Sullivan, Timmermann, and White (1999) re-evaluated these results across a universe of thousands of technical rules using White's Reality Check. Once search bias was accounted for, the best rule was statistically indistinguishable from chance out of sample, proving that the original results reflected data mining.
 \end{callout}
 
-To test it we need to be precise on three points.
+\section{Post-Publication Samples as Natural Experiments}
+\label{sec:09-postpub}
 
-\begin{itemize}
-  \item \textbf{On average, over what period.} UIP is a statement about expectations. Over a few months, exchange-rate noise dominates. The test needs decades of data and many currencies.
-  \item \textbf{Which currencies.} The lab uses nine developed-market currencies against the dollar. Emerging-market currencies have higher carry but also capital controls, default risk and much higher trading costs.
-  \item \textbf{What would count against it.} UIP fails if Fama slopes are significantly below 1 and if a carry portfolio earns a significant average return. It fails in a deeper sense if the return survives trading costs and the slopes are below zero, not merely below one.
-\end{itemize}
-
-\section{The original evidence}
-\label{sec:06-evidence}
-
-\textbf{Fama (1984).} Using monthly data for nine currencies against the dollar after the end of fixed exchange rates in 1973, Fama found that the slopes were not just below 1 but generally negative. High-interest currencies tended to appreciate. He showed that this implies a risk premium in forward rates that varies over time and is more volatile than expected exchange-rate changes. Froot and Thaler (1990) summarized the literature: across 75 published estimates, the average slope was about $-0.88$.
-
-\textbf{Carry as a risk factor.} Lustig, Roussanov and Verdelhan (2011) sorted currencies into portfolios by interest rate. The high-minus-low\index{factor!HML (value)} portfolio earned substantial average returns. They showed that a single carry factor, together with a dollar factor, explained much of the cross-section of currency returns, and that high-interest currencies loaded more heavily on it. Menkhoff, Sarno, Schmeling and Schrimpf (2012) found that carry losses coincided with increases in global currency volatility\index{volatility}.
-
-\textbf{Crashes.} Brunnermeier, Nagel and Pedersen (2008) showed that carry returns are negatively skewed\index{skewness}: large losses are more likely than large gains. Losses coincided with falling risk appetite and funding liquidity\index{liquidity}, measured among other things by rises in the VIX\index{VIX}, as carry traders were forced to unwind together.
-
-\textbf{Peso problems.}\index{peso problem|textbf} One possible explanation is that the high returns compensate for rare disasters not yet seen in the sample, a \textbf{peso problem}. Burnside, Eichenbaum, Kleshchelski and Rebelo (2011) tested this by hedging carry positions with currency options. The hedged trade still earned a substantial return. They concluded that rare disasters could explain the premium only if the market prices them at much more than their likely cost.
-
-\section{Lab~\thechapter: Replicating Fama (1984) and Lustig, Roussanov and Verdelhan (2011)}
-\label{sec:06-lab}
+McLean and Pontiff (2016) evaluated 97 published anomalies across three distinct periods:
+\begin{enumerate}
+  \item \textbf{In-Sample Period}: original discovery sample;
+  \item \textbf{Post-Sample / Pre-Publication Period}: returns dropped by 26\%, reflecting data-mining bias;
+  \item \textbf{Post-Publication Period}: returns dropped by an additional 32\% (58\% total decline), reflecting arbitrage activities by market participants.
+\end{enumerate}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:06} at a glance.} \emph{Papers replicated:} the Fama (1984) regression; the carry portfolios of Lustig, Roussanov and Verdelhan (2011). \emph{Claim on trial\index{claims-on-trial method}:} high-interest currencies depreciate enough to offset their yield. \emph{Data:} free monthly data from FRED\index{FRED}: the Federal Reserve's exchange rates for nine currencies (yen, pound, Swiss franc, Canadian, Australian and New Zealand dollars, Swedish krona and Norwegian krone, and the euro from 1999) and OECD three-month interbank rates for each country and the United States. The VIX and the Fama--French\index{Fama--French factors} market factor are optional. \emph{Code:} runs as a script (\texttt{python lab18.py}) or as a notebook with a prediction prompt before each step.
+\noindent \textbf{What Failed: The Dividend Yield Out of Sample}
+
+The dividend-price ratio exhibited strong in-sample predictive performance through the 1980s. During the 1990s bull market, however, dividend yields dropped to historical lows, generating persistent negative return forecasts while equity markets surged. Real-time forecasters relying on dividend yields would have remained underweight equities throughout one of the largest bull markets in history. Structural shifts in mean dividend payouts explain much of this out-of-sample breakdown (Lettau and Van Nieuwerburgh 2008; Goyal and Welch 2008).
 \end{callout}
 
-\textbf{Part A, Fama regressions.} For each currency, the monthly change in the log exchange rate (dollars per foreign unit) on last month's U.S.-minus-foreign interest differential, with Newey--West\index{standard error!Newey--West (HAC)} errors, plus a pooled slope (Lab Figure~\ref{ch:06}.1).
+\section{What Investors Can Use}
+\label{sec:09-investors}
 
-\textbf{Part B, the carry portfolio.} Each month, long the three highest-rate currencies and short the three lowest, equally weighted, using rates known at the end of the previous month. The return is split into the interest earned and the exchange-rate change (Lab Figure~\ref{ch:06}.2). Its distribution is compared with a normal distribution\index{distribution!normal} (Lab Figure~\ref{ch:06}.3).
-
-\textbf{Part C, stress tests.} Three subperiods (to 1998, 1999--2007, 2008 onward), transaction costs\index{transaction costs} of 0 to 20 basis points\index{basis point} per unit of weight traded, exposure to stock-market returns and to changes in the VIX, and the ten worst months.
-
-\textbf{Part D, the investor's view.} Drawdowns\index{drawdown}, recovery times, the share of losses from the worst months, and carry returns plotted against VIX changes (Lab Figures~\ref{ch:06}.4 and~\ref{ch:06}.5).
-
-Three data choices matter.
-
+\textbf{Rules of Thumb:}
 \begin{itemize}
-  \item The interest differential stands in for the forward discount, which covered interest parity makes nearly equal; forward rates are not freely available.
-  \item FRED's exchange rates are monthly averages of daily rates, which smooths returns and makes crashes look milder than they were.
-  \item The sample is limited to developed currencies, where carry is smaller but trading costs and capital controls are minor.
+  \item Start from the historical mean: Use the historical mean return as the primary benchmark for asset returns.
+  \item Prefer model combinations: Equal-weighted forecast combinations consistently beat individual predictive models by shrinking variance.
+  \item Inspect cumulative error plots: Plot cumulative squared error differences to verify whether forecast gains are steady or concentrated in single shock events.
 \end{itemize}
 
-\textbf{What the simulated run shows.} The simulation lets high-rate currencies depreciate by only 30\% of their interest advantage and adds rare risk-off months in which they fall sharply. The lab recovers this: a pooled Fama slope well below 1, a carry portfolio with a positive average return and negative skewness, interest income partly offset by exchange-rate losses, and losses when the VIX jumps. Individual currency slopes are very imprecise, as they are in real data. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
-
-\section{Stress tests}
-\label{sec:06-stress}
-
-\textbf{Subperiods.} Carry returns have varied a lot over time. A strategy that earns most of its return in a few long calm stretches and gives back much of it in a few months can look very different depending on where the sample starts and ends. The period since 2008 matters most: interest-rate differentials among developed countries collapsed toward zero for years, and with them the carry available.
-
-\textbf{Transaction costs.}\index{transaction costs|textbf} G10 currencies are the most liquid assets in the world, with bid--ask spreads\index{bid--ask spread} of a few basis points. Carry portfolios rebalance\index{rebalancing} only when interest rankings change, so turnover\index{turnover} is modest. Costs reduce but rarely eliminate the developed-market carry premium. For emerging-market currencies they matter much more.
-
-\textbf{Skewness and crashes.}\index{skewness|textbf} The carry trade is often described as ``going up the stairs and down the elevator.'' Its returns should show negative skewness, and its worst months should cluster in episodes of global stress: 1992 (the European exchange-rate crisis), 1998 (the Russian default and LTCM), 2008, and the yen rally of August 2024. The lab lists the worst months and their share of total losses.
-
-\textbf{Exposure to stocks and fear.} If carry is a risk premium\index{risk premium}, its returns should be positively correlated with stock returns, especially in bad months, and negatively correlated with changes in the VIX. A strategy whose beta\index{beta} to stocks rises in down markets offers less diversification\index{diversification} than its average correlation\index{correlation} suggests.
-
-\textbf{Monthly averages.} Because the exchange rates are monthly averages of daily data, the lab's worst months will understate the speed of the real crashes. In October 2008 several carry currencies fell by double digits against the yen within days.
+\textbf{6-Question Investor Audit Checklist:}
+\begin{enumerate}
+  \item Were forecasts generated strictly walk-forward without look-ahead bias?
+  \item Were point-in-time publication delays and data revisions accounted for?
+  \item Is the benchmark model appropriate and hard to beat?
+  \item Was nested model comparison evaluated using the Clark--West test?
+  \item Does performance survive multiple-testing corrections (White's Reality Check / SPA)?
+  \item Does predictive efficacy persist in post-publication samples?
+\end{enumerate}
 
 \section{Verdict}
-\label{sec:06-verdict}
+\label{sec:09-verdict}
 
 \begin{callout}
-\textbf{Verdict: fails} (as of October 2026) over most samples. High-interest currencies have not depreciated by their interest advantage on average; Fama slopes are well below 1 and often negative, and carry portfolios have earned a premium. That premium is paid for with sudden crashes that arrive in global downturns.
+\noindent \textbf{Verdict: Fails}
+
+For most single macroeconomic predictors, in-sample statistical significance fails to translate into out-of-sample forecast superiority over the historical mean benchmark (Goyal and Welch 2008; Goyal, Welch, and Zafirov 2024). Out-of-sample $R^2_{\text{OS}}$ metrics are predominantly negative, and success is concentrated in isolated historical shocks. Economic value survives weakly only when imposing sign restrictions and equal-weighted forecast combinations.
 \end{callout}
-
-What fails:
-
-\begin{itemize}
-  \item \textbf{The slope.} Across decades of studies, slopes in the Fama regression have been below 1 and usually below zero. A high interest rate has predicted, if anything, a stronger currency in the short run.
-  \item \textbf{The zero-return prediction.} Carry portfolios have earned positive average returns after realistic costs for developed-market currencies.
-\end{itemize}
-
-What survives:
-
-\begin{itemize}
-  \item \textbf{The spirit of UIP over long horizons and in extremes.} Some studies find slopes closer to 1 at horizons of several years, and in countries with very high inflation\index{inflation}, where large interest differentials are matched by large depreciations.
-  \item \textbf{No free lunch.} The premium comes with negative skewness, losses concentrated in global crises and positive correlation with stocks in bad months. That is what a risk premium looks like, not an arbitrage. An investor who earns carry is paid for providing liquidity and insurance to the rest of the world when it is scarce.
-\end{itemize}
-
-The verdict would move to \emph{weakens} if carry returns since 2008 were consistently near zero, as narrow interest differentials and crowding\index{crowding} might imply.
-
-\section{What investors can use}
-\label{sec:06-investors}
-
-\textbf{What a currency carry fund earns.} A carry strategy collects interest-rate differentials between currencies and keeps them as long as exchange rates do not move against it. In calm years it delivers modest, steady gains. Its risk is not spread evenly over time: most of its losses come in a few months of global stress, when high-yielding currencies fall together and funding currencies, the yen and Swiss franc above all, rise.
-
-\textbf{How it loses money.} Carry crashes are fast. They begin when something forces leveraged carry traders to cut positions: a rise in volatility, a margin call\index{margin}, a surprise from the central bank of a funding currency. Selling pushes high-yield\index{credit rating} currencies down further, which forces more selling. Diversifying across many currency pairs helps little, because the losses are driven by a common factor.
-
-\textbf{Carry in a portfolio.} Because carry tends to lose when stocks fall, it adds less diversification to an equity portfolio than its average correlation suggests. Investors should measure its correlation with stocks in bad months, not over the whole sample.
-
-\textbf{Questions to ask a manager running currency carry:}
-
-\begin{itemize}
-  \item What are the funding currencies, and how concentrated is the portfolio in one or two pairs?
-  \item How much leverage\index{leverage} is used, and what happens to margin in a volatility spike?
-  \item How did the strategy perform in late 2008 and in August 2024?
-  \item Is there a crash filter, such as cutting exposure when volatility rises, and how did it perform out of sample\index{in-sample versus out-of-sample}?
-\end{itemize}
-
-\begin{callout}
-\textbf{What Failed: the yen carry trade, 2008.} In the years before 2008, borrowing in yen at rates near zero and investing in Australian dollars, New Zealand dollars and other high-yielding currencies was one of the most popular trades in the world, among Japanese retail investors and hedge funds alike. When the financial crisis intensified in the autumn of 2008, carry traders rushed to repay yen loans at the same time. Between July and late October 2008 the Australian and New Zealand dollars lost more than a third of their value against the yen, wiping out years of interest income in a few weeks.
-
-The episode matched the risk-premium explanation exactly. The trade paid steadily in good times and lost heavily in the worst global downturn in decades, when investors could least afford it. It recurred on a smaller scale in August 2024: after the Bank of Japan raised its policy rate to 0.25\% at the end of July, the yen rose sharply, carry positions were cut, and on August 5 the Nikkei 225 fell 12.4\%.
-\end{callout}
-
-\section{Open questions}
-\label{sec:06-open}
-
-\begin{itemize}
-  \item \textbf{Is carry a risk premium or a slowly corrected mispricing\index{mispricing}?} If it were mispricing, it should shrink as more capital pursues it. Has it?
-  \item \textbf{What happened to carry after 2008?} Near-zero rates in many developed countries removed most interest differentials. Did the premium per unit of differential change, or only the opportunity?
-  \item \textbf{Do covered-interest-parity deviations matter?} Since 2008, CIP has not held exactly, reflecting the cost of banks' balance sheets. How does this affect measured carry returns?
-  \item \textbf{Can crashes be avoided?} Momentum\index{momentum} and volatility filters claim to sidestep the worst months. Do they work out of sample, or do they simply give up the premium?
-\end{itemize}
 
 \section*{Exercises}
 \addcontentsline{toc}{section}{Exercises}
 
 \subsection*{Conceptual (all readers)}
-
 \begin{enumerate}
-  \item The U.S. one-year rate is 4\% and the Japanese rate 0.5\%. The spot rate is 150 yen per dollar. Compute the one-year forward rate. Under UIP, what spot rate is expected in a year?
-  \item Using the numbers in Exercise 1, compute the return to a dollar-based investor who borrows yen, converts to dollars and invests at 4\%, if the spot rate stays at 150, moves to the UIP forecast, or falls to 135.
-  \item Explain why covered interest parity is enforced by arbitrage but uncovered interest parity is not.
+  \item Explain why in-sample $R^2$ cannot decrease when adding variables, whereas out-of-sample $R^2_{\text{OS}}$ can be negative.
+  \item A forecaster predicts 12-month returns monthly using past data. Explain which training observations must be purged to prevent leakage.
+  \item Why is the uncorrected Diebold--Mariano test biased when comparing nested predictive models? What adjustment does Clark--West provide?
+  \item Describe how White's Reality Check constructs a null distribution for the maximum performance statistic across $N$ models.
+  \item Explain why an equal-weighted combination of 14 weak forecasts often beats every individual forecast out of sample.
 \end{enumerate}
 
-\subsection*{Lab extensions (technical readers)}
-
+\subsection*{Lab Extensions (technical readers)}
 \begin{enumerate}
-  \setcounter{enumi}{3}
-  \item Part A: how many currencies have Fama slopes significantly below 1? Below 0? What is the pooled slope?
-  \item Part B: what share of the carry portfolio's interest income was offset by exchange-rate changes? Compare with what UIP predicts.
-  \item Part C: compare carry returns before and after 2008. What happened to the interest differentials?
-  \item Part C: estimate the carry portfolio's beta to stocks in all months and in months when stocks fell. What does the difference mean for an investor?
-  \item Add a filter that holds the carry portfolio only when the VIX is below its 12-month median. Compare the Sharpe ratio and the worst month with the unfiltered strategy.
-  \item A financial adviser recommends a fund that earns ``the interest-rate differential between currencies.'' Using this chapter's evidence, explain what the fund is really paid for and when it is likely to lose money.
+  \setcounter{enumi}{5}
+  \item Replicate Part B of Lab~\ref{ch:09} across 14 macro predictors. Compute $R^2_{\text{OS}}$ and Clark--West $p$-values for 1965--2005 vs. post-2005 samples.
+  \item Evaluate sensitivity to window choice by rerunning walk-forward forecasts using a 20-year rolling window versus an expanding window.
+  \item Apply White's Reality Check to a universe of 500 technical trading rules applied to daily market index returns. Determine whether the top rule survives multiple-testing penalties.
 \end{enumerate}
+
+\section{Lab~\thechapter: Replicating Goyal and Welch (2008) and White's Reality Check}
+\label{sec:09-lab}
+
+\begin{callout}
+\textbf{Lab~\ref{ch:09} at a glance.} \emph{Papers replicated:} Goyal and Welch (2008); Campbell and Thompson (2008); White (2000). \emph{Claim on trial:} In-sample significant predictors beat the historical mean out of sample. \emph{Data:} Goyal and Welch's updated dataset (\texttt{PredictorData.xlsx}), free from Amit Goyal's website, containing 14 macro predictors (valuation ratios, interest rates, credit spreads, stock variance, net equity expansion, inflation). \emph{Code:} \texttt{ch05-out-of-sample/}.
+\end{callout}
+
+\subsection*{Lab Setup and Structure}
+\begin{table}[htbp]
+\centering
+\small
+\caption{The 14 Macroeconomic Predictors of Goyal and Welch}
+\label{tab:09-goyal-predictors}
+\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Category & Predictors \\
+\midrule
+Valuation Ratios & Dividend--price ratio, dividend yield, earnings--price ratio, dividend payout ratio, book-to-market ratio. \\
+Interest Rates & Treasury-bill rate, long-term government yield, long-term bond return, term spread. \\
+Credit & Default yield spread (Baa minus Aaa), default return spread. \\
+Other & Stock variance, net equity expansion, inflation (lagged 2 months). \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{Part A: In-Sample Regressions.} Run univariate regressions for all 14 predictors; record slope, White $t$-statistic, and $R^2$.
+  \item \textbf{Part B: Out-of-Sample Walk-Forward.} Generate recursive forecasts starting in 1965. Compute $R^2_{\text{OS}}$, Clark--West, and Diebold--Mariano statistics. Plot cumulative squared error differences.
+  \item \textbf{Part C: Remedies.} Evaluate Campbell--Thompson sign restrictions, forecast combinations, and certainty-equivalent return gains ($\Delta \text{CER}$).
+  \item \textbf{Part D: Post-Publication Natural Experiment.} Evaluate predictive performance in the post-2005 sample.
+  \item \textbf{Part E: White's Reality Check.} Apply White's Reality Check to a simulated technical trading universe to measure search bias.
+\end{itemize}
+
+\subsection*{Verdict}
+\textbf{Fails.} Single macroeconomic predictors do not consistently outperform the historical mean out of sample. Forecast combinations and theoretical sign constraints provide minor improvements, but overall out-of-sample predictability remains weak.

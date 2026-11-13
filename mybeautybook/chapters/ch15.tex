@@ -1,4 +1,4 @@
-% Chapter 15 -- Claim: Credit Spreads Mainly Reflect Expected Defaults
+% Chapter 16 -- Claim: Selling Options Earns a Reliable Premium
 % Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -12,271 +12,276 @@
 }{}
 \makeatother
 
-\chapter{Claim: Credit Spreads Mainly Reflect Expected Defaults}
-\label{ch:15}
+\chapter{Claim: Selling Options Earns a Reliable Premium}
+\label{ch:16}
 
-A corporate bond pays more than a Treasury bond of similar maturity, and the obvious explanation is default. Merton (1974) made the explanation precise. Treating a firm's equity as a call option on its assets, he derived the credit spread\index{credit spread} from the firm's leverage, the volatility of its assets and the time to maturity, and founded the structural approach to credit risk. On this view the spread is largely an actuarial charge: the probability of default times the loss given default\index{loss given default}. It is how many investors think about credit, and it is how credit ratings\index{credit rating} are designed, since ratings rank bonds by their expected default losses\index{credit spread!expected-loss component}.
+Once the Black--Scholes model gave every option an implied volatility, a regularity became visible: the volatility implied by index option prices was usually higher than the volatility the market went on to deliver. An investor who sells stock-index options is in the same business as an insurance company. A put option\index{option!put} is insurance against a market fall; its seller collects a premium up front and pays out when the market drops. If the insurance is priced above expected claims, the seller earns a steady profit, with the occasional very bad year. Coval and Shumway (2001) showed that index option returns are too low to be explained by their market risk, and Carr and Wu (2009) measured the \textbf{variance risk premium}\index{variance risk premium} directly and found it large and persistent.
 
-The view is testable, because a century of default data shows how often bonds of each rating have defaulted and how much investors recovered. When researchers ran the test, the numbers did not add up. Elton, Gruber, Agrawal and Mann (2001) found that expected default losses account for only a small part of corporate spreads, with taxes and a risk premium making up much of the rest. Collin-Dufresne, Goldstein and Martin (2001) found that changes in spreads are driven largely by a common factor unrelated to firm-specific default risk, and Huang and Huang (2012) showed that structural models calibrated to actual default rates explain only a small fraction of investment-grade spreads. This gap became known as the \textbf{credit spread puzzle}\index{credit spread puzzle}. Gilchrist and Zakraj\v{s}ek (2012) separated the spread into a default component and an excess bond premium, and found that the premium predicts recessions.
+The question matters because a large industry rests on it. Whaley (2002) studied the covered-call\index{option selling!covered call} strategy and helped design the Cboe BuyWrite Index, and option-income funds, covered-call ETFs and volatility-selling strategies now hold large sums. The issue is what kind of premium they collect. A reliable premium for bearing a risk that others want to shed is one thing. A strategy that wins small most months and loses large in a few, while carrying most of the stock market's risk, is another. Israelov and Nielsen (2015) showed that much of the return of covered calls comes from their equity exposure rather than from the volatility premium.
 
-The answer bears on what credit investors are paid for, why spreads rise in recessions, and why highly rated structured securities proved so dangerous in 2007--08, when products designed around expected losses met a collapse in risk appetite. The claim on trial\index{claims-on-trial method} is: \textbf{the extra yield on corporate bonds over Treasuries is mostly payment for expected default losses.}
+The implications are practical for anyone offered option income. The two kinds of premium can look alike in a backtest\index{backtest}, so the evidence has to separate them, and the crashes of 2008, February 2018 and March 2020 show what the tail looks like. The claim on trial\index{claims-on-trial method} is: \textbf{selling index puts or writing covered calls earns a return above the risk taken, because implied volatility exceeds realized volatility.}
 
-The lab in Section~\ref{sec:15-lab} replicates the decomposition of Elton et al.\ (2001) on a century of Moody's corporate yields from FRED, with published default and recovery rates, and adds the excess bond premium of Gilchrist and Zakraj\v{s}ek (2012), which the Federal Reserve publishes free, in order to check how much of the spread reflects expected defaults and what the rest is paying for.
+The lab in Section~\ref{sec:16-lab} replicates the variance-risk-premium measurement of Carr and Wu (2009) with the free VIX and daily U.S. market returns, and rebuilds put-writing and covered-call strategies that can be compared with Cboe's published PUT and BXM index histories, in order to check whether selling options earns a reliable premium and how much of it is simply stock-market risk.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item define credit spreads, default probabilities, recovery rates\index{recovery rate} and loss given default;
-  \item compute the expected-loss spread and the default rate that would justify an observed spread;
-  \item explain the Merton model\index{Merton model}, in which equity is a call option\index{option!call} on the firm's assets;
-  \item distinguish real-world from risk-neutral\index{risk-neutral pricing} default probabilities, and explain why the timing of defaults matters for the spread;
-  \item state the claim that spreads mainly reflect expected losses, and summarize the evidence on the credit spread puzzle\index{credit spread puzzle} and the excess bond premium\index{excess bond premium};
-  \item judge what a credit investor is paid for, and when reaching for yield is likely to disappoint.
+  \item describe call and put payoffs and use put--call parity\index{put--call parity} to show that a covered call and a cash-secured put\index{option selling!cash-secured put} are the same position;
+  \item price an option by Black--Scholes\index{Black--Scholes--Merton model}, compute its Greeks\index{Greeks}, and back out implied volatility\index{volatility!implied};
+  \item define the VIX\index{VIX} and the variance\index{variance} risk premium\index{risk premium}, and estimate a seller's expected gain from the gap between implied and realized volatility\index{volatility!realized};
+  \item state the claim that selling options earns a reliable premium, and separate the variance risk premium from the returns of option-income strategies;
+  \item measure option-strategy performance with beta\index{beta}-matched benchmarks, up and down betas\index{beta!up and down} and the manipulation-proof performance measure\index{manipulation-proof performance measure (MPPM)};
+  \item judge what an option-income fund is likely to deliver, and what can go wrong.
 \end{itemize}
 
-\section{Foundations: spreads, default and recovery}
-\label{sec:15-foundations}
+\section{Foundations: the VIX and the option seller's payoff}
+\label{sec:16-foundations}
 
-\subsection{Credit spread}
+Chapter~\ref{ch:14} introduced option payoffs, put--call parity, the Black--Scholes--Merton model, the Greeks and implied volatility (Sections~\ref{sec:14-bsm} to~\ref{sec:14-iv}). This chapter adds the VIX and the economics of selling options.
 
-The yield on a corporate bond minus the yield on a Treasury of similar maturity. Moody's publishes long-run yield series for seasoned \textbf{Aaa} and \textbf{Baa} bonds, the highest and lowest investment-grade ratings, back to 1919. The \textbf{Baa--Aaa spread}\index{credit spread!default spread (Baa--Aaa)|textbf} compares two corporate yields and avoids some of the differences between corporate and Treasury bonds.
+\subsection{The VIX}
 
-\subsection{Default probability (PD)}
+The VIX, introduced in Section~\ref{sec:10-iv}, is computed from a strip of out-of-the-money calls and puts on the S\&P 500. Its square approximates the fair strike of a 30-day \textbf{variance swap}\index{variance swap|textbf}, a contract that pays the difference between realized variance and a fixed strike. The variance risk premium of Section~\ref{sec:10-iv} is therefore the expected payoff to the seller of such a swap: the expected gap between implied (risk-neutral\index{risk-neutral pricing}) variance and the realized variance that follows.
 
-\textbf{Default probability (PD)} is the chance that the issuer fails to pay in a given year. Rating agencies publish historical default rates by rating. Moody's reported average annual default rates of 0.27\% for Baa issuers and essentially zero for Aaa over 1920--2006, and about 1\% for Ba, the highest speculative grade (Moody's Investors Service 2007).
-
-\subsection{Recovery rate}
-
-\textbf{Recovery rate ($R$)}\index{recovery rate|textbf} is the fraction of face value investors recover after default, measured by the bond's price shortly after default. Moody's reported an average of 38\% for senior unsecured bonds over 1982--2006. \textbf{Loss given default}\index{loss given default|textbf} is $1 - R$.
-
-\subsection{Expected-loss spread}
-
-A risk-neutral investor, one who cares only about expected payoffs, demands just enough extra yield to cover expected losses. For a one-year horizon with continuous compounding\index{compounding}:
-\begin{equation}
-  \text{spread} = -\ln\!\left[1 - \mathrm{PD}\,(1 - R)\right] \approx \mathrm{PD}\,(1 - R)
-  \label{eq:15-el}
-\end{equation}
-Any spread above this is compensation for something else: risk, illiquidity\index{illiquidity} or taxes.
-
-\subsection{Why spreads can exceed expected losses}
+\textbf{Worked example.} The index is at 100, the risk-free rate\index{risk-free rate} is 4\%, and a one-month at-the-money put trades at an implied volatility of 20\%.
 
 \begin{itemize}
-  \item \textbf{Risk premium.}\index{risk premium|textbf} Defaults cluster in recessions, when investors' other wealth is also falling. Risk-averse\index{risk aversion} investors demand compensation for losses that arrive at bad times.
-  \item \textbf{Liquidity.}\index{liquidity|textbf} Corporate bonds trade less often and at wider bid--ask spreads\index{bid--ask spread} than Treasuries.
-  \item \textbf{Taxes.}\index{taxes|textbf} In the United States, interest on corporate bonds is subject to state income tax; interest on Treasuries is not.
+  \item Black--Scholes price: $P = \$2.14$ per \$100 of index. The call is worth \$2.47; the difference, \$0.33, equals $100 - 100\,e^{-0.04/12}$, as parity requires.
+  \item Suppose volatility over the month turns out to be 16\%. At 16\%, the put would have been worth \$1.68. The seller's expected gain is roughly $\$2.14 - \$1.68 = \$0.46$, or vega (\$0.115 per vol point) times the 4-point gap.
+  \item That is an \emph{expected} gain. If the index falls 10\% during the month, the put pays \$10 and the seller loses $\$10 - \$2.14 = \$7.86$, about seventeen months of expected gains at \$0.46 a month (Figure~\ref{fig:16-put}).
 \end{itemize}
-
-\subsection{The Merton model}
-
-Merton (1974) treated a firm's equity as a call option on its assets, with the face value of debt as the strike (Figure~\ref{fig:15-merton}). Default occurs if asset value falls below the debt at maturity. The model links credit spreads to leverage\index{leverage} and asset volatility\index{volatility}, and its descendants, \textbf{structural models}\index{Merton model|textbf}, are the standard tool for asking whether spreads are consistent with default risk.
 
 \begin{figure}[htbp]
 \centering
-\begin{tikzpicture}
+\begin{tikzpicture}[declare function={profit(\s) = 2.14 - max(100 - \s, 0);}]
 \begin{axis}[
-  width=0.6\linewidth, height=0.34\linewidth,
+  width=0.64\linewidth, height=0.34\linewidth,
   axis lines=left, axis line style={-stealth},
-  xmin=0, xmax=2, ymin=0, ymax=1.1,
-  xtick={0,1}, xticklabels={$0$, face value of debt $F$},
-  ytick={0,1}, yticklabels={$0$,$F$},
-  xlabel={Firm's asset value at maturity, $V$},
-  ylabel={Payoff},
+  xmin=85, xmax=110, ymin=-13, ymax=5,
+  xtick={86,88,...,110}, ytick={-10,-5,0,5},
+  tick label style={font=\small},
+  xlabel={Index at expiry}, ylabel={Put seller's profit (\$)},
   clip=false,
 ]
-  % Debt: min(V, F)
-  \addplot[fenavy, very thick] coordinates {(0,0) (1,1) (2,1)};
-  % Equity: max(V - F, 0)
-  \addplot[fegray, very thick, dashed] coordinates {(0,0) (1,0) (2,1)};
-  \node[align=center] at (axis cs:0.48,0.84) {default:\\$V < F$};
-  \node[fenavy] at (axis cs:1.5,0.9) {debt: $\min(V, F)$};
-  \node[fegray, anchor=west, align=left] at (axis cs:1.6,0.36)
-    {equity: $\max(V - F, 0)$,\\a call on the assets};
+  \addplot[gray, thin, domain=85:110, samples=2] {0};
+  \addplot[fenavy, very thick] coordinates {(85,-12.86) (100,2.14) (110,2.14)};
+  \fill[fenavy] (axis cs:97.86,0)  circle (2.6pt);
+  \fill[fenavy] (axis cs:90,-7.86) circle (2.6pt);
+  \node[anchor=south east] at (axis cs:97.4,0.4) {break-even 97.86};
+  \node[anchor=south east] at (axis cs:110,2.4) {keep the \$2.14 premium};
+  \node[anchor=north west, align=left] at (axis cs:90.6,-7.3)
+    {index $-10\%$: lose \$7.86,\\about 17 months of expected gains};
 \end{axis}
 \end{tikzpicture}
-\caption{The Merton model. At maturity, debtholders receive the firm's asset value $V$ up to the face value of debt $F$, so debt pays $\min(V, F)$. Shareholders receive what is left, $\max(V - F, 0)$, the payoff of a call option on the firm's assets. If $V < F$, the firm defaults.}
-\label{fig:15-merton}
-\end{figure}
-
-\textbf{Worked example.} A 10-year Baa bond yields 6\% and a 10-year Treasury 4\%, a spread of 2\% (Figure~\ref{fig:15-decomp}).
-
-\begin{itemize}
-  \item With $\mathrm{PD} = 0.27\%$ and $R = 38\%$, the expected-loss spread is $-\ln(1 - 0.0027 \times 0.62) \approx 0.17\%$. Expected losses explain about 8\% of the spread.
-  \item For expected losses to explain the whole 2\%, the annual default rate would have to be about $(1 - e^{-0.02})/0.62 \approx 3.2\%$, roughly twelve times the historical Baa average and well above the long-run average for Ba bonds.
-  \item Even a pessimistic assumption, $\mathrm{PD} = 1\%$ and $R = 20\%$, explains only 0.8\% of the 2\% spread.
-\end{itemize}
-
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.61\linewidth, height=2.4cm,
-  axis x line*=bottom, axis y line=none,
-  xmin=0, xmax=2.2, ymin=0, ymax=1,
-  xtick={0,0.2,...,2.2},
-  xticklabel style={/pgf/number format/fixed},
-  xlabel={Spread over Treasuries (percentage points)},
-  clip=false,
-]
-  \fill[fenavy]  (axis cs:0,0.35)    rectangle (axis cs:0.17,0.75);
-  \fill[gray!35] (axis cs:0.17,0.35) rectangle (axis cs:2,0.75);
-  % Legend
-  \fill[fenavy]  (axis cs:0.02,1.55) rectangle (axis cs:0.1,1.75);
-  \node[anchor=west] at (axis cs:0.11,1.65) {expected default loss (0.17)};
-  \fill[gray!35] (axis cs:0.02,1.10) rectangle (axis cs:0.1,1.30);
-  \node[anchor=west] at (axis cs:0.11,1.20) {everything else (1.83)};
-\end{axis}
-\end{tikzpicture}
-\caption{Decomposing the worked example's 2\% Baa spread. At Moody's long-run default and recovery rates, expected default losses account for 0.17 percentage points. The remaining 1.83 points pay for something else: risk, illiquidity or taxes.}
-\label{fig:15-decomp}
+\caption{The put seller's profit at expiry in the worked example. Above the strike of 100 the seller keeps the \$2.14 premium; below the break-even of 97.86 the loss grows one for one with the fall. A 10\% fall costs \$7.86, about seventeen months of expected gains.}
+\label{fig:16-put}
 \end{figure}
 
 \section{How it works}
-\label{sec:15-how}
+\label{sec:16-how}
 
-A corporate bond's spread over a Treasury can be split into four pieces:
+\textbf{Why insurance might be overpriced.} Many investors hold stock portfolios they cannot easily sell and want protection against crashes. Pension funds, insurers and structured-product issuers buy index puts; market makers\index{market maker} who sell them must hold capital against the risk and cannot fully hedge it. Bollen and Whaley (2004) and G\^arleanu, Pedersen and Poteshman (2009) showed that this net buying pressure raises option prices, especially for out-of-the-money puts. In equilibrium, sellers are paid for bearing a risk that bites in the worst states of the world, when investors' wealth is low and losses hurt most. A premium for that risk is not a free lunch. It is compensation, and it should be large precisely because the losses come at bad times.
+
+\textbf{Ways to sell volatility.} The strategies differ in how much equity risk they carry alongside the volatility exposure.
 
 \begin{center}
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
 \toprule
-Component & What it pays for & How to measure it \\
+Strategy & Position & Equity exposure & Main risk \\
 \midrule
-Expected default loss & The average loss from defaults & Historical default rates $\times$ loss given default \\
-Default risk premium & Bearing default losses that cluster in bad times & Residual after expected loss; structural models \\
-Liquidity premium & Costs and delays of trading corporate bonds & Bid--ask spreads, trading volume, bond-specific measures \\
-Tax premium & State taxes on corporate interest & Tax rates applied to the yield \\
+Covered call (buy-write) & Own the index, sell a call & High (beta about 0.5--0.8) & Market falls; gains capped in rallies \\
+Cash-secured put (put-write) & Hold bills, sell a put & High (same as covered call at the same strike) & Market falls \\
+Short straddle & Sell a call and a put & Low on average, changes with the market & Large moves either way \\
+Delta-hedged option & Sell an option, hedge its delta daily & Near zero & Realized volatility above implied \\
+Short variance swap & Receive fixed variance, pay realized & Near zero, but crashes raise realized variance & Volatility spikes \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-The claim is that the first component dominates. The test has two steps. First, estimate expected losses from historical default and recovery data and compare them with observed spreads. If they explain most of the spread, the claim survives. Second, examine the residual\index{regression!residuals}. If it is small and stable, it might be liquidity or measurement error. If it is large, rises in recessions and forecasts economic activity, it behaves like a risk premium.
+The first two are what most retail and institutional ``option income'' products do. The last two isolate the variance risk premium itself. Comparing them is the heart of this chapter: if the covered call's return is mostly the equity premium\index{equity premium} earned with a beta of 0.6, it is not evidence that selling options pays.
 
-\textbf{Real-world and risk-neutral probabilities.} Bond prices imply a \textbf{risk-neutral}\index{risk-neutral pricing|textbf} default probability: the default rate that would justify the spread for an investor who does not care about risk. Historical data give \textbf{real-world} default probabilities. The gap between the two measures how much investors charge for bearing default risk. Hull's textbooks show this gap is large for investment-grade bonds and smaller, relative to the spread, for junk bonds.
+\textbf{The payoff shape.} A covered call keeps the downside of the stock market but caps the upside at the strike plus the premium (Figure~\ref{fig:16-cc}). In calm or gently rising months it beats the market; in strong rallies it lags; in crashes it loses almost as much as the market, cushioned only by the premium. The return distribution is therefore \textbf{negatively skewed}\index{skewness|textbf}. Most months bring small gains, and a few bring large losses.
 
-\textbf{Why the timing of defaults matters.} Two bonds with the same expected loss can deserve very different spreads. A bond whose defaults occur randomly over the cycle adds little risk to a diversified\index{diversification} portfolio. A bond whose defaults all arrive in recessions, when stocks are falling and jobs are at risk, is much less attractive and should pay more. Investment-grade defaults are rare in normal times and concentrated in severe downturns, which is exactly the pattern that should command a large premium.
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.61\linewidth, height=0.38\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=80, xmax=120, ymin=-20, ymax=21,
+  xtick={80,85,...,120}, ytick={-20,-10,0,10,20},
+  xlabel={Index at expiry}, ylabel={Profit per \$100 of index (\$)},
+  clip=false,
+]
+  \addplot[gray, thin, domain=80:120, samples=2] {0};
+  % Index alone
+  \addplot[fegray, thick, dashed, domain=80:120, samples=2] {x - 100};
+  % Covered call: index plus the $2.47 premium, capped at the strike
+  \addplot[fenavy, very thick] coordinates {(80,-17.53) (100,2.47) (120,2.47)};
+  \node[fegray, anchor=east] at (axis cs:113,16.5) {index alone};
+  \node[fenavy, anchor=south east, align=right] at (axis cs:120,3.0)
+    {covered call:\\gain capped at \$2.47};
+  \node[fenavy, anchor=west, align=left] at (axis cs:90,-15)
+    {losses nearly as large\\as the index's};
+\end{axis}
+\end{tikzpicture}
+\caption{A one-month at-the-money covered call against the index alone, using the worked example's prices. The call premium of \$2.47 caps the gain and cushions the loss by the same amount, so the covered call keeps almost all of the index's downside.}
+\label{fig:16-cc}
+\end{figure}
+
+That shape creates a measurement problem. The Sharpe ratio uses only the mean and standard deviation, so it cannot see skewness. Selling out-of-the-money options can raise a portfolio's Sharpe ratio while making its tail much worse. Section~\ref{sec:16-measure} sets out measures that are harder to game.
 
 \section{The claim}
-\label{sec:15-claim}
+\label{sec:16-claim}
 
 \begin{callout}
-\textbf{Claim.} The yield spread of corporate bonds over Treasuries mostly reflects the losses investors expect from default. Under reasonable assumptions for default rates and recoveries, expected losses account for most of the average spread.
+\textbf{Claim.} Implied volatility exceeds the volatility that follows, on average, so option sellers earn a reliable premium. Strategies that sell index options, such as covered calls and put-writing, deliver better risk-adjusted returns than holding the index.
 \end{callout}
+
+The claim has two parts that can succeed or fail separately.
+
+\begin{itemize}
+  \item \textbf{The variance risk premium.} Implied variance is, on average, above the realized variance that follows. This is a statement about prices and can be tested directly by comparing the VIX with subsequent realized volatility.
+  \item \textbf{The strategy premium.} Covered-call and put-writing strategies earn more than their risk justifies. This requires the variance premium to survive trading costs, early exercise and roll timing, and it requires an honest risk adjustment.
+\end{itemize}
 
 To test it we need to be precise on three points.
 
 \begin{itemize}
-  \item \textbf{Mostly.} We take ``mostly'' to mean more than half of the average spread for investment-grade bonds. The claim could hold for junk bonds and fail for investment grade, or the reverse.
-  \item \textbf{Reasonable assumptions.} Default and recovery rates vary over time and by measurement. The test uses long-run averages from rating agencies and checks how far they would have to be stretched to rescue the claim.
-  \item \textbf{What would count against it.} The claim fails if expected losses explain less than half of investment-grade spreads under any plausible assumptions, and if the remainder behaves like compensation for risk: rising in recessions and forecasting weaker economic activity.
+  \item \textbf{What counts as risk.} A strategy with a beta of 0.5 should be compared with half the market plus half in bills, not with the whole market. Its negative skewness should be priced, not ignored.
+  \item \textbf{What counts as reliable.} A premium that is positive in most months but wiped out in a few is reliable in one sense and not in another. We report both the share of months positive and the size of the worst losses.
+  \item \textbf{What would count against it.} The variance risk premium fails if implied volatility is not significantly above realized volatility on average. The strategy claim fails if covered calls and put-writing earn no alpha after adjusting for beta, or if their advantage disappears once skewness is priced.
 \end{itemize}
 
 \section{The original evidence}
-\label{sec:15-evidence}
+\label{sec:16-evidence}
 
-\textbf{Elton, Gruber, Agrawal and Mann (2001).} Using corporate bond prices and historical default and recovery rates, they found that expected default losses accounted for only a small part of the spread between corporate and Treasury yields. State taxes, which apply to corporate interest but not to Treasury interest, explained a large part. The rest moved with the risk factors that explain stock returns, evidence of a risk premium.
+\textbf{Option returns.} Coval and Shumway (2001) studied S\&P 500 index options and found that buying zero-beta, at-the-money \textbf{straddles} (a call and a put at the same strike) lost about 3\% a week on average. A straddle has little exposure to the direction of the market, so its losses point to a price for volatility itself. Bakshi and Kapadia (2003) found that delta-hedged option positions lost money on average, and attributed the losses to a negative market volatility risk premium: investors pay to be long volatility because volatility rises when markets fall.
 
-\textbf{Collin-Dufresne, Goldstein and Martin (2001).} If spreads reflect default risk, changes in spreads should be explained by changes in the variables that drive default in structural models: leverage, asset volatility, interest rates. These explained only about a quarter of the variation in spread changes. Most of the rest was driven by a single common factor across bonds, unrelated to firm-specific default risk.
+\textbf{The variance risk premium.} Carr and Wu (2009) showed how to compute the variance swap rate from a portfolio of options, the method behind today's VIX, and used it to measure the premium directly for five stock indexes and 35 individual stocks. For the S\&P 500, implied variance was well above realized variance on average. Bollerslev, Tauchen and Zhou (2009) found that the size of the premium also predicts stock-market returns at a quarterly horizon, better than the price--earnings ratio or the default spread, consistent with its being a price of economic uncertainty.
 
-\textbf{Huang and Huang (2012).} They calibrated a wide range of structural models to historical default losses and equity risk premia and asked how much of observed spreads the models could explain. For investment-grade bonds, credit risk accounted for only a small share of spreads, and an even smaller share at short maturities. For high-yield bonds, it accounted for much more. This gap became known as the \textbf{credit spread puzzle}\index{credit spread puzzle|textbf}.
+\textbf{Covered calls and put-writing.} Cboe commissioned Robert Whaley to design the BuyWrite Index (BXM), which tracks an S\&P 500 portfolio that sells a one-month, near-the-money call each month. Whaley (2002) found that it had earned returns close to the S\&P 500's with substantially lower volatility. A later study for Cboe (Callan Associates 2006) reported that from June 1988 to August 2006 the BXM returned 11.77\% a year against 11.67\% for the S\&P 500, with a standard deviation of 9.29\% against 13.89\%. Cboe later added a PutWrite Index (PUT), which sells one-month at-the-money puts against Treasury-bill collateral. These results drew large inflows into option-income products.
 
-\textbf{Gilchrist and Zakraj\v{s}ek (2012).} They split corporate spreads into a component explained by expected default, estimated firm by firm, and a residual they called the \textbf{excess bond premium}\index{excess bond premium|textbf}. The excess bond premium, not the default component, carried most of the information about future economic activity. A rise in it predicted lower output and employment, consistent with a measure of investors' risk appetite and of the health of financial intermediaries.
+\textbf{The skeptics.} Broadie, Chernov and Johannes (2009) argued that large average losses on index puts are not by themselves evidence of mispricing. Under standard models with jumps and reasonable risk premiums, put returns are expected to be very negative and very noisy, so short samples say little. Israelov and Nielsen (2015) decomposed covered-call returns into three exposures: the equity market, short volatility and an unintended equity reversal bet. Equity exposure drove most of the risk and return. The short-volatility component had a Sharpe ratio near 1.0 but contributed less than 10\% of the risk, and the reversal component added about a quarter of the risk with little return. A covered call, in other words, is mostly a stock-market position.
 
-Some later work narrows the puzzle by modelling default risk that varies with the business cycle\index{business cycle}. None restores expected losses as the main component of investment-grade spreads.
+\section{Measuring option-strategy returns}
+\label{sec:16-measure}
 
-\section{Lab~\thechapter: Replicating the Elton et al.\ (2001) spread decomposition}
-\label{sec:15-lab}
+Option-selling strategies are the textbook case where the usual performance measures mislead. Four corrections matter.
+
+\textbf{Adjust for beta.} A covered call with a beta of 0.6 should earn about 60\% of the equity premium without any volatility premium at all. The relevant comparison is a \textbf{beta-matched} portfolio, 60\% in the market and 40\% in bills, or equivalently the CAPM alpha (Chapter~\ref{ch:18}). A covered call that matches the market's return with two-thirds of its volatility may have earned no alpha.
+
+\textbf{Look at both betas.} Selling options makes exposure asymmetric. The \textbf{down beta}, estimated in months when the market falls, is close to 1: the strategy takes most of the loss. The \textbf{up beta}, estimated in rising months, is much lower, because the call caps the gains. An investor who cares about losses more than gains should weigh the down beta.
+
+\textbf{Price the skewness.} The Sharpe ratio ignores skewness, so a strategy can raise it by selling crash insurance. Goetzmann, Ingersoll, Spiegel and Welch (2007) showed that a manager can raise a portfolio's Sharpe ratio by selling out-of-the-money options, without any skill. They proposed a \textbf{manipulation-proof performance measure (MPPM)}:
+\begin{equation}
+  \Theta = \frac{1}{(1 - \rho)\,\Delta t}\,\ln\!\left\{\frac{1}{T}\sum_{t=1}^{T}\left[\frac{1 + r_t}{1 + r_{f,t}}\right]^{1-\rho}\right\}
+  \label{eq:16-mppm}
+\end{equation}
+Here $T$ is the number of periods, $\Delta t$ the length of each period in years, and $r_t$ and $r_{f,t}$ the strategy's and the risk-free return. $\Theta$ is the certainty-equivalent excess return of an investor with constant relative risk aversion $\rho$. With $\rho = 3$, a typical value, a large negative month costs far more than a large positive month gains, so selling crash insurance cannot improve the score unless it really adds value.
+
+\textbf{Respect the sample.} A strategy that loses heavily once a decade needs several decades of data to estimate its mean (Section~\ref{sec:01-foundations}). Broadie, Chernov and Johannes (2009) showed how noisy put returns are even over twenty years. A backtest that starts after 2009 and ends before 2020, for example, would miss both of the big losses of the period since 1990.
+
+\section{Lab~\thechapter: Replicating Carr and Wu (2009) and the Cboe put-write and buy-write indices}
+\label{sec:16-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:15} at a glance.} \emph{Papers replicated:} Elton, Gruber, Agrawal and Mann (2001); the excess bond premium of Gilchrist and Zakraj\v{s}ek (2012). \emph{Claim on trial\index{claims-on-trial method}:} credit spreads mainly reflect expected default losses. \emph{Data:} free monthly data from FRED\index{FRED}: Moody's seasoned Aaa and Baa yields from 1919, the 10-year Treasury yield from 1953, the NBER recession indicator and industrial production. The Gilchrist--Zakraj\v{s}ek excess bond premium, published by the Federal Reserve, can be added. \emph{Code:} runs as a script (\texttt{python lab17.py}) or as a notebook with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:16} at a glance.} \emph{Papers replicated:} the variance risk premium of Carr and Wu (2009); the put-write and buy-write strategies studied by Whaley (2002). \emph{Claim on trial:} selling index options earns a reliable premium. \emph{Data:} daily market returns from the Kenneth French library and the VIX from FRED, which starts in 1990; both are free. Cboe's PUT and BXM index histories can be added for comparison. \emph{Code:} runs as a script (\texttt{python lab14.py}) or as a notebook with a prediction prompt before each step.
 \end{callout}
 
-\textbf{Part A, spreads.} The Baa--Aaa spread since 1919 and the Baa--Treasury and Aaa--Treasury spreads since 1953: averages, decade averages, and averages in recessions and expansions (Lab Figure~\ref{ch:15}.1).
+\textbf{Part A, the variance risk premium.} At each month end, the VIX is compared with the market's realized volatility over the next 21 trading days. The lab reports the average gap in volatility points with a Newey--West $t$-statistic, the share of months in which implied exceeded realized, the median gap and the worst months (Lab Figures~\ref{ch:16}.1 and~\ref{ch:16}.2).
 
-\textbf{Part B, decomposition.} The expected-loss spread from adjustable assumptions, by default 0.27\% a year for Baa and zero for Aaa with 38\% recovery, Moody's long-run averages. The lab reports the share of each average spread that expected loss explains, and the default rate that would be needed for expected loss to explain the whole spread at each date (Lab Figures~\ref{ch:15}.2 and~\ref{ch:15}.3).
-
-\textbf{Part C, the residual as a risk premium.} Regressions of industrial production growth over the next 12 months on each spread, and on the excess bond premium if supplied; growth by spread quintile; and the average path of the Baa--Aaa spread around the start of recessions (Lab Figure~\ref{ch:15}.4).
-
-\textbf{Part D, stress tests.} The share of the Baa--Treasury spread explained over a grid of default rates from 0.1\% to 2\% and recoveries from 20\% to 60\% (Lab Figure~\ref{ch:15}.5), spread peaks in six crises, and subperiod averages.
-
-Three measurement issues affect the decomposition, and they work in different directions.
+\textbf{Part B, strategies.} The lab rebuilds two strategies from the data. Each month it sells a one-month option priced by Black--Scholes at the VIX and holds it to the next month end:
 
 \begin{itemize}
-  \item \textbf{Maturity.} Moody's yields are on long bonds, typically 20 years or more, while the Treasury benchmark is 10 years. When the Treasury curve slopes up, this widens the Baa--Treasury spread for reasons unrelated to credit. The Baa--Aaa spread avoids the problem.
-  \item \textbf{Taxes.}\index{taxes|textbf} State taxes on corporate interest widen corporate--Treasury spreads, but not the Baa--Aaa spread.
-  \item \textbf{Default timing.} Annual average default rates understate losses in the worst decades, such as the 1930s. Part D's grid includes default rates several times the average.
+  \item an \textbf{at-the-money put-write}, collateralized by bills like Cboe's PUT. By put--call parity this is also an at-the-money covered call, and the lab checks that the two returns are identical;
+  \item a \textbf{covered call 2\% out of the money}, which keeps more of the market's upside.
 \end{itemize}
 
-\textbf{What the simulated run shows.} The simulation builds the Baa--Aaa spread from a fixed expected loss of 0.15\% plus a premium that jumps in recessions. The lab recovers it: expected loss explains about a quarter of the Baa--Aaa spread, the spread is higher in recessions, and a high spread forecasts weaker output growth. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
+Each is compared with the market on excess return, volatility, Sharpe ratio, skewness, worst month, drawdown, beta and CAPM alpha, over its own history and over a common period (Lab Figure~\ref{ch:16}.3).
+
+\textbf{Part C, stress tests.} Returns in crisis periods, the five worst market months, up and down betas, and the MPPM (Lab Figure~\ref{ch:16}.4).
+
+\textbf{Part D, equity versus volatility.} Each strategy's excess return is split into the part explained by beta and the alpha that remains. The lab compares it with the market scaled to the same beta, and with a pure short variance swap struck at VIX$^2$, sized to 10\% annual volatility (Lab Figure~\ref{ch:16}.5).
+
+The rebuilt strategies are deliberately simple, and that matters for interpretation. They price options at the VIX, which includes the premium on out-of-the-money puts and so usually exceeds at-the-money implied volatility. That overstates the premium a seller actually collects. They also ignore bid--ask spreads\index{bid--ask spread} and roll at month ends rather than on Cboe's third-Friday schedule. The \texttt{-{}-iv-shift} option prices the options a few points below the VIX. Comparing the rebuilt series with Cboe's indices, which use traded prices, shows how much these simplifications matter.
+
+\textbf{What the simulated run shows.} The simulation builds in a VIX 12\% above expected volatility. The lab finds the premium (implied above realized in 83\% of months), a put-write with a beta of about 0.5, strongly negative skewness and a down beta near 0.9 against an up beta near 0.15. The rebuilt put-write and covered call show positive alphas\index{alpha} when options are priced at the inflated VIX. The Cboe-like series, priced 2 points lower, show none. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
 
 \section{Stress tests}
-\label{sec:15-stress}
+\label{sec:16-stress}
 
-\textbf{Default assumptions.} The obvious defence of the claim is that historical averages understate future defaults. Part D's grid shows how far the assumptions must be stretched. With the 1920--2006 Baa average of 0.27\%, expected loss is a small fraction of a spread of one to two percentage points. To explain most of it, Baa bonds would need to default at well over 1\% a year with low recoveries, every year, which is the long-run experience of speculative-grade Ba bonds, not investment-grade Baa.
+\textbf{Crashes.} The months that decide the verdict are few: October 1987, August 1998, September 2008 to February 2009, February and March 2020. In each, the market fell sharply, realized volatility jumped far above the implied volatility priced a month earlier, and option sellers lost most of what the market lost. A put-write cushions a crash only by one month's premium, typically 1--3\% of the strike. Lab Figure~\ref{ch:16}.2 shows the pattern for the variance premium: many small positive months and a few large negative ones.
 
-\textbf{The Great Depression.} The 1930s are the worst case for investment-grade defaults in the Moody's data. A default rate several times the long-run Baa average in those years would raise the expected-loss share sharply for that decade. Even then, the claim must explain the spread in the many decades with almost no Baa defaults.
+\textbf{Skewness.}\index{skewness|textbf} On the Sharpe ratio\index{Sharpe ratio}, put-writing and covered calls often look better than the market, because they cut volatility more than they cut returns. On the MPPM with risk aversion\index{risk aversion} 3, expect the advantage to shrink, because the measure prices the crash months. A strategy whose apparent edge vanishes once skewness is priced is being paid for crash risk\index{crash risk}, not earning alpha.
 
-\textbf{Crises.} Spreads peak in crises: the early 1930s, 1974--75, 1980--82, 2008--09 and March 2020. If spreads were expected losses, the peaks would forecast correspondingly large defaults. In 2008--09 and 2020, investment-grade defaults rose but remained far below what the peak spreads would have required. Spreads widened mainly because investors demanded more to hold risk and because dealers and funds withdrew from the market.
+\textbf{Equity exposure.} Covered calls and put-writes have betas of roughly 0.5 to 0.7. Over a period when the equity premium was large, a beta of 0.6 alone earns most of their return. The lab's decomposition separates the two: if the alpha is small relative to the beta component, the strategy is mainly a stock investment with a different payoff shape.
 
-\textbf{Rating categories.} For high-yield bonds, expected losses are a much larger share of the spread (Huang and Huang 2012). The claim may work for junk bonds and fail for investment grade. Moody's yield series cover only Aaa and Baa, so this lab cannot test it directly; Exercise 1 extends the decomposition using published default rates for lower ratings.
+\textbf{Timing of the sample.} After a crisis, implied volatility can stay high while realized volatility subsides, which makes the premium look rich; before a crisis, it can look rich until the crash arrives. A backtest that starts just after a crisis, or ends just before one, will flatter the strategy. Exercise 4 splits the sample at 2008.
 
-\textbf{Liquidity.}\index{liquidity|textbf} Part of the residual is compensation for illiquidity, and it rises in crises when trading dries up. Separating liquidity from risk is difficult because both rise together in bad times. The Gilchrist--Zakraj\v{s}ek excess bond premium, which strips out firm-level default risk, is a useful check: if it forecasts output as well as the raw spread, the forecasting power does not come from expected defaults.
+\textbf{Implementation.} Real options have bid--ask spreads, and covered-call funds pay management fees. Israelov and Nielsen (2015) found that the strategy's equity-reversal exposure, created by mechanically resetting the strike each month, adds risk without return. These frictions are small per trade but large relative to a premium of a few percent a year.
 
 \section{Verdict}
-\label{sec:15-verdict}
+\label{sec:16-verdict}
 
 \begin{callout}
-\textbf{Verdict: fails} (as of October 2026) for investment-grade bonds. Under historical default and recovery rates, expected default losses explain only a minority of investment-grade spreads, and the remainder behaves like a risk premium that rises in bad times and forecasts weaker economic activity. For high-yield bonds the claim fits better, since expected losses are a much larger share of their spreads.
+\textbf{Verdict: survives for the variance risk premium; weakens for option-income strategies} (as of October 2026). Implied volatility has exceeded subsequent realized volatility on average, in most months, across decades and markets. That premium is real and is compensation for crash risk. But covered-call and put-writing strategies earn most of their return from equity exposure, carry negative skewness and lose most of what the market loses in crashes. Measured against a beta-matched portfolio and with skewness priced, their advantage is small.
 \end{callout}
-
-What fails:
-
-\begin{itemize}
-  \item \textbf{Expected losses are too small.}\index{credit spread!expected-loss component|textbf} With Moody's long-run Baa default rate of 0.27\% and 38\% recovery, expected loss is under 0.2 percentage points a year, a small fraction of typical Baa spreads. Rescuing the claim requires default rates several times higher, sustained over decades.
-  \item \textbf{Spreads move for other reasons.} Changes in default-risk variables explain only a quarter of spread changes (Collin-Dufresne, Goldstein and Martin 2001), and a common factor drives much of the rest.
-  \item \textbf{The residual is a risk premium.} It rises in recessions, peaks in crises and forecasts weaker output, which is how compensation for bearing risk in bad times should behave (Gilchrist and Zakraj\v{s}ek 2012).
-\end{itemize}
 
 What survives:
 
 \begin{itemize}
-  \item \textbf{Expected losses matter at the margin.} Lower-rated bonds have higher spreads, and expected losses rise with them. Ratings rank spreads correctly even though they do not explain their level.
-  \item \textbf{The claim fits junk bonds better.} For speculative-grade debt, expected losses are a large share of the spread.
+  \item \textbf{The variance risk premium.}\index{variance|textbf} Studies using the VIX, synthetic variance swaps and option returns agree that index option buyers pay more than realized volatility justifies on average (Coval and Shumway 2001; Bakshi and Kapadia 2003; Carr and Wu 2009). The premium has an economic explanation, demand for crash insurance, and predicts market returns (Bollerslev, Tauchen and Zhou 2009).
+  \item \textbf{Lower volatility for covered calls.} Covered calls and put-writes have delivered market-like returns with lower volatility over long periods. For an investor who has to hold equities, that is a real benefit.
 \end{itemize}
 
-The verdict would move to \emph{weakens} if a measure of liquidity explained most of the residual and that liquidity premium did not vary with economic conditions. The evidence so far points the other way: the residual and liquidity both rise in bad times.
-
-\section{What investors can use}
-\label{sec:15-investors}
-
-\textbf{Credit is compensation for recession risk.} An investor in investment-grade bonds earns a spread well above expected default losses. That is good news on average, but it is pay for a specific risk: losses and price declines that arrive together with stock-market losses and recessions. Credit is not a substitute for Treasuries in a portfolio meant to hedge equity risk.
-
-\textbf{The limits of reaching for yield.} In low-rate periods, investors move into lower-rated or longer-maturity credit to earn more. The extra yield is real, but it is paid for bearing more of the same recession risk. A portfolio that has quietly accumulated credit exposure will behave like an equity portfolio in a downturn.
-
-\textbf{Ratings measure expected loss, not timing.} A rating ranks bonds by how likely they are to default and how much investors will lose, on average. It says nothing about whether those losses will arrive in a recession, which is what determines the risk premium.
-
-\textbf{Questions to ask a credit manager:}
+What weakens it:
 
 \begin{itemize}
-  \item What share of the portfolio's yield above Treasuries would be lost in a recession with default rates like those of 2009?
-  \item How correlated are the portfolio's returns with stocks in bad months?
-  \item How liquid are the holdings in a crisis, and what would it cost to sell them?
-  \item For structured holdings, how do losses depend on correlations\index{correlation} between the underlying loans?
+  \item \textbf{Most of the return is equity.} With betas of 0.5 to 0.7, the strategies earn most of the equity premium through their stock exposure. The short-volatility component is a small share of their risk (Israelov and Nielsen 2015).
+  \item \textbf{The Sharpe ratio flatters them.}\index{Sharpe ratio|textbf} Negative skewness and down betas near 1 mean that measures accounting for the tail, such as the MPPM, show a smaller advantage than the Sharpe ratio does.
+  \item \textbf{The premium is paid for crash risk.} A pure short-volatility position earns a high Sharpe ratio most of the time and suffers severe losses in volatility spikes. Whether that is attractive depends on whether the investor can survive the spikes.
+\end{itemize}
+
+The verdict on option-income strategies would move to \emph{survives} if their alpha against a beta-matched benchmark remained significant after skewness and costs over a full cycle of crises. It would move to \emph{fails} if, after accounting for beta, the premium were consistently eaten by costs and fees.
+
+\section{What investors can use}
+\label{sec:16-investors}
+
+\textbf{What an option-income fund actually delivers.} Covered-call and put-writing funds advertise high distributions. Three facts help interpret them; Israelov and Nielsen (2014) discuss these and other common misconceptions about covered calls.
+
+\begin{itemize}
+  \item \textbf{Distributions are not yield.} The premium a fund collects and pays out comes with a cap on the fund's gains. In a strong market, the investor gives up upside in exchange for the income. The premium is not a dividend on top of the market return; part of it is the market return, converted into a different shape.
+  \item \textbf{The fund is mostly an equity fund.} With a beta of around 0.5 to 0.7 and a down beta near 1, it will fall nearly as much as the market in a crash and rise much less in a rally. Compare it with a mix of an index fund and bills at the same beta, not with the index.
+  \item \textbf{Look at the worst months, not the Sharpe ratio.} A smooth return history can hide a tail. Ask how the fund did in 2008 and in March 2020.
+\end{itemize}
+
+\textbf{Questions to ask a manager selling volatility:}
+
+\begin{itemize}
+  \item What is the strategy's beta, and its down beta? What would a beta-matched index position have returned?
+  \item How far out of the money, and how short-dated, are the options sold? How is the strike reset?
+  \item What is the largest loss the strategy could suffer in one day, and how was that figure derived?
+  \item Is there leverage\index{leverage}, or margin that could be called in a spike?
 \end{itemize}
 
 \begin{callout}
-\textbf{What Failed: highly rated structured credit before 2008.} By 2007, according to Fitch, roughly 60\% of all global structured products carried AAA ratings, compared with less than 1\% of corporate issues (Coval, Jurek and Stafford 2009). Pooling mortgages and other loans and slicing them into \textbf{tranches}\index{tranches|textbf}, claims with different priority on the pool's losses, allowed issuers to create large quantities of senior securities whose expected default losses, as estimated by rating models, were as low as those of the safest corporate bonds. They were priced accordingly, with spreads similar to other AAA debt.
+\textbf{What Failed: selling volatility on margin, February 2018.} LJM Partners ran funds that used margin to sell out-of-the-money puts and calls on S\&P 500 futures. For years the strategy produced steady returns. In February 2018, when volatility spiked, the LJM-managed funds lost more than 80\%, over \$1 billion, in two trading days. The same week, the VelocityShares inverse VIX note described in Chapter~\ref{ch:10} lost 96\% in a day.
 
-The mistake was the claim this chapter tests: that a spread need only compensate for expected losses. Senior tranches lose money only when many underlying loans default together, which happens in a severe recession. Their losses are therefore concentrated in exactly the worst states of the world, and they deserved much larger risk premiums than corporate bonds with the same expected loss. In 2007, Moody's downgraded 31\% of the asset-backed CDO tranches it rated, including 14\% of those initially rated AAA, and many more were downgraded in 2008. Investors who had treated rating-based expected losses as the whole story discovered that the timing of losses matters as much as their average.
+In 2021 the SEC charged LJM and two portfolio managers with misleading investors about the funds' risk management. According to the SEC, the firm had told investors it stress-tested for a worst-case daily loss of 20\% in its mutual fund, but that figure had been derived from a historical single-day loss of about 9\%, doubled and rounded up.
+
+The episode illustrates this chapter's verdict in its sharpest form. The variance risk premium is real, and selling volatility earned it for years. But the premium is payment for exactly the kind of day that ended LJM. Leverage turned a strategy that should lose heavily in a spike into one that could not survive it.
 \end{callout}
 
 \section{Open questions}
-\label{sec:15-open}
+\label{sec:16-open}
 
 \begin{itemize}
-  \item \textbf{How much of the residual is liquidity rather than risk?} Both rise in bad times. Better measures of bond-level liquidity, and the growth of bond ETFs, offer new ways to separate them.
-  \item \textbf{Has the investor base changed spreads?} Insurance companies, bond funds and ETFs hold most corporate bonds. Do their constraints, such as capital rules tied to ratings or redemption pressure, create premiums unrelated to default?
-  \item \textbf{What did central-bank purchases do?} In 2020 the Federal Reserve announced purchases of corporate bonds, and spreads fell sharply. How much of the premium is the price of intermediaries' balance-sheet capacity\index{capacity}?
-  \item \textbf{Do structural models need fixing or replacing?} Models with time-varying risk and macroeconomic default risk narrow the credit spread puzzle. Do they fit the cross-section of spreads by rating and maturity as well as the average?
+  \item \textbf{Has the boom in short-dated options changed the premium?} Options expiring the same day (zero days to expiry, or 0DTE) made up over 61\% of S\&P 500 index option volume in May 2025, according to Cboe (Cboe Global Markets 2025). Do they change the price of one-month volatility, or the size of the variance premium?
+  \item \textbf{How large is the premium net of costs for retail investors?} Covered-call ETFs on single stocks and indexes have grown rapidly. What do they deliver after fees, spreads and taxes\index{taxes}, compared with a beta-matched index position?
+  \item \textbf{Is the premium compensation or mispricing\index{mispricing}?} Rational models with crash risk explain much of it (Broadie, Chernov and Johannes 2009). Does demand pressure from hedgers add a mispricing on top?
+  \item \textbf{Can the premium be harvested with less crash risk?} Delta-hedged\index{delta hedging} positions, variance swaps with caps, or strategies that cut exposure when volatility rises all aim to keep the premium and avoid the tail. Do they survive out of sample\index{in-sample versus out-of-sample}?
 \end{itemize}
 
 \section*{Exercises}
@@ -285,19 +290,19 @@ The mistake was the claim this chapter tests: that a spread need only compensate
 \subsection*{Conceptual (all readers)}
 
 \begin{enumerate}
-  \item Using Moody's long-run average annual default rates (Ba about 1.1\%, B about 3.5\%) and 38\% recovery, compute the expected-loss spread for Ba and B bonds. If typical spreads are 3\% and 5\%, what share is expected loss? Compare with the Baa result.
-  \item A 5-year Baa bond yields 5.5\% and the 5-year Treasury 4\%. What annual default rate, with 40\% recovery, would make expected losses equal the spread? What does this say about the risk-neutral and real-world default probabilities?
-  \item Explain in words why a bond whose defaults all occur in recessions should pay a higher spread than one with the same expected loss whose defaults occur at random times.
+  \item The index is at 4,000, the risk-free rate is 5\%, and one-month implied volatility is 18\%. Price a one-month at-the-money call and put by Black--Scholes and check put--call parity.
+  \item Use put--call parity to show that a covered call and a cash-secured put with the same strike and expiry have the same payoff. Why do Cboe's BXM and PUT indices nonetheless have different returns?
+  \item A covered call has a beta of 0.6 and has returned 7\% a year when the market returned 9\% and bills 2\%. What is its CAPM alpha? What return would a beta-matched portfolio of the index and bills have earned?
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
   \setcounter{enumi}{3}
-  \item Part B: with the default assumptions, what share of the Baa--Treasury and Baa--Aaa spreads does expected loss explain? Why might the two shares differ?
-  \item Part B: plot the break-even default rate. In which months was it lowest? Was it ever below the historical Baa default rate?
-  \item Part C: does the Baa--Aaa spread forecast industrial production growth? If you have the excess bond premium, does it forecast better?
-  \item Part D: find the default and recovery assumptions under which expected loss explains 75\% of the average Baa--Treasury spread. Are they plausible for investment-grade bonds?
-  \item Subtract an estimate of the state tax effect (for example, a 4\% tax rate applied to the corporate yield) and recompute the residual. How much does it shrink?
-  \item A pension fund wants to raise its yield by moving from Treasuries to Baa corporate bonds. Using this chapter's evidence, explain what the fund will be paid for and when it is likely to regret the move.
+  \item Part A: in what share of months did the VIX exceed realized volatility? Compute the average gap separately for months with VIX above and below 25. Where is the premium larger? Then split the sample at 2008: how different is the premium before and after?
+  \item Part B: rerun with \texttt{-{}-iv-shift -2} and \texttt{-4}. How much of the rebuilt put-write's alpha survives? Compare with Cboe's PUT if you downloaded it.
+  \item Part C: compute the MPPM with risk aversion 1, 3 and 6. At what risk aversion does put-writing stop beating the market?
+  \item Part D: what share of each strategy's excess return comes from beta? Compare the skewness of the put-write with that of the beta-matched market.
+  \item Part D: the pure short variance swap has a high Sharpe ratio. Find its worst month. How much leverage could an investor have used before that month would have wiped out the account?
+  \item A retiree is offered an option-income fund paying an 8\% distribution. Using this chapter's evidence, write a one-page explanation of what the fund is likely to deliver and what could go wrong.
 \end{enumerate}

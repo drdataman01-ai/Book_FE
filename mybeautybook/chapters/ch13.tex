@@ -1,4 +1,4 @@
-% Chapter 13 -- Claim: Diversification Fails When You Need It Most
+% Chapter 14 -- Claim: Delta Hedging Removes Option Risk
 % Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -12,278 +12,332 @@
 }{}
 \makeatother
 
-\chapter{Claim: Diversification Fails When You Need It Most}
-\label{ch:13}
+\chapter{Claim: Delta Hedging Removes Option Risk}
+\label{ch:14}
 
-Diversification\index{diversification} is often called the only free lunch in finance. Combine assets that do not move in lockstep, and the portfolio's risk falls below the average risk of its parts at no cost in expected return\index{return!expected}. Every balanced fund, target-date fund and pension portfolio rests on that arithmetic. The crash of October 1987, when markets around the world fell together, raised a doubt that has never gone away: perhaps correlations\index{correlation} rise exactly when diversification is needed.
+In 1973 Fischer Black and Myron Scholes, with a closely related paper by Robert Merton, made a striking claim: an option can be manufactured. By holding the right number of shares and adjusting that number continuously, a trader can reproduce the option's payoff exactly, whatever the market does. If that is true, the option's price is not a matter of opinion about where the market is going; it is the cost of the recipe. The same year the Chicago Board Options Exchange opened, and within a few years traders were pricing options with the formula on handheld calculators. The work earned the 1997 Nobel Prize in economics.
 
-Testing the doubt turned out to be subtle. Longin and Solnik (2001) used extreme-value methods on international equity markets and found that correlations rise in large market falls but not in large rises. Ang and Chen (2002) found the same asymmetry for U.S. stock portfolios. Forbes and Rigobon (2002) then showed that a correlation measured in a turbulent period is biased upward simply because volatility is higher, so part of the apparent ``contagion'' is a statistical artefact. Campbell, Sunderam and Viceira (2017) turned to the other pillar of diversification, government bonds, and showed that the correlation between stocks and bonds changed sign around 2000 as the inflation regime changed. In 2022, when inflation returned, stocks and Treasury bonds fell together.
+The argument rests on assumptions that no market satisfies: continuous trading, constant volatility and no trading costs. Researchers soon asked how much they matter. Leland (1985) showed that with trading costs a hedger who rebalances often pays a great deal, and one who rebalances rarely bears risk, so perfect replication is impossible. After the crash of 1987 option prices showed a persistent \emph{volatility smile}\index{volatility smile}, evidence that the market does not believe the model's assumptions. Bakshi and Kapadia (2003) measured the gains of delta-hedged option positions and found them systematically negative, a sign that hedged option sellers are paid for bearing volatility risk, and Hull and White (2017) proposed a hedge that adjusts the textbook delta for how volatility moves with the market.
 
-The implications reach every asset allocator. If correlations rise in crises, risk models built on calm-period data understate losses, and investors need assets that hedge specifically in bad times. If the rise is mostly an artefact, the free lunch is safer than its critics claim. The claim on trial\index{claims-on-trial method} is: \textbf{correlations between stocks, and between stocks and bonds, rise in crashes, so diversification fails in exactly the periods it is meant for.}
+The answer matters well beyond option traders. The replication argument underpins the pricing of almost every derivative, and it is why banks can sell structured products and hedge them rather than bet on them. The claim on trial\index{claims-on-trial method} is: \textbf{a trader who sells an option and delta-hedges it as the model prescribes ends with a profit and loss close to zero.}
 
-The lab in Section~\ref{sec:13-lab} replicates the exceedance correlations of Longin and Solnik (2001) and the correction of Forbes and Rigobon (2002) with free U.S., international and industry returns from the Kenneth R. French Data Library, and follows the stock--bond correlation of Campbell, Sunderam and Viceira (2017) with FRED yields and inflation, in order to check whether diversification really fails in crises and which assets still protected investors when it mattered.
+The lab in Section~\ref{sec:14-lab} replicates the Black--Scholes hedge, in the spirit of the delta-hedged gains of Bakshi and Kapadia (2003), along simulated paths where the model holds and along real index paths since 1990, using free daily U.S. market returns and the VIX as the implied volatility, in order to measure how much risk is left, where it comes from, and how large the losses are in the worst months.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item compute portfolio volatility\index{volatility} from correlations, and explain why average correlation sets a floor on diversification;
-  \item measure the diversification ratio\index{diversification!ratio};
-  \item explain why measured correlation rises with volatility, and apply the Forbes--Rigobon\index{correlation!Forbes--Rigobon correction} correction;
-  \item interpret exceedance correlations\index{correlation!exceedance} and tail dependence\index{tail dependence} against a normal benchmark;
-  \item explain why the stock--bond correlation\index{correlation!stock--bond} changes sign with the inflation\index{inflation} regime;
-  \item separate the statistical claim (correlations rise in crises) from the economic one (diversified portfolios fail), and judge a portfolio by its losses in bad months.
+  \item explain the replication\index{replication} argument behind Black--Scholes and the assumptions it needs;
+  \item decompose a delta-hedged\index{delta hedging} option's daily P\&L into gamma\index{Greeks!gamma} and theta\index{Greeks!theta}, and compute the break-even daily move;
+  \item estimate the error from hedging at discrete intervals, and explain why it shrinks with the square root of the hedging frequency;
+  \item explain the volatility smile\index{volatility smile} and why it is evidence against the model's assumptions;
+  \item state the claim that delta hedging removes option risk, and test it by hedging along real and simulated market paths;
+  \item judge what risks a ``fully hedged'' option seller or structured-product issuer still carries.
 \end{itemize}
 
-\section{Foundations: correlation, diversification and how crisis correlations are measured}
-\label{sec:13-foundations}
+\section{Foundations: options, Black--Scholes, replication and the Greeks}
+\label{sec:14-foundations}
 
-\subsection{Correlation and diversification}
+\subsection{Payoffs}
 
-For two assets with weights $w_1$ and $w_2$, volatilities $\sigma_1$ and $\sigma_2$ and correlation $\rho$, portfolio variance\index{variance} is
+A \textbf{call} gives the right to buy an asset at the \textbf{strike price}\index{option!strike price|textbf} $K$ on the expiry date $T$; at expiry it pays $\max(S_T - K, 0)$, where $S_T$ is the asset's price then. A \textbf{put} gives the right to sell; it pays $\max(K - S_T, 0)$. An option is \textbf{at the money}\index{option!moneyness|textbf} when $K$ equals the current price, \textbf{out of the money} when exercising now would pay nothing (a put with $K$ below $S$), and \textbf{in the money} otherwise. The buyer pays a \textbf{premium}; the seller (or \textbf{writer}) receives it and takes on the obligation.
+
+\subsection{Put--call parity}
+
+For European options, which can be exercised only at expiry, on a non-dividend-paying asset with the same strike and expiry:
 \begin{equation}
-  \sigma_p^2 = w_1^2\sigma_1^2 + w_2^2\sigma_2^2 + 2w_1w_2\rho\,\sigma_1\sigma_2
-  \label{eq:13-var2}
+  C - P = S - K e^{-rT}
+  \label{eq:14-parity}
 \end{equation}
-The lower the correlation, the lower the portfolio's risk. With $N$ assets of equal volatility $\sigma$ and equal pairwise correlation $\rho$, an equally weighted portfolio has variance
-\begin{equation}
-  \sigma_p^2 = \sigma^2\left[\rho + \frac{1 - \rho}{N}\right]
-  \label{eq:13-varN}
-\end{equation}
-As $N$ grows, the variance falls toward $\rho\sigma^2$. The average correlation therefore sets a floor on how much risk diversification can remove (Figure~\ref{fig:13-floor}). The \textbf{diversification ratio}\index{diversification!ratio|textbf}, the weighted average of the assets' volatilities divided by the portfolio's volatility, measures the benefit. A ratio of 1 means none.
+Rearranged, \emph{stock plus a short call} equals \emph{cash of $Ke^{-rT}$ plus a short put}. A \textbf{covered call}\index{option selling!covered call|textbf} (own the stock, sell a call) and a \textbf{cash-secured put}\index{option selling!cash-secured put|textbf} (hold the strike in bills, sell a put) with the same strike are the same position.
 
-\textbf{Worked example.} Ten industries each have 20\% volatility. At an average correlation of 0.6, an equally weighted portfolio has volatility $20\% \times \sqrt{0.6 + 0.4/10} = 16.0\%$. If the correlation rises to 0.8, the volatility rises to $20\% \times \sqrt{0.8 + 0.2/10} = 18.1\%$. A rise in correlation of that size wipes out half of the diversification benefit, from 4 points of volatility to under 2.
+\subsection{Black--Scholes--Merton}
+\label{sec:14-bsm}
+
+If the stock follows a geometric Brownian motion with constant volatility $\sigma$, an option can be replicated by trading the stock and a bond, so its price does not depend on investors' risk preferences (Black and Scholes 1973; Merton 1973):
+\begin{equation}
+  C = S\,N(d_1) - K e^{-rT} N(d_2), \qquad P = K e^{-rT} N(-d_2) - S\,N(-d_1)
+  \label{eq:14-bs}
+\end{equation}
+\begin{equation}
+  d_1 = \frac{\ln(S/K) + (r + \sigma^2/2)\,T}{\sigma\sqrt{T}}, \qquad d_2 = d_1 - \sigma\sqrt{T}
+  \label{eq:14-d}
+\end{equation}
+where $N$ is the standard normal distribution\index{distribution!normal} function. This chapter tests the replication\index{replication} argument itself.
+
+\subsection{The Greeks}
+\label{sec:14-greeks}
+
+\textbf{The Greeks}\index{Greeks|textbf} measure sensitivities.
+
+\begin{itemize}
+  \item \textbf{Delta}\index{Greeks!delta|textbf} ($\partial V/\partial S$) is the number of shares that hedge the option: $N(d_1)$ for a call, $N(d_1) - 1$ for a put.
+  \item \textbf{Gamma}\index{Greeks!gamma|textbf} is the change in delta as $S$ moves.
+  \item \textbf{Vega}\index{Greeks!vega|textbf} is the change in price per unit change in $\sigma$.
+  \item \textbf{Theta}\index{Greeks!theta|textbf} is the change in price as time passes.
+\end{itemize}
+
+An option seller\index{option!writer} is short gamma and short vega, and collects theta: time decay works in the seller's favour, large moves against.
+
+\subsection{Implied volatility}
+\label{sec:14-iv}
+
+Section~\ref{sec:10-iv} introduced implied volatility as the volatility that makes an option's market price equal its model price. With Equation~\eqref{eq:14-bs} in hand, the definition becomes precise: implied volatility is the $\sigma$ that makes the Black--Scholes price equal the market price. It is the market's price of volatility, not a forecast in the statistical sense. \textbf{Realized volatility}\index{volatility!realized|textbf} is the standard deviation\index{standard deviation} of returns that actually occurs over the option's life. Implied volatility differs across strikes: for stock indexes, out-of-the-money puts trade at higher implied volatilities than at-the-money options, a pattern called the \textbf{skew}\index{volatility smile|textbf} (Chapter~\ref{ch:14}).
+
+\subsection{Replication}
+
+Section~\ref{sec:14-bsm} stated the Black--Scholes--Merton model and its assumptions: a geometric Brownian motion with constant volatility\index{volatility} $\sigma$, continuous and costless trading, and a constant risk-free rate\index{risk-free rate}. This chapter tests the argument behind the model. Under those assumptions, a portfolio of $\Delta = \partial V/\partial S$ shares and a bond, rebalanced\index{rebalancing} continuously, has exactly the same value as the option at every moment. Because the option can be replicated, its price must equal the cost of the replicating portfolio. Otherwise there would be an \textbf{arbitrage}\index{arbitrage|textbf}, a riskless profit. The resulting price depends on $\sigma$ but not on the stock's expected return\index{return!expected}.
+
+\subsection{Delta hedging}
+
+\textbf{Delta hedging}\index{delta hedging|textbf} is the same recipe run in reverse. A dealer who sells an option holds $\Delta$ shares to offset it. Over a short interval, the option's value changes by roughly
+\begin{equation}
+  dV \approx \Delta\,dS + \tfrac{1}{2}\Gamma\,dS^2 + \Theta\,dt
+  \label{eq:14-taylor}
+\end{equation}
+where $\Delta$, $\Gamma$ and $\Theta$ are the delta\index{Greeks!delta}, gamma and theta of Section~\ref{sec:14-greeks}. The shares offset the first term, delta. They cannot offset the second, gamma, which is the curvature $\partial^2 V/\partial S^2$. The third, theta, is the time decay that the option seller earns.
+
+\subsection{The hedging P\&L}
+
+For a seller who hedges at the implied volatility\index{volatility!implied} $\sigma$, the profit over one day is approximately
+\begin{equation}
+  \text{P\&L} \approx \tfrac{1}{2}\,\Gamma S^2 \left(\sigma^2 \Delta t - r^2\right)
+  \label{eq:14-pnl}
+\end{equation}
+where $r$ is that day's return and $\Delta t$ is one day as a fraction of a year. The seller earns theta on quiet days and loses on days when the stock moves more than the implied volatility predicts. Summed over the option's life, the hedged P\&L is a gamma-weighted bet that realized variance\index{volatility!realized} will be below implied variance\index{variance}. In the Black--Scholes world, realized variance equals $\sigma^2$ on average, so the bet is fair and, with continuous hedging, riskless.
+
+\subsection{Discrete hedging}
+
+Real hedgers rebalance at intervals. Even in the Black--Scholes world this leaves an error whose standard deviation\index{standard deviation} falls with the square root of the number of rebalances. Kamal and Derman (1999) showed that for an at-the-money\index{option!moneyness} option hedged $N$ times it is about
+\begin{equation}
+  \mathrm{sd}(\text{hedging error}) \approx \sqrt{\frac{\pi}{4}}\;\frac{\sigma \times \text{vega}}{\sqrt{N}}
+  \label{eq:14-kd}
+\end{equation}
+where vega\index{Greeks!vega} is measured per unit of $\sigma$. That is about a fifth of the premium for a one-month option hedged daily. Quadrupling the hedging frequency halves the error (Figure~\ref{fig:14-freq}).
 
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[
-  % Equally weighted portfolio of N assets, each with 20% volatility
-  declare function={pvol(\n,\r) = 20*sqrt(1/\n + (1 - 1/\n)*\r);}
+  % Kamal--Derman: hedging error ~ 0.82 / sqrt(N) of the premium
+  declare function={err(\n) = 82/sqrt(\n);}
 ]
 \begin{axis}[
-  width=0.54\linewidth, height=0.34\linewidth,
+  width=0.64\linewidth, height=0.34\linewidth,
+  xmode=log,
   axis lines=left, axis line style={-stealth},
-  xmin=1, xmax=50, ymin=14, ymax=20.5,
-  xtick={5,10,...,50}, ytick={14,16,18,20},
-  xlabel={Number of assets, $N$},
-  ylabel={Portfolio volatility (\%)},
-  samples at={1,...,50}, clip=false,
+  xmin=1, xmax=200, ymin=0, ymax=95,
+  xtick={1,4,21,84},
+  xticklabels={1, 4 (weekly), 21 (daily), 84 (4 a day)},
+  ytick={0,20,...,80},
+  xlabel={Rebalances over a one-month option's life, $N$},
+  ylabel={Hedging error (\% of premium)},
+  samples=100, domain=1:200, clip=false,
 ]
-  % Floors set by the average correlation
-  \addplot[densely dotted, domain=1:50, samples=2] {20*sqrt(0.8)};
-  \addplot[densely dotted, domain=1:50, samples=2] {20*sqrt(0.6)};
-  \addplot[fegray, very thick, dashed] {pvol(x,0.8)};
-  \addplot[fenavy, very thick] {pvol(x,0.6)};
-  \fill[fegray] (axis cs:10,{pvol(10,0.8)}) circle (2.4pt);
-  \fill[fenavy] (axis cs:10,{pvol(10,0.6)}) circle (2.4pt);
-  \node[anchor=south west] at (axis cs:10.3,{pvol(10,0.8)+0.05}) {18.1\%};
-  \node[anchor=south west] at (axis cs:10.3,{pvol(10,0.6)+0.05}) {16.0\%};
-  \node[fegray, anchor=west, align=left] at (axis cs:51,17.9) {$\rho = 0.8$:\\floor 17.9\%};
-  \node[fenavy, anchor=west, align=left] at (axis cs:51,15.5) {$\rho = 0.6$:\\floor 15.5\%};
+  \addplot[fenavy, very thick] {err(x)};
+  \fill[fenavy] (axis cs:4,41)  circle (2.6pt);
+  \fill[fenavy] (axis cs:21,{err(21)}) circle (2.6pt);
+  \fill[fenavy] (axis cs:84,{err(84)}) circle (2.6pt);
+  \node[anchor=south west] at (axis cs:4.4,41)  {41\%};
+  \node[anchor=south west] at (axis cs:23,{err(21)}) {18\%};
+  \node[anchor=south west] at (axis cs:92,{err(84)}) {9\%};
 \end{axis}
 \end{tikzpicture}
-\caption{Volatility of an equally weighted portfolio of assets with 20\% volatility each. Adding assets helps only down to a floor set by the average correlation: 15.5\% at a correlation of 0.6 and 17.9\% at 0.8. With ten assets, as in the worked example, a rise from 0.6 to 0.8 lifts volatility from 16.0\% to 18.1\%.}
-\label{fig:13-floor}
+\caption{Hedging error in the Black--Scholes world, by the Kamal--Derman approximation, for a one-month at-the-money option at 20\% volatility. Hedging weekly leaves an error of about 41\% of the premium, daily about 18\%, and four times a day about 9\%. Each quadrupling of the frequency halves the error.}
+\label{fig:14-freq}
 \end{figure}
 
-\subsection{Why measured correlation rises when volatility rises}
+\subsection{The volatility smile}
 
-Suppose $y = \beta x + e$, with the noise $e$ unchanged when $x$ becomes more volatile. The correlation of $x$ and $y$ is
-\begin{equation}
-  \rho = \frac{\beta\sigma_x}{\sqrt{\beta^2\sigma_x^2 + \sigma_e^2}}
-  \label{eq:13-bias}
-\end{equation}
-which rises with $\sigma_x$ even though the link between the two markets, $\beta$, has not changed (Figure~\ref{fig:13-bias}). Correlations measured in turbulent periods are therefore \textbf{biased upward} (Boyer, Gibson and Loretan 1999).
+If Black--Scholes were right, every option on the same asset would have the same implied volatility. Section~\ref{sec:14-iv} described the skew, the higher implied volatilities of low-strike index puts, which is also called the \textbf{smile}\index{volatility smile|textbf} when both wings are raised. For this chapter, the skew matters as the market's admission that returns are not lognormal with constant volatility, which is the assumption that delta hedging relies on.
+
+\textbf{Worked example.} The index is at 100, the risk-free rate is 4\%, and a one-month at-the-money call is sold at 20\% implied volatility (Figure~\ref{fig:14-pnl}).
+
+\begin{itemize}
+  \item Price \$2.47, delta 0.53, gamma 0.069, theta $-\$0.063$ a day. The dealer sells the call and buys 0.53 units of the index.
+  \item If the index is unchanged the next day, the dealer earns the theta: about \$0.063.
+  \item If the index moves 3 points either way, the gamma loss is $\tfrac{1}{2} \times 0.069 \times 3^2 = \$0.31$, and the dealer loses about $\$0.31 - \$0.063 = \$0.25$ before rebalancing.
+  \item The break-even daily move is $\sqrt{2 \times 0.063/0.069} \approx 1.35$ points, close to the 1.26-point daily standard deviation that 20\% annual volatility implies. Hedging is a wager that daily moves will average less than that.
+\end{itemize}
 
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[
-  % y = x + e with sigma_e = 20%: measured correlation = sigma_x / sqrt(sigma_x^2 + 20^2)
-  declare function={rho(\s) = \s/sqrt(\s*\s + 400);}
+  % One-day P&L of a delta-hedged short call: theta - (1/2) gamma dS^2,
+  % with theta = 0.063 and break-even at a move of 1.35 points
+  declare function={pnl(\d) = 0.063 - 0.063*(\d/1.35)^2;}
 ]
 \begin{axis}[
-  width=0.58\linewidth, height=0.34\linewidth,
+  width=0.61\linewidth, height=0.34\linewidth,
   axis lines=left, axis line style={-stealth},
-  xmin=0, xmax=42, ymin=0, ymax=1,
-  xtick={0,5,...,40}, ytick={0,0.2,...,1},
+  xmin=-4, xmax=4, ymin=-0.55, ymax=0.15,
+  xtick={-4,...,4}, ytick={-0.4,-0.2,0},
   yticklabel style={/pgf/number format/fixed},
-  xlabel={Volatility of market $x$, $\sigma_x$ (\%)},
-  ylabel={Measured correlation of $x$ and $y$},
-  samples=150, domain=2:42, clip=false,
+  xlabel={Index move over one day (points)},
+  ylabel={Hedged seller's P\&L (\$)},
+  samples=150, domain=-4:4, clip=false,
 ]
-  \addplot[fenavy, very thick] {rho(x)};
-  \fill (axis cs:15,0.6) circle (2.4pt);
-  \fill (axis cs:30,{rho(30)}) circle (2.4pt);
-  \node[anchor=north west] at (axis cs:15.5,0.58) {calm, $\sigma_x = 15\%$: 0.60};
-  \node[anchor=north west] at (axis cs:30.5,{rho(30)-0.02}) {turbulent, $\sigma_x = 30\%$: 0.83};
-  \node[anchor=west] at (axis cs:2,0.93) {same link throughout: $y = x + e$, $\sigma_e = 20\%$};
+  \addplot[gray, thin, samples=2] {0};
+  \addplot[fenavy, very thick] {pnl(x)};
+  \foreach \wfX in {-1.35,0,1.35,3} {
+    \edef\wfTmp{\noexpand\fill[fenavy] (axis cs:\wfX,{pnl(\wfX)}) circle (2.6pt);}
+    \wfTmp
+  }
+  \node[anchor=south] at (axis cs:0,0.085) {theta: $+\$0.063$};
+  \node[anchor=south west] at (axis cs:1.5,0.02) {break-even $\pm 1.35$};
+  \node[anchor=west] at (axis cs:3.12,{pnl(3)}) {3-point move: $-\$0.25$};
 \end{axis}
 \end{tikzpicture}
-\caption{The volatility bias in measured correlation. The link between the two markets never changes ($y = x + e$, with noise of 20\%), yet the measured correlation rises from 0.60 when $x$ has 15\% volatility to 0.83 when it has 30\%.}
-\label{fig:13-bias}
+\caption{The delta-hedged call seller's P\&L over one day in the worked example. The seller earns \$0.063 of theta if the index is unchanged, breaks even on a move of about 1.35 points either way, and loses \$0.25 on a 3-point move. The loss grows with the square of the move.}
+\label{fig:14-pnl}
 \end{figure}
-
-\subsection{The Forbes--Rigobon correction}
-
-Forbes and Rigobon (2002) proposed a correction. If $\rho_c$ is the correlation measured in a period when the variance of $x$ is higher by a factor $1 + \delta$, the correlation that would hold at normal variance is
-\begin{equation}
-  \rho^* = \frac{\rho_c}{\sqrt{1 + \delta\,(1 - \rho_c^2)}}
-  \label{eq:13-fr}
-\end{equation}
-For example, a crisis correlation of 0.8, measured when variance is four times its normal level ($\delta = 3$), corresponds to $0.8/\sqrt{1 + 3 \times 0.36} = 0.55$ in normal times. The correction assumes the extra volatility starts in $x$. If the link itself strengthens in crises, the correction removes part of a real change.
-
-\subsection{Conditioning on the tails}
-
-Truncating a sample also changes its correlation. For a bivariate normal distribution\index{distribution!normal}, the correlation among observations where both variables are below some threshold is lower than the full-sample correlation, and falls further as the threshold moves into the tail. \textbf{Exceedance correlations}\index{correlation!exceedance|textbf} (Longin and Solnik 2001; Ang and Chen 2002) are measured over observations where both returns are beyond a quantile\index{quantile}, and are compared with what a normal distribution with the same overall correlation would produce. The gap between the two, not the raw level, is the evidence of asymmetry.
-
-\subsection{Tail dependence}
-
-\textbf{Tail dependence}\index{tail dependence|textbf} asks how likely one asset is to have an extreme loss when another does: $P(Y \text{ in its worst } p\text{-tail} \mid X \text{ in its worst } p\text{-tail})$. For independent assets the answer is $p$. For a normal distribution it falls toward $p$ as $p$ shrinks. Fat-tailed\index{fat tails} joint distributions, modelled with \textbf{copulas}\index{copula|textbf} (functions that join marginal distributions into a joint one) such as the Student $t$ or Clayton, keep it higher.
-
-\subsection{The stock--bond correlation}
-
-Government bonds hedge stocks when bad economic news lowers both expected profits and interest rates. They fail as hedges when inflation news dominates, because rising inflation hurts both bond prices and, through higher discount rates\index{discount rate}, stock prices. The sign of the stock--bond correlation has changed over the decades.
 
 \section{How it works}
-\label{sec:13-how}
+\label{sec:14-how}
 
-Three different things can make diversification look weaker in a crisis, and they have different implications for investors.
+The replication argument can fail in four ways, and each leaves a different fingerprint on the hedging P\&L\index{hedging P\&L}.
 
-\begin{itemize}
-  \item \textbf{A measurement effect.} When volatility rises, measured correlation rises even if the underlying relationship is unchanged. This part is an artefact, and correcting for it shrinks the apparent increase.
-  \item \textbf{A common shock.} In a crisis, one factor, such as a global panic, a funding squeeze or a recession scare, comes to dominate returns. Assets that usually move on separate news now move on the same news. This is a real change, and it is the one that hurts investors.
-  \item \textbf{A change of regime.} Some relationships flip sign with the economic environment. The stock--bond correlation is the main example: negative when growth shocks dominate, positive when inflation shocks dominate.
-\end{itemize}
+\begin{center}
+\small
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\toprule
+Assumption & What happens in practice & Effect on a hedged option seller \\
+\midrule
+Continuous trading & Hedgers rebalance daily or less often & Random errors that shrink with hedging frequency; present even when the model is right \\
+Constant, known volatility & Volatility changes and clusters (Chapter~\ref{ch:10}) & P\&L tracks realized minus implied variance; losses when volatility rises \\
+Continuous price paths & Prices jump, as in October 1987 or March 2020 & Large losses on jump days that no rebalancing frequency can prevent \\
+No trading costs & Every rebalance pays a spread & A steady drag that grows with hedging frequency \\
+\bottomrule
+\end{tabularx}
+\end{center}
 
-What matters to an investor is not the correlation itself but the return of the portfolio in bad times. A portfolio can lose less than stocks in a crash even if correlations rise, provided some assets fall less than others. Diversification fails in the investor's sense only when every holding falls about as much as the riskiest one.
+The first is a property of the model itself: it would occur even if Black--Scholes were exactly right. The others are failures of its assumptions. A test of the claim must separate them, and the cleanest way is to run the same hedging strategy twice, once on real market paths and once on simulated paths that obey the model exactly. The difference between the two is the cost of the model's being wrong.
 
-The mechanisms also differ by asset. International stocks share the global equity factor, so their correlation with U.S. stocks is high to begin with and may rise further in sell-offs. Industries within one market are even more closely linked. Treasury bonds and commodities respond to different forces, and their link to stocks can change sign.
+\textbf{Jumps are the hardest problem.} Over a day in which the market falls 20\%, the change in the option's value is far from the delta-hedge's change. The gamma term $\tfrac{1}{2}\Gamma\,dS^2$ is enormous, and rebalancing more often does not help, because the jump happens between rebalances. A seller of options is short gamma, so a jump in either direction is a loss.
+
+\textbf{Volatility changes}\index{volatility|textbf} are a second-order version of the same problem. If realized volatility over the month is twice the implied volatility used to price and hedge the option, the seller loses roughly vega times the gap, regardless of how often the hedge is adjusted.
+
+\textbf{The smile is the market's response.} After October 1987, dealers began to charge more for the risks that delta hedging cannot remove: crashes and volatility spikes. They did so by raising the implied volatility of out-of-the-money puts, the options that pay off in crashes. The smile is thus both evidence against the Black--Scholes assumptions and the price of the residual\index{regression!residuals} risk that delta hedging leaves.
 
 \section{The claim}
-\label{sec:13-claim}
+\label{sec:14-claim}
 
 \begin{callout}
-\textbf{Claim.} Correlations rise in crises, so diversification fails exactly when investors need it most.
+\textbf{Claim.} An option seller who delta-hedges as Black--Scholes prescribes is left with little risk. Hedging removes most of the variance of the unhedged position, and what remains is small, symmetric and shrinks as hedging becomes more frequent.
 \end{callout}
 
-The claim has two parts, and each can be tested separately:
+This is the claim that justifies treating an option's Black--Scholes price as its cost of production. To test it we need to be precise on four points.
 
 \begin{itemize}
-  \item \textbf{The statistical part:} correlations between risky assets are higher in down markets and turbulent periods than in calm ones, by more than the volatility bias and the normal distribution would imply.
-  \item \textbf{The economic part:} as a result, diversified portfolios offer little protection in the worst months.
+  \item \textbf{Little risk relative to what.} The benchmark is the unhedged short option. A hedge that removes 90\% of its variance and leaves errors of a fifth of the premium, as in the Black--Scholes world with daily hedging, meets the claim. A hedge that leaves occasional losses of several times the premium does not.
+  \item \textbf{Which volatility.} The seller must price and hedge at some volatility. We use the VIX\index{VIX}, the market's implied volatility, so the test is whether hedging at the market's price leaves little risk.
+  \item \textbf{Which statistic.} The standard deviation of the hedging error captures day-to-day risk. The 1\% quantile\index{quantile} and the worst month capture tail risk. The claim requires both to be small.
+  \item \textbf{What would count against it.} The claim fails if hedging on real paths leaves much more risk than on Black--Scholes paths, if the remaining errors are fat-tailed\index{fat tails}, or if more frequent hedging fails to reduce them.
 \end{itemize}
-
-The first part can be true while the second is false. That happens if diversifiers such as Treasury bonds keep their low or negative correlation with stocks while equity correlations rise.
 
 \section{The original evidence}
-\label{sec:13-evidence}
+\label{sec:14-evidence}
 
-\textbf{International equity markets (Longin and Solnik 2001).} Using monthly returns for the U.S., the U.K., France, Germany and Japan from 1959 to 1996, Longin and Solnik applied extreme value theory to the tails of the joint distribution. They found that the correlation of large negative returns rises in bear markets but not in bull markets. Multivariate normality was rejected for the negative tail but not for the positive one. They concluded that the market's direction, not volatility alone, drives the increase. They also warned that simply conditioning on large absolute returns can create a spurious rise in correlation.
+\textbf{The model.} Black and Scholes (1973) derived the option price from a hedging argument, and Merton (1973) generalized it and set out the conditions under which it holds. Early empirical tests, including their own (Black and Scholes 1972), found the model a useful approximation with systematic deviations from market prices. Within a few years Black--Scholes prices and deltas were standard on trading floors.
 
-\textbf{U.S. stocks (Ang and Chen 2002).} Ang and Chen found that correlations between U.S. stock portfolios and the market are much greater for downside moves than for upside moves, especially extreme ones. Conditional on the downside, correlations in the data differed from those implied by a normal distribution by 11.6\%. Small stocks, value stocks\index{value versus growth} and past losers\index{winners and losers} showed the most asymmetry. Among the models they tried, regime-switching models captured the asymmetry best; GARCH\index{GARCH} models did poorly.
+\textbf{Transaction costs.}\index{transaction costs|textbf} Leland (1985) showed that with proportional trading costs, perfect replication is impossible: hedging continuously would cost an infinite amount. He proposed hedging at discrete intervals with an adjusted volatility, raised for an option seller to cover the expected costs, and showed that the adjustment grows as the hedging interval shrinks. Even in principle, the seller faces a trade-off between hedging error and trading costs.
 
-\textbf{Contagion or interdependence (Forbes and Rigobon 2002).} Forbes and Rigobon studied three crises: the 1987 U.S. crash, the 1994 Mexican peso collapse and the 1997 East Asian crisis. With unadjusted correlations, several countries showed evidence of \textbf{contagion}\index{contagion|textbf}, meaning correlations that rose in the crisis. After correcting for the higher volatility, there was virtually none. They concluded that the high co-movement reflected strong linkages that existed all along, which they called \textbf{interdependence}\index{interdependence|textbf}.
+\textbf{The smile after 1987.}\index{volatility smile|textbf} Rubinstein (1994) documented that before October 1987, implied volatilities of S\&P 500 index options were roughly the same across strikes, as Black--Scholes requires. After the crash, a pronounced skew appeared, with low-strike puts priced at much higher implied volatilities, and it has persisted ever since. He developed implied binomial trees to fit it. The smile is direct evidence that the market does not price options as if Black--Scholes held.
 
-\textbf{Investor-focused evidence (Page and Panariello 2018).} Using monthly data from 1970 to mid-2017, Page and Panariello reported that the correlation between U.S. and non-U.S. developed stocks was $-17\%$ during the strongest U.S. rallies and $+87\%$ during the worst 1\% of U.S. sell-offs. They found a similar pattern for real estate, corporate and high-yield\index{credit rating} bonds, emerging markets and hedge funds. Treasury bonds usually decoupled from stocks in sell-offs, but the authors noted that the stock--bond correlation can turn positive when inflation or interest rates drive markets. Their correlations are conditioned on U.S. returns alone, so part of the asymmetry may reflect the truncation effect described in Section~\ref{sec:13-foundations}.
+\textbf{Better models.} Bakshi, Cao and Chen (1997) tested models with stochastic volatility, jumps and stochastic interest rates on S\&P 500 options. Adding stochastic volatility and jumps improved pricing. For hedging, modelling stochastic volatility alone gave the best performance; jumps helped pricing but not hedging, because a jump cannot be hedged with the underlying asset at all.
 
-\textbf{The stock--bond correlation (Campbell, Sunderam and Viceira 2017).} Campbell, Sunderam and Viceira found that the covariance between Treasury bond and stock returns was slightly positive on average over 1953 to 2009 but varied a great deal. It was unusually high in the early 1980s and negative in the 2000s, especially in the 2000--02 and 2007--09 downturns. They linked the change to how inflation and real rates co-move with the real economy.
+\textbf{Portfolio insurance.} The most consequential test of dynamic replication was not an academic study. In the 1980s, portfolio insurance programmes used dynamic trading in index futures to replicate a protective put on large equity portfolios. The Brady Commission (Presidential Task Force on Market Mechanisms 1988) estimated that \$60 to \$90 billion of equity assets were under portfolio insurance when the market crashed in October 1987. The What Failed box in Section~\ref{sec:14-investors} tells what happened.
 
-The evidence supports the statistical part of the claim for equities, with caveats about measurement. It contradicts any simple version for bonds, whose hedging value depends on the inflation regime.
-
-\section{Lab~\thechapter: Replicating Longin and Solnik (2001) and Forbes and Rigobon (2002)}
-\label{sec:13-lab}
+\section{Lab~\thechapter: Replicating the Black--Scholes hedge along real and simulated paths}
+\label{sec:14-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:13} at a glance.} \emph{Papers replicated:} Longin and Solnik (2001); Forbes and Rigobon (2002); the stock--bond correlation of Campbell, Sunderam and Viceira (2017). \emph{Claim on trial\index{claims-on-trial method}:} diversification fails when it is needed most. \emph{Data:} U.S. market excess returns\index{return!excess} from 1926, international developed-market returns from 1990 and 10 industry portfolios, all from the Kenneth R. French Data Library\index{Kenneth French data library}; the 10-year Treasury yield (GS10, from 1953), consumer prices (CPIAUCSL) and the spot oil price (WTISPLC) from FRED\index{FRED}. All are free. \emph{Code:} runs as a script (\texttt{python lab19.py}) or as a notebook (\texttt{lab19\_walkthrough.ipynb}) with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:14} at a glance.} \emph{Papers replicated:} the Black--Scholes (1973) hedge; delta-hedged gains in the spirit of Bakshi and Kapadia (2003). \emph{Claim on trial\index{claims-on-trial method}:} delta hedging removes option risk. \emph{Data:} daily market returns from the Kenneth French\index{Kenneth French data library} library and the VIX from FRED\index{FRED}, from 1990; both are free. \emph{Code:} runs as a script (\texttt{python lab15.py}) or as a notebook with a prediction prompt before each step.
 \end{callout}
 
-Bond returns are built from yields by buying a 10-year par bond each month and selling it a month later at the new yield.
+At each month end the lab sells a one-month at-the-money call on the market at its Black--Scholes price, using the VIX as the implied volatility. It buys $\Delta$ units of the index, finances them at the risk-free rate, rebalances on a schedule, and pays the option's payoff at expiry. The final value is the \textbf{hedging P\&L}\index{hedging P\&L|textbf}, expressed as a share of the premium. The same strategy is then run on 20 simulated geometric Brownian motion paths per month, using that month's implied volatility, where the Black--Scholes assumptions hold exactly.
 
-The lab has four parts:
+\textbf{Part A, residual risk.} Mean, standard deviation, skewness\index{skewness}, 1\% quantile and worst month of the hedged P\&L for daily, two-day, weekly, two-weekly and no hedging, on real and simulated paths, and the share of the unhedged risk removed (Lab Figure~\ref{ch:14}.1).
 
-\begin{itemize}
-  \item \textbf{Part A} measures the correlation of U.S. stocks with international stocks, bonds and oil, and the average pairwise correlation of the ten industries. It reports each in calm months, in high-volatility months (the top fifth by trailing 12-month U.S. volatility), after the Forbes--Rigobon correction and in the worst 10\% of U.S. months. It also plots exceedance correlations against a normal benchmark (Lab Figures~\ref{ch:13}.1 and~\ref{ch:13}.2).
-  \item \textbf{Part B} measures tail dependence at the 5\%, 10\% and 20\% levels, against a normal distribution with the same correlation.
-  \item \textbf{Part C} tracks the rolling 36-month stock--bond correlation and relates it to inflation. It reports results by decade and by inflation regime, and for 2022 (Lab Figure~\ref{ch:13}.3).
-  \item \textbf{Part D} compares 100\% stocks, a 60/40 stock--bond portfolio and an equal-weight mix of U.S. stocks, international stocks, bonds and oil. It reports average returns in the worst and best 5\% of stock months, drawdowns\index{drawdown}, five crisis periods and the diversification ratio (Lab Figures~\ref{ch:13}.4 and~\ref{ch:13}.5).
-\end{itemize}
+\textbf{Part B, source.} A regression of the actual P\&L on the gamma--theta approximation of Equation~\eqref{eq:14-pnl} summed over the month (Lab Figure~\ref{ch:14}.3), and on the gap between implied and realized variance.
 
-The command \texttt{python lab19.py -{}-source sim} tests the code on simulated data.
+\textbf{Part C, frictions.} Hedging frequency (Lab Figure~\ref{ch:14}.4) and transaction costs of 0 to 10 basis points\index{basis point} per unit of index traded (Lab Figure~\ref{ch:14}.5).
 
-\textbf{What the simulated run shows.} The lab was run end to end only on simulated data. The simulation was built so that the true correlation between U.S. and international stocks rises from 0.60 in calm regimes to 0.75 in stress, and so that the stock--bond correlation rises with inflation. The results test the code and illustrate the measurement problems; they say nothing about real markets.
+\textbf{Part D, tail.} The worst months, with the market move, implied and realized volatility and the largest daily move, and the share of all losses that came from the worst 5\% of months (Lab Figure~\ref{ch:14}.2).
 
-\begin{itemize}
-  \item The raw correlation between U.S. and international stocks rose from 0.61 in calm months to 0.70 in high-volatility months. The Forbes--Rigobon correction brought it down to 0.47, below the calm level, even though the simulation contained a true increase. The correction overshoots when the link itself strengthens in a crisis.
-  \item In the worst 10\% of U.S. months, the same correlation was 0.45, lower than in calm months, because conditioning on one tail truncates the data.
-  \item The average industry correlation rose from 0.68 to 0.80 in high-volatility months, and fell to 0.61 after correction.
-  \item The stock--bond correlation was $-0.17$ when prior inflation was below 3\% and $+0.17$ when it was 3\% or more.
-  \item In the worst 5\% of stock months, when stocks lost 8.5\% on average, the 60/40 portfolio lost 5.0\% and the equal-weight mix 4.7\%. The 60/40 diversification ratio fell from 1.26 in calm months to 1.16 in high-volatility months: smaller, but not zero.
-\end{itemize}
+Two design choices matter for interpretation. First, pricing at the VIX overstates at-the-money implied volatility, as Chapter~\ref{ch:16} explained, so the \emph{mean} hedged P\&L includes the variance risk premium\index{risk premium} plus some overstatement. The \emph{spread} of the P\&L, which is what the claim is about, is little affected. Second, a delta-hedged call and a delta-hedged put with the same strike are the same position, so the lab uses calls only.
 
-On real data the lab answers the question the simulation cannot: whether the rise in correlations survives the correction, and whether diversified portfolios still cushioned the worst months.
+\textbf{What the simulated run shows.} On the simulated Black--Scholes paths, daily hedging leaves a mean P\&L near zero and a standard deviation of about 17\% of the premium, in line with the Kamal--Derman formula, and the error falls steadily as hedging becomes more frequent. On the simulated GARCH\index{GARCH} paths with fat tails, which play the role of real paths in the test run, daily hedging still removes most of the unhedged risk. But the residual is larger, negatively skewed and concentrated: the worst 5\% of months produced most of the losses. The gamma--theta approximation explains most of the P\&L, and the largest deviations from it come in months with big daily moves. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
 
 \section{Stress tests}
-\label{sec:13-stress}
+\label{sec:14-stress}
 
-\textbf{The definition of a crisis.} Results depend on how bad times are defined: high volatility, falling markets, recessions or a list of named crises. Correlations conditioned on direction (Longin and Solnik's bear markets) and on volatility (Forbes and Rigobon's turmoil) answer different questions. The lab offers both, and Exercise 4 adds recessions.
+\textbf{Hedging frequency.} In the Black--Scholes world, hedging four times as often halves the error (Figure~\ref{fig:14-freq}). On real paths, the part of the error that comes from discrete rebalancing\index{delta hedging!discrete rebalancing} falls in the same way, but the parts that come from jumps and volatility changes do not. If the lab finds that moving from weekly to daily hedging reduces risk much less on real paths than on simulated ones, the residual is dominated by risks that rebalancing cannot remove.
 
-\textbf{The correction's assumption.} The Forbes--Rigobon adjustment assumes the extra volatility comes from the conditioning market and that the link between markets is fixed. If a crisis strengthens the link, the correction removes part of a real change, as the simulated run showed. The raw and corrected numbers are best read as upper and lower bounds.
+\textbf{Transaction costs.}\index{transaction costs|textbf} Every rebalance pays a spread. With costs of a few basis points per unit of index traded, daily hedging can consume a large share of the seller's margin, which is why dealers hedge less often than the model prescribes and why Leland's adjusted volatility exists. The lab's cost experiment shows how quickly the trade-off bites.
 
-\textbf{Frequency.} Monthly data smooth over the days when correlations spike. Daily correlations in October 1987 or March 2020 were higher than monthly ones. For a long-horizon investor, though, monthly or quarterly co-movement matters more than daily.
+\textbf{Crash months.} The months that matter are those with jumps: October 1987 (before the lab's sample), August 1998, October 2008, August 2011, August 2015, February 2018 and March 2020. In each, a one-month option sold at the start of the month at the prevailing implied volatility faced daily moves far larger than that volatility implied. Expect the hedged seller's worst months to be these, with losses of a multiple of the premium even with daily hedging.
 
-\textbf{Sample period.} International data begin in 1990, after the long era of capital controls ended. The stock--bond correlation depends heavily on whether the sample includes the high-inflation 1970s and early 1980s. A sample running from 2000 to 2021 shows bonds as a strong hedge; one including 1965--1985 or 2022 does not.
+\textbf{Realized versus implied volatility.} The gamma--theta approximation says the hedged P\&L is a bet that realized variance will be below implied. When implied volatility is above realized, as it is in most months (Chapter~\ref{ch:16}), the hedged seller earns a profit. That profit is not evidence that hedging removed risk. It is the variance risk premium, earned by bearing the risk that remains. A hedge that leaves a positive mean and a fat left tail has turned an option position into a short-volatility position, not into a riskless one.
 
-\textbf{Bond construction.} Returns built from constant-maturity yields approximate a bond index. They miss the coupon effects and roll of actual bonds but capture the duration\index{duration} risk that dominated 2022.
-
-\textbf{Statistical power.}\index{statistical power|textbf} High-volatility months are a fifth of the sample, and extreme tails much less. With about 70 high-volatility months for international stocks, a correlation of 0.7 has a standard error\index{standard error} near 0.06, so differences of a few hundredths are noise.
+\textbf{Model risk in the hedge ratio.} Black--Scholes deltas assume volatility does not change when the price moves. For stock indexes, volatility tends to rise when prices fall (Chapter~\ref{ch:10}). Hull and White (2017) showed that adjusting the delta for this relation, a \textbf{minimum-variance delta}\index{delta hedging!minimum-variance delta|textbf}, reduces hedging errors for index options. The size of the improvement is itself a measure of how wrong the Black--Scholes hedge ratio is.
 
 \section{Verdict}
-\label{sec:13-verdict}
+\label{sec:14-verdict}
 
 \begin{callout}
-\textbf{Verdict: weakens} (as of October 2026). The statistical part of the claim holds for equities. Correlations among stock markets, and among industries within one market, are higher in falling markets than a normal distribution implies, and the asymmetry survives methods designed to avoid the volatility bias (Longin and Solnik 2001; Ang and Chen 2002). Part of the increase that investors notice in crises is a measurement effect, as Forbes and Rigobon showed, but not all of it. The economic part is overstated.
+\textbf{Verdict: fails as a description of practice} (as of October 2026). Black--Scholes delta hedging removes most of the day-to-day risk of an option position, but what it leaves is not little and not symmetric. The residual is a bet on realized versus implied volatility, with fat-tailed losses in months with jumps and volatility spikes, and those losses cannot be eliminated by hedging more often.
 \end{callout}
 
+What survives:
+
 \begin{itemize}
-  \item \textbf{Diversifying across equities alone does fail in crises.} Adding international stocks or more industries buys little protection when it is most wanted.
-  \item \textbf{Diversifying across asset classes has usually worked.} Treasury bonds rose in most stock-market crashes of the last forty years, and a 60/40 portfolio typically lost a fraction of what stocks lost in the worst months.
-  \item \textbf{That protection is not a law.} It depends on the inflation regime. When inflation is high or rising, as in the 1970s and in 2022, stocks and bonds can fall together.
+  \item \textbf{Delta hedging works as a first approximation.} It removes most of the variance of an unhedged option position. It is the reason dealers can sell options without betting on market direction, and the reason Black--Scholes remains the industry's common language, even as a quoting convention.
+  \item \textbf{The hedging P\&L is understood.}\index{hedging P\&L|textbf} The gamma--theta approximation explains most of it. A trader knows what bet the hedged book contains: short realized volatility, long implied.
 \end{itemize}
 
-The claim is therefore true for the diversification most investors rely on least (within equities), and conditional for the diversification they rely on most (stocks and bonds). The verdict would move to \emph{survives} if real-data results showed stock--bond protection failing in growth-driven crises as well, and to \emph{fails} if equity correlations showed no asymmetry after correction.
+What fails:
+
+\begin{itemize}
+  \item \textbf{The residual is large and fat-tailed.} On real paths, hedging leaves more risk than on Black--Scholes paths, and the worst months bring losses of a multiple of the premium.
+  \item \textbf{More frequent hedging cannot fix it.} Jumps happen between rebalances. Volatility changes are not hedged by the underlying at all. Hedging more often raises costs without removing these risks.
+  \item \textbf{The market knows.} The volatility smile that has existed since 1987 is the market's price for the risks delta hedging leaves. If the claim were true, the smile would not exist.
+\end{itemize}
+
+The verdict would move to \emph{weakens} if a simple extension, such as hedging with a minimum-variance delta or adding a small position in other options to hedge vega and gamma, removed most of the tail. That is how dealers actually hedge, and it is why they never rely on delta alone.
 
 \section{What investors can use}
-\label{sec:13-investors}
+\label{sec:14-investors}
+
+\textbf{The residual risks inside structured products.} A bank that sells a structured note with a capped equity return or a principal guarantee is short options, and it hedges them dynamically. The hedge removes most of the market risk, but the bank keeps the risks this chapter identifies: jumps, volatility changes and the cost of rebalancing. It charges for them, which is part of why such products are expensive. When an investor buys one, the fee includes the price of risks the bank cannot hedge away.
+
+\textbf{Option-based funds.} A fund that sells options and delta-hedges them is not market-neutral\index{market-neutral} in the sense that matters. It is short volatility: it earns steady returns in calm markets and loses heavily in jumps. Its track record will look smooth until a crash.
+
+\textbf{Why the smile exists.} The higher implied volatility of out-of-the-money index puts is not a quirk. It is the price of crash risk\index{crash risk}, which delta hedging cannot remove. An investor buying downside protection pays it; an investor selling protection is paid it for bearing the jumps.
+
+\textbf{Questions to ask a manager or a structured-product issuer:}
 
 \begin{itemize}
-  \item \textbf{Use stress correlations, not average ones.} Plan with the correlations seen in the worst months, not the full-sample figure. For equities, assume they move closer together in a sell-off.
-  \item \textbf{Diversify across risks, not labels.} Ten equity funds in different regions or styles are mostly one bet on the global equity factor. Real diversification needs assets driven by different forces, such as interest rates or inflation.
-  \item \textbf{Know what your hedge hedges.} Long-term Treasury bonds hedge recessions and deflationary panics. They do not hedge inflation shocks. Cash, short-term bonds, inflation-linked bonds and some commodities behave differently.
-  \item \textbf{Judge by portfolio losses.} Ask what the whole portfolio lost in past crises, not whether correlations rose.
-  \item \textbf{Rebalance.}\index{rebalancing|textbf} Diversified portfolios that rebalance sell what held up and buy what fell, which helps recoveries even when diversification disappointed in the fall.
-\end{itemize}
-
-\textbf{Questions to ask a manager or adviser:}
-
-\begin{itemize}
-  \item What did this portfolio lose in 2008, in March 2020 and in 2022?
-  \item Which correlations do you use to estimate risk, and from which periods?
-  \item Which of the holdings would be expected to rise if stocks fell 30\% because of a recession? And if they fell because of an inflation shock?
-  \item How much of the portfolio's risk comes from the equity factor?
-  \item Are any reported correlations based on smoothed or appraisal-based prices?
+  \item How are the option positions hedged: delta only, or also vega and gamma with other options?
+  \item What happens to the hedge in a one-day move of 10\% or 20\%?
+  \item How often is the hedge rebalanced, and what does rebalancing cost?
+  \item What was the strategy's worst month, and was it in a crash?
 \end{itemize}
 
 \begin{callout}
-\textbf{What Failed: bonds as the hedge in 2022.} For most of the two decades before 2022, Treasury bonds rose when stocks fell, and the 60/40 portfolio became the default allocation. Then inflation reached its highest levels in forty years and the Federal Reserve raised rates rapidly. In 2022 the S\&P 500 fell 18.1\% and the U.S. dollar bond market about 13\%. According to Dimensional (Dimensional Fund Advisors 2023), a 60/40 portfolio lost 11\% over the year, with a drawdown of 19\% at its low point, and many bond indices had their worst year on record. Nothing in the correlation had been wrong; it had been estimated in a period dominated by growth shocks and low, stable inflation. When the dominant shock changed, so did the sign. Investors who treated a negative stock--bond correlation as a constant learned that it was a feature\index{features and targets} of a regime.
+\textbf{What Failed: portfolio insurance, October 1987.} Portfolio insurance, developed by Hayne Leland and Mark Rubinstein, replicated a protective put on an equity portfolio by dynamic trading: selling stock-index futures as the market fell and buying them back as it rose, exactly as delta hedging prescribes. By October 1987, according to the Brady Commission, \$60 to \$90 billion of equity assets were under portfolio insurance.
+
+On October 19, 1987, the market fell more than 20\% in a day. The strategy required insurers to sell at every step down. According to the Brady Commission, portfolio insurers sold the equivalent of about \$4 billion of stock in index futures, more than 40\% of futures volume excluding locals' trades, and just under \$2 billion of stock directly on the New York Stock Exchange. Prices moved faster than the trades could be executed, so the hedge was always behind. Insurers could not trade at the prices their models assumed, so the protection they delivered fell short of the puts they were replicating, and the Brady Commission concluded that their mechanical selling added to the pressure on prices.
+
+The failure was the replication assumption itself: continuous trading at continuous prices. A real put would have paid off regardless of how the market got there. A replicated put depended on trading through the fall, and the market did not allow it. The volatility skew that appeared after the crash has been the market's price for that lesson ever since.
 \end{callout}
 
 \section{Open questions}
-\label{sec:13-open}
+\label{sec:14-open}
 
 \begin{itemize}
-  \item \textbf{Which regime are we in?} Can the stock--bond correlation be forecast from inflation, inflation uncertainty or central-bank credibility well enough to adjust allocations in time?
-  \item \textbf{Better crisis correlations.} Do regime-switching, copula or dynamic conditional correlation models forecast crisis co-movement out of sample\index{in-sample versus out-of-sample}, or only describe it after the fact?
-  \item \textbf{Private assets.} Smoothed valuations make private equity and real estate look like diversifiers. How large is their true crisis correlation with public stocks?
-  \item \textbf{New hedges.} Have trend-following\index{trend following}, long-volatility or tail-hedging strategies delivered crisis protection at an acceptable cost? Chapter~\ref{ch:16}'s evidence on option selling is the mirror image of this question.
+  \item \textbf{How much of the hedging error is compensation for bearing jump risk?} If the mean hedged P\&L of option sellers is positive, is it just enough to pay for the jumps, or more?
+  \item \textbf{How much better do practical hedges do?} Minimum-variance deltas, vega hedges with other options and stochastic-volatility models all reduce hedging error. How much of the tail do they remove on real paths?
+  \item \textbf{Do short-dated options change the picture?} Options expiring within a day have enormous gamma near expiry. Does dealers' hedging of them amplify intraday moves?
+  \item \textbf{Can machine-learning hedges beat Black--Scholes?} ``Deep hedging'' learns hedging rules directly from data with costs and constraints. Do its gains survive out of sample\index{in-sample versus out-of-sample} and in crashes?
 \end{itemize}
 
 \section*{Exercises}
@@ -292,19 +346,19 @@ The claim is therefore true for the diversification most investors rely on least
 \subsection*{Conceptual (all readers)}
 
 \begin{enumerate}
-  \item Twenty assets each have 25\% volatility. Compute the volatility of an equally weighted portfolio when the average correlation is 0.3 and when it is 0.7. What share of the diversification benefit is lost?
-  \item A correlation of 0.75 is measured in a crisis when the variance of the conditioning market is three times its normal level. Apply the Forbes--Rigobon correction. What correlation in normal times does it imply?
-  \item Using $y = \beta x + e$ with $\beta = 0.6$, $\sigma_e = 15\%$ and $\sigma_x = 15\%$, compute the correlation of $x$ and $y$. Recompute with $\sigma_x = 30\%$. Explain why the correlation changed even though $\beta$ did not.
+  \item For the worked example in Section~\ref{sec:14-foundations}, compute the hedged seller's P\&L over one day if the index moves 1, 2 and 4 points. At what daily move does the seller break even?
+  \item Using the Kamal--Derman approximation, Equation~\eqref{eq:14-kd}, compute the standard deviation of the hedging error, as a share of the premium, for a one-month at-the-money option hedged daily, weekly and four times a day.
+  \item Show that a delta-hedged call and a delta-hedged put with the same strike and expiry have the same hedged P\&L.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
   \setcounter{enumi}{3}
-  \item Part A: run on real data. For which pairs does the high-volatility correlation exceed the calm one after the Forbes--Rigobon correction? Then define bad times as NBER recession months (FRED series USREC) instead of high-volatility months. Do the conclusions change?
-  \item Compare the exceedance correlations of U.S. and international stocks with the normal benchmark (Lab Figure~\ref{ch:13}.1). Is the gap larger in the lower tail than the upper tail?
-  \item Part C: compute the stock--bond correlation for 1965--1985 and for 2000--2021. Relate the difference to average inflation in each period.
-  \item Part D: list the five worst months for U.S. stocks since 1953. What did bonds do in each?
-  \item Forbes and Rigobon say ``no contagion, only interdependence''. Why might an investor care little about the distinction?
-  \item A client says, ``Bonds failed in 2022, so they are useless as a hedge.'' Using the chapter's evidence, write a short reply.
+  \item Part A: compare the share of unhedged risk removed by daily hedging on real and Black--Scholes paths. Compare the 1\% quantiles. Which comparison is more informative about the claim?
+  \item Part B: what share of the variance of the hedged P\&L does the gamma--theta approximation explain? Find the months with the largest residuals. What happened in them?
+  \item Part C: at what transaction cost does weekly hedging give a higher mean P\&L than daily hedging? What is the effect on the 1\% quantile?
+  \item Part D: compute the share of all hedging losses that came from the worst 5\% of months. Compare it with the Black--Scholes paths.
+  \item Price the option at the VIX but hedge using trailing 21-day realized volatility. How does the P\&L distribution change?
+  \item A structured-product salesperson says the bank's position is ``fully hedged.'' Using this chapter's evidence, explain what risks the bank still carries and how it charges for them.
 \end{enumerate}

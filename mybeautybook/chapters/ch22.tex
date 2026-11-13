@@ -1,4 +1,4 @@
-% Chapter 22 -- Claim: Transformers Price Stocks Better Than Factor Models
+% Chapter 23 -- Claim: Foundation Models Trained on Market Data Beat GARCH
 % Requires: amsmath, amssymb, booktabs, array, tabularx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -11,213 +11,191 @@
 }{}
 \makeatother
 
-\chapter{Claim: Transformers Price Stocks Better Than Factor Models}
-\label{ch:22}
+\chapter{Claim: Foundation Models Trained on Market Data Beat GARCH}
+\label{ch:23}
 
-Asset pricing asks why different assets earn different average returns, and since the 1980s its general answer has been the \textbf{stochastic discount factor}\index{stochastic discount factor (SDF)}: a single random variable that prices every asset. The factor models of Chapter~\ref{ch:04} are one way to build it, from a handful of portfolios chosen by researchers. With hundreds of candidate characteristics, later work asked the data to build it instead. Kozak, Nagel and Santosh (2020) estimated an SDF from many anomaly portfolios with shrinkage, Kelly, Pruitt and Su (2019) let each stock's exposures depend on its characteristics, and Chen, Pelger and Zhu (2024) used deep neural networks. Each step priced returns more accurately than the last.
+Chapter~\ref{ch:21} tested general-purpose time-series foundation models\index{foundation models}, trained on electricity demand, traffic, weather and many other series, and used them on financial data without further training. One study in that chapter found that pretraining on financial data helped. In 2025 two lines of work followed that lead. The first builds a model from market data alone: Shi et al.\ (2025) introduced Kronos, pretrained on more than 12 billion price bars from 45 exchanges, and reported that it forecast prices and volatility better than general foundation models and produced more realistic synthetic market data. The second keeps a general model but adapts it: Goel, Pasricha, Magris and Kanniainen (2025) fine-tuned Google's TimesFM step by step on realized-volatility data and reported that it beat the econometric models that risk managers have used for decades.
 
-The newest step comes from the technology behind large language models. A \textbf{transformer}\index{transformer|textbf} uses a mechanism called \textbf{attention}\index{attention (neural networks)|textbf}, which lets each word in a sentence look at the other words to decide what it means. Kelly, Kuznetsov, Malamud and Xu (2025) placed a transformer inside an asset-pricing model, so that each stock could ``look at'' other stocks before the model decided how to price it. They reported that their artificial intelligence pricing model priced U.S. stocks with about 30\% smaller errors than the best earlier models, and that its tangency portfolio earned an out-of-sample Sharpe ratio of about four. A Sharpe ratio of four is far above anything an investor has earned for long, so the result invites careful testing.
+The benchmark both lines must beat is familiar. GARCH and its relatives, tested in Chapter~\ref{ch:10}, forecast volatility well with a handful of parameters, and they have been refined for forty years. The question is whether a model with millions of parameters, trained on market data, can do better, and whether the improvement survives a fair test: the same data, the same loss function, and only periods the model could not have seen during training.
 
-The implications are large if the result holds. It would mean that how a stock is priced depends on information about other stocks in ways that factor models cannot capture, and that the methods behind chatbots can improve one of the central models of finance. The claim on trial\index{claims-on-trial method} is: \textbf{an asset-pricing model that places a transformer inside the stochastic discount factor prices the cross-section with much smaller errors than earlier models, and its tangency portfolio earns a higher Sharpe ratio out of sample.}
+The implications reach risk management and trading. Better volatility forecasts would improve option pricing, Value-at-Risk and volatility targeting, and realistic synthetic data would help test strategies on more history than the market has produced. The claim on trial\index{claims-on-trial method} is: \textbf{foundation models pretrained or fine-tuned on financial market data beat both general-purpose foundation models and econometric benchmarks such as GARCH and HAR in forecasting volatility.}
 
-The lab in Section~\ref{sec:22-lab} replicates the linear-transformer pricing model of Kelly et al.\ (2025) on free anomaly portfolios from the Jensen--Kelly--Pedersen data, against the shrinkage baseline of Kozak, Nagel and Santosh (2020), in order to check whether attention across assets really prices returns better than a well-built factor model. The original study uses stock-level data from paid databases, so the lab replicates the mechanism one level up, with portfolios as the assets.
+The lab in Section~\ref{sec:23-lab} replicates the core volatility comparisons of Shi et al.\ (2025) and Goel et al.\ (2025) on free daily market data, with Stooq price bars where a free key is available and a fallback that uses only the Kenneth R. French Data Library, in order to check whether models trained on market data really beat GARCH under a fair test.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item explain the stochastic discount factor\index{stochastic discount factor} and why pricing all assets correctly is the same goal as finding the portfolio with the highest Sharpe ratio;
-  \item estimate a shrinkage SDF in the style of Kozak, Nagel and Santosh, and explain IPCA\index{IPCA};
-  \item describe how deep networks and adversarial training have been used to estimate an SDF;
-  \item compute attention weights by hand and explain how a transformer shares information across stocks;
-  \item state the claim in a form that can fail, and judge it by out-of-sample pricing errors, Sharpe ratios, size groups and costs.
+  \item describe a price bar and estimate daily volatility from its high, low, open and close;
+  \item explain how Kronos turns price bars into tokens and generates forecasts by sampling;
+  \item distinguish full, incremental and parameter-efficient fine-tuning, and set up fine-tuning without look-ahead;
+  \item judge synthetic market data against the stylized facts of returns;
+  \item compare forecasts with the Diebold--Mariano and Giacomini--White tests;
+  \item state the claim in a form that can fail, and test it after each model's training cutoff.
 \end{itemize}
 
-\section{Foundations: the stochastic discount factor and its machine-learning estimators}
-\label{sec:22-foundations}
+\section{Foundations: market data, fine-tuning and synthetic data}
+\label{sec:23-foundations}
 
-\subsection{The SDF and the pricing equation for excess returns}
+\subsection{OHLCV (K-line) bars}
 
-An asset-pricing model has one job: to explain why some assets earn higher average returns than others. The most general way to write such a model uses a \textbf{stochastic discount factor}\index{stochastic discount factor|textbf} (SDF), a random number $M_{t+1}$ that is high in bad times and low in good times. The model says that every excess return\index{return!excess} $R^e_{i,t+1}$, once multiplied by the SDF, has an expected value of zero:
+Exchanges summarize trading over each interval, such as a minute, an hour or a day, in a \textbf{price bar}\index{price bar|textbf}. A bar records five numbers: the \textbf{open}, the first trade price in the interval; the \textbf{high} and the \textbf{low}, the highest and lowest prices; the \textbf{close}, the last price; and the \textbf{volume}, the number of shares or contracts traded. Together they are called \textbf{OHLCV} data. Some data sets add a sixth number, the \textbf{amount}, which is the value traded in currency. Charts draw each bar as a candlestick, and in Chinese and Japanese markets bars are often called \textbf{K-lines}\index{K-line}, which is why Kronos's authors speak of the ``language of K-lines.''
+
+A bar carries more information than a closing price. A day that closes where it opened may still have swung widely between its high and its low, and that swing says something about volatility. The volume says how actively the market traded.
+
+\subsection{Range-based volatility: Parkinson and Garman--Klass}
+
+Chapter~\ref{ch:10} measured a day's variance with the squared daily return, which is noisy, or with realized variance\index{realized variance} from intraday returns, which is accurate but requires intraday data that are rarely free. Daily bars allow a middle path. Write $H_t$, $L_t$, $O_t$ and $C_t$ for the high, low, open and close on day $t$. Parkinson (1980) showed that the squared log range is an estimate of the day's variance:
 \begin{equation}
-  E_t\!\left[ M_{t+1} R^e_{i,t+1} \right] = 0 \quad \text{for every asset } i.
-  \label{eq:22-pricing}
+  \hat\sigma^2_{P,t} = \frac{1}{4 \ln 2} \left(\ln \frac{H_t}{L_t}\right)^2.
+  \label{eq:23-parkinson}
 \end{equation}
-The intuition is that an asset which pays off in bad times, when $M$ is high, is valuable insurance, so investors accept a low average return on it. An asset which pays off in good times must offer a high average return. The CAPM of Chapter~\ref{ch:04} is a special case in which $M$ falls in a straight line as the market return rises.
-
-Many modern studies write the SDF as one minus the return on a portfolio of the assets:
+Garman and Klass (1980) added the open and close:
 \begin{equation}
-  M_{t+1} = 1 - w_t' R^e_{t+1},
-  \label{eq:22-sdf}
+  \hat\sigma^2_{GK,t} = \frac{1}{2} \left(\ln \frac{H_t}{L_t}\right)^2 - \left(2\ln 2 - 1\right) \left(\ln \frac{C_t}{O_t}\right)^2.
+  \label{eq:23-gk}
 \end{equation}
-where $R^e_{t+1}$ is the vector of excess returns and $w_t$ the vector of portfolio weights, chosen with information available at time $t$. Estimating an asset-pricing model then means choosing the weights $w_t$. If the weights are allowed to depend on each stock's characteristics, such as its size, value and past return, the model can price the cross-section in a flexible way.
+Under ideal conditions, with continuous trading and no drift, these estimators are several times more precise than the squared close-to-close return. In practice they have two weaknesses. They ignore the jump between yesterday's close and today's open, which matters for stock markets that are closed overnight, and they are biased downward when trading is not continuous, because the recorded high and low miss the true extremes. They are still a large improvement on squared returns, and this chapter's lab uses the Garman--Klass estimator as its measure of daily variance.
 
-\subsection{From an SDF to the tangency portfolio}
+\textbf{Worked example.} A stock index opens at 100, trades between 98 and 103, and closes at 101. Then $\ln(H/L) = \ln(103/98) = 0.0498$ and $\ln(C/O) = \ln(1.01) = 0.0100$. The Parkinson estimate is $0.0498^2/(4 \times 0.693) = 0.00089$, a daily volatility of about 3.0\%. The Garman--Klass estimate is $0.5 \times 0.0498^2 - 0.386 \times 0.0100^2 = 0.00120$, a daily volatility of about 3.5\%.
 
-When the weights are constant, Equation~\eqref{eq:22-pricing} has a familiar solution. Substituting Equation~\eqref{eq:22-sdf} and solving for $w$ gives
+\subsection{Tokenizing multivariate bars}
+
+Chapter~\ref{ch:21} explained how Chronos turns a single series into tokens by scaling it and sorting each value into one of a fixed set of bins. A price bar has five or six numbers that move together, so Kronos tokenizes the whole bar at once. A small encoder network compresses each normalized bar into a short code of zeros and ones, using a method called \textbf{binary spherical quantization}. In the paper's main setting the code has 20 bits, which allows about a million different tokens. The code is split into a \textbf{coarse} part and a \textbf{fine} part of 10 bits each, much as a price can be described first roughly and then precisely.
+
+A transformer then learns the ``language'' of these tokens. Given a history of bars, it predicts the coarse part of the next token, then the fine part given the coarse part, and so on, one bar at a time. To forecast, Kronos samples many possible future paths in this way and averages them. The same sampling produces synthetic price histories. The paper describes three sizes of the model, with about 25 million, 100 million and 500 million parameters, and a history of up to 512 bars.
+
+\subsection{Fine-tuning: full, incremental and parameter-efficient}
+
+A pretrained model can be adapted to a new task by \textbf{fine-tuning}\index{fine-tuning|textbf}: continuing its training on data from that task. There are three main ways to do it.
+
+\begin{itemize}
+  \item \textbf{Full fine-tuning} updates every parameter. It is the most flexible and the most expensive, and with a small data set it can overfit and forget what the model learned in pretraining.
+  \item \textbf{Parameter-efficient fine-tuning} freezes most of the network and trains only a small part. One option trains only the last layers. Another, called \textbf{LoRA}\index{LoRA} (low-rank adaptation; Hu et al.\ 2022), adds to each large weight matrix a correction made of two thin matrices, so that only a small number of new parameters are trained.
+  \item \textbf{Incremental fine-tuning} repeats the training as new data arrive. Goel and coauthors fine-tuned TimesFM on the first half of their sample, tested it on the next fifth, then added that fifth to the training data, fine-tuned again and tested on the following fifth, and so on. This is the walk-forward design of Section~\ref{sec:09-walkforward}, applied to a neural network.
+\end{itemize}
+
+The rule that matters most is the same as in every forecasting chapter: fine-tune only on data that end before the period being forecast. A model fine-tuned on the whole sample and then tested on part of it has seen the answers.
+
+\subsection{Synthetic market data and the stylized facts}
+
+A model that can generate realistic price paths has uses beyond forecasting. Risk managers can use synthetic paths to stress-test portfolios, and researchers can use them to enlarge small data sets. A synthetic path is useful only if it behaves like real data. Cont (2001) summarized the \textbf{stylized facts}\index{stylized facts|textbf} that real returns show across markets, several of which Chapter~\ref{ch:10} documented:
+
+\begin{itemize}
+  \item daily returns have fat tails, with far more extreme days than a normal distribution allows;
+  \item returns themselves show almost no autocorrelation, but absolute and squared returns show strong, slowly decaying autocorrelation, which is \textbf{volatility clustering}\index{volatility clustering};
+  \item volatility tends to rise after prices fall, the \textbf{leverage effect}\index{leverage effect};
+  \item returns over longer horizons, such as a month, look closer to normal than daily returns.
+\end{itemize}
+
+A GARCH model with fat-tailed shocks reproduces most of these facts with a few parameters, so it is the natural benchmark for any generative model. Kronos's authors measured realism in two ways: how well a classifier could tell synthetic paths from real ones, and how well a model trained only on synthetic data performed on real data.
+
+\subsection{The Giacomini--White test}
+
+The Diebold--Mariano test of Section~\ref{sec:09-accuracy} asks whether one forecast has a lower average loss than another. It assumes that the models' parameters are known, or estimated on ever-growing samples. When models are re-estimated on a rolling window, or fine-tuned again and again, Giacomini and White (2006) offer a test that treats the whole forecasting method, including the estimation, as the object being compared. Write $d_{t+1}$ for the difference in losses between methods A and B at time $t+1$. The test asks whether the loss difference can be predicted from information available at time $t$:
 \begin{equation}
-  w = \Sigma^{-1} \mu,
-  \label{eq:22-tangency}
+  H_0: E\left[d_{t+1} \mid \mathcal{F}_t\right] = 0.
+  \label{eq:23-gw}
 \end{equation}
-where $\mu$ is the vector of expected excess returns and $\Sigma$ the covariance matrix (with second moments in place of covariances, a small difference for monthly returns). These are the weights of the tangency portfolio\index{tangency portfolio} of Chapter~\ref{ch:12}. The SDF portfolio is the portfolio with the highest possible Sharpe ratio, and its squared Sharpe ratio is $\mu'\Sigma^{-1}\mu$.
-
-This link is why studies of machine-learning SDFs report Sharpe ratios. A model that prices all assets correctly must contain the maximum-Sharpe portfolio, and a model that leaves pricing errors behind has missed some return that a better portfolio would capture. Small pricing errors and a high out-of-sample Sharpe ratio are two views of the same success. Studies measure pricing errors with the alphas\index{alpha} of test assets against the SDF portfolio, or with the \textbf{Hansen--Jagannathan distance}\index{Hansen--Jagannathan distance|textbf}, a summary of how far the model's SDF is from pricing a set of test assets exactly.
-
-\subsection{Baseline 1: the shrinkage SDF of Kozak, Nagel and Santosh}
-
-With hundreds of candidate factors, Equation~\eqref{eq:22-tangency} cannot be used directly. The sample $\Sigma$ is noisy, its inverse is worse, and the weights become extreme, the problem Chapter~\ref{ch:12} called error maximization. Kozak, Nagel and Santosh (2020) shrink the weights with a ridge penalty, exactly as in Chapter~\ref{ch:20}:
-\begin{equation}
-  \hat w = \left(\hat\Sigma + \gamma I\right)^{-1} \hat\mu,
-  \label{eq:22-kns}
-\end{equation}
-where $\gamma$ controls how strongly the weights are pulled toward zero and is chosen by cross-validation. Written in terms of the principal components\index{principal components} of the factors, the penalty shrinks the weight on each component by the factor $\lambda_j/(\lambda_j+\gamma)$, where $\lambda_j$ is the component's variance. Components with little variance, where a large average return is most likely to be noise, are shrunk the most. The economic justification is that a factor with a high average return but almost no variance would be close to an arbitrage opportunity, which should be rare.
-
-Kozak, Nagel and Santosh found that an SDF built from a few characteristic-based factors, such as the four- and five-factor models, could not summarize the cross-section of expected returns well, while an SDF built from a small number of principal components of many factors performed well.
-
-\subsection{Baseline 2: IPCA}
-
-\textbf{Instrumented principal components analysis}\index{IPCA|textbf} (IPCA), introduced by Kelly, Pruitt and Su (2019), lets factor loadings change with a stock's characteristics. The model is
-\begin{equation}
-  r_{i,t+1} = \beta_{i,t}' f_{t+1} + \varepsilon_{i,t+1}, \qquad \beta_{i,t} = \Gamma' z_{i,t},
-  \label{eq:22-ipca}
-\end{equation}
-where $f_{t+1}$ is a short vector of latent factors, $z_{i,t}$ the stock's characteristics and $\Gamma$ a matrix estimated from the data. A stock's characteristics therefore tell the model how much risk it carries, which is the meaning of the paper's title, ``Characteristics Are Covariances.'' Kelly, Pruitt and Su found that five IPCA factors explained the cross-section of average returns more accurately than existing factor models, that the remaining anomaly alphas were small and insignificant, and that only about ten characteristics mattered.
-
-\subsection{Deep SDFs: feed-forward networks and adversarial estimation}
-
-A natural next step lets a neural network choose the weights in Equation~\eqref{eq:22-sdf}: $w_{i,t} = g(z_{i,t}, s_t)$, where $g$ is a network of the kind described in Section~\ref{sec:20-nn} and $s_t$ a summary of economic conditions. The network is trained to make the pricing errors as small as possible, which is the same as making the SDF portfolio's Sharpe ratio as large as possible.
-
-Chen, Pelger and Zhu (2024) added a twist from machine learning called \textbf{adversarial training}\index{adversarial training|textbf}. A second network searches for the portfolios that the SDF prices worst, and the first network then improves its pricing of exactly those portfolios. The contest continues until no portfolio the adversary can find is badly mispriced. They used U.S. stocks from 1967 to 2016, 46 firm characteristics and 178 macroeconomic series, summarized with a recurrent network. Their SDF portfolio reached an annual out-of-sample Sharpe ratio of about 2.6, roughly twice that of a network trained only to forecast returns.
-
-\subsection{Attention and the transformer for a panel of stocks}
-
-The models above treat each stock separately: stock $i$'s weight depends only on stock $i$'s own characteristics. Attention removes that restriction. Give each stock a vector of characteristics $x_i$. Attention computes three transformed versions of it: a \textbf{query} $q_i = W_Q x_i$, a \textbf{key} $k_i = W_K x_i$ and a \textbf{value} $v_i = W_V x_i$. Stock $i$ then compares its query with every stock's key, turns the scores into weights that sum to one, and averages the other stocks' values:
-\begin{equation}
-  a_{ij} = \frac{\exp\left(q_i' k_j/\sqrt{d}\right)}{\sum_{l} \exp\left(q_i' k_l/\sqrt{d}\right)}, \qquad h_i = \sum_{j} a_{ij}\, v_j,
-  \label{eq:22-attention}
-\end{equation}
-where $d$ is the length of the query vector. The output $h_i$ is a new description of stock $i$ that includes information from the stocks most similar to it, in the sense that the model has learned.
-
-\textbf{Worked example.} Three stocks have queries and keys of length one: $q = (1, 0, 2)$ and $k = (1, 0, 2)$, and values $v = (0.03, 0.00, -0.02)$. For stock 1, the scores $q_1 k_j$ are $1, 0, 2$, and the attention weights are $e^1, e^0, e^2$ divided by their sum, about $0.24, 0.09, 0.67$. Stock 1's new value is $0.24 \times 0.03 + 0.09 \times 0 + 0.67 \times (-0.02) \approx -0.006$. Stock 1 pays most attention to stock 3, whose key is most aligned with its query.
-
-A \textbf{transformer}\index{transformer|textbf} stacks several such attention layers, each followed by a small feed-forward network, with shortcuts that add each layer's input to its output. A \textbf{linear transformer} drops the exponential and the normalization. In the asset-pricing model of Kelly and coauthors, the linear version gives portfolio weights
-\begin{equation}
-  w_t = \left(X_t W X_t'\right) X_t \lambda,
-  \label{eq:22-linear}
-\end{equation}
-where $X_t$ stacks all stocks' characteristics in rows, $W$ is a matrix of attention parameters and $\lambda$ a vector of pricing coefficients. The matrix $X_t W X_t'$ has one row and one column for every stock, and its entry $(i,j)$ says how much stock $i$ borrows from stock $j$.
+In practice the researcher chooses a few variables $h_t$ known at time $t$, such as a constant and yesterday's loss difference, and tests whether the averages of $h_t d_{t+1}$ are all zero with a standard Wald test. With only a constant, the test reduces to a Diebold--Mariano test, but it remains valid when models are re-estimated on rolling windows. With more variables it can reveal that one method is better in some conditions, such as calm markets, and worse in others.
 
 \section{How it works}
-\label{sec:22-how}
+\label{sec:23-how}
 
-\textbf{Why sharing information across stocks might help.} A stock's own characteristics are not the only information about its risk and return. News about a supplier affects its customers. A rise in one bank's funding costs affects other banks. Two stocks with similar characteristics may respond to the same shocks. Earlier models could use such links only if a researcher wrote them in by hand, for example through industry factors. Attention lets the model learn which other stocks are informative, month by month, from the data. Kelly and coauthors found that observable links, such as shared analyst coverage, customer--supplier relationships and patent similarity, explained about 18\% of the variation in their transformer's attention, so most of what the model learned was not captured by those familiar links.
+\textbf{Why train on market data?} A model pretrained on electricity and weather learns patterns such as daily cycles, trends and smooth seasonality. Markets have little of that. Their most reliable patterns are fat tails, volatility clustering and the link between falling prices and rising volatility. A model trained on billions of price bars sees those patterns constantly and in every market, and Kronos's authors argue that this is why it forecasts volatility and generates realistic paths better than general models.
 
-\textbf{What the linear surrogate reveals.} Equation~\eqref{eq:22-linear} looks complicated, but it can be rewritten as an ordinary linear model in a very large set of features: every product of three characteristics. With 132 characteristics there are about 2.3 million such products. The linear transformer is therefore a ridge regression of the kind used throughout Chapter~\ref{ch:20}, on an enormous number of interactions. Its weights can be read as timing signals for characteristic-managed portfolios. This rewriting is what makes the model, and this chapter's lab, understandable.
+\textbf{Why fine-tuning helps.} Markets change. A model pretrained once, or a general model, may have learned the volatility patterns of a different era or a different domain. Fine-tuning on recent data from the series being forecast lets the model adjust its scale and dynamics. Goel and coauthors found that TimesFM used zero-shot was a reasonable but not leading forecaster of volatility, and that repeated fine-tuning was what made it competitive.
 
-\textbf{More parameters than months.} The full transformer has around a million parameters, estimated in rolling windows of 60 months. Classical statistics would expect such a model to overfit. Chapter~\ref{ch:20} described the ``virtue of complexity'' argument, in which very large models with shrinkage can still forecast well, and Nagel's (2025) warning that such models may simply reproduce a simple strategy. Kelly, Kuznetsov, Malamud, Xu and Zhang (2024), in ``Large and Deep Factor Models,'' studied deep networks trained to build an SDF. They showed that such a network can be split into two parts: a part that discovers useful nonlinear characteristics and a part that prices them, which behaves like a ridge-regularized linear factor model. Their analysis gives a theoretical reason why very large networks need not overfit, and a way to see what they have learned.
+\textbf{A new leakage risk.} A model pretrained on 45 exchanges has very likely seen the S\&P 500, the major currency pairs and the large stocks that a student would test it on, and possibly over the same dates. If so, a test on that history measures memory, not forecasting skill. This is the pretraining leakage\index{leakage!pretraining} that Section~\ref{sec:21-contam} described for general models, and it is more severe here, because the pretraining data and the test data come from the same markets. The only clean test uses data that arrived after the model's training data were collected.
 
 \section{The claim}
-\label{sec:22-claim}
+\label{sec:23-claim}
 
 Stated so that it can fail:
 
 \begin{callout}
-\textbf{An asset-pricing model that uses a transformer to share information across stocks prices the cross-section of U.S. stock returns with smaller out-of-sample pricing errors than factor models and earlier machine-learning models, and the portfolio it implies earns a higher out-of-sample Sharpe ratio, among large stocks and after trading costs.}
+\textbf{Foundation models that are pretrained or fine-tuned on financial market data forecast volatility more accurately than GARCH and HAR models, and generate synthetic price paths that match the stylized facts of returns better than a GARCH simulation, on data that arrived after the models were trained.}
 \end{callout}
 
-The claim has a \textbf{statistical form}, smaller pricing errors and a higher Sharpe ratio before costs, and an \textbf{economic form}, which requires the advantage to survive among stocks an investor can trade in size and after costs. The tests follow:
+The claim has a \textbf{forecasting form} and a \textbf{generative form}. The tests follow:
 
 \begin{itemize}
-  \item \textbf{Out of sample.} Are the gains present in periods not used for training, and after the early decades of the sample?
-  \item \textbf{Benchmarks.} Does the transformer beat both simple factor models and strong machine-learning models on the same data?
-  \item \textbf{Size.} Are the gains present among mega and large stocks, not only among small and micro stocks?
-  \item \textbf{Costs.} How much of the advantage remains after trading costs?
+  \item \textbf{Benchmarks.} Are the comparisons against well-specified econometric models, such as GARCH and HAR, estimated on the same data?
+  \item \textbf{Loss functions.} Does the advantage hold under the QLIKE loss that Chapter~\ref{ch:10} recommended for volatility, not only under squared error?
+  \item \textbf{Clean data.} Does the advantage survive on data the model could not have seen?
+  \item \textbf{Economic value.} Is the improvement large enough to change a risk number, such as a 99\% VaR, in a way that its backtest can detect?
 \end{itemize}
 
 \section{The original evidence}
-\label{sec:22-evidence}
+\label{sec:23-evidence}
 
-\subsection{Chen, Pelger and Zhu (2024)}
+\subsection{Shi et al. (2025): Kronos}
 
-Chen, Pelger and Zhu\index{Chen, Pelger and Zhu} were among the first to estimate an SDF for individual stocks with deep learning. Their contribution was to train the network on the pricing condition of Equation~\eqref{eq:22-pricing}, rather than on return forecasts, and to use an adversary to find the hardest test portfolios. Their SDF outperformed the benchmarks they considered in Sharpe ratio, explained variation and pricing errors. They found that the most important characteristics were familiar ones, led by measures of past price trends, profitability and capital structure, and that conditioning on the economic environment mattered.
-
-\subsection{Kelly, Kuznetsov, Malamud, Xu and Zhang (2024)}
-
-``Large and Deep Factor Models'' is a theoretical and empirical study of why deep SDF networks work. Its main result is that a deep network trained to build an SDF can be decomposed into a stage that discovers nonlinear characteristics and a stage that prices them like a large linear factor model. An earlier version of the paper reported that, with enough data, out-of-sample performance improved as the network was made deeper. The paper is a working paper and has been substantially revised, so its empirical results should be read in their latest version.
-
-\subsection{Kelly, Kuznetsov, Malamud and Xu (2025)}
-
-Kelly, Kuznetsov, Malamud and Xu\index{AI pricing model (AIPM)|textbf} used monthly U.S. stock returns from 1963 to 2022, taken from the open-source data of Jensen, Kelly and Pedersen (2023) that Chapter~\ref{ch:19} also uses. They kept 132 of the 153 characteristics in that data, dropped the tiniest stocks, and used the 132 corresponding factors as test assets. Each model was estimated in rolling 60-month windows, so the out-of-sample returns run from 1968 to 2022, and the neural models were averaged over ten random starting points. Table~\ref{tab:22-aipm} shows their main comparison.
-
-\begin{table}[htbp]
-\centering
-\small
-\caption{Out-of-sample performance of SDF models for U.S. stocks, 1968--2022, from Kelly, Kuznetsov, Malamud and Xu (2025), Table 1. The Sharpe ratio is annualized. The pricing error is the Hansen--Jagannathan distance on the 132 test factors; lower is better.}
-\label{tab:22-aipm}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-Model & Sharpe ratio & Pricing error \\
-\midrule
-Fama--French six factors & 1.01 & 0.55 \\
-Hou--Xue--Zhang $q$-factors & 1.77 & 0.42 \\
-Linear in characteristics (no attention) & 3.60 & 0.15 \\
-Shallow random-feature network & 3.87 & 0.13 \\
-Linear attention & 3.89 & 0.14 \\
-Deep network without attention (MLP) & 4.31 & 0.13 \\
-Transformer (AIPM) & 4.57 & 0.09 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Four results support the claim. First, the transformer had the highest Sharpe ratio and the smallest pricing error, about 30\% smaller than the deep network without attention. Its alpha against that network was about 1.9\% a year with a $t$-statistic of 8.4. Second, the advantage held after 2002, when the transformer's Sharpe ratio was 3.37 against 3.07 for the network without attention. Third, adding attention layers helped: the Sharpe ratio rose from about 3.8 with one transformer block to about 4.6 with ten, while making the networks without attention larger did not help. Fourth, within each size group the transformer had the highest Sharpe ratio, although its Sharpe ratio was much lower among mega and large stocks than among small and micro stocks.
-
-\subsection{Questions the papers leave open}
-
-Three questions matter for the verdict.
+Shi and coauthors\index{Kronos|textbf} pretrained Kronos on more than 12 billion bars from 45 exchanges, at seven sampling frequencies, including minute and daily bars, with six fields per bar: open, high, low, close, volume and amount. They compared it with 25 baselines, including general time series foundation models, non-pretrained deep networks, GARCH for volatility, and generative models for synthetic data. They reported the following results, mostly in a zero-shot setting:
 
 \begin{itemize}
-  \item \textbf{Costs.} The paper reports no trading costs. Portfolios built from monthly re-estimated weights on thousands of stocks can trade heavily, and Chapter~\ref{ch:17} showed how quickly costs can erase a paper return.
-  \item \textbf{Small stocks.} The highest Sharpe ratios come from small and micro stocks, the segment in which Chapter~\ref{ch:19} found anomalies concentrated and Chapter~\ref{ch:20} found machine-learning gains concentrated.
-  \item \textbf{Replication.} The paper is a working paper by a single team, and the result has not yet been reproduced independently. Every other model in Table~\ref{tab:22-aipm} also has a Sharpe ratio far above what investors have earned, which is a reminder that these are hypothetical, frictionless returns.
+  \item on price forecasting, a rank information coefficient (the correlation between predicted and actual rankings) 93\% higher than the best general foundation model and 87\% higher than the best non-pretrained model;
+  \item on volatility forecasting, a 9\% lower mean absolute error;
+  \item on synthetic data, a 22\% improvement in their measure of fidelity;
+  \item a simulated long-only investment test on Chinese A-shares, scored by excess return and information ratio.
 \end{itemize}
 
-\section{Lab~\thechapter: Replicating the linear-transformer SDF on anomaly portfolios}
-\label{sec:22-lab}
+The results come from the authors' own benchmarks, and the paper's main text does not make clear which periods and markets were held out of pretraining. The model's code and smaller versions are openly available, which makes independent testing possible.
+
+\subsection{Goel, Pasricha, Magris and Kanniainen (2025)}
+
+Goel and coauthors asked a narrower question with a careful design. They forecast next-day realized variance for 21 stock indices, including the S\&P 500, FTSE 100 and Nikkei 225, from 2000 to 2021, using five-minute realized variance from the Oxford-Man Institute's Realized Library. They compared TimesFM 2.0, used zero-shot and with incremental fine-tuning, against realized GARCH, ARFIMA, HAR and CHAR models, in both levels and logs. They scored forecasts with six loss functions, including MSE and QLIKE, and tested differences with Diebold--Mariano and Giacomini--White tests and the model confidence set.
+
+Their findings were nuanced. Incrementally fine-tuned versions generally beat their zero-shot counterparts. The best model overall was a fine-tuned TimesFM with a short history of 64 days, forecasting log variance; it had the lowest average squared error and was never significantly worse than any other model under three of the loss functions. Under QLIKE, the TimesFM versions with a history of 512 days, both zero-shot and fine-tuned, beat every econometric model at the 10\% level. The realized GARCH model remained hard to beat at predicting whether volatility would rise or fall.
+
+\subsection{Marconi (2025)}
+
+Marconi tested two foundation models, Tiny Time Mixers (TTM) and Chronos, on three financial tasks: changes in the U.S. 10-year Treasury yield, the volatility of the euro--dollar exchange rate, and an equity spread. The pretrained TTM, once fine-tuned, beat an identical network trained from scratch by 25\% to 50\% when data were limited and by 15\% to 30\% with longer data, and reached comparable accuracy with three to ten fewer years of data. Without fine-tuning, TTM beat naive benchmarks on volatility and the equity spread. Specialized traditional models, however, matched or beat TTM in two of the three tasks. The study's main lesson is that pretraining saves data, not that it beats the best specialized model.
+
+\section{Lab~\thechapter: Replicating Kronos and fine-tuned TimesFM on daily market data}
+\label{sec:23-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:22} at a glance.} \emph{Papers replicated:} Kelly, Kuznetsov, Malamud and Xu (2025), against the baseline of Kozak, Nagel and Santosh (2020). \emph{Claim on trial\index{claims-on-trial method}:} attention across assets improves an SDF's out-of-sample pricing and Sharpe ratio. \emph{Data:} the free monthly factor returns of Jensen, Kelly and Pedersen (153 U.S. factors, with their theme clusters), and the Fama--French five factors and momentum from the Kenneth R. French Data Library\index{Kenneth French data library}. \emph{Code:} runs as a script or as a notebook, with a prediction prompt before each step. Part D needs PyTorch; the other parts run on a laptop in minutes.
+\textbf{Lab~\ref{ch:23} at a glance.} \emph{Papers replicated:} Shi et al.\ (2025); Goel, Pasricha, Magris and Kanniainen (2025). \emph{Claim on trial\index{claims-on-trial method}:} foundation models trained or fine-tuned on market data forecast volatility better than GARCH and HAR. \emph{Data:} daily OHLCV bars for major stock indices and exchange-traded funds from a free source such as Stooq, used within its terms; daily market returns from the Kenneth R. French Data Library\index{Kenneth French data library}; the VIX from FRED\index{FRED}. If the bars cannot be downloaded, a fallback mode runs on the French library alone (see below). \emph{Models:} the open small version of Kronos, TimesFM, Chronos-Bolt from Lab~\ref{ch:21}, GARCH(1,1) and HAR. \emph{Code:} runs as a script or as a notebook, with a prediction prompt before each step. The zero-shot parts run on a laptop; fine-tuning TimesFM needs a GPU, such as a free cloud notebook.
 \end{callout}
 
-\textbf{The design.} The original study uses stock-level characteristics, which require paid CRSP and Compustat data. The lab therefore replicates the mechanism one level up. Its ``assets'' are the 153 JKP factors, and each factor's ``characteristics'' are five numbers known at the end of each month: its past 1-, 3- and 12-month returns, its volatility over the past 12 months and its average return over the past 36 months. Attention then lets each factor borrow information from factors that have behaved similarly. Every model is re-estimated each month on the previous 60 months, as in the original paper, and judged on the following month.
+\textbf{The design.} The lab's measure of daily variance is the Garman--Klass estimator of Equation~\eqref{eq:23-gk}, because intraday data are not freely available. Every model forecasts tomorrow's Garman--Klass variance using only data up to today. HAR is estimated on the same measure, and GARCH on daily returns.
 
 \begin{itemize}
-  \item \textbf{Part A, simple baselines.} The SDF built from the Fama--French five factors plus momentum, and the shrinkage SDF of Equation~\eqref{eq:22-kns} on all 153 factors, with $\gamma$ chosen by cross-validation inside each window.
-  \item \textbf{Part B, no attention.} A model in which each factor's weight depends only on its own five characteristics, first linearly and then through a small neural network.
-  \item \textbf{Part C, linear attention.} The linear transformer of Equation~\eqref{eq:22-linear}, estimated through its equivalent ridge regression on all products of three characteristics. With five characteristics there are 125 such products, so the regression has a closed-form solution.
-  \item \textbf{Part D, a small transformer.} A nonlinear transformer with one to four blocks, trained to maximize the SDF's Sharpe ratio and averaged over ten random starting points.
-  \item \textbf{Part E, scoring.} For each model, the out-of-sample Sharpe ratio of the SDF portfolio, its alpha against every other model, and the pricing errors of the 153 factors, reported for the full period and after 2002.
+  \item \textbf{Part A, zero-shot forecasts.} Kronos, TimesFM and Chronos-Bolt forecast next-day returns and next-day variance for each asset, with no fine-tuning. Return forecasts are scored by their rank correlation with actual returns across assets; variance forecasts by MSE and QLIKE.
+  \item \textbf{Part B, the Goel et al.\ replication.} TimesFM is fine-tuned incrementally on log Garman--Klass variance, following the 50\%--20\%--20\%--10\% schedule of the original study, and compared with GARCH and HAR estimated in the same windows. Differences are tested with Diebold--Mariano and Giacomini--White tests.
+  \item \textbf{Part C, fine-tuning choices.} The lab varies the history length (64, 128 and 512 days) and the fine-tuning method (last layers only, or LoRA) and reports how much each choice matters.
+  \item \textbf{Part D, synthetic paths.} Kronos generates 1,000 one-year daily paths for the S\&P 500, and a GARCH model with Student-$t$ shocks generates 1,000 more. Each set is scored on the stylized facts: kurtosis, autocorrelation of returns and of absolute returns at lags 1 to 50, and the correlation between today's return and tomorrow's absolute return.
+  \item \textbf{Part E, risk.} Each model's variance forecast is turned into a 99\% one-day VaR and backtested with the Kupiec and Christoffersen tests of Chapter~\ref{ch:11}.
+  \item \textbf{Part F, clean data.} Parts A, B and E are repeated using only days after each model's public release, the only period that no pretraining corpus could contain.
 \end{itemize}
 
-\textbf{What readers will find.} Lab Figure~\ref{ch:22}.1 plots the growth of a dollar in each SDF portfolio, scaled to the same volatility. Lab Figure~\ref{ch:22}.2 shows how the transformer's Sharpe ratio changes with the number of blocks. Lab Figure~\ref{ch:22}.3 is a heat map of average attention between factor clusters, showing which groups of factors borrow from which. The test of the claim is whether attention adds a significant alpha over the best model without attention, out of sample and after 2002.
+\textbf{A fallback that needs no download.}\index{squared return!as variance proxy} Free daily bars can be hard to obtain: since early 2026 Stooq asks each user to request a free key, and it limits how many files can be downloaded each day. If the bars cannot be obtained, the lab switches to a fallback mode that uses only the daily market return and the daily 49 industry portfolios from the Kenneth R. French Data Library, which the code downloads without a key. In this mode the day's variance is measured by the squared close-to-close return instead of the Garman--Klass estimator. HAR is built from daily, weekly and monthly averages of squared returns. Because a single squared return can be zero, TimesFM and Chronos-Bolt read the logarithm of the five-day average of squared returns, and every forecast is scored against the next day's squared return. QLIKE, in the form $\log F + RV/F$ of Section~\ref{sec:10-eval}, accepts a zero proxy, so the scoring rule does not change.
+
+The fallback runs Parts A, B, C, E and F for TimesFM, Chronos-Bolt, GARCH and HAR, with the industry portfolios taking the place of the indices and funds. Kronos is skipped, because it reads open, high, low, close and volume together and the French library publishes only returns. In Part D only the GARCH paths are generated, and they are compared with the real data. The code reports which mode it ran in, and readers should state the mode when they report results.
+
+The fallback answers a narrower question, but it still teaches something. A squared daily return is a much noisier measure of variance than the Garman--Klass estimator, so the loss of every model rises and the gaps between models shrink relative to the noise. The tests in Part B will therefore find fewer significant differences. This is the same lesson that Andersen and Bollerslev (1998) drew in Chapter~\ref{ch:10}: a noisy proxy makes good forecasts look worse and makes models harder to tell apart, but with a robust loss such as QLIKE it does not, on average, change which model ranks first (Patton 2011). A model that wins clearly in the fallback mode is therefore likely to win with better data too, while a tie in the fallback mode is not evidence that the models are equally good.
+
+\textbf{What readers will find.} Lab Figure~\ref{ch:23}.1 shows each model's variance forecasts for the S\&P 500 against the Garman--Klass variance in 2020 and 2022. Lab Figure~\ref{ch:23}.2 compares the autocorrelation of absolute returns in real data, Kronos paths and GARCH paths. Lab Figure~\ref{ch:23}.3 reports QLIKE losses relative to HAR, before and after each model's release date. The test of the claim is whether the foundation models beat GARCH and HAR under QLIKE, significantly, in Part F.
 
 \emph{[Draft note: the figures and numbers are generated by running the lab on data at the time of publication. The book prints the results; the text above does not anticipate them.]}
 
 \section{Stress tests}
-\label{sec:22-stress}
+\label{sec:23-stress}
 
-\textbf{1. A placebo.} A flexible model can find structure that is not there. The lab shuffles the characteristics across factors each month, so that a factor's characteristics belong to some other factor. If attention still adds alpha, it is fitting noise. If the advantage disappears, the model is using real information.
+\textbf{1. Crisis periods.} Volatility forecasts matter most when volatility jumps. The lab reports losses separately for February to April 2020 and for 2022, and asks whether any model reacts before the jump or only after it.
 
-\textbf{2. Large stocks.} The lab repeats Part E with JKP factors built from large stocks only, where JKP provide such versions. The original paper's own size-group results show much lower Sharpe ratios among mega and large stocks, and that is the segment an investor can trade in size.
+\textbf{2. A placebo with known truth.} The lab simulates a GARCH process with the parameters estimated on the S\&P 500 and asks each model to forecast it. On such data GARCH is the correct model, so a foundation model that beats it would be fitting noise. A foundation model that comes close shows that it has learned volatility clustering.
 
-\textbf{3. Costs.} The lab measures how much each model's factor weights change from month to month and charges an assumed cost for each unit of change. Because the factors are themselves long--short portfolios, this understates the true cost, so a model that loses its advantage under this charge would lose it in practice too.
+\textbf{3. Assets the model is unlikely to have seen.} The lab repeats Part A on small-country stock indices and on the simulated series. A large drop in accuracy compared with the major indices would suggest that part of the major-index performance is memory.
 
-\textbf{4. Window length and seeds.} The 60-month window and the network settings are choices. The lab repeats the analysis with 120-month windows and reports the spread of results across random starting points, in the spirit of the robustness grids of Chapter~\ref{ch:24}.
+\textbf{4. The measure of variance.} Garman--Klass variance is noisier than five-minute realized variance. Patton (2011) showed that noise in the measure does not change the ranking of forecasts under MSE and QLIKE, but it does reduce the power of the tests. Results that are not significant here may become significant with better data, and the lab says so.
 
-\textbf{5. A simpler explanation.} Following Nagel's (2025) test in Chapter~\ref{ch:20}, the lab compares the transformer's portfolio with a simple factor-timing rule, which overweights factors with high recent returns and low volatility. If the transformer's returns are largely explained by that rule, attention has rediscovered a simple strategy rather than found a new one.
+\textbf{5. Compute against accuracy.} A HAR model is three regression coefficients estimated in a fraction of a second. A fine-tuned foundation model needs a GPU and hours of computation. The lab reports the gain in QLIKE per hour of computation, a reminder that a small gain may not be worth the cost.
 
 \section{Verdict}
-\label{sec:22-verdict}
+\label{sec:23-verdict}
 
-Based on the published evidence, to be confirmed by readers' runs of Lab~\ref{ch:22}: \textbf{provisional.}
+Based on the published evidence, to be confirmed by readers' runs of Lab~\ref{ch:23}: \textbf{provisional.}
 
 \begin{center}
 \small
@@ -225,49 +203,49 @@ Based on the published evidence, to be confirmed by readers' runs of Lab~\ref{ch
 \toprule
 Test & Finding & Effect on the claim \\
 \midrule
-Against factor models & Far higher Sharpe ratio and far smaller pricing errors than FF6 and the $q$-factors & Supports \\
-Against other machine learning & Smaller pricing errors than the best network without attention, with a significant alpha & Supports \\
-After 2002 & Advantage smaller but still present & Supports, weakened \\
-Large stocks & Highest within each size group, but with much lower Sharpe ratios than in small stocks & Supports only weakly \\
-Costs & Not reported & Untested \\
-Independent replication & None yet & Untested \\
+Kronos, volatility & 9\% lower error than baselines, on the authors' benchmarks & Supports, not independently verified \\
+Kronos, synthetic data & 22\% better fidelity, on the authors' measure & Supports, not independently verified \\
+Fine-tuned TimesFM & Beats GARCH and HAR under several losses, including QLIKE, on 21 indices & Supports \\
+Zero-shot TimesFM & Generally behind fine-tuned versions, but competitive under QLIKE with a long history & Supports in part \\
+Specialized models & Matched or beat TTM in two of three tasks & Weakens \\
+Clean post-release data & Not yet reported & Untested \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-The statistical form of the claim has strong support in one careful study: a transformer that shares information across stocks priced U.S. stocks better than both factor models and earlier machine-learning models, out of sample and over five decades. The economic form has not been tested. No trading costs were reported, the largest gains are among smaller stocks, and the result has not yet been replicated by an independent team. A verdict of provisional is the honest one until those tests are done. The verdict is dated by the sample tested.
+The evidence suggests that training on market data helps. A general foundation model, fine-tuned step by step on volatility data, can match and sometimes beat the best econometric volatility models, and a model pretrained only on market data reports large gains on its authors' benchmarks. The evidence is young, mostly from working papers, and none of it yet uses data that the models could not have seen. Until it does, the claim is provisional. The verdict is dated by the sample tested.
 
 \section{What investors can use}
-\label{sec:22-investors}
+\label{sec:23-investors}
 
-\textbf{Read Sharpe ratios above three as research results, not as returns.} Every machine-learning SDF in this chapter reports Sharpe ratios that no fund has delivered for long. They are hypothetical, frictionless and long--short, and they include stocks that are hard to trade.
+\textbf{Keep HAR and GARCH as the yardstick.} They are cheap, transparent and hard to beat. A foundation model earns a place in a risk system only if it beats them out of sample, under QLIKE, by enough to change a risk decision.
 
-\textbf{The lasting lesson is about information.} Stocks are not independent. The attention result suggests that information about related firms helps to explain returns. An investor can use that idea without a transformer, for example by watching how a company's suppliers, customers and competitors are moving.
+\textbf{Fine-tune, and fine-tune honestly.} The evidence favors models adapted to the series at hand over models used as delivered. Every fine-tuning step must use only data available at the time.
 
-\textbf{Treat ``AI-powered'' as a claim to test.} A product built on these models should be judged by the same questions as any other strategy.
+\textbf{Use synthetic data for stress tests, with checks.} Synthetic price paths can widen a stress test beyond the few crises in history, but only if they reproduce fat tails and volatility clustering. Check them against a GARCH simulation before trusting them.
 
-\textbf{Questions to ask a manager who uses AI to price stocks:}
+\textbf{Questions to ask a vendor of a financial foundation model:}
 
 \begin{enumerate}
-  \item What is the strategy's Sharpe ratio after costs, among stocks you can trade in your size?
-  \item How much of the return comes from small and micro stocks?
-  \item How does the model compare with a simple linear model on the same characteristics, and with a simple factor-timing rule?
-  \item How often is the model re-estimated, how much does the portfolio turn over, and what happened in periods when it was not re-trained?
-  \item Has anyone outside your team reproduced the results?
+  \item What data was the model trained on, and up to what date?
+  \item How does it compare with HAR and GARCH under QLIKE, on data after the training cutoff?
+  \item Was the model fine-tuned on the test period, or on any data after the forecast date?
+  \item How much better are its VaR numbers, by the Kupiec and Christoffersen tests?
+  \item What does it cost to run and to re-train, and how often must it be re-trained?
 \end{enumerate}
 
 \begin{callout}
-\textbf{What Failed: the quant quake of August 2007.} In the first two weeks of August 2007, many quantitative equity funds that held long--short portfolios built from similar characteristics, such as value, momentum and quality, suffered large and sudden losses, followed by a partial rebound. Khandani and Lo (2011) traced the episode to the rapid unwinding of one or more large portfolios, which pushed down the prices of the stocks that all these funds held long and pushed up the prices of the stocks they held short. The models were not wrong about average returns. They were wrong about risk: funds that thought they held different strategies had built nearly the same portfolio from the same characteristics. The claim that a characteristic-based model's backtested risk describes its live risk \textbf{fails} when many investors use similar models. A model that learns from the same public characteristics as everyone else may end up in the same crowded trades.
+\textbf{What Failed: forecasting volatility from calm data, March 2020.} In mid-February 2020 the VIX was below 15, and models estimated on the calm years before it forecast low volatility. Within a month the S\&P 500 fell by about a third, and on March 16 the VIX closed at 82.69, its highest close on record. Every model that forecasts volatility from past data, from GARCH to a foundation model, raised its forecast only after the turmoil had begun. Models that react quickly to new data, such as GARCH and HAR, adjusted within days; risk measures based on long, equally weighted windows took months. The claim that any model trained on calm data can anticipate a regime shift \textbf{fails}. What a better model can offer is a faster and more accurate response once the shift begins, which is exactly what the crisis tests in this chapter measure.
 \end{callout}
 
 \section{Open questions}
-\label{sec:22-open}
+\label{sec:23-open}
 
 \begin{itemize}
-  \item \textbf{What does attention learn?} Observable links between firms explain only a small part of the transformer's attention. What does the rest represent?
-  \item \textbf{Do the gains survive costs?} A cost-aware version of the model, trained to maximize net rather than gross Sharpe ratio, has not yet been published.
-  \item \textbf{Is it risk or mispricing?} An SDF with a Sharpe ratio above four implies extremely volatile marginal utility if it reflects risk. If it reflects mispricing, how long can it last once the model is widely used?
-  \item \textbf{Beyond U.S. stocks.} Does attention help in other countries, where the JKP data also allow tests, and in other asset classes?
+  \item \textbf{Memory or skill?} How much of a market-trained model's accuracy on major indices comes from having seen them in pretraining?
+  \item \textbf{Which data to pretrain on?} Is more data from more markets always better, or does data from very different markets, such as cryptocurrencies or minute bars, help or hurt daily equity forecasts?
+  \item \textbf{Returns as well as risk?} Volatility is predictable, so a better model can improve on GARCH. Returns are mostly not, as Chapter~\ref{ch:09} showed. Do the gains in price forecasting survive costs and post-release data?
+  \item \textbf{Generative models for risk.} Can synthetic paths from a foundation model improve stress tests and capital estimates, and how should regulators judge them?
 \end{itemize}
 
 \section*{Exercises}
@@ -275,20 +253,21 @@ The statistical form of the claim has strong support in one careful study: a tra
 \subsection*{Conceptual (all readers)}
 
 \begin{enumerate}
-  \item Explain in words why an asset that pays off in bad times should earn a lower average return, using the SDF of Equation~\eqref{eq:22-pricing}.
-  \item Show that if $M = 1 - w'R^e$ prices two uncorrelated assets with expected excess returns of 4\% and 6\% and variances of 0.04 and 0.09, the weights are $w = (1, 0.67)$. What is the Sharpe ratio of the SDF portfolio?
-  \item In the shrinkage SDF of Equation~\eqref{eq:22-kns}, a principal component has variance 0.0001 and another has variance 0.01, and $\gamma = 0.001$. By what fraction is each component's weight shrunk? Why is this economically sensible?
-  \item Repeat the attention worked example for stock 3. Which stock does stock 3 pay most attention to, and what is its new value?
-  \item Explain why a Sharpe ratio of 4.57 in a research paper does not mean that an investor could have earned it.
+  \item A day's bar has open 50, high 51, low 49 and close 50.5. Compute the Parkinson and Garman--Klass variance estimates and the implied daily volatilities.
+  \item Explain why range-based estimators are biased downward when trading is not continuous, and why they miss overnight risk.
+  \item Why must incremental fine-tuning use only data before each test period? Describe what would go wrong if the whole sample were used.
+  \item List the stylized facts of daily returns. Which of them does a GARCH model with normal shocks fail to reproduce?
+  \item Explain the difference between the Diebold--Mariano test and the Giacomini--White test. When does the difference matter?
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
   \setcounter{enumi}{5}
-  \item In Part C, add the JKP theme cluster of each factor as extra characteristics. Does attention concentrate within clusters?
-  \item Run the placebo of Stress test 1 one hundred times. Where does the real model's alpha fall in the distribution of placebo alphas?
-  \item In Part D, plot the out-of-sample Sharpe ratio against the number of transformer blocks for windows of 60 and 120 months. Does depth help in both?
-  \item Charge costs of 5, 10 and 20 basis points per unit change in factor weights. At what cost does the transformer's advantage over the shrinkage SDF disappear?
-  \item Repeat the full lab with the JKP factors for developed markets outside the United States. Is the ranking of models the same?
+  \item In Part B, replace QLIKE with MSE. Does the ranking of models change? Relate your answer to Section~\ref{sec:10-eval}.
+  \item In Part D, compute the leverage effect in each set of synthetic paths. Which generator reproduces it?
+  \item Run Part B twice, once with Garman--Klass variance and once in the fallback mode with squared returns, on the same dates. How much does the QLIKE gap between TimesFM and HAR shrink relative to its standard error? Relate your answer to Andersen and Bollerslev (1998) in Chapter~\ref{ch:10}.
+  \item In Part E, compute the 99\% VaR from Kronos's sampled paths directly, as a quantile, instead of from its variance forecast. Does the backtest improve?
+  \item Add the VIX as a covariate to HAR. Does any foundation model still beat it in Part F?
+  \item Fine-tune Kronos on the first half of the post-release data and test on the second half. Compare the gain from fine-tuning with the gain Goel and coauthors found for TimesFM.
 \end{enumerate}

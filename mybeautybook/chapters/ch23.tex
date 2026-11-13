@@ -1,7 +1,8 @@
-% Chapter 23 -- Claim: Foundation Models Trained on Market Data Beat GARCH
-% Requires: amsmath, amssymb, booktabs, array, tabularx, tcolorbox (breakable, skins), hyperref or url.
+% Chapter 24 -- Capstone: Replicating a Finance Claim
+% Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
 \makeatletter
 \@ifundefined{callout}{%
   \newtcolorbox{callout}{breakable, enhanced,
@@ -11,263 +12,516 @@
 }{}
 \makeatother
 
-\chapter{Claim: Foundation Models Trained on Market Data Beat GARCH}
-\label{ch:23}
+\chapter{Capstone: Replicating a Finance Claim}
+\label{ch:24}
 
-Chapter~\ref{ch:21} tested general-purpose time-series foundation models\index{foundation models}, trained on electricity demand, traffic, weather and many other series, and used them on financial data without further training. One study in that chapter found that pretraining on financial data helped. In 2025 two lines of work followed that lead. The first builds a model from market data alone: Shi et al.\ (2025) introduced Kronos, pretrained on more than 12 billion price bars from 45 exchanges, and reported that it forecast prices and volatility better than general foundation models and produced more realistic synthetic market data. The second keeps a general model but adapts it: Goel, Pasricha, Magris and Kanniainen (2025) fine-tuned Google's TimesFM step by step on realized-volatility data and reported that it beat the econometric models that risk managers have used for decades.
+This book has put twenty-three claims on trial\index{claims-on-trial method}. The capstone asks the reader to run a trial of their own: take a published finance result, reproduce it, extend it and deliver a dated verdict that others can check. Replication\index{replication} is how a field corrects itself, and finance has come to it late. In 2021 the \emph{Journal of Finance} retracted an article after Paul Guest, attempting a replication, found that key results could not be reproduced from the code and data the authors had posted. The editors noted that retractions are rare in finance and economics mainly because replications are rarely attempted, not because published work is free of errors (American Finance Association 2021).
 
-The benchmark both lines must beat is familiar. GARCH and its relatives, tested in Chapter~\ref{ch:10}, forecast volatility well with a handful of parameters, and they have been refined for forty years. The question is whether a model with millions of parameters, trained on market data, can do better, and whether the improvement survives a fair test: the same data, the same loss function, and only periods the model could not have seen during training.
+The reasons for the gap are well understood. Original studies often use paid databases, code is rarely published, and a replication that confirms a result is hard to publish. The tools of earlier chapters show why this matters: a result found by searching can be luck (Chapter~\ref{ch:01}), a result built on flawed data can be an artefact (Chapter~\ref{ch:02}), and a result that holds in sample can fail out of sample (Chapter~\ref{ch:09}). Pre-registration\index{pre-registration}, power analysis\index{statistical power} and open code, borrowed from medicine and psychology, are the field's response.
 
-The implications reach risk management and trading. Better volatility forecasts would improve option pricing, Value-at-Risk and volatility targeting, and realistic synthetic data would help test strategies on more history than the market has produced. The claim on trial\index{claims-on-trial method} is: \textbf{foundation models pretrained or fine-tuned on financial market data beat both general-purpose foundation models and econometric benchmarks such as GARCH and HAR in forecasting volatility.}
+The capstone is also a portfolio piece. A well-documented replication, with code that runs in one command, shows employers and admissions committees exactly how its author works, and it can grow into a paper or a dissertation chapter. The chapter's first sections give the research-design tools a replication needs: testable hypotheses, benchmarks, power, pre-registration, robustness and critical reading. The remaining sections turn them into a project. Its lab, in Section~\ref{sec:24-lab}, provides a project template, and its worked example replicates Jegadeesh and Titman (1993), the momentum paper of Chapter~\ref{ch:05}, on its original 1965--1989 sample with free data, in order to show every step: reproducing the published numbers, explaining any differences, and extending the test to new data.
 
-The lab in Section~\ref{sec:23-lab} replicates the core volatility comparisons of Shi et al.\ (2025) and Goel et al.\ (2025) on free daily market data, with Stooq price bars where a free key is available and a fallback that uses only the Kenneth R. French Data Library, in order to check whether models trained on market data really beat GARCH under a fair test.
-
-By the end of the chapter you will be able to:
+By the end of the capstone you will have:
 
 \begin{itemize}
-  \item describe a price bar and estimate daily volatility from its high, low, open and close;
-  \item explain how Kronos turns price bars into tokens and generates forecasts by sampling;
-  \item distinguish full, incremental and parameter-efficient fine-tuning, and set up fine-tuning without look-ahead;
-  \item judge synthetic market data against the stylized facts of returns;
-  \item compare forecasts with the Diebold--Mariano and Giacomini--White tests;
-  \item state the claim in a form that can fail, and test it after each model's training cutoff.
+  \item chosen a claim that is testable, worthwhile and feasible with available data;
+  \item written and frozen a pre-registration\index{pre-registration} with a power analysis\index{statistical power};
+  \item reproduced the original result and explained any differences;
+  \item extended it to new periods, markets or costs;
+  \item written a report with a dated verdict, and released code and data;
+  \item refereed a classmate's replication and answered referee\index{peer review} comments on your own.
 \end{itemize}
 
-\section{Foundations: market data, fine-tuning and synthetic data}
-\label{sec:23-foundations}
+Lab~\ref{ch:24} provides a ready-made project template that builds all of this in, and a worked example that shows a finished project.
 
-\subsection{OHLCV (K-line) bars}
+\section{Turning a claim into testable hypotheses}
+\label{sec:24-hypotheses}
 
-Exchanges summarize trading over each interval, such as a minute, an hour or a day, in a \textbf{price bar}\index{price bar|textbf}. A bar records five numbers: the \textbf{open}, the first trade price in the interval; the \textbf{high} and the \textbf{low}, the highest and lowest prices; the \textbf{close}, the last price; and the \textbf{volume}, the number of shares or contracts traded. Together they are called \textbf{OHLCV} data. Some data sets add a sixth number, the \textbf{amount}, which is the value traded in currency. Charts draw each bar as a candlestick, and in Chinese and Japanese markets bars are often called \textbf{K-lines}\index{K-line}, which is why Kronos's authors speak of the ``language of K-lines.''
+Claims in finance usually arrive in loose language: ``value beats growth\index{value premium}'', ``momentum\index{momentum} works'', ``AI can read the news''. A testable version needs five elements:
 
-A bar carries more information than a closing price. A day that closes where it opened may still have swung widely between its high and its low, and that swing says something about volatility. The volume says how actively the market traded.
+\begin{enumerate}
+  \item \textbf{The object.} What exactly earns what? For example, the value-weighted\index{index weighting!value-weighted} top decile of stocks by book-to-market\index{book-to-market ratio} minus the bottom decile, with NYSE breakpoints\index{NYSE breakpoints}.
+  \item \textbf{The quantity.} Mean return, alpha\index{alpha} against a model, Sharpe ratio, out-of-sample $R^2$\index{out-of-sample $R^2$} or a regression slope.
+  \item \textbf{The comparison.} Against zero, a benchmark or another method.
+  \item \textbf{The direction.} Most claims are one-sided: the effect is positive, or the new method is better.
+  \item \textbf{The decision rule.} What result counts as support, what as failure and what as inconclusive.
+\end{enumerate}
 
-\subsection{Range-based volatility: Parkinson and Garman--Klass}
+Each claim chapter in this book started from a sentence (``The claim'') and turned it into tests in the lab. The same discipline applies to new research. Write the claim as one falsifiable sentence, then translate it into a \textbf{primary hypothesis}, the single test that decides the question, and a short list of \textbf{secondary hypotheses}\index{primary and secondary hypotheses|textbf}, which add depth but cannot rescue a failed primary test.
 
-Chapter~\ref{ch:10} measured a day's variance with the squared daily return, which is noisy, or with realized variance\index{realized variance} from intraday returns, which is accurate but requires intraday data that are rarely free. Daily bars allow a middle path. Write $H_t$, $L_t$, $O_t$ and $C_t$ for the high, low, open and close on day $t$. Parkinson (1980) showed that the squared log range is an estimate of the day's variance:
-\begin{equation}
-  \hat\sigma^2_{P,t} = \frac{1}{4 \ln 2} \left(\ln \frac{H_t}{L_t}\right)^2.
-  \label{eq:23-parkinson}
-\end{equation}
-Garman and Klass (1980) added the open and close:
-\begin{equation}
-  \hat\sigma^2_{GK,t} = \frac{1}{2} \left(\ln \frac{H_t}{L_t}\right)^2 - \left(2\ln 2 - 1\right) \left(\ln \frac{C_t}{O_t}\right)^2.
-  \label{eq:23-gk}
-\end{equation}
-Under ideal conditions, with continuous trading and no drift, these estimators are several times more precise than the squared close-to-close return. In practice they have two weaknesses. They ignore the jump between yesterday's close and today's open, which matters for stock markets that are closed overnight, and they are biased downward when trading is not continuous, because the recorded high and low miss the true extremes. They are still a large improvement on squared returns, and this chapter's lab uses the Garman--Klass estimator as its measure of daily variance.
+The decision rule matters as much as the test. ``Support'' should require more than statistical significance\index{statistical significance}: a sign and size consistent with the claim, and significance in the sample the claim is about (often the period after publication). ``Failure'' should be defined too, so that a null result is reported as evidence rather than as a disappointment.
 
-\textbf{Worked example.} A stock index opens at 100, trades between 98 and 103, and closes at 101. Then $\ln(H/L) = \ln(103/98) = 0.0498$ and $\ln(C/O) = \ln(1.01) = 0.0100$. The Parkinson estimate is $0.0498^2/(4 \times 0.693) = 0.00089$, a daily volatility of about 3.0\%. The Garman--Klass estimate is $0.5 \times 0.0498^2 - 0.386 \times 0.0100^2 = 0.00120$, a daily volatility of about 3.5\%.
+\section{Sample, benchmarks and controls}
+\label{sec:24-sample}
 
-\subsection{Tokenizing multivariate bars}
-
-Chapter~\ref{ch:21} explained how Chronos turns a single series into tokens by scaling it and sorting each value into one of a fixed set of bins. A price bar has five or six numbers that move together, so Kronos tokenizes the whole bar at once. A small encoder network compresses each normalized bar into a short code of zeros and ones, using a method called \textbf{binary spherical quantization}. In the paper's main setting the code has 20 bits, which allows about a million different tokens. The code is split into a \textbf{coarse} part and a \textbf{fine} part of 10 bits each, much as a price can be described first roughly and then precisely.
-
-A transformer then learns the ``language'' of these tokens. Given a history of bars, it predicts the coarse part of the next token, then the fine part given the coarse part, and so on, one bar at a time. To forecast, Kronos samples many possible future paths in this way and averages them. The same sampling produces synthetic price histories. The paper describes three sizes of the model, with about 25 million, 100 million and 500 million parameters, and a history of up to 512 bars.
-
-\subsection{Fine-tuning: full, incremental and parameter-efficient}
-
-A pretrained model can be adapted to a new task by \textbf{fine-tuning}\index{fine-tuning|textbf}: continuing its training on data from that task. There are three main ways to do it.
+\textbf{Sample.} The sample should be chosen for reasons that do not depend on the result:
 
 \begin{itemize}
-  \item \textbf{Full fine-tuning} updates every parameter. It is the most flexible and the most expensive, and with a small data set it can overfit and forget what the model learned in pretraining.
-  \item \textbf{Parameter-efficient fine-tuning} freezes most of the network and trains only a small part. One option trains only the last layers. Another, called \textbf{LoRA}\index{LoRA} (low-rank adaptation; Hu et al.\ 2022), adds to each large weight matrix a correction made of two thin matrices, so that only a small number of new parameters are trained.
-  \item \textbf{Incremental fine-tuning} repeats the training as new data arrive. Goel and coauthors fine-tuned TimesFM on the first half of their sample, tested it on the next fifth, then added that fifth to the training data, fine-tuned again and tested on the following fifth, and so on. This is the walk-forward design of Section~\ref{sec:09-walkforward}, applied to a neural network.
+  \item \textbf{Period.} The full available history, the period after the original publication (for replications), or both.
+  \item \textbf{Universe.} Which securities are included, and how microcaps\index{micro-caps} are treated. Hou, Xue and Zhang\index{q-factor model} (2020) found that about 65\% of 452 anomalies\index{anomaly} were insignificant at the 5\% level once microcaps were limited by NYSE breakpoints and value weighting. Chen and Zimmermann (2022), using the original papers' own methods, reproduced nearly all clearly significant predictors. Much of the difference between the two studies lies in such design choices.
+  \item \textbf{Data vintage\index{data!vintages}.} Data are revised. Record the download date and keep a copy.
+  \item \textbf{Exclusions.} State them in advance: financial firms, low-priced stocks, missing data.
 \end{itemize}
 
-The rule that matters most is the same as in every forecasting chapter: fine-tune only on data that end before the period being forecast. A model fine-tuned on the whole sample and then tested on part of it has seen the answers.
-
-\subsection{Synthetic market data and the stylized facts}
-
-A model that can generate realistic price paths has uses beyond forecasting. Risk managers can use synthetic paths to stress-test portfolios, and researchers can use them to enlarge small data sets. A synthetic path is useful only if it behaves like real data. Cont (2001) summarized the \textbf{stylized facts}\index{stylized facts|textbf} that real returns show across markets, several of which Chapter~\ref{ch:10} documented:
+\textbf{Benchmarks.} A claim that a method is ``better'' needs a strong benchmark, not a straw man:
 
 \begin{itemize}
-  \item daily returns have fat tails, with far more extreme days than a normal distribution allows;
-  \item returns themselves show almost no autocorrelation, but absolute and squared returns show strong, slowly decaying autocorrelation, which is \textbf{volatility clustering}\index{volatility clustering};
-  \item volatility tends to rise after prices fall, the \textbf{leverage effect}\index{leverage effect};
-  \item returns over longer horizons, such as a month, look closer to normal than daily returns.
+  \item the historical mean\index{historical-mean benchmark} for return forecasts (Chapter~\ref{ch:05});
+  \item 1/N\index{equal weighting (1/N)} for portfolios (Chapter~\ref{ch:12});
+  \item AR and HAR\index{HAR model} models for forecasting series (Chapters~\ref{ch:10} and~\ref{ch:21});
+  \item a linear model with the same inputs for machine learning\index{machine learning} (Chapter~\ref{ch:20});
 \end{itemize}
 
-A GARCH model with fat-tailed shocks reproduces most of these facts with a few parameters, so it is the natural benchmark for any generative model. Kronos's authors measured realism in two ways: how well a classifier could tell synthetic paths from real ones, and how well a model trained only on synthetic data performed on real data.
+\textbf{Controls.} For return claims, control for known factors (market, size, value, momentum, profitability, investment) and report alphas. For causal claims, choose controls that block confounding paths without introducing new bias; Angrist and Pischke warn against ``bad controls'' that are themselves outcomes of the treatment.
 
-\subsection{The Giacomini--White test}
+\textbf{Out of sample.}\index{in-sample versus out-of-sample|textbf} Reserve data that will be used only once, for the final test. Chapter~\ref{ch:09} covers walk-forward\index{walk-forward evaluation} designs, purging\index{purging and embargoing} and embargoes.
 
-The Diebold--Mariano test of Section~\ref{sec:09-accuracy} asks whether one forecast has a lower average loss than another. It assumes that the models' parameters are known, or estimated on ever-growing samples. When models are re-estimated on a rolling window, or fine-tuned again and again, Giacomini and White (2006) offer a test that treats the whole forecasting method, including the estimation, as the object being compared. Write $d_{t+1}$ for the difference in losses between methods A and B at time $t+1$. The test asks whether the loss difference can be predicted from information available at time $t$:
-\begin{equation}
-  H_0: E\left[d_{t+1} \mid \mathcal{F}_t\right] = 0.
-  \label{eq:23-gw}
-\end{equation}
-In practice the researcher chooses a few variables $h_t$ known at time $t$, such as a constant and yesterday's loss difference, and tests whether the averages of $h_t d_{t+1}$ are all zero with a standard Wald test. With only a constant, the test reduces to a Diebold--Mariano test, but it remains valid when models are re-estimated on rolling windows. With more variables it can reveal that one method is better in some conditions, such as calm markets, and worse in others.
+\section{Power: how much data is enough}
+\label{sec:24-power}
 
-\section{How it works}
-\label{sec:23-how}
-
-\textbf{Why train on market data?} A model pretrained on electricity and weather learns patterns such as daily cycles, trends and smooth seasonality. Markets have little of that. Their most reliable patterns are fat tails, volatility clustering and the link between falling prices and rising volatility. A model trained on billions of price bars sees those patterns constantly and in every market, and Kronos's authors argue that this is why it forecasts volatility and generates realistic paths better than general models.
-
-\textbf{Why fine-tuning helps.} Markets change. A model pretrained once, or a general model, may have learned the volatility patterns of a different era or a different domain. Fine-tuning on recent data from the series being forecast lets the model adjust its scale and dynamics. Goel and coauthors found that TimesFM used zero-shot was a reasonable but not leading forecaster of volatility, and that repeated fine-tuning was what made it competitive.
-
-\textbf{A new leakage risk.} A model pretrained on 45 exchanges has very likely seen the S\&P 500, the major currency pairs and the large stocks that a student would test it on, and possibly over the same dates. If so, a test on that history measures memory, not forecasting skill. This is the pretraining leakage\index{leakage!pretraining} that Section~\ref{sec:21-contam} described for general models, and it is more severe here, because the pretraining data and the test data come from the same markets. The only clean test uses data that arrived after the model's training data were collected.
-
-\section{The claim}
-\label{sec:23-claim}
-
-Stated so that it can fail:
-
-\begin{callout}
-\textbf{Foundation models that are pretrained or fine-tuned on financial market data forecast volatility more accurately than GARCH and HAR models, and generate synthetic price paths that match the stylized facts of returns better than a GARCH simulation, on data that arrived after the models were trained.}
-\end{callout}
-
-The claim has a \textbf{forecasting form} and a \textbf{generative form}. The tests follow:
-
-\begin{itemize}
-  \item \textbf{Benchmarks.} Are the comparisons against well-specified econometric models, such as GARCH and HAR, estimated on the same data?
-  \item \textbf{Loss functions.} Does the advantage hold under the QLIKE loss that Chapter~\ref{ch:10} recommended for volatility, not only under squared error?
-  \item \textbf{Clean data.} Does the advantage survive on data the model could not have seen?
-  \item \textbf{Economic value.} Is the improvement large enough to change a risk number, such as a 99\% VaR, in a way that its backtest can detect?
-\end{itemize}
-
-\section{The original evidence}
-\label{sec:23-evidence}
-
-\subsection{Shi et al. (2025): Kronos}
-
-Shi and coauthors\index{Kronos|textbf} pretrained Kronos on more than 12 billion bars from 45 exchanges, at seven sampling frequencies, including minute and daily bars, with six fields per bar: open, high, low, close, volume and amount. They compared it with 25 baselines, including general time series foundation models, non-pretrained deep networks, GARCH for volatility, and generative models for synthetic data. They reported the following results, mostly in a zero-shot setting:
-
-\begin{itemize}
-  \item on price forecasting, a rank information coefficient (the correlation between predicted and actual rankings) 93\% higher than the best general foundation model and 87\% higher than the best non-pretrained model;
-  \item on volatility forecasting, a 9\% lower mean absolute error;
-  \item on synthetic data, a 22\% improvement in their measure of fidelity;
-  \item a simulated long-only investment test on Chinese A-shares, scored by excess return and information ratio.
-\end{itemize}
-
-The results come from the authors' own benchmarks, and the paper's main text does not make clear which periods and markets were held out of pretraining. The model's code and smaller versions are openly available, which makes independent testing possible.
-
-\subsection{Goel, Pasricha, Magris and Kanniainen (2025)}
-
-Goel and coauthors asked a narrower question with a careful design. They forecast next-day realized variance for 21 stock indices, including the S\&P 500, FTSE 100 and Nikkei 225, from 2000 to 2021, using five-minute realized variance from the Oxford-Man Institute's Realized Library. They compared TimesFM 2.0, used zero-shot and with incremental fine-tuning, against realized GARCH, ARFIMA, HAR and CHAR models, in both levels and logs. They scored forecasts with six loss functions, including MSE and QLIKE, and tested differences with Diebold--Mariano and Giacomini--White tests and the model confidence set.
-
-Their findings were nuanced. Incrementally fine-tuned versions generally beat their zero-shot counterparts. The best model overall was a fine-tuned TimesFM with a short history of 64 days, forecasting log variance; it had the lowest average squared error and was never significantly worse than any other model under three of the loss functions. Under QLIKE, the TimesFM versions with a history of 512 days, both zero-shot and fine-tuned, beat every econometric model at the 10\% level. The realized GARCH model remained hard to beat at predicting whether volatility would rise or fall.
-
-\subsection{Marconi (2025)}
-
-Marconi tested two foundation models, Tiny Time Mixers (TTM) and Chronos, on three financial tasks: changes in the U.S. 10-year Treasury yield, the volatility of the euro--dollar exchange rate, and an equity spread. The pretrained TTM, once fine-tuned, beat an identical network trained from scratch by 25\% to 50\% when data were limited and by 15\% to 30\% with longer data, and reached comparable accuracy with three to ten fewer years of data. Without fine-tuning, TTM beat naive benchmarks on volatility and the equity spread. Specialized traditional models, however, matched or beat TTM in two of the three tasks. The study's main lesson is that pretraining saves data, not that it beats the best specialized model.
-
-\section{Lab~\thechapter: Replicating Kronos and fine-tuned TimesFM on daily market data}
-\label{sec:23-lab}
-
-\begin{callout}
-\textbf{Lab~\ref{ch:23} at a glance.} \emph{Papers replicated:} Shi et al.\ (2025); Goel, Pasricha, Magris and Kanniainen (2025). \emph{Claim on trial\index{claims-on-trial method}:} foundation models trained or fine-tuned on market data forecast volatility better than GARCH and HAR. \emph{Data:} daily OHLCV bars for major stock indices and exchange-traded funds from a free source such as Stooq, used within its terms; daily market returns from the Kenneth R. French Data Library\index{Kenneth French data library}; the VIX from FRED\index{FRED}. If the bars cannot be downloaded, a fallback mode runs on the French library alone (see below). \emph{Models:} the open small version of Kronos, TimesFM, Chronos-Bolt from Lab~\ref{ch:21}, GARCH(1,1) and HAR. \emph{Code:} runs as a script or as a notebook, with a prediction prompt before each step. The zero-shot parts run on a laptop; fine-tuning TimesFM needs a GPU, such as a free cloud notebook.
-\end{callout}
-
-\textbf{The design.} The lab's measure of daily variance is the Garman--Klass estimator of Equation~\eqref{eq:23-gk}, because intraday data are not freely available. Every model forecasts tomorrow's Garman--Klass variance using only data up to today. HAR is estimated on the same measure, and GARCH on daily returns.
-
-\begin{itemize}
-  \item \textbf{Part A, zero-shot forecasts.} Kronos, TimesFM and Chronos-Bolt forecast next-day returns and next-day variance for each asset, with no fine-tuning. Return forecasts are scored by their rank correlation with actual returns across assets; variance forecasts by MSE and QLIKE.
-  \item \textbf{Part B, the Goel et al.\ replication.} TimesFM is fine-tuned incrementally on log Garman--Klass variance, following the 50\%--20\%--20\%--10\% schedule of the original study, and compared with GARCH and HAR estimated in the same windows. Differences are tested with Diebold--Mariano and Giacomini--White tests.
-  \item \textbf{Part C, fine-tuning choices.} The lab varies the history length (64, 128 and 512 days) and the fine-tuning method (last layers only, or LoRA) and reports how much each choice matters.
-  \item \textbf{Part D, synthetic paths.} Kronos generates 1,000 one-year daily paths for the S\&P 500, and a GARCH model with Student-$t$ shocks generates 1,000 more. Each set is scored on the stylized facts: kurtosis, autocorrelation of returns and of absolute returns at lags 1 to 50, and the correlation between today's return and tomorrow's absolute return.
-  \item \textbf{Part E, risk.} Each model's variance forecast is turned into a 99\% one-day VaR and backtested with the Kupiec and Christoffersen tests of Chapter~\ref{ch:11}.
-  \item \textbf{Part F, clean data.} Parts A, B and E are repeated using only days after each model's public release, the only period that no pretraining corpus could contain.
-\end{itemize}
-
-\textbf{A fallback that needs no download.}\index{squared return!as variance proxy} Free daily bars can be hard to obtain: since early 2026 Stooq asks each user to request a free key, and it limits how many files can be downloaded each day. If the bars cannot be obtained, the lab switches to a fallback mode that uses only the daily market return and the daily 49 industry portfolios from the Kenneth R. French Data Library, which the code downloads without a key. In this mode the day's variance is measured by the squared close-to-close return instead of the Garman--Klass estimator. HAR is built from daily, weekly and monthly averages of squared returns. Because a single squared return can be zero, TimesFM and Chronos-Bolt read the logarithm of the five-day average of squared returns, and every forecast is scored against the next day's squared return. QLIKE, in the form $\log F + RV/F$ of Section~\ref{sec:10-eval}, accepts a zero proxy, so the scoring rule does not change.
-
-The fallback runs Parts A, B, C, E and F for TimesFM, Chronos-Bolt, GARCH and HAR, with the industry portfolios taking the place of the indices and funds. Kronos is skipped, because it reads open, high, low, close and volume together and the French library publishes only returns. In Part D only the GARCH paths are generated, and they are compared with the real data. The code reports which mode it ran in, and readers should state the mode when they report results.
-
-The fallback answers a narrower question, but it still teaches something. A squared daily return is a much noisier measure of variance than the Garman--Klass estimator, so the loss of every model rises and the gaps between models shrink relative to the noise. The tests in Part B will therefore find fewer significant differences. This is the same lesson that Andersen and Bollerslev (1998) drew in Chapter~\ref{ch:10}: a noisy proxy makes good forecasts look worse and makes models harder to tell apart, but with a robust loss such as QLIKE it does not, on average, change which model ranks first (Patton 2011). A model that wins clearly in the fallback mode is therefore likely to win with better data too, while a tie in the fallback mode is not evidence that the models are equally good.
-
-\textbf{What readers will find.} Lab Figure~\ref{ch:23}.1 shows each model's variance forecasts for the S\&P 500 against the Garman--Klass variance in 2020 and 2022. Lab Figure~\ref{ch:23}.2 compares the autocorrelation of absolute returns in real data, Kronos paths and GARCH paths. Lab Figure~\ref{ch:23}.3 reports QLIKE losses relative to HAR, before and after each model's release date. The test of the claim is whether the foundation models beat GARCH and HAR under QLIKE, significantly, in Part F.
-
-\emph{[Draft note: the figures and numbers are generated by running the lab on data at the time of publication. The book prints the results; the text above does not anticipate them.]}
-
-\section{Stress tests}
-\label{sec:23-stress}
-
-\textbf{1. Crisis periods.} Volatility forecasts matter most when volatility jumps. The lab reports losses separately for February to April 2020 and for 2022, and asks whether any model reacts before the jump or only after it.
-
-\textbf{2. A placebo with known truth.} The lab simulates a GARCH process with the parameters estimated on the S\&P 500 and asks each model to forecast it. On such data GARCH is the correct model, so a foundation model that beats it would be fitting noise. A foundation model that comes close shows that it has learned volatility clustering.
-
-\textbf{3. Assets the model is unlikely to have seen.} The lab repeats Part A on small-country stock indices and on the simulated series. A large drop in accuracy compared with the major indices would suggest that part of the major-index performance is memory.
-
-\textbf{4. The measure of variance.} Garman--Klass variance is noisier than five-minute realized variance. Patton (2011) showed that noise in the measure does not change the ranking of forecasts under MSE and QLIKE, but it does reduce the power of the tests. Results that are not significant here may become significant with better data, and the lab says so.
-
-\textbf{5. Compute against accuracy.} A HAR model is three regression coefficients estimated in a fraction of a second. A fine-tuned foundation model needs a GPU and hours of computation. The lab reports the gain in QLIKE per hour of computation, a reminder that a small gain may not be worth the cost.
-
-\section{Verdict}
-\label{sec:23-verdict}
-
-Based on the published evidence, to be confirmed by readers' runs of Lab~\ref{ch:23}: \textbf{provisional.}
+Most finance effects are small relative to the noise in returns, and samples are short. Power analysis answers two questions before a study begins: whether the sample could detect the effect if it exists, and what a non-significant result would mean.
 
 \begin{center}
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.24\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.24\linewidth}@{}}
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
 \toprule
-Test & Finding & Effect on the claim \\
+True Sharpe ratio & Years for 80\% power at $t = 1.96$ & Years for 80\% power at $t = 3.0$ & Power with 20 years at $t = 1.96$ \\
 \midrule
-Kronos, volatility & 9\% lower error than baselines, on the authors' benchmarks & Supports, not independently verified \\
-Kronos, synthetic data & 22\% better fidelity, on the authors' measure & Supports, not independently verified \\
-Fine-tuned TimesFM & Beats GARCH and HAR under several losses, including QLIKE, on 21 indices & Supports \\
-Zero-shot TimesFM & Generally behind fine-tuned versions, but competitive under QLIKE with a long history & Supports in part \\
-Specialized models & Matched or beat TTM in two of three tasks & Weakens \\
-Clean post-release data & Not yet reported & Untested \\
+0.2 & 196 & 369 & 14\% \\
+0.3 & 87 & 164 & 27\% \\
+0.4 & 49 & 92 & 43\% \\
+0.5 & 31 & 59 & 61\% \\
+0.75 & 14 & 26 & 92\% \\
+1.0 & 8 & 15 & 99\% \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-The evidence suggests that training on market data helps. A general foundation model, fine-tuned step by step on volatility data, can match and sometimes beat the best econometric volatility models, and a model pretrained only on market data reports large gains on its authors' benchmarks. The evidence is young, mostly from working papers, and none of it yet uses data that the models could not have seen. Until it does, the claim is provisional. The verdict is dated by the sample tested.
-
-\section{What investors can use}
-\label{sec:23-investors}
-
-\textbf{Keep HAR and GARCH as the yardstick.} They are cheap, transparent and hard to beat. A foundation model earns a place in a risk system only if it beats them out of sample, under QLIKE, by enough to change a risk decision.
-
-\textbf{Fine-tune, and fine-tune honestly.} The evidence favors models adapted to the series at hand over models used as delivered. Every fine-tuning step must use only data available at the time.
-
-\textbf{Use synthetic data for stress tests, with checks.} Synthetic price paths can widen a stress test beyond the few crises in history, but only if they reproduce fat tails and volatility clustering. Check them against a GARCH simulation before trusting them.
-
-\textbf{Questions to ask a vendor of a financial foundation model:}
-
-\begin{enumerate}
-  \item What data was the model trained on, and up to what date?
-  \item How does it compare with HAR and GARCH under QLIKE, on data after the training cutoff?
-  \item Was the model fine-tuned on the test period, or on any data after the forecast date?
-  \item How much better are its VaR numbers, by the Kupiec and Christoffersen tests?
-  \item What does it cost to run and to re-train, and how often must it be re-trained?
-\end{enumerate}
-
-\begin{callout}
-\textbf{What Failed: forecasting volatility from calm data, March 2020.} In mid-February 2020 the VIX was below 15, and models estimated on the calm years before it forecast low volatility. Within a month the S\&P 500 fell by about a third, and on March 16 the VIX closed at 82.69, its highest close on record. Every model that forecasts volatility from past data, from GARCH to a foundation model, raised its forecast only after the turmoil had begun. Models that react quickly to new data, such as GARCH and HAR, adjusted within days; risk measures based on long, equally weighted windows took months. The claim that any model trained on calm data can anticipate a regime shift \textbf{fails}. What a better model can offer is a faster and more accurate response once the shift begins, which is exactly what the crisis tests in this chapter measure.
-\end{callout}
-
-\section{Open questions}
-\label{sec:23-open}
+The table, computed in Lab~\ref{ch:24}, makes three points:
 
 \begin{itemize}
-  \item \textbf{Memory or skill?} How much of a market-trained model's accuracy on major indices comes from having seen them in pretraining?
-  \item \textbf{Which data to pretrain on?} Is more data from more markets always better, or does data from very different markets, such as cryptocurrencies or minute bars, help or hurt daily equity forecasts?
-  \item \textbf{Returns as well as risk?} Volatility is predictable, so a better model can improve on GARCH. Returns are mostly not, as Chapter~\ref{ch:09} showed. Do the gains in price forecasting survive costs and post-release data?
-  \item \textbf{Generative models for risk.} Can synthetic paths from a foundation model improve stress tests and capital estimates, and how should regulators judge them?
+  \item \textbf{Many claims cannot be settled with the data available.} A factor with a true Sharpe ratio of 0.3, typical of published anomalies after publication, needs almost 90 years of data for a reliable test at $t = 1.96$, and more than 160 at $t = 3$.
+  \item \textbf{Short-sample results are mostly noise.} With 20 years of data, a real effect with a Sharpe ratio of 0.3 is detected only about a quarter of the time. A backtest\index{backtest} with a high Sharpe ratio over a short period is more likely to reflect luck than skill.
+  \item \textbf{Absence of evidence is weak evidence of absence.} A non-significant result from an underpowered study says little. Report the power alongside the result, or report a confidence interval\index{confidence interval}, which shows the range of effects the data cannot rule out.
 \end{itemize}
 
-\section*{Exercises}
+The formulas assume normal, independent returns. Lab~\ref{ch:24} checks them by simulation with fat tails\index{fat tails} and autocorrelation\index{autocorrelation}, which change the rejection rates of naive t-tests. That is one more reason to use robust standard errors\index{standard error!robust (White)} (Chapter~\ref{ch:04}).
 
-\subsection*{Conceptual (all readers)}
+For predictive regressions the requirements are similar. A monthly $R^2$ of 0.5\% needs about 1,560 months, 130 years, for 80\% power at $t = 1.96$. Because hundreds of ideas have been tested on the same data, the relevant threshold is higher than 1.96: the Bonferroni threshold for 100 tests is about 3.5.
+
+\section{Pre-registration}
+\label{sec:24-prereg}
+
+A \textbf{pre-registration}\index{pre-registration|textbf} is a written, time-stamped plan made before the researcher sees the results. It separates \textbf{confirmatory}\index{confirmatory versus exploratory analysis|textbf} analysis, planned in advance, from \textbf{exploratory} analysis, discovered along the way. Both are valuable, but only the first supports the usual interpretation of a p-value.
+
+A pre-registration for a finance study covers:
 
 \begin{enumerate}
-  \item A day's bar has open 50, high 51, low 49 and close 50.5. Compute the Parkinson and Garman--Klass variance estimates and the implied daily volatilities.
-  \item Explain why range-based estimators are biased downward when trading is not continuous, and why they miss overnight risk.
-  \item Why must incremental fine-tuning use only data before each test period? Describe what would go wrong if the whole sample were used.
-  \item List the stylized facts of daily returns. Which of them does a GARCH model with normal shocks fail to reproduce?
-  \item Explain the difference between the Diebold--Mariano test and the Giacomini--White test. When does the difference matter?
+  \item \textbf{The claim}, in one sentence.
+  \item \textbf{Hypotheses}: the primary hypothesis and its direction, and the secondary hypotheses.
+  \item \textbf{Data}: sources, vintage and how they will be obtained.
+  \item \textbf{Sample and exclusions}, fixed in advance.
+  \item \textbf{The primary test}: statistic, standard errors\index{standard error} and threshold.
+  \item \textbf{Secondary tests and the robustness grid.}
+  \item \textbf{Power}: the expected effect size, the sample and the resulting power.
+  \item \textbf{Decision rules}: what counts as support, failure or an inconclusive result.
+  \item \textbf{Reporting}: what will be reported whatever the outcome.
+  \item \textbf{Deviations}: a commitment to list and justify any departure from the plan.
 \end{enumerate}
 
-\subsection*{Lab extensions (technical readers)}
+The plan must be fixed in a way others can verify. A commit to a public repository, a post on the Open Science Framework or a hash of the document published somewhere time-stamped all work. Lab~\ref{ch:24} writes the document and appends its \textbf{SHA-256 hash}\index{SHA-256 hash|textbf}, a fingerprint that changes if a single character changes, so that any later edit is detectable.
+
+\textbf{The problem of old data.} Pre-registration is cleanest when the data do not yet exist. In finance, most data are historical and may already have been seen. Three partial remedies help:
+
+\begin{itemize}
+  \item pre-register a test on the period after the original study, which is the logic of post-publication\index{anomaly!post-publication decay} tests throughout this book;
+  \item pre-register on data that will arrive in the future, such as the next five years of returns;
+  \item hold out data the researcher commits not to examine, such as an international sample.
+\end{itemize}
+
+\textbf{Registered reports.}\index{registered report|textbf} Some journals review the plan rather than the results, and accept the paper in principle before the data are analyzed. The \emph{Journal of Accounting Research} ran its 2017 conference this way: authors pre-registered their analyses and received provisional acceptance regardless of outcome. Registered reports remove the incentive to find a significant result, because publication no longer depends on one.
+
+\section{Robustness grids and reporting null results}
+\label{sec:24-robust}
+
+Every empirical study involves choices that are individually reasonable: the sample start, the breakpoints, the weighting, the treatment of outliers, the holding period. Gelman and Loken (2014) called the result a ``garden of forking paths'': even a researcher who runs only one analysis may have chosen it after seeing the data, and the reported p-value no longer means what it says.
+
+Lab~\ref{ch:24} makes the problem concrete. A signal that is pure noise is tested in 36 reasonable ways (three sample starts, three portfolio cuts, two weightings, two treatments of January), 300 times over. The pre-chosen specification is significant in about 4\% of studies, close to the nominal 5\%. At least one of the 36 specifications is significant in about 39\%. A researcher who reports the best of 36 has close to a two-in-five chance of a false discovery.
+
+The remedy is to report the whole grid, not only the preferred specification:
+
+\begin{itemize}
+  \item A \textbf{specification curve}\index{specification curve|textbf} (Simonsohn, Simmons and Nelson 2020) plots the estimate for every reasonable specification, sorted by size, with the choices shown underneath. Lab~\ref{ch:24} draws one for the size effect\index{size premium} across 36 specifications.
+  \item Report the share of specifications that are significant and the range of estimates, and say which specification was pre-registered as primary.
+  \item If results depend on one choice, say so and explain why that choice is right.
+\end{itemize}
+
+\textbf{Null results.} A well-designed test that finds no effect is a result. It should be reported with its power and confidence interval, so readers can see which effect sizes it rules out. \textbf{Publication bias}\index{publication bias|textbf}, the tendency for significant results to be published and null results to be filed away, distorts the literature (Chapter~\ref{ch:19}). Harvey (2017) noted how few published t-statistics fall below 2. Replication-friendly outlets, discussed in Section~\ref{sec:24-publish}, publish well-designed null results.
+
+\section{Reading finance papers critically}
+\label{sec:24-reading}
+
+The same checklist that guides a study also helps in reading one. Before accepting a paper's conclusion, ask:
 
 \begin{enumerate}
-  \setcounter{enumi}{5}
-  \item In Part B, replace QLIKE with MSE. Does the ranking of models change? Relate your answer to Section~\ref{sec:10-eval}.
-  \item In Part D, compute the leverage effect in each set of synthetic paths. Which generator reproduces it?
-  \item Run Part B twice, once with Garman--Klass variance and once in the fallback mode with squared returns, on the same dates. How much does the QLIKE gap between TimesFM and HAR shrink relative to its standard error? Relate your answer to Andersen and Bollerslev (1998) in Chapter~\ref{ch:10}.
-  \item In Part E, compute the 99\% VaR from Kronos's sampled paths directly, as a quantile, instead of from its variance forecast. Does the backtest improve?
-  \item Add the VIX as a covariate to HAR. Does any foundation model still beat it in Part F?
-  \item Fine-tune Kronos on the first half of the post-release data and test on the second half. Compare the gain from fine-tuning with the gain Goel and coauthors found for TimesFM.
+  \item \textbf{The claim.} Is it stated precisely enough to be false? What is the primary test?
+  \item \textbf{Prior plausibility.} Is there an economic reason for the effect, a risk or a behavioral bias, stated before the evidence?
+  \item \textbf{Sample.} Why this period and universe? Does the result hold after the original publication, in other countries, and without microcaps?
+  \item \textbf{Benchmarks and controls.} Is the comparison with a strong benchmark? Are known factors controlled for?
+  \item \textbf{Statistics.} Are standard errors robust to autocorrelation and heteroskedasticity\index{heteroskedasticity}? Is the t-statistic adjusted for the number of tests the authors and the field have run?
+  \item \textbf{Power and size.} Is the sample long enough? Is the effect economically meaningful, not just statistically significant?
+  \item \textbf{Forking paths.} How many specifications are shown? Do the results survive reasonable alternatives?
+  \item \textbf{Implementation.} Are trading costs\index{transaction costs}, capacity\index{capacity} and data availability at the time accounted for?
+  \item \textbf{Look-ahead.}\index{look-ahead bias|textbf} Could any input have been known only later, including through a pre-trained model?
+  \item \textbf{Replication.}\index{replication|textbf} Are data and code available? Has anyone replicated it?
+\end{enumerate}
+
+The disagreement between Hou, Xue and Zhang (2020) and Chen and Zimmermann (2022) shows why the details matter. Both studies examined the same anomaly literature. One found that most anomalies failed and the other that nearly all clearly significant predictors replicated, largely because they made different, defensible choices about microcaps, weighting and breakpoints. Jensen, Kelly and Pedersen (2023) argued, using a Bayesian framework and data from 93 countries, that most factors do replicate. A careful reader asks which choices drive a result and whether the claim survives the alternatives.
+
+\section{Choosing a claim}
+\label{sec:24-choosing}
+
+A good capstone claim passes three tests.
+
+\textbf{Testable.} The claim can be stated as one falsifiable sentence with a clear primary test (Section~\ref{sec:24-hypotheses}). ``Momentum\index{momentum} earns about 1\% a month'' is testable; ``markets are irrational'' is not.
+
+\textbf{Data available.} The data, or a close free substitute, must be obtainable within the course. Free sources used in this book include:
+
+\begin{itemize}
+  \item the Kenneth R. French Data Library\index{Kenneth French data library}, for portfolios and factors;
+  \item FRED\index{FRED}, for macroeconomic and interest-rate series;
+  \item Robert Shiller's long-run market data;
+  \item Amit Goyal's predictor data;
+  \item Open Source Asset Pricing\index{Open Source Asset Pricing}, for anomaly\index{anomaly} portfolios;
+  \item the Federal Reserve's yield curves\index{yield curve};
+  \item SEC EDGAR, for filings.
+\end{itemize}
+
+If the original paper used CRSP\index{CRSP} or Compustat\index{Compustat}, decide early whether a free substitute is close enough, and state the difference.
+
+\textbf{Worthwhile.} The result should matter: widely cited, used by practitioners, or the basis of later research. A claim whose answer is already settled by many replications teaches less than one with little independent evidence.
+
+Three kinds of capstone work well:
+
+\begin{enumerate}
+  \item \textbf{Direct replication with extension.} Reproduce the original sample, then extend to the years since publication. Most claim chapters in this book followed this pattern.
+  \item \textbf{Robustness replication.}\index{robustness|textbf} Reproduce the result, then test whether it survives reasonable alternative choices, using a specification curve\index{specification curve} (Section~\ref{sec:24-robust}).
+  \item \textbf{Conceptual replication.} Test the same idea in a different market, asset class or country.
+\end{enumerate}
+
+Sources of candidate claims include:
+
+\begin{itemize}
+  \item the open questions at the end of each chapter in this book;
+  \item the \emph{Critical Finance Review}'s lists of influential papers proposed for replication;
+  \item highly cited papers in the major finance journals;
+  \item claims made by practitioners and fund providers.
+\end{itemize}
+
+A one-page proposal should state the claim, the paper, the data, the primary test and a power analysis, and should be approved before work begins.
+
+\section{Planning the replication}
+\label{sec:24-planning}
+
+\textbf{Read the paper three times.}
+
+\begin{enumerate}
+  \item For the claim.
+  \item For the method: sample, filters, variable definitions, portfolio formation, standard errors\index{standard error}.
+  \item For the numbers to reproduce: list every statistic in the main tables with its table and page.
+\end{enumerate}
+
+Write the definitions in your own words and note any ambiguity. Ambiguities are common and are often the source of later differences.
+
+\textbf{Decide what ``reproduced'' means.} Set tolerances before running anything. A mean return within 15\% of the original, with the same sign and significance, is a reasonable default. State what happens if the sign or significance differs. Figure~\ref{fig:24-status} shows the classification the Lab~\ref{ch:24} template applies to each statistic.
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.8}{%
+\begin{tikzpicture}[
+  q/.style={draw=fenavy, thick, rounded corners=2pt, fill=fenavy!10, align=center,
+            minimum width=3.4cm, minimum height=1cm},
+  r/.style={draw=gray!70, fill=gray!10, align=center,
+            minimum width=3.1cm, minimum height=0.9cm},
+  a/.style={-stealth},
+  lab/.style={font=\small},
+]
+  \node[q] (q1) at (0,0)    {Statistic computed?};
+  \node[q] (q2) at (0,-1.9) {Within tolerance\\(default 15\%)?};
+  \node[q] (q3) at (0,-3.9) {Same sign?};
+  \node[r] (r1) at (5,0)    {not reproduced};
+  \node[r] (r2) at (5,-1.9) {match};
+  \node[r] (r3) at (5,-3.9) {same sign,\\different size};
+  \node[r] (r4) at (0,-5.8) {different sign};
+  \draw[a] (q1) -- node[above, lab] {no}  (r1);
+  \draw[a] (q2) -- node[above, lab] {yes} (r2);
+  \draw[a] (q3) -- node[above, lab] {yes} (r3);
+  \draw[a] (q1) -- node[right, lab] {yes} (q2);
+  \draw[a] (q2) -- node[right, lab] {no}  (q3);
+  \draw[a] (q3) -- node[right, lab] {no}  (r4);
+\end{tikzpicture}%
+}
+\caption{How each reproduced statistic is classified. A statistic that cannot be computed is ``not reproduced''; one within the tolerance is a ``match''; otherwise it is ``same sign, different size'' or ``different sign''. The tolerance is set in advance, in the pre-registration.}
+\label{fig:24-status}
+\end{figure}
+
+\textbf{Plan the extensions.}
+
+\begin{itemize}
+  \item the period since publication;
+  \item trading costs\index{transaction costs};
+  \item a robustness grid over the choices the paper made;
+  \item other markets if data allow.
+\end{itemize}
+
+Decide which extension is the primary test of whether the claim survives. Usually it is the post-publication\index{anomaly!post-publication decay} sample.
+
+\textbf{Write and freeze the pre-registration.} Use the template of Section~\ref{sec:24-prereg}, with the power analysis filled in. Commit it to a public repository, or post its hash, before running the replication. The command \texttt{run.py freeze} writes the document with a SHA-256\index{SHA-256 hash} hash and refuses to overwrite it later without an explicit override, which must then be reported as a deviation.
+
+{\sloppy \textbf{Set up the project structure.} Lab~\ref{ch:24} creates it in one command. Fill in \texttt{original.json} with the statistics from the paper and \texttt{config.json} with samples and tolerances before writing any analysis code.\par}
+
+\section{Running, logging and analyzing}
+\label{sec:24-running}
+
+\textbf{One command reproduces everything.} The project should go from raw data to every number in the report with a single command. That forces code to be complete and ordered, and it lets a referee, an instructor or the author six months later check the work. In the template, \texttt{python run.py all} runs five steps (Figure~\ref{fig:24-pipeline}):
+
+\begin{enumerate}
+  \item \textbf{freeze}: write and hash the pre-registration;
+  \item \textbf{data}: download or load the data and save a processed copy;
+  \item \textbf{replicate}: compute the original statistics on the original sample and compare;
+  \item \textbf{extend}: run the extensions;
+  \item \textbf{report}: build the report.
+\end{enumerate}
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.8}{%
+\begin{tikzpicture}[
+  pstep/.style={draw=fenavy, thick, rounded corners=2pt, fill=fenavy!10, align=center,
+               minimum width=2.3cm, minimum height=1.45cm, inner sep=2pt, font=\small},
+  a/.style={-stealth, thick},
+]
+  \node[font=\ttfamily\small] at (5.8,1.3) {python run.py all};
+  \foreach \wfI/\wfN/\wfT in {0/freeze/{pre-registration\\+ SHA-256},
+                              1/data/{download,\\save copy},
+                              2/replicate/{original sample,\\compare},
+                              3/extend/{new period,\\costs, grid},
+                              4/report/{draft with\\tables}} {
+    \node[pstep] (s\wfI) at (2.9*\wfI,0) {\textbf{\wfN}\\\wfT};
+  }
+  \foreach \wfI [evaluate=\wfI as \wfJ using int(\wfI+1)] in {0,...,3} {
+    \draw[a] (s\wfI) -- (s\wfJ);
+  }
+  \node[draw=gray!70, fill=gray!10, minimum width=13.6cm, text width=13.2cm, align=center, minimum height=0.8cm,
+        font=\small] (log) at (5.8,-2.1)
+    {run log: one record per step, with time, input fingerprints, parameters,
+     outputs and package versions};
+  \foreach \wfI in {0,...,4} {
+    \draw[-stealth, fegray] (s\wfI.south) -- (s\wfI.south |- log.north);
+  }
+\end{tikzpicture}%
+}
+\caption{The capstone pipeline. One command runs the five steps in order, and each step appends a record to the run log, so every number in the report can be traced to the inputs and code that produced it.}
+\label{fig:24-pipeline}
+\end{figure}
+
+\textbf{Log every run.} The template's run log appends one record per step: the time, a SHA-256 fingerprint of every input file, the parameters, the outputs and the package versions. Records are never rewritten, so the log shows every attempt, including abandoned ones. If a number changes, the log shows whether the data or the code changed.
+
+\textbf{Fix data versions.} Data providers revise their files. Record the download date, keep a copy of the raw file if its licence allows (or at least its fingerprint), and note the version in the report.
+
+\textbf{Analyze differences, do not hide them.} A replication rarely matches to the last decimal. When numbers differ, find out why before moving on. The usual suspects:
+
+\begin{itemize}
+  \item sample dates;
+  \item filters (price, exchange, share codes);
+  \item breakpoints and weighting;
+  \item how missing and delisted\index{delisting} returns are treated (Chapter~\ref{ch:02});
+  \item the data vintage\index{data!vintages};
+  \item the standard-error method.
+\end{itemize}
+
+Change one choice at a time and record the effect. The reasons for differences are often the most valuable part of a replication: the debate between Hou, Xue and Zhang\index{q-factor model} (2020) and Chen and Zimmermann (2022) turned largely on such choices.
+
+\textbf{Separate confirmatory\index{confirmatory versus exploratory analysis} from exploratory.} Analyses in the pre-registration are confirmatory. Anything added after seeing the results is exploratory and must be labelled as such.
+
+\section{Writing the report}
+\label{sec:24-report}
+
+The report follows the structure of a claim chapter in this book, so readers know where to find each element:
+
+\begin{enumerate}
+  \item \textbf{The claim.} One sentence, then a paragraph on the original paper: authors, journal, sample, method and headline result.
+  \item \textbf{Method.} Data sources and versions; how the original variables were rebuilt; unavoidable differences from the original, such as free data in place of CRSP; standard errors.
+  \item \textbf{Replication.}\index{replication|textbf} A table of the original statistics beside the reproduced ones, with the status of each (match, same sign but different size, different sign, not reproduced), and an explanation of every difference.
+  \item \textbf{Extensions.} The post-publication sample, trading costs, the robustness grid or specification curve, and other markets.
+  \item \textbf{Deviations.} Every departure from the pre-registration, with the reason. ``None'' is a valid entry.
+  \item \textbf{Verdict, dated.} Survives, weakens, fails or provisional, as of the date of writing, with the evidence that would change it.
+  \item \textbf{Code and data.} Where they are and how to run them.
+\end{enumerate}
+
+Lab~\ref{ch:24} builds a draft of this report automatically, filling in the replication and extension tables and leaving marked sections for the author's writing.
+
+Write for a reader who has not read the original paper. Report effect sizes in economic units (percent a year, basis points\index{basis point}), not only t-statistics\index{t-statistic}. A replication that fails is not a failure of the replicator; the report should be as clear and complete for a null result as for a confirmation. The tone should be neutral: describe what was found and why, not who was wrong.
+
+\section{Releasing code and data}
+\label{sec:24-release}
+
+A replication that others cannot rerun is only half a replication. Release:
+
+\begin{itemize}
+  \item \textbf{All code}, from raw data to every table and figure, with instructions and a list of package versions. A permissive licence (the template uses MIT) lets others reuse it.
+  \item \textbf{Data}, where the licence allows. Where it does not, as with CRSP, Compustat or most news archives, provide instructions and code to obtain and link the data, and the fingerprints of the files used. Some journals also accept \textbf{pseudo-data}\index{pseudo-data|textbf}: fictional data in the same format, so that the code can be tested.
+  \item \textbf{The run log and the pre-registration.}
+  \item \textbf{A citation file}, so the replication can be cited.
+\end{itemize}
+
+This is now standard practice at leading journals. The \emph{Journal of Finance}'s data and code sharing policy (Journal of Finance 2024), for example, requires authors to provide their programs, detailed computation methods and log files, the data where they can be shared (or pseudo-data where they cannot), and instructions covering the software, packages, random seeds\index{random seed} and execution order. A data editor tests the materials at acceptance.
+
+Use a public repository, such as GitHub, for the code and an archive with a permanent identifier, such as Zenodo or the Open Science Framework, for the release that accompanies the final report. Tag the exact version that produced the reported numbers.
+
+\section{Peer review: writing and answering referee reports}
+\label{sec:24-review}
+
+Each student referees one classmate's replication, and answers the referee report on their own. Learning to review is part of learning to do research.
+
+\textbf{Writing a referee report.} A useful report has four parts:
+
+\begin{enumerate}
+  \item \textbf{A summary} of the paper in three to five neutral sentences, so the author can see what the referee understood.
+  \item \textbf{An overall assessment}: is the question important, is the design credible, and do the conclusions follow from the evidence?
+  \item \textbf{Major comments}, numbered. Each states the problem, explains why it matters for the conclusion and suggests what would fix it. Major comments are the ones that could change the verdict.
+  \item \textbf{Minor comments}: clarity, presentation, small errors.
+\end{enumerate}
+
+Use the checklist of Section~\ref{sec:24-reading} as a guide. Run the code: a referee who cannot reproduce the results from the repository has found the most important comment of all. Be specific, constructive and courteous. Criticize the work, not the author.
+
+\textbf{Answering referees.} Reproduce each comment, then respond to it directly: what was changed and where, or, if nothing was changed, why. Thank the referee for comments that improved the work, and disagree politely where the evidence supports it. A response that addresses every point, with exact references to the revised report, makes the referee's second reading quick.
+
+Lab~\ref{ch:24}'s project template includes both templates, in the \texttt{review/} folder.
+
+\section{Where to publish}
+\label{sec:24-publish}
+
+A strong capstone can be developed into a paper. Outlets that welcome replications include:
+
+\begin{itemize}
+  \item \textbf{The \emph{Critical Finance Review}}, which publishes replications and critiques, and has run issues of replications of influential papers on topics chosen by the editor, with replication teams invited through calls for proposals.
+  \item \textbf{Replication sections of general journals.} The \emph{Journal of Finance}, for example, has a Replications and Corrigenda section, which published the replication that led to the 2021 retraction described in this chapter's opening.
+  \item \textbf{Registered-report formats}\index{registered report|textbf}, where a journal reviews and accepts the plan before the results are known.
+  \item \textbf{Working-paper series}, such as SSRN, arXiv's quantitative finance section and university series, which make the work public at once and invite comments.
+  \item \textbf{Student and practitioner outlets}: undergraduate research journals, practitioner journals and professional blogs, for shorter, applied replications.
+\end{itemize}
+
+Before submitting, check each outlet's policy on replications and on code and data. Post the working paper and repository together, so readers can check the results immediately.
+
+\section{Lab~\thechapter: the capstone template}
+\label{sec:24-lab}
+
+\begin{callout}
+\textbf{Lab~\ref{ch:24} at a glance.} \emph{Purpose:} a project template that builds pre-registration, logging, comparison with the original and a report draft into every replication. \emph{Data:} for the worked example, 10 Portfolios Formed on Prior (12-2) Return from the Kenneth R. French Data Library; for your own project, whatever your claim needs. \emph{Code:} \texttt{python lab24.py new} creates a project; \texttt{python lab24.py demo} builds and runs the worked example.
+\end{callout}
+
+\subsection*{Planning tools: power and pre-registration}
+\label{sec:24-planning-lab}
+
+\begin{callout}
+\textbf{Planning tools at a glance.} \emph{Question:} how much data does a claim need, how many false discoveries do forking paths create, and how is a plan frozen before the test? \emph{Data:} Portfolios Formed on Size from the Kenneth R. French Data Library\index{Kenneth French data library}, for Part C; the other parts need no market data. \emph{Code:} runs as a script (\texttt{python lab23.py}, or \texttt{python lab23.py -{}-claim-file my\_claim.json -{}-expected-sharpe 0.4} for your own claim) or as a notebook (\texttt{lab23\_walkthrough.ipynb}), using the design tools of the book's \texttt{fintest} module.
+\end{callout}
+
+The lab has five parts:
+
+\begin{itemize}
+  \item \textbf{Part A, power for returns.} It computes the years of data needed to detect Sharpe ratios from 0.2 to 1.0 at $t = 1.96$ and $t = 3.0$, and checks the formula by simulation, first with normal returns and then with fat tails (Student-$t$ with 4 degrees of freedom) and autocorrelation of 0.15 (Lab Figure~\ref{ch:24}.1).
+  \item \textbf{Part B, predictability and multiple testing\index{multiple testing}.} It computes the months needed to detect an $R^2$ from 0.2\% to 10\%, and the Bonferroni t-threshold as the number of tests grows from 1 to 1,000 (Lab Figure~\ref{ch:24}.2).
+  \item \textbf{Part C, forking paths.} It draws a specification curve for the size effect, smallest minus largest size portfolio, across 36 combinations of research choices (Lab Figure~\ref{ch:24}.3). It also tests a pure-noise signal in the same 36 ways, 300 times (Lab Figure~\ref{ch:24}.4).
+  \item \textbf{Part D, Bayesianized p-values.} It tabulates the lowest probability that the null is true for t-statistics from 1.96 to 4 and prior odds from 1:1 to 99:1 against (Lab Figure~\ref{ch:24}.5).
+  \item \textbf{Part E, pre-registration.} It writes \texttt{preregistration.md} for the size effect as an example, or for the reader's own claim supplied as a JSON file, with the power analysis filled in and a SHA-256 hash appended.
+\end{itemize}
+
+\textbf{What the run shows.} Parts A, B, D and E do not depend on market data, and their results are exact or simulated by design. Part C was run with simulated size portfolios.
+
+\begin{itemize}
+  \item The power table is the one shown in Section~\ref{sec:24-power}. Simulation confirmed about 80\% power at the computed sample sizes with normal returns. With fat tails and autocorrelation, the naive t-test's rejection rate fell to 76\% to 78\%.
+  \item The pure-noise signal was significant in 4.0\% of studies in the pre-chosen specification and in 38.7\% somewhere among the 36 specifications.
+  \item In the simulated size portfolios, the 36 estimates of the size effect ranged from $-2.1\%$ to $+5.3\%$ a year, and 10 of the 36 were significant. Which result a researcher reported would depend on which path they took.
+  \item At $t = 1.96$, the lowest probability that the null is true was 13\% with even prior odds, 37\% with odds of 4:1 against and 57\% with odds of 9:1 against.
+\end{itemize}
+
+
+\textbf{Creating a project.} \texttt{python lab24.py new} creates a replication project with a fixed structure:
+
+\begin{center}
+\small
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.44\linewidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Path & Purpose \\
+\midrule
+\texttt{preregistration\_fields.json} $\rightarrow$ \texttt{preregistration.md} & The plan, frozen with a SHA-256 hash; \texttt{run.py freeze} refuses to overwrite it without an explicit override \\
+\texttt{original.json} & The original paper's statistics, with table and page references \\
+\texttt{config.json} & Original sample, post-publication start, costs, tolerances, data source \\
+\texttt{src/load.py}, \texttt{src/analysis.py} & Data loading and analysis, edited for the claim \\
+\texttt{run.py} & The pipeline: freeze, data, replicate, extend, report, or all \\
+\texttt{results/} & Replication statistics, comparison with the original, status, extensions, figure \\
+\texttt{logs/run\_log.jsonl} & Append-only log of every run, with input fingerprints and package versions \\
+\texttt{report/} & Report template and the generated draft \\
+\texttt{review/} & Referee report and response templates \\
+\texttt{tests/} & A check that the pipeline runs and gives the same numbers twice \\
+\texttt{LICENSE}, \texttt{CITATION.cff}, \texttt{.gitignore} & Licence, citation metadata, raw data excluded from version control by default \\
+\texttt{fintest/} & A copy of the book's analysis module, now at version 1.0.0 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Each statistic in \texttt{original.json} is compared with the replication on the original sample and labelled as in Figure~\ref{fig:24-status}: a match (within the tolerance, by default 15\%), same sign but different size, different sign, or not reproduced. The project as a whole is then labelled reproduced, partly reproduced or not reproduced.
+
+\textbf{The worked example.} \texttt{python lab24.py demo} builds and runs a worked example: momentum, measured as the winners-minus-losers return from the Kenneth R. French Data Library's portfolios formed on prior 12-month returns. It freezes a pre-registration and replicates on a 1965--1989 sample. It then extends to the period after 1993, the year Jegadeesh and Titman\index{Jegadeesh and Titman}'s study was published, with trading costs of 0, 25 and 50 basis points, and writes the report draft. The worked example's \texttt{original.json} contains example values, not the numbers of any paper; a real project replaces them with the published statistics.
+
+\textbf{What the run shows.} The template was run end to end on simulated data. The pre-registration was frozen and verified, the log recorded five steps with input fingerprints, the comparison and extension tables were filled into the report, re-freezing the plan was refused, and the project's own test passed. On simulated data the example statistics matched within tolerance; on real data the comparison will depend on the numbers entered from the paper.
+
+\section{Grading rubric for instructors}
+\label{sec:24-rubric}
+
+The rubric rewards design and transparency as much as results. A careful replication that fails to reproduce a claim can earn full marks; a confirmation with a weak design cannot.
+
+\begin{center}
+\footnotesize
+\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.14\linewidth}>{\raggedright\arraybackslash}p{0.07\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}@{}}
+\toprule
+Criterion & Weight & Excellent & Adequate & Weak \\
+\midrule
+Claim and proposal & 10\% & Falsifiable claim, important paper, feasible data, power analysis & Clear claim, some gaps in feasibility or power & Vague claim or infeasible data \\
+Pre-registration & 10\% & Complete, frozen before analysis, decision rules stated & Complete but vague decision rules & Missing, or written after results \\
+Replication & 25\% & All main statistics reproduced or differences fully explained & Most reproduced, some differences unexplained & Few reproduced, little explanation \\
+Extensions & 20\% & Post-publication test, costs and a robustness grid, clearly interpreted & Some extensions, limited interpretation & None or poorly designed \\
+Report and verdict & 15\% & Clear, neutral, effect sizes in economic units, dated verdict with conditions for change & Clear but incomplete & Hard to follow, or verdict not supported \\
+Code and data & 10\% & One command reproduces everything; log, licence and citation present & Runs with some manual steps & Does not run \\
+Peer review & 10\% & Specific, constructive referee report that ran the code; complete response to referees & Generic report or partial response & Missing \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{Process.} Grade the proposal and pre-registration as early milestones, so problems are caught before the analysis. Check that the pre-registration's commit date precedes the first replication run in the log. Run each project's pipeline before grading the report.
+
+\section*{Milestones and exercises}
+\addcontentsline{toc}{section}{Milestones and exercises}
+
+\subsection*{Milestones (matching the 14-week plan, weeks 11 to 14)}
+
+\begin{enumerate}
+  \item \textbf{Proposal} (week 11): claim, paper, data, primary test and power analysis on one page.
+  \item \textbf{Pre-registration}\index{pre-registration|textbf} (week 12): frozen and committed; \texttt{original.json} and \texttt{config.json} filled in.
+  \item \textbf{Replication and extensions} (week 13): pipeline runs end to end; differences explained.
+  \item \textbf{Report, peer review and presentation} (week 14): report and code released; referee report written; response to referees; presentation of the dated verdict.
+\end{enumerate}
+
+\subsection*{Exercises}
+
+\begin{enumerate}
+  \item Choose three candidate claims from the open questions in Chapters~\ref{ch:01} to~\ref{ch:23}. For each, assess whether it is testable, whether the data are available and whether it is worthwhile. Pick one and write the proposal.
+  \item Create a project with \texttt{python lab24.py new}, fill in \texttt{original.json} from the paper you chose, and freeze the pre-registration.
+  \item {\sloppy Run the worked example on real data. Replace the example values in \texttt{original.json} with the statistics from Jegadeesh and Titman's paper for the closest comparable strategy, and explain any differences.\par}
+  \item Change one design choice in the worked example (for example, equal weighting\index{equal weighting (1/N)} or a different sample start) and record the effect in the log. Is the change confirmatory or exploratory?
+  \item Write a referee report on a classmate's replication using the template. Run their code first.
+  \item Answer a referee report on your own replication, point by point.
+  \item Prepare a ten-minute presentation of your verdict: the claim, the replication, the extensions and what would change your conclusion.
 \end{enumerate}
