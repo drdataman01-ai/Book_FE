@@ -1,0 +1,490 @@
+\documentclass[12pt]{Beautybook-EN}
+
+\usepackage{mathptmx}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usepgfplotslibrary{fillbetween}
+\definecolor{fenavy}{HTML}{1B2A6B}
+\definecolor{fegray}{HTML}{4D4D4D}
+
+
+%\usepackage[top=1in, bottom=1in]{geometry} % Adjust the margins as needed
+\usepackage{pdfpages}
+\usepackage{xcolor}
+\usepackage{longtable}
+
+\pagecolor{white}
+\usepackage{makeidx}
+\makeindex
+\usepackage{graphicx}
+\usepackage[totoc]{idxlayout}
+% Redefine the parskip length
+\setlength{\parskip}{6pt} % Adjust the length as needed
+\setlist[itemize]{itemsep=0pt}
+\setlist[enumerate]{itemsep=0pt}
+\usepackage{imakeidx}
+\makeindex[intoc, columns=2, title=Index, options=-s fe.ist]
+% ---------------------------------------------------------------------------- %
+%                            The Cover Theme Chosen                            %
+% ---------------------------------------------------------------------------- %
+\definecolor{coverbgcolor}{HTML}{e0e0e0}
+\definecolor{coverfgcolor}{HTML}{826e68} % The color of the background
+\definecolor{coverbar}{HTML}{7c9092} % The color of the left bar
+\definecolor{bottomcolor}{HTML}{826e68}
+\coverstyle={ % 封面键值列表
+    cover-choose=cn, % cn (需新增项\entitle{#}); en ; enfig ; birkar
+}
+% ---------------------------------------------------------------------------- %
+%                            The Cover Theme Chosen                            %
+% ---------------------------------------------------------------------------- %
+\mathstyle={
+    math-font=plain, % plain; stix; mtpro2 
+}
+\usepackage{bm}
+% \overfullrule=1pt
+% \RequirePackage[fontsize=13.5pt]{fontsize}
+%% First one
+\mynewtheorem{
+    defi={\textbf{Definition}}[section]{interior style={left color=ReD!8,right color=ReD!5!CyaN!50}, borderline west={1.5mm}{0mm}{ReD}},
+    thm={\textbf{Theorem}}[section]{interior style={left color=CyaN!80!black!20,right color=CyaN!80!black!15!CyaN!50}, borderline west={1.5mm}{0mm}{CyaN!80!black}},
+    lem={\textbf{Lemma}}[section]{interior style={left color=BluE!8,right color=BluE!5!CyaN!50}, borderline west={1.5mm}{0mm}{BluE}},
+    prop={\textbf{Proposition}}[section]{interior style={left color=OrangE!8,right color=OrangE!5!CyaN!50}, borderline west={1.5mm}{0mm}{OrangE}},
+    exam={\textbf{Example}}[chapter]{interior style={left color=DarkGreen!8,right color=DarkGreen!5!CyaN!50}, borderline west={1.5mm}{0mm}{DarkGreen}},
+    cor={\textbf{Corollary}}[chapter]{interior style={left color=violet!8,right color=violet!5!CyaN!50}, borderline west={1.5mm}{0mm}{violet}},
+}
+\newtheorem*{remark}{\textbf{Remark}}
+%% Second one
+\makeatletter
+\mynewtcbtheorem{
+    % 这个 theorem 是环境名
+    problem={
+        counter=tcbprob, 
+        the counter=\thesection.\arabic{tcbprob}, 
+        name=Problem, % 它保存到 \theorem@name 里
+        thmcolor=绛紫,
+        autoref name=\bfseries Problem, 
+        style={
+        arc=3pt,breakable,enhanced,interior style={top color=绛紫!9 ,middle color=绛紫!6, bottom color=绛紫!3},boxrule=0pt,top=8mm,
+        fuzzy shadow={-0.6mm}{0.6mm}{0mm}{0.3mm}{white!50!gray},% 上
+        fuzzy shadow={0.6mm}{-0.6mm}{0mm}{0.3mm}{fill=white!40!gray},%下
+        opacityframe=0, opacityback=0.98,
+        fontupper=\itshape, step={tcbprob},
+        before pre=\smallskip, after app=\smallskip,
+        overlay unbroken=\my@theorem@overlay@unbroken{Problem\ \thetcbprob}{绛紫},
+        overlay first=\my@theorem@overlay@first{Problem\ \thetcbprob}{绛紫},
+        overlay last=\my@theorem@overlay@last{绛紫},
+        }
+    },
+    lemma={
+        counter=tcblem,
+        the counter=\thesection.\arabic{tcblem},
+        name=Lemma, 
+        lemcolor=靛蓝, 
+        autoref name=\bfseries Lemma,
+        style={
+        arc=0mm,breakable,enhanced,interior style={top color=靛蓝!9 ,middle color=靛蓝!6, bottom color=靛蓝!3},arc=3pt,boxrule=0pt,top=6mm,bottom=5mm,
+        fuzzy shadow={-0.6mm}{0.6mm}{0mm}{0.3mm}{white!50!gray},% 上
+        fuzzy shadow={0.6mm}{-0.6mm}{0mm}{0.3mm}{fill=white!40!gray},%下
+        opacityframe=0, opacityback=0.98,
+        fontupper=\itshape,step={tcblem},
+        before pre=\smallskip, after app=\smallskip,
+        overlay unbroken=\my@lemma@overlay@unbroken{\lemma@name\ \thetcblem}{\lemma@lemcolor},
+        overlay first=\my@lemma@overlay@first{\lemma@name\ \thetcblem}{\lemma@lemcolor},
+        overlay last=\my@lemma@overlay@last{\lemma@lemcolor},
+        }
+    },
+    corollary={
+        counter=tcbcor,
+        the counter=\thesection.\arabic{tcbcor},
+        autoref name=\bfseries Corollary,
+        style={
+        arc=0mm,breakable,enhanced,interior style={top color=茶色!9 ,middle color=茶色!6, bottom color=茶色!3},arc=3pt,boxrule=0pt,top=6mm,bottom=5mm,
+        fuzzy shadow={-0.6mm}{0.6mm}{0mm}{0.3mm}{white!50!gray},% 上
+        fuzzy shadow={0.6mm}{-0.6mm}{0mm}{0.3mm}{fill=white!40!gray},%下
+        opacityframe=0, opacityback=0.98,
+        fontupper=\itshape,step={tcbcor},
+        before pre=\smallskip, after app=\smallskip,
+        overlay unbroken=\my@lemma@overlay@unbroken{Corollary\ \thetcbcor}{茶色},
+        overlay first=\my@lemma@overlay@first{Corollary\ \thetcbcor}{茶色},
+        overlay last=\my@lemma@overlay@last{茶色},
+        }
+    },
+    proposition={
+        counter=tcbprop,
+        the counter=\thesection.\arabic{tcbprop},
+        autoref name=\bfseries Proposition,
+        style={
+        arc=0mm,breakable,enhanced,interior style={top color=黛绿!9 ,middle color=黛绿!6, bottom color=黛绿!3},arc=3pt,boxrule=0pt,top=6mm,bottom=5mm,
+        fuzzy shadow={-0.6mm}{0.6mm}{0mm}{0.3mm}{white!50!gray},% 上
+        fuzzy shadow={0.6mm}{-0.6mm}{0mm}{0.3mm}{fill=white!40!gray},%下
+        opacityframe=0, opacityback=0.98,
+        fontupper=\itshape,step={tcbprop},
+        before pre=\smallskip, after app=\smallskip,
+        overlay unbroken=\my@lemma@overlay@unbroken{Proposition\ \thetcbprop}{黛绿},
+        overlay first=\my@lemma@overlay@first{Proposition\ \thetcbprop}{黛绿},
+        overlay last=\my@lemma@overlay@last{黛绿},
+        }
+    },
+    definition={
+        counter=tcbdefi,
+        the counter=\thesection.\arabic{tcbdefi},
+        autoref name=\bfseries Definition,
+        style={
+        arc=0mm,breakable,enhanced,interior style={top color=茜色!9 ,middle color=茜色!6, bottom color=茜色!3},arc=3pt,boxrule=0pt,top=6mm,bottom=5mm,
+        fuzzy shadow={-0.6mm}{0.6mm}{0mm}{0.3mm}{white!50!gray},% 上
+        fuzzy shadow={0.6mm}{-0.6mm}{0mm}{0.3mm}{fill=white!40!gray},%下
+        opacityframe=0, opacityback=0.98,
+        fontupper=\normalsize,step={tcbdefi},
+        before pre=\smallskip, after app=\smallskip,
+        overlay unbroken=\my@lemma@overlay@unbroken{Definition\ \thetcbdefi}{茜色},
+        overlay first=\my@lemma@overlay@first{Definition\ \thetcbdefi}{茜色},
+        overlay last=\my@lemma@overlay@last{茜色},
+        }
+    },
+    example={
+        counter=tcbexam,
+        the counter=\thesection.\arabic{tcbexam},
+        autoref name=\bfseries Example,
+        style={
+        arc=0mm,breakable,enhanced,interior style={top color=黛绿!9 ,middle color=黛绿!6, bottom color=黛绿!3},arc=3pt,boxrule=0pt,top=6mm,bottom=5mm,
+        fuzzy shadow={-0.6mm}{0.6mm}{0mm}{0.3mm}{white!50!gray},% 上
+        fuzzy shadow={0.6mm}{-0.6mm}{0mm}{0.3mm}{fill=white!40!gray},%下
+        opacityframe=0, opacityback=0.98,
+        fontupper=\normalsize,step={tcbexam},
+        before pre=\smallskip, after app=\smallskip,
+        overlay unbroken=\my@lemma@overlay@unbroken{Example\ \thetcbexam}{黛绿},
+        overlay first=\my@lemma@overlay@first{Example\ \thetcbexam}{黛绿},
+        overlay last=\my@lemma@overlay@last{黛绿},
+        }
+    },
+    Exercise={
+        counter=tcbexer,
+        the counter=\thechapter.\arabic{tcbexer},
+        autoref name=\bfseries Exercise,
+        style={
+        arc=0mm,breakable,enhanced,interior style={top color=绛紫!9 ,middle color=绛紫!6, bottom color=绛紫!3},arc=3pt,boxrule=0pt,top=6mm,bottom=5mm,
+        fuzzy shadow={-0.6mm}{0.6mm}{0mm}{0.3mm}{white!50!gray},% 上
+        fuzzy shadow={0.6mm}{-0.6mm}{0mm}{0.3mm}{fill=white!40!gray},%下
+        opacityframe=0, opacityback=0.9,
+        fontupper=\normalsize,step={tcbexer},
+        before pre=\smallskip, after app=\smallskip,
+        overlay unbroken=\my@lemma@overlay@unbroken{Exercise\ \thetcbexer}{绛紫},
+        overlay first=\my@lemma@overlay@first{Exercise\ \thetcbexer}{绛紫},
+        overlay last=\my@lemma@overlay@last{绛紫},
+        }
+    },
+    theorem={
+        counter=tcbthm,
+        the counter=\thesection.\arabic{tcbthm},
+        autoref name=\bfseries Theorem,
+        style={
+        arc=0mm,breakable,enhanced,interior style={top color=黛绿!9 ,middle color=黛绿!6, bottom color=黛绿!3},arc=3pt,boxrule=0pt,top=6mm,bottom=5mm,
+        fuzzy shadow={-0.6mm}{0.6mm}{0mm}{0.3mm}{white!50!gray},% 上
+        fuzzy shadow={0.6mm}{-0.6mm}{0mm}{0.3mm}{fill=white!40!gray},%下
+        opacityframe=0, opacityback=0.98,
+        fontupper=\itshape,step={tcbthm},
+        before pre=\smallskip, after app=\smallskip,
+        overlay unbroken=\my@lemma@overlay@unbroken{Theorem\ \thetcbthm}{黛绿},
+        overlay first=\my@lemma@overlay@first{Theorem\ \thetcbthm}{黛绿},
+        overlay last=\my@lemma@overlay@last{黛绿},
+        }
+    },
+    conjecture={
+        counter=tcbconj,
+        the counter=\thesection.\arabic{tcbconj},
+        name=Conjecture, 
+        lemcolor=靛蓝, 
+        autoref name=\bfseries Conjecture,
+        style={
+        arc=0mm,breakable,enhanced,interior style={top color=靛蓝!9 ,middle color=靛蓝!6, bottom color=靛蓝!3},arc=3pt,boxrule=0pt,top=6mm,bottom=5mm,
+        fuzzy shadow={-0.6mm}{0.6mm}{0mm}{0.3mm}{white!50!gray},% 上
+        fuzzy shadow={0.6mm}{-0.6mm}{0mm}{0.3mm}{fill=white!40!gray},%下
+        opacityframe=0, opacityback=0.98,
+        fontupper=\itshape,step={tcbconj},
+        before pre=\smallskip, after app=\smallskip,
+        overlay unbroken=\my@lemma@overlay@unbroken{Conjecture\ \thetcblem}{靛蓝},
+        overlay first=\my@lemma@overlay@first{Conjecture\ \thetcblem}{靛蓝},
+        overlay last=\my@lemma@overlay@last{靛蓝},
+        }
+    },
+}
+\makeatother
+% Callouts (What Failed, Lab at a glance, ...)
+\definecolor{fenavy}{HTML}{1B2A6B}
+\newtcolorbox{callout}{%
+  breakable, enhanced,
+  colback=white, colframe=fenavy, boxrule=0.5pt, arc=1mm,
+  borderline west={2.5pt}{0pt}{fenavy},
+  left=8pt, right=8pt, top=4pt, bottom=4pt}
+
+
+%% --------参考文献
+\RequirePackage[
+backend=biber,
+style=numeric,
+sorting=nty
+]{biblatex}
+\addbibresource{ref.bib}
+
+\indexsetup{level=\chapter*,noclearpage}
+\makeindex[title={\sffamily References},columns=3,columnsep=15pt,columnseprule]
+\makeindex
+
+    \usepackage{listings}
+    \lstset{
+        basicstyle=\small\ttfamily,	
+            keywordstyle=\color{NavyBlue}, 
+            commentstyle=\color{gray!50!black!50},   	
+            stringstyle=\rmfamily\slshape\color{red}, 	
+        backgroundcolor=\color{gray!5},     
+        frame=leftline,						
+        framerule=0.5pt,rulecolor=\color{gray!80}, 
+        numbers=left,				
+            numberstyle=\footnotesize,	
+            firstnumber=1,
+            stepnumber=1,                  	
+            numbersep=7pt,               	
+        aboveskip=.25em, 			
+        showspaces=false,               	
+        showstringspaces=false,        
+        keepspaces=true, 					
+        showtabs=false,                 	
+        tabsize=2,                     		
+        captionpos=b,                   	
+        flexiblecolumns=true, 			
+        breaklines=true,                	
+        breakatwhitespace=false,        	
+        breakautoindent=true,			
+        breakindent=1em, 			
+        title=\lstname,				
+        escapeinside=``,  		
+        xleftmargin=1em,  xrightmargin=1em,     
+        aboveskip=1ex, belowskip=1ex,
+        framextopmargin=1pt, framexbottommargin=1pt,
+            abovecaptionskip=-2pt,belowcaptionskip=3pt,
+        extendedchars=false, columns=flexible, mathescape=true,
+        texcl=true,
+        fontadjust
+    }%
+           
+%--------------------------------------------------------%
+% Custom environment for Q&A
+\newenvironment{qanda}
+  {\begin{list}{}{\leftmargin=1cm \rightmargin=0cm \labelwidth=1cm \labelsep=0.2cm \itemindent=0cm \parsep=0.2cm}}
+  {\end{list}}
+
+\newcommand{\question}[1]{\item[\textbf{Question:}] #1}
+\newcommand{\answer}[1]{\item[\textbf{Answer:}] #1}
+\color{black}
+
+\renewenvironment{backgroundbox}[1]
+{%
+\begin{tcolorbox}[
+    width=\textwidth,
+    center,
+    colback=gray!5,
+    colframe=gray!70,
+    enhanced,
+    boxrule=0.5pt,
+    breakable,
+    left=0pt,
+    right=5pt,
+    top=4pt,
+    bottom=4pt
+]
+\linespread{1.1}\selectfont
+\begin{list}{}{%
+    \setlength{\labelwidth}{0.8cm}%
+    \setlength{\labelsep}{0.25cm}%
+    \setlength{\leftmargin}{1.05cm}%
+    \setlength{\rightmargin}{0pt}%
+    \setlength{\topsep}{0pt}%
+    \setlength{\partopsep}{0pt}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\listparindent}{0pt}%
+}
+\item\relax
+{\bfseries #1\par}\medskip
+}
+{%
+\end{list}%
+\end{tcolorbox}%
+}
+
+
+
+%--------------------------------------------------------%
+\begin{document}                                          %
+%--------------------------------------------------------%
+\typeout{Paper Width = \the\paperwidth}
+\typeout{Paper Height = \the\paperheight}
+\thispagestyle{empty}
+\title{Financial Engineering and the Evidence}
+\subtitle{Active Learning by Verifying Famous Claims}
+\edition{First Edition}
+%\bookseries{}
+\author{Chris Kuo, Ph.D.}
+%\pressname{Beautybook}
+%\presslogo{inner_pics/logo.png}
+%\coverimage{inner_pics/coverimage.jpg}%ivy-ge998908f8_1280.jpg
+%\makecover
+\makeatletter
+
+
+\includepdf{cover/The_frontcover_beautybook.pdf}
+
+
+%------------------------ Publisher matter -------------------------%
+\newpage
+\vspace*{\fill}
+\footnotesize
+\noindent Copyright \textcopyright{} Chris Kuo, Ph.D. \\
+\\
+\noindent  All rights reserved. No part of this publication may be reproduced, stored in a retrieval system, or transmitted in any form or by any means, electronic, mechanical, photocopying, recording, scanning, or otherwise, except as permitted under Section 107 or 108 of the 1976 United States Copyright Act, without the prior written permission of the publisher, or in the case of brief quotations embodied in critical reviews and certain other noncommercial uses permitted by copyright law. 
+
+\noindent  
+While every effort has been made to ensure the reliability of the information presented in this publication, Innovation Press assumes no responsibility for errors or omissions. However, neither the author nor Innovation Press assumes any liability for damages resulting from the use of the information contained herein. \\
+\\
+
+
+ \noindent  ISBN 979-8-9825592-1-0
+ \\
+ \\
+\noindent First edition:  January 2027 \\
+
+\noindent This book was typeset using \LaTeX{} software. 
+The  \TeX{}  template acknowledgement:  \\
+ The \textit{Beautybook} \url{[https://ctan.org/pkg/beautybook?lang=en]} \\
+Comprehensive TEX Archive Network (CTAN)\\
+\\
+
+ 
+\noindent The Innovation Press, \\
+\noindent Ann Arbor, MI 
+\begin{figure}[!htbp]
+  \includegraphics[width=0.12\textwidth]{innovation_press.png}% Replace example-image with the filename of your image
+\end{figure}
+ 
+\vspace*{\fill}
+\normalsize
+\pagenumbering{arabic}
+
+% ---------------------------------------------------------------------------- %
+%                           The Sidebar Theme Chosen                           %
+% ---------------------------------------------------------------------------- %
+\definecolor{bg}{HTML}{e0e0e0}
+\definecolor{fg}{HTML}{2c4f54}
+\colorlet{outermarginbgcolor}{bg}
+\colorlet{outermarginfgcolor}{fg}
+% set the contents of the outer margin on even and odd pages for scrheadings, plain and scth
+\oddoutermargin{\sffamily \leftmark} % Odd
+\evenoutermargin{\sffamily\@title} % Even
+
+% ---------------------------------------------------------------------------- %
+%                         The images used in the title                         %
+% ---------------------------------------------------------------------------- %
+\titleimage{
+  chapteroddimage={odd1,odd2,odd3,odd4,odd5,odd6,odd7,odd8,odd9,odd10,odd11,odd12,odd13,odd14,odd15,mid1,mid2,mid3,mid4,mid5,mid6,mid7,mid8,mid9,mid10,mid11},
+%
+  partoddimage={odd1,odd2,odd3,odd4,odd5,odd6,odd7,odd8,odd9,odd10,odd11,odd12,odd13,odd14,odd15,mid1,mid2,mid3,mid4,mid5,mid6,mid7,mid8,mid9,mid10,mid11},
+%
+  chapterevenimage={songeven,even1,even2,even3,even4,mid1,mid2,mid3,mid4,mid5,mid6,mid7,mid8,mid9,mid10,mid11},
+%
+  partevenimage={songeven,even1,even2,even3,even4,mid1,mid2,mid3,mid4,mid5,mid6,mid7,mid8,mid9,mid10,mid11},
+}
+\chapimage{\Beautybook@chapterimagename}
+\partimage{\Beautybook@partimagename}
+\makeatother
+\colorlet{framegolden}{fg} % The line color of the magic box
+\colorlet{framegray}{bg!50} % The background color of the magic box
+\frontmatter
+
+
+% -------------------------About the author------------------------------%
+{
+\thispagestyle{empty}
+
+\input{chapters/author.tex}
+}
+
+%------------------------------TOC------------------------------------------%
+\thispagestyle{empty}
+\tableofcontents\let\cleardoublepage\clearpage
+
+\mainmatter
+
+% ----------------------------Preface and Introduction-----------------%
+
+\input{chapters/preface.tex}
+
+
+% ---- Part I: Returns, luck and data
+\part{Returns, Luck and Data}
+\include{chapters/ch01}   % 1  Claim: A Strong Track Record Proves Skill
+\include{chapters/ch02}   % 2  Claim: Historical Data Show What a Strategy Would Have Earned
+
+% ---- Part II: Regression, factor models and the cross-section
+\part{Factor Models and the Cross-Section}
+\include{chapters/ch03_revised}  
+\include{chapters/ch03}  
+\include{chapters/ch04}   % 4  Claim: A Profitable Backtest Means a Profitable Strategy
+\include{chapters/ch05}   % 5  Claim: Low-Risk Stocks Beat High-Risk Stocks
+\include{chapters/ch06}   % 6  Claim: Past Winners Keep Winning
+\include{chapters/ch07}   % 7  Claim: Most Published Anomalies Fail to Replicate
+
+% ---- Part III: Forecasting over time
+%\part{Forecasting over Time}
+%\include{chapters/ch08}   % 8  Claim: Stock Market Returns Are Predictable
+%\include{chapters/ch09}   % 9  Claim: The Trend Is Your Friend
+%\include{chapters/ch10}   % 10 Claim: The Yield Curve Predicts Future Interest Rates
+%\include{chapters/ch11}   % 11 Claim: Currency Losses Cancel Out Higher Interest Rates
+
+% ---- Part IV: Portfolios and dependence
+%\part{Portfolios and Dependence}
+%\include{chapters/ch12}   % 12 Claim: Optimized Portfolios Beat Simple Equal Weighting
+%\include{chapters/ch13}   % 13 Claim: Diversification Fails When You Need It Most
+
+% ---- Part V: Volatility and risk
+%\part{Volatility and Risk}
+%\include{chapters/ch14}   % 14 Claim: Volatility Is Predictable
+%\include{chapters/ch15}   % 15 Claim: Value-at-Risk Models Measure Risk Reliably
+
+% ---- Part VI: Derivatives and credit
+%\part{Derivatives and Credit}
+%\include{chapters/ch16}   % 16 Claim: Selling Options Earns a Reliable Premium
+%\include{chapters/ch17}   % 17 Claim: Delta Hedging Removes Option Risk
+%\include{chapters/ch18}   % 18 Claim: Corporate Bond Spreads Mainly Reflect Expected Defaults
+
+% ---- Part VII: Machine learning
+%\part{Machine Learning}
+%\include{chapters/ch19}   % 19 Claim: Machine Learning Predicts Stock Returns Better Than Linear Models
+%\include{chapters/ch20}   % 20 Claim: Artificial Intelligence Prices Stocks Better Than Factor Models
+
+% ---- Part VIII: Foundation models and the capstone
+%\part{Foundation Models and the Capstone}
+%\include{chapters/ch21}   % 21 Claim: Foundation Models Forecast Better Than Classical Methods
+%\include{chapters/ch22}   % 22 Claim: Foundation Models Trained on Market Data Beat GARCH
+%\include{chapters/ch23}   % 23 Capstone: Replicating a Finance Claim
+
+% Removed in the reorganization (old files, not included): ch08 (valuations), ch08_copilot (value),
+% ch23 (language models), ch25 (research design; its design sections now sit in ch24), and the
+% unused duplicates ch09_copilot and ch19.
+
+
+%--------------------------- BACK MATTER --------------------------------%
+\backmatter
+\renewcommand{\thechapter}{}   % no chapter number on back-matter pages
+\input{chapters/furtherreading.tex}
+\input{chapters/datasources.tex}   % continues on the same page
+% All sources cited in Chapters 1--23, consolidated
+\input{chapters/references.tex}
+
+%--------------------------Keyword Page Index------------------------%
+\clearpage
+\printindex
+
+\thispagestyle{empty}
+\input{chapters/index}
+
+\end{document}

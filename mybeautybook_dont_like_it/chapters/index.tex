@@ -1,0 +1,9 @@
+% index.tex -- prints the subject index at the end of the book.
+% Place \input{chapters/index} (or \include) after the back matter, before \end{document}.
+% The preamble needs (load imakeidx BEFORE hyperref):
+%   \usepackage{imakeidx}
+%   \makeindex[intoc, columns=2, title=Index, options=-s fe.ist]
+%   \providecommand{\indexgroup}[1]{\par\bigskip{\large\bfseries #1}\par\nopagebreak\smallskip}
+\providecommand{\indexgroup}[1]{\par\bigskip{\large\bfseries #1}\par\nopagebreak\smallskip}
+\clearpage
+\printindex
