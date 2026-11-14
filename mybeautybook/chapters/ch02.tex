@@ -459,7 +459,6 @@ The lab measures each of the problems from Sections~\ref{sec:02-returns} to~\ref
 The reason for the simulation is itself part of the lesson. To measure survivorship bias, we need to compare a backtest on all companies, including the ones that failed, with the same backtest on the survivors alone. Free stock-price sites list mainly the companies that still exist, so the failures are missing. The French library does include failed companies, but only inside its portfolio returns, so we cannot take them out to see how much difference they make. A simulation solves this problem, because it gives us the full history of every company, including the ones that disappear.
 
 
-
 \subsection*{Part A: Arithmetic versus geometric averages}
 
 \textbf{Predict first.} Before running this part, write down which of the four portfolios you expect to show the largest gap between its arithmetic and geometric average returns, and roughly how large you expect that gap to be.
@@ -524,21 +523,51 @@ Using size-sorted portfolios, the lab measures the \textbf{size premium}\index{s
 
 \subsection*{Your verdict}
 
-Readers write one sentence for each problem, saying how much it changed the result and in which direction, and then judge the claim. The expected verdict is \textbf{survives, with conditions}. Free data can support a reliable backtest when you do the following:
+Write one sentence for each problem, saying how much it changed the result and in which direction. Then reach your own verdict on the claim, using the scale of Section~\ref{sec:01-method}, and compare it with the published evidence summarized in Section~\ref{sec:02-verdict}. If your verdict differs, explain which of your results led you there.
+
+\section{Where the evidence stands}
+\label{sec:02-verdict}
+
+The published studies cited in this chapter point to a clear pattern: \textbf{free, public data can support a reliable backtest, but only when the data include failed companies and the backtest avoids hindsight and checks how its portfolios are weighted.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.09\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+Portfolio data from the French library and similar sources & \textbf{Yes} & These data are built from CRSP, so they include companies that later failed, together with their delisting returns. & Kenneth R. French Data Library; Chen and Zimmermann; Jensen, Kelly and Pedersen \\
+\addlinespace[3pt]
+Today's stocks from a free price site & \textbf{No} & The companies that failed are missing, so returns are overstated and false patterns can appear. & Brown, Goetzmann, Ibbotson and Ross (1992); Elton, Gruber and Blake (1996) \\
+\addlinespace[3pt]
+Data with missing delisting returns & \textbf{No} & The final losses of failing companies, about $-30$\% on average and more on Nasdaq, are left out. & Shumway (1997); Shumway and Warther (1999) \\
+\addlinespace[3pt]
+Signals or settings chosen with hindsight & \textbf{No} & Using figures before they were published, or choosing a rule's settings over the whole sample, makes results look better than any investor could have achieved. & Fama and French (1993); Sullivan, Timmermann and White (1999) \\
+\addlinespace[3pt]
+Equal-weighted results & \textbf{Partly} & Micro-caps are about 60\% of listed stocks but only 3\% of market value, and many anomalies disappear without them. & Fama and French (2008); Hou, Xue and Zhang (2020) \\
+\addlinespace[3pt]
+Findings tested only on the data where they were found & \textbf{Partly} & The whole field has searched the same data, and effects such as size weakened after they were published. & Lo and MacKinlay (1990); Schwert (2003); Harvey, Liu and Zhu (2016) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Together, these findings turn into four conditions that a backtest built on free data must meet:
 
 \begin{enumerate}
-  \item use total returns, compare them with a total-return benchmark, and quote the geometric average when reporting growth (Part A);
-  \item use data that include failed companies, such as the French library's portfolios, which are built from CRSP, rather than a list of today's stocks (Part B);
-  \item lag every signal and every accounting figure, and choose a rule's settings with walk-forward tests (Part C);
-  \item check that the result survives value weighting and the removal of micro-caps (Part D).
+  \item \textbf{Use the right returns.} Use total returns, compare them with a total-return benchmark, and quote the geometric average when reporting growth (Section~\ref{sec:02-returns}).
+  \item \textbf{Include the failures.} Use data that include failed companies, such as the French library's portfolios, rather than a list of today's stocks (Section~\ref{sec:02-survivorship}).
+  \item \textbf{Use only what was known.} Lag every signal and every accounting figure, and choose a rule's settings with walk-forward tests (Section~\ref{sec:02-lookahead}).
+  \item \textbf{Check the weighting.} Confirm that the result survives value weighting and the removal of micro-caps (Section~\ref{sec:02-microcaps}).
 \end{enumerate}
 
-A backtest that skips these steps can look excellent and still mean nothing, while one that follows them can be trusted as far as its statistics allow. The checklist in the next section turns these conditions into questions that you can ask of any backtest, including your own.
+A backtest that skips these steps can look excellent and still mean nothing, while one that follows them can be trusted as far as its statistics allow.
 
-\section{What investors can use: a data checklist}
+\textbf{What would change the picture.} The evidence would support the claim more broadly if free sources began to publish stock-level data that include delisted companies, so that individual-stock strategies could be tested without a paid database. It would weaken the claim if the portfolio data built from CRSP were found to contain errors of their own that change published results.
+
+\section{What practitioners and investors can use: a data checklist}
 \label{sec:02-checklist}
 
-Before you trust any backtest, whether it is your own or someone else's, work through the following questions. Each question corresponds to a section of this chapter, and most of them can be answered in a few minutes.
+The evidence in Section~\ref{sec:02-verdict} turns into a practical checklist. Before you trust any backtest, whether it is your own or someone else's, work through the following questions. Each question corresponds to a section of this chapter, and most of them can be answered in a few minutes.
 
 \begin{itemize}
   \item[$\square$] \textbf{Returns (Section~\ref{sec:02-returns}):} Are the returns total returns that include dividends? Are they compared with a total-return benchmark? Is the reported average arithmetic or geometric?

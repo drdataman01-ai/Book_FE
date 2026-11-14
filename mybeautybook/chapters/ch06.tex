@@ -198,55 +198,6 @@ McLean and Pontiff (2016) evaluated 97 published anomalies across three distinct
 The dividend-price ratio exhibited strong in-sample predictive performance through the 1980s. During the 1990s bull market, however, dividend yields dropped to historical lows, generating persistent negative return forecasts while equity markets surged. Real-time forecasters relying on dividend yields would have remained underweight equities throughout one of the largest bull markets in history. Structural shifts in mean dividend payouts explain much of this out-of-sample breakdown (Lettau and Van Nieuwerburgh 2008; Goyal and Welch 2008).
 \end{callout}
 
-\section{What Investors Can Use}
-\label{sec:09-investors}
-
-\textbf{Rules of Thumb:}
-\begin{itemize}
-  \item Start from the historical mean: Use the historical mean return as the primary benchmark for asset returns.
-  \item Prefer model combinations: Equal-weighted forecast combinations consistently beat individual predictive models by shrinking variance.
-  \item Inspect cumulative error plots: Plot cumulative squared error differences to verify whether forecast gains are steady or concentrated in single shock events.
-\end{itemize}
-
-\textbf{6-Question Investor Audit Checklist:}
-\begin{enumerate}
-  \item Were forecasts generated strictly walk-forward without look-ahead bias?
-  \item Were point-in-time publication delays and data revisions accounted for?
-  \item Is the benchmark model appropriate and hard to beat?
-  \item Was nested model comparison evaluated using the Clark--West test?
-  \item Does performance survive multiple-testing corrections (White's Reality Check / SPA)?
-  \item Does predictive efficacy persist in post-publication samples?
-\end{enumerate}
-
-\section{Verdict}
-\label{sec:09-verdict}
-
-\begin{callout}
-\noindent \textbf{Verdict: Fails}
-
-For most single macroeconomic predictors, in-sample statistical significance fails to translate into out-of-sample forecast superiority over the historical mean benchmark (Goyal and Welch 2008; Goyal, Welch, and Zafirov 2024). Out-of-sample $R^2_{\text{OS}}$ metrics are predominantly negative, and success is concentrated in isolated historical shocks. Economic value survives weakly only when imposing sign restrictions and equal-weighted forecast combinations.
-\end{callout}
-
-\section*{Exercises}
-\addcontentsline{toc}{section}{Exercises}
-
-\subsection*{Conceptual (all readers)}
-\begin{enumerate}
-  \item Explain why in-sample $R^2$ cannot decrease when adding variables, whereas out-of-sample $R^2_{\text{OS}}$ can be negative.
-  \item A forecaster predicts 12-month returns monthly using past data. Explain which training observations must be purged to prevent leakage.
-  \item Why is the uncorrected Diebold--Mariano test biased when comparing nested predictive models? What adjustment does Clark--West provide?
-  \item Describe how White's Reality Check constructs a null distribution for the maximum performance statistic across $N$ models.
-  \item Explain why an equal-weighted combination of 14 weak forecasts often beats every individual forecast out of sample.
-\end{enumerate}
-
-\subsection*{Lab Extensions (technical readers)}
-\begin{enumerate}
-  \setcounter{enumi}{5}
-  \item Replicate Part B of Lab~\ref{ch:09} across 14 macro predictors. Compute $R^2_{\text{OS}}$ and Clark--West $p$-values for 1965--2005 vs. post-2005 samples.
-  \item Evaluate sensitivity to window choice by rerunning walk-forward forecasts using a 20-year rolling window versus an expanding window.
-  \item Apply White's Reality Check to a universe of 500 technical trading rules applied to daily market index returns. Determine whether the top rule survives multiple-testing penalties.
-\end{enumerate}
-
 \section{Lab~\thechapter: Replicating Goyal and Welch (2008) and White's Reality Check}
 \label{sec:09-lab}
 
@@ -280,5 +231,78 @@ Other & Stock variance, net equity expansion, inflation (lagged 2 months). \\
   \item \textbf{Part E: White's Reality Check.} Apply White's Reality Check to a simulated technical trading universe to measure search bias.
 \end{itemize}
 
-\subsection*{Verdict}
-\textbf{Fails.} Single macroeconomic predictors do not consistently outperform the historical mean out of sample. Forecast combinations and theoretical sign constraints provide minor improvements, but overall out-of-sample predictability remains weak.
+\subsection*{Your verdict}
+
+Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:09-verdict}. If your verdict differs, explain which of your results led you there.
+
+\section{Where the evidence stands}
+\label{sec:09-verdict}
+
+The published studies cited in this chapter point to a clear pattern: \textbf{statistical significance in sample rarely carries over to forecasting out of sample, and most single predictors fail to beat the historical mean, although economic restrictions and combined forecasts recover a modest gain.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+In-sample predictability & \textbf{Yes} & The dividend--price ratio and other variables predict the equity premium in regressions fitted to the whole history. & Fama and French (1988); Campbell and Shiller (1988) \\
+\addlinespace[3pt]
+Single predictors out of sample & \textbf{No} & Most predictors fail to beat the historical mean in real time, and several do worse. & Goyal and Welch (2008); Goyal, Welch and Zafirov (2024) \\
+\addlinespace[3pt]
+Forecasts with economic restrictions & \textbf{Partly} & Ruling out wrong-signed slopes and negative premium forecasts recovers a modest but useful predictability. & Campbell and Thompson (2008) \\
+\addlinespace[3pt]
+Combined forecasts & \textbf{Partly} & An equal-weighted average of many weak forecasts beats each one by reducing the variance of the forecast. & Rapach, Strauss and Zhou (2010) \\
+\addlinespace[3pt]
+The dividend yield after 1990 & \textbf{No} & Low dividend yields signalled poor returns throughout one of the largest bull markets in history. & Lettau and Van Nieuwerburgh (2008); Goyal and Welch (2008) \\
+\addlinespace[3pt]
+The best of many rules & \textbf{No} & Once the search across thousands of rules is accounted for, the best rule is indistinguishable from chance. & Sullivan, Timmermann and White (1999); White (2000) \\
+\addlinespace[3pt]
+Published return patterns in general & \textbf{Weaker} & Returns fall by about a quarter out of sample and by more than half after publication. & McLean and Pontiff (2016) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{What would change the picture.} The evidence would support the claim more strongly if a predictor chosen in advance kept beating the historical mean in the years after publication, by enough to raise an investor's certainty-equivalent return after costs. It would weaken the claim further if the modest gains from restrictions and combinations also disappeared in new data.
+
+\section{What practitioners and investors can use}
+\label{sec:09-investors}
+
+The evidence in Section~\ref{sec:09-verdict} suggests several practical lessons.
+
+\textbf{Rules of Thumb:}
+\begin{itemize}
+  \item Start from the historical mean: Use the historical mean return as the primary benchmark for asset returns.
+  \item Prefer model combinations: Equal-weighted forecast combinations consistently beat individual predictive models by shrinking variance.
+  \item Inspect cumulative error plots: Plot cumulative squared error differences to verify whether forecast gains are steady or concentrated in single shock events.
+\end{itemize}
+
+\textbf{6-Question Investor Audit Checklist:}
+\begin{enumerate}
+  \item Were forecasts generated strictly walk-forward without look-ahead bias?
+  \item Were point-in-time publication delays and data revisions accounted for?
+  \item Is the benchmark model appropriate and hard to beat?
+  \item Was nested model comparison evaluated using the Clark--West test?
+  \item Does performance survive multiple-testing corrections (White's Reality Check / SPA)?
+  \item Does predictive efficacy persist in post-publication samples?
+\end{enumerate}
+
+\section*{Exercises}
+\addcontentsline{toc}{section}{Exercises}
+
+\subsection*{Conceptual (all readers)}
+\begin{enumerate}
+  \item Explain why in-sample $R^2$ cannot decrease when adding variables, whereas out-of-sample $R^2_{\text{OS}}$ can be negative.
+  \item A forecaster predicts 12-month returns monthly using past data. Explain which training observations must be purged to prevent leakage.
+  \item Why is the uncorrected Diebold--Mariano test biased when comparing nested predictive models? What adjustment does Clark--West provide?
+  \item Describe how White's Reality Check constructs a null distribution for the maximum performance statistic across $N$ models.
+  \item Explain why an equal-weighted combination of 14 weak forecasts often beats every individual forecast out of sample.
+\end{enumerate}
+
+\subsection*{Lab Extensions (technical readers)}
+\begin{enumerate}
+  \setcounter{enumi}{5}
+  \item Replicate Part B of Lab~\ref{ch:09} across 14 macro predictors. Compute $R^2_{\text{OS}}$ and Clark--West $p$-values for 1965--2005 vs. post-2005 samples.
+  \item Evaluate sensitivity to window choice by rerunning walk-forward forecasts using a 20-year rolling window versus an expanding window.
+  \item Apply White's Reality Check to a universe of 500 technical trading rules applied to daily market index returns. Determine whether the top rule survives multiple-testing penalties.
+\end{enumerate}

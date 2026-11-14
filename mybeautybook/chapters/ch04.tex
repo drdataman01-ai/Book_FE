@@ -85,7 +85,7 @@ A stock's past return over a window is its cumulative return over those months: 
   \item \textbf{Rebalance every month.} Hold the positions for one month, then repeat the sort. Roughly a third of the portfolio changes each month.
 \end{itemize}
 
-Because the portfolio holds as much in winners as it sells in losers, its beta to the market is close to zero on average, although it changes a great deal over time, as Section~\ref{sec:05-crashes} shows. Running it requires selling stocks short, which costs borrowing fees. Most individual investors instead hold long-only momentum funds, which tilt toward winners but keep the market's full beta.
+Because the portfolio holds as much in winners as it sells in losers, its beta to the market is close to zero on average, although it changes a great deal over time, as Section~\ref{sec:05-how} shows. Running it requires selling stocks short, which costs borrowing fees. Most individual investors instead hold long-only momentum funds, which tilt toward winners but keep the market's full beta.
 
 Because the stocks in each side of the portfolio change from month to month, the portfolio's beta changes too, sometimes sharply; Section~\ref{sec:05-how} explains why this matters for momentum's worst months.
 
@@ -239,8 +239,10 @@ The final clause is what distinguishes this chapter's claim from a simple statem
 
 \textbf{What readers will find.} Lab Figure~\ref{ch:05}.1 marks the five worst months on a century-long chart of momentum's growth; Lab Figure~\ref{ch:05}.3 shows that they cluster in the upper right of a scatter of momentum against the market during bear markets: when beaten-down markets rebound. Lab Figure~\ref{ch:05}.4 compares raw and volatility-scaled momentum, with their drawdowns. The test of the claim is whether the premium is present in most decades and after publication, survives costs, and whether its crashes are manageable without hindsight.
 
-\section{Stress tests}
+\subsection{Robustness checks}
 \label{sec:05-stress}
+
+The full-sample results can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
 
 \textbf{1. After publication.} Jegadeesh and Titman's paper appeared in 1993. Momentum's post-publication record is one of the longest out-of-sample tests of any anomaly, and Jegadeesh and Titman (2001) found it continued to work through the 1990s. The lab extends the test to the present, through the 2009 crash and the 2010s.
 
@@ -252,31 +254,54 @@ The final clause is what distinguishes this chapter's claim from a simple statem
 
 \textbf{5. The volatility-scaling result itself.} A result that improves on a famous anomaly by adjusting it is itself a claim that can be overfit\index{overfitting}. Barroso and Santa-Clara chose a six-month window and a 12\% target; the lab lets readers change both, and an exercise asks how sensitive the improvement is. Chapter~\ref{ch:10} returns to whether volatility timing\index{volatility targeting} works in general.
 
-\section{Verdict}
+\subsection*{Your verdict}
+
+Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:05-verdict}. If your verdict differs, explain which of your results led you there.
+
+\section{Where the evidence stands}
 \label{sec:05-verdict}
 
-Based on the published evidence, to be confirmed by readers' runs of Lab~\ref{ch:05} on data through 2025: \textbf{survives, with severe crash risk\index{crash risk}.}
+The published studies cited in this chapter point to a clear pattern: \textbf{momentum has survived publication, appears in most markets and covers its costs at institutional trading costs, but its rare, severe crashes make it hard to hold without managing its risk.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
 
 \begin{center}
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.25\linewidth}@{}}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
 \toprule
-Test & Finding & Effect on the claim \\
+Situation & Holds? & Why & Evidence \\
 \midrule
-A century of U.S. data & A large average premium with a high t-statistic & Supports \\
-After publication & Continued to earn a premium through the 1990s; weaker and more volatile since 2000, with the 2009 crash & Supports, weakened \\
-Other countries and assets & Broad, with Japan the notable exception & Supports \\
-Costs & Large, but smaller than the gross premium at institutional costs & Supports, with a smaller net premium \\
-Crashes & Rare, severe and concentrated in market rebounds after declines & A serious qualification \\
-Volatility scaling & Reduces crashes and raises the Sharpe ratio in the literature, using only past data & Supports manageability, but is itself a claim to test \\
+A century of U.S. data & \textbf{Yes} & Past winners beat past losers by a large average premium with a high $t$-statistic, and the three-factor model cannot explain it. & Jegadeesh and Titman (1993); Fama and French (1996) \\
+\addlinespace[3pt]
+After publication & \textbf{Yes, weaker} & The premium continued through the 1990s but has been weaker and more volatile since 2000. & Jegadeesh and Titman (2001); Daniel and Moskowitz (2016) \\
+\addlinespace[3pt]
+Other countries and asset classes & \textbf{Mostly} & Momentum appears in Europe, in stocks across countries and in bonds, currencies and commodities, with Japan the notable exception. & Rouwenhorst (1998); Asness, Moskowitz and Pedersen (2013); Chui, Titman and Wei (2010) \\
+\addlinespace[3pt]
+After trading costs & \textbf{Yes, smaller} & Costs are large but smaller than the gross premium at institutional trading costs. & Novy-Marx and Velikov (2016) \\
+\addlinespace[3pt]
+Through its crashes & \textbf{Partly} & Rare, severe losses come when beaten-down markets rebound, as in 1932 and 2009. & Grundy and Martin (2001); Daniel and Moskowitz (2016) \\
+\addlinespace[3pt]
+With volatility scaling & \textbf{Partly} & Scaling by forecast volatility reduced the crashes and raised the Sharpe ratio, but the improvement is itself a claim to test. & Barroso and Santa-Clara (2015) \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-Momentum is among the most robust anomalies in finance: it has survived publication, appears in most markets and asset classes, and covers its costs at institutional trading costs\index{transaction costs}. Its crashes are the reason the verdict is not an unqualified survives: an investor holding raw momentum must be prepared to lose a large fraction of the strategy's value in a few months, at moments when the rest of the portfolio is recovering. The verdict is dated by the sample tested.
+Momentum is among the most robust anomalies in finance. Its crashes are the main qualification, because an investor holding raw momentum must be prepared to lose a large fraction of the strategy's value in a few months, at moments when the rest of the portfolio is recovering.
 
-\section{What investors can use}
+\textbf{What would change the picture.} The evidence would support the claim fully if volatility scaling, set in advance and tested in new data, reliably removed the crashes without removing the premium. It would weaken the claim if the premium kept shrinking after 2000 until it no longer covered realistic trading costs.
+
+\subsection{Open questions}
+\label{sec:05-open}
+
+\begin{itemize}
+  \item \textbf{Can momentum crashes be forecast in real time?} The bear-market and volatility signals help in sample. How well do they work for an investor who adopts them today, and do they survive the multiple-testing\index{multiple testing} corrections of Chapter~\ref{ch:19}?
+  \item \textbf{Why not Japan?} Cultural explanations, differences in investor behavior and differences in market structure have all been proposed for momentum's weakness in Japan; none is settled.
+  \item \textbf{Risk or behavior?} If crashes are the risk that momentum's premium compensates, managing the crashes should reduce the premium. Does it?
+  \item \textbf{Momentum in factors.}\index{momentum|textbf} Ehsani and Linnainmaa (2022) argue that factor returns themselves have momentum. How does that relate to momentum in individual stocks?
+\end{itemize}
+
+\section{What practitioners and investors can use}
 \label{sec:05-investors}
+
+The evidence in Section~\ref{sec:05-verdict} suggests several practical lessons.
 
 \textbf{Trend rules for asset allocation.} Time-series momentum applied across asset classes, the core of managed-futures funds, has historically tended to do well in prolonged market declines, when it turns short. That makes it a candidate \textbf{diversifier}, an addition that tends to do well when the rest of the portfolio does badly, for a stock-heavy portfolio. Its returns have been uneven, with long flat periods, and its fees are often high.
 
@@ -297,16 +322,6 @@ Momentum is among the most robust anomalies in finance: it has survived publicat
 \begin{callout}
 \textbf{What Failed: holding raw momentum through the 2009 rebound.} By early 2009 momentum had performed well through the financial crisis: it was long defensive winners and short the collapsing financial and cyclical stocks. When the market turned in March 2009, the most beaten-down stocks rebounded hardest. Over the following months, momentum's loser portfolio rose far more than its winner portfolio, and the strategy lost much of a decade's gains in a few months (Daniel and Moskowitz 2016). Nothing about the crash was a mystery afterward: the strategy was short a portfolio of very high-beta stocks at the bottom of a bear market. The failure was in treating momentum's average return as the whole story, and in sizing positions as if the risk were constant. The claim that momentum's historical return could be harvested without managing its crash risk \textbf{fails}.
 \end{callout}
-
-\section{Open questions}
-\label{sec:05-open}
-
-\begin{itemize}
-  \item \textbf{Can momentum crashes be forecast in real time?} The bear-market and volatility signals help in sample. How well do they work for an investor who adopts them today, and do they survive the multiple-testing\index{multiple testing} corrections of Chapter~\ref{ch:19}?
-  \item \textbf{Why not Japan?} Cultural explanations, differences in investor behavior and differences in market structure have all been proposed for momentum's weakness in Japan; none is settled.
-  \item \textbf{Risk or behavior?} If crashes are the risk that momentum's premium compensates, managing the crashes should reduce the premium. Does it?
-  \item \textbf{Momentum in factors.}\index{momentum|textbf} Ehsani and Linnainmaa (2022) argue that factor returns themselves have momentum. How does that relate to momentum in individual stocks?
-\end{itemize}
 
 \section*{Exercises}
 \addcontentsline{toc}{section}{Exercises}

@@ -652,7 +652,7 @@ The rest of this book applies one method to every claim. It is simple enough to 
   \item \textbf{Claim} --- State what is asserted in one testable sentence. ``Momentum works'' is vague; ``stocks with the highest 12-month returns, skipping the last month, outperform the lowest by a positive average return after costs'' can be tested.
   \item \textbf{Understand} --- Learn how the idea works and how the original evidence was produced, including the data, the sample period, the method and the number of alternatives the authors tried.
   \item \textbf{Verify} --- Rebuild the result yourself, then stress-test it out of sample\index{in-sample versus out-of-sample}, in other markets, after costs and after publication.
-  \item \textbf{Judge} --- Reach a verdict on the scale below, and date it with the sample period you tested.
+  \item \textbf{Judge} --- Compare your results with the published evidence, which each chapter summarizes in a section called \emph{Where the evidence stands}. Then reach your own verdict on the scale below, and date it with the sample period you tested.
   \item \textbf{Apply} --- State what an investor or practitioner can actually use, and what remains open.
 \end{enumerate}
 
@@ -673,6 +673,24 @@ Provisional & The evidence is too new or too mixed for a firm verdict. \\
 \end{center}
 
 Two habits make the method work. First, \textbf{decide the test before seeing the result}. Write down the claim, the data and the pass criteria in advance, so that the test cannot be bent to fit the outcome. Second, \textbf{always ask ``compared to what?''} Every claim is judged against a simple benchmark, such as the market, the historical average\index{historical-mean benchmark} or a naive rule, and never against zero.
+
+
+\section{Looking ahead}
+\label{sec:01-ahead}
+
+This chapter showed that prices are hard to predict, that the noise in returns hides real effects and manufactures false ones, and that selection turns luck into impressive backtests. The rest of the book builds on these points, one claim at a time, in roughly the order the field itself studied them. Each chapter introduces a method only a little harder than the one before.
+
+\textbf{Part I continues} with the data itself (Chapter~\ref{ch:02}), which shows how survivorship bias, look-ahead bias and micro-cap\index{micro-caps} stocks inflate results before any statistics are run, and with investors' own returns (Chapter~\ref{ch:03}), which asks whether individuals lose return through their own decisions.
+
+\textbf{Part II} turns to regression and the cross-section of stock returns: the CAPM and the size and value factors (Chapter~\ref{ch:04}), and momentum (Chapter~\ref{ch:05}).
+
+\textbf{Part III} turns to forecasting through time, in currencies, bonds and stocks (Chapters~\ref{ch:06} to~\ref{ch:09}), and builds the out-of-sample tests that the rest of the book reuses.
+
+\textbf{Parts IV to VI} move from the mean of returns to their risk: volatility and Value at Risk (Chapters~\ref{ch:10} and~\ref{ch:11}), portfolios and diversification (Chapters~\ref{ch:12} and~\ref{ch:13}), and options and credit (Chapters~\ref{ch:14} to~\ref{ch:16}).
+
+\textbf{Part VII} returns to the classical findings with the tools of the last two decades: trading costs, the low-risk anomaly and the replication debate (Chapters~\ref{ch:17} to~\ref{ch:19}). \textbf{Part VIII} tests the newest claims, from machine learning to foundation models (Chapters~\ref{ch:20} to~\ref{ch:23}), and the capstone (Chapter~\ref{ch:24}) asks readers to run a trial of their own.
+
+Each chapter ends by summarizing where the published evidence stands, and the lab asks you to reach your own verdict. Some claims hold up well. That is the point of the method. Its aim is not to dismiss every finding, but to separate the findings that hold from the ones that only looked good.
 
 This chapter's lab applies the method to a claim at the root of the whole field: whether a track record can reveal real skill.
 
@@ -728,22 +746,44 @@ The chapter presents five exhibits. Lab Figure~\ref{ch:01}.1 tracks the market's
 
 \subsection*{Your verdict}
 
-The lab ends by asking readers to write their own verdict on the claim in two or three sentences, using their numbers. The expected conclusion is \textbf{survives, with conditions}. A track record can reveal real skill, but only when three conditions hold:
+The lab ends by asking you to write your own verdict on the claim in two or three sentences, using the scale of Section~\ref{sec:01-method} and the numbers from your own run. Then compare it with the published evidence summarized in Section~\ref{sec:01-verdict}. If your verdict differs, explain which of your results led you there.
+
+\section{Where the evidence stands}
+\label{sec:01-verdict}
+
+The published studies cited in this chapter point to a clear pattern: \textbf{a track record can reveal real skill, but only when it is long enough, clears a bar that allows for how many strategies were tried, and keeps working after it was chosen.} Most records do not meet these conditions, and genuine skill appears to be rare. The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.22\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+Mutual funds as a group, after fees & \textbf{No} & The average fund earns less than a cheap market fund with the same risk, and few funds beat what chance alone would produce. & Jensen (1968); Fama and French (2010) \\
+A minority of skilled managers & \textbf{Yes} & The best records of a small group of managers are hard to explain by luck, and differences in skill persist for many years. & Kosowski, Timmermann, Wermers and White (2006); Berk and van Binsbergen (2015) \\
+Records with an identifiable edge & \textbf{Yes} & Profits that trace back to better information or cheaper execution are evidence of skill, not only of luck. & Katona et al.\ (2025); Frazzini, Israel and Moskowitz (2018) \\
+Short records & \textbf{No} & A Sharpe ratio of 0.5 needs about 15 years of data to reach $t = 1.96$, and most records are far shorter. & Lo (2002); Section~\ref{sec:01-signal-noise} \\
+The best of many backtests & \textbf{No} & When many strategies are tried, the best one looks impressive by chance alone, so the usual bar of $t = 2$ is far too low. & Bailey et al.\ (2014); Harvey, Liu and Zhu (2016) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Together, these findings turn into three conditions that a record must meet before it counts as evidence of skill:
 
 \begin{enumerate}
   \item \textbf{It is long enough for its Sharpe ratio.} The record needs about $(1.96/\mathrm{SR})^2$ years, which is roughly 15 years for a Sharpe ratio of 0.5 and 4 years for a Sharpe ratio of 1.0 (Section~\ref{sec:01-signal-noise}).
-  \item \textbf{It clears a bar that allows for how many strategies were tried.} After 1,000 tries, the alpha must reach $t_\alpha > 3.89$, not 1.96. The random strategies in Parts 2 and 3 show why.
-  \item \textbf{It keeps working on data that played no part in choosing it}, such as the period after selection.
+  \item \textbf{It clears a bar that allows for how many strategies were tried.} After 1,000 tries, the alpha must reach $t_\alpha > 3.89$, not 1.96, and Harvey, Liu and Zhu (2016) argue that, because the field as a whole has already tested so many ideas, any new finding should clear a $t$ of about 3.
+  \item \textbf{It keeps working on data that played no part in choosing it}, such as the period after the strategy was selected.
 \end{enumerate}
 
-A record that meets all three is real evidence of skill. A short record, or the best of many tries judged by the usual bar, is not.
+These conditions are not obstacles. They are the specification that a credible strategy must meet. Lab extension~9 lets you plant a genuinely skilled strategy among the 1,000 random ones and see what it takes for it to stand out. The rest of the book gives you the tools to meet each condition, and later chapters find strategies whose alpha holds up under testing.
 
-\textbf{What the verdict means for you.} Profits can come from bearing risk, from luck or from skill (Section~\ref{sec:01-foundations}), and skill can be found. The conditions above are not obstacles. They are the specification that a credible strategy must meet. Lab extension~9 lets you plant a genuinely skilled strategy among the 1,000 and see what it takes for it to stand out. The rest of the book gives you the tools to meet each condition, and later chapters find strategies whose alpha survives testing.
+\textbf{What would change the picture.} The evidence would support the claim more broadly if large groups of managers, chosen in advance, kept beating cheap alternatives after fees over long periods. It would reject the claim if even the managers singled out by Kosowski and colleagues and by Berk and van Binsbergen lost their edge in later data.
 
-\section{What investors can use}
+\section{What practitioners and investors can use}
 \label{sec:01-investors}
 
-The practical lesson of this chapter is to judge evidence by \textbf{how it was produced}, not by how good it looks. A spectacular track record and a modest one can carry the same information, or none, depending on the search behind them. The same lesson tells you what a convincing record looks like. It is long enough for its Sharpe ratio, it is honest about the number of tries, and it is confirmed on new data.
+The evidence in Section~\ref{sec:01-verdict} suggests several practical lessons. The most important is to judge evidence by \textbf{how it was produced}, not by how good it looks. A spectacular track record and a modest one can carry the same information, or none, depending on the search behind them. The same lesson tells you what a convincing record looks like. It is long enough for its Sharpe ratio, it is honest about the number of tries, and it is confirmed on new data.
 
 \textbf{Rules of thumb}
 
@@ -765,23 +805,6 @@ The practical lesson of this chapter is to judge evidence by \textbf{how it was 
   \item What happened to the other strategies or funds you launched at the same time?
   \item Are transaction costs, fees and taxes included?
 \end{itemize}
-
-\section{Looking ahead}
-\label{sec:01-ahead}
-
-This chapter showed that prices are hard to predict, that the noise in returns hides real effects and manufactures false ones, and that selection turns luck into impressive backtests. The rest of the book builds on these points, one claim at a time, in roughly the order the field itself studied them. Each chapter introduces a method only a little harder than the one before.
-
-\textbf{Part I continues} with the data itself (Chapter~\ref{ch:02}), which shows how survivorship bias, look-ahead bias and micro-cap\index{micro-caps} stocks inflate results before any statistics are run, and with investors' own returns (Chapter~\ref{ch:03}), which asks whether individuals lose return through their own decisions.
-
-\textbf{Part II} turns to regression and the cross-section of stock returns: the CAPM and the size and value factors (Chapter~\ref{ch:04}), and momentum (Chapter~\ref{ch:05}).
-
-\textbf{Part III} turns to forecasting through time, in currencies, bonds and stocks (Chapters~\ref{ch:06} to~\ref{ch:09}), and builds the out-of-sample tests that the rest of the book reuses.
-
-\textbf{Parts IV to VI} move from the mean of returns to their risk: volatility and Value at Risk (Chapters~\ref{ch:10} and~\ref{ch:11}), portfolios and diversification (Chapters~\ref{ch:12} and~\ref{ch:13}), and options and credit (Chapters~\ref{ch:14} to~\ref{ch:16}).
-
-\textbf{Part VII} returns to the classical findings with the tools of the last two decades: trading costs, the low-risk anomaly and the replication debate (Chapters~\ref{ch:17} to~\ref{ch:19}). \textbf{Part VIII} tests the newest claims, from machine learning to foundation models (Chapters~\ref{ch:20} to~\ref{ch:23}), and the capstone (Chapter~\ref{ch:24}) asks readers to run a trial of their own.
-
-Each chapter ends with a verdict, and some claims survive. That is the point of the method. Its aim is not to dismiss every finding, but to separate the findings that hold from the ones that only looked good.
 
 \section*{Exercises}
 \addcontentsline{toc}{section}{Exercises}

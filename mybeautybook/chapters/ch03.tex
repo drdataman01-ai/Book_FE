@@ -512,7 +512,6 @@ For these reasons, evaluating a factor requires several complementary questions:
 These questions are especially important in empirical asset pricing, where researchers may examine hundreds of candidate factors. A statistically significant result can arise by chance, particularly when many hypotheses are tested. Even a factor that survives statistical scrutiny must still demonstrate economic relevance and practical value. A credible factor discovery should therefore combine statistical evidence, economic reasoning and realistic investment considerations.
 
 
-
 \subsection{Practical and Institutional Implications}
 \label{sec:04-implications}
 
@@ -688,48 +687,7 @@ careful empirical methods. Harvey, Liu, and Zhu take the
 reported $t$-statistics as given and assume that the
 underlying studies have appropriately addressed issues
 such as heteroskedasticity, autocorrelation, and data
-errors. 
-
-\section{What Investors Can Use}
-\label{sec:04-investors}
-
-The ideas in this chapter suggest a few useful habits for judging any claim about returns.
-
-\textbf{Rules of thumb:}
-\begin{enumerate}
-  \item \textbf{Separate alpha from factor exposure.} Many index funds and factor ETFs now offer exposure to size, value and other known factors at low cost. When a fund charges higher fees for active management, or claims that its manager has skill, check how much of its return comes from steady exposure to those same factors. 
-  \item \textbf{Be cautious with new factors that only just clear the usual bar.} Because so many factors have been tested on the same data, a $t$-statistic of 2 is weaker evidence than it looks. Harvey, Liu and Zhu (2016) suggest a hurdle closer to 3. Remember, too, that among 25 portfolios tested at the 5\% level, one or two will usually look significant by chance.
-  \item \textbf{Look at returns after costs.} A statistically significant alpha can still be too small to survive trading costs, short-selling fees and management fees. Chapter~\ref{ch:17} shows how to make that comparison.
-\end{enumerate}
-
-\textbf{Questions to ask fund managers:}
-\begin{itemize}
-  \item How much of your performance comes from alpha, and how much from exposure to factors that a low-cost index or factor fund would also provide?
-  \item How many models or variations did you test before choosing this strategy?
-  \item What is the confidence interval for your alpha, and how large is the alpha after fees and trading costs?
-\end{itemize}
-\section*{Exercises}
-\addcontentsline{toc}{section}{Exercises}
-
-\subsection*{Conceptual (all readers)}
-\begin{enumerate}
-  \item An active equity manager reports a CAPM alpha of 3.2\% per year ($t = 2.5$). Under a Fama--French three-factor model, the alpha drops to 0.1\% ($t = 0.2$), with an $SMB$ loading of 0.70 and an $HML$ loading of 0.50. Explain the source of the manager's excess return, and what it implies for the fee the manager should charge.
-  \item A stock has a market beta of 0.8, a residual standard deviation of 6\% a month, and the market's standard deviation is 4.5\% a month. Use Equation~\eqref{eq:04-vardec-capm} to compute the share of its variance that is systematic. What would the share be for an equally weighted portfolio of 50 such stocks with independent residuals?
-  \item Fama and French (2015) found that the value factor becomes redundant once profitability and investment factors are added. Using the dividend discount model argument of Section~\ref{sec:04-multifactor}, explain why value stocks might load on these two factors, and discuss what the finding implies for reading $HML$ as a distress factor.
-  \item Explain why adding factors to a model can always make an alpha smaller, and state what economic and statistical evidence you would require before accepting a newly proposed factor.
-  \item Daily returns show minimal autocorrelation, yet absolute daily returns show strong autocorrelation. Explain how both statements can be true, and why this matters for standard errors.
-  \item A long-horizon regression of 5-year returns on dividend yields uses 50 years of monthly data ($T=600$, $k=60$). How many independent observations does it contain, and why are classical $t$-statistics misleading?
-  \item Why must a time-series bootstrap resample blocks of observations rather than individual months?
-  \item Explain why a factor alpha with $t = 3.2$ might lack economic significance, and list what you would need to know before investing in it.
-\end{enumerate}
-
-\subsection*{Lab Extensions (technical readers)}
-\begin{enumerate}
-  \setcounter{enumi}{8}
-  \item Replicate Part B of Lab~\ref{ch:04} across two sub-samples: 1963--1992 and 1993--present. Compare changes in factor risk premia and GRS test rejections.
-  \item Compute $t$-statistics for 25 portfolio alphas using four methods: Classical OLS, White, Newey--West, and Stationary Block Bootstrap. Identify portfolios with the largest SE discrepancies, and explain what features of their returns might cause them.
-  \item Pair monthly returns with 1,000 simulated non-predictive predictors ($\rho = 0.98$). Run long-horizon regressions ($k=1$ to $60$) and plot false-positive rates for OLS, Newey--West, and Hodrick standard errors. Then set the correlation between predictor shocks and return shocks to $-0.9$ and describe how the Stambaugh bias changes the results.
-\end{enumerate}
+errors.
 
 \section{Lab~\thechapter: Replicating Fama and French (1993) and the factor zoo}
 \label{sec:04-lab}
@@ -805,8 +763,82 @@ The purpose is not to decide whether every factor is investable. Rather, it is t
 
 \subsection*{Your verdict}
 
-Readers judge the claim by comparing the results from all three parts. The expected verdict is \textbf{survives, with conditions}. The Fama--French three-factor model should explain more of the variation in the 25 size-and-book-to-market portfolios than the CAPM. Its additional factors capture systematic differences in portfolio returns that the market factor alone does not explain. However, a higher $R^2$ does not guarantee that all pricing errors disappear or that the model fully explains differences in expected returns.
+Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:04-verdict}. If your verdict differs, explain which of your results led you there.
 
-The multiple-testing experiment reveals a separate limitation. When researchers examine hundreds of candidate factors, conventional significance thresholds can produce many false discoveries. A more demanding statistical hurdle helps, but it does not replace economic reasoning, theoretical motivation or out-of-sample validation.
+\section{Where the evidence stands}
+\label{sec:04-verdict}
 
-Finally, statistical significance does not guarantee economic value. Factor premiums must be large enough to matter after considering risk, transaction costs and implementation constraints. The broader lesson is that a convincing factor discovery requires more than a significant $t$-statistic: it should help explain return differences, withstand appropriate statistical scrutiny and make economic sense.
+The published studies cited in this chapter point to a clear pattern: \textbf{adding size and value to the market explains differences in portfolio returns that beta alone cannot, but many of the factors proposed since are likely to be false discoveries, so a new factor must clear a higher bar.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+Beta alone & \textbf{No} & Average returns rise with beta less steeply than the CAPM predicts, and once size and book-to-market are included, beta adds almost nothing. & Black, Jensen and Scholes (1972); Fama and French (1992) \\
+\addlinespace[3pt]
+Size and value across the 25 portfolios & \textbf{Yes} & Adding SMB and HML raises the $R^2$ above 90\% for most portfolios and shrinks their alphas toward zero. & Fama and French (1993) \\
+\addlinespace[3pt]
+Value alongside profitability and investment & \textbf{Partly} & Once profitability and investment factors are added, the value factor adds little explanatory power. & Fama and French (2015) \\
+\addlinespace[3pt]
+Why size and value earn a premium & \textbf{Disputed} & One reading treats the premiums as payment for risk, the other as the result of investors' mistakes, and value stocks did not do worse in recessions. & Fama and French (1993); Lakonishok, Shleifer and Vishny (1994) \\
+\addlinespace[3pt]
+Apparent skill of fund managers & \textbf{Yes} & Much of what looked like skill under the CAPM is exposure to factors, and few funds cover their costs. & Carhart (1997); Fama and French (2010) \\
+\addlinespace[3pt]
+Hundreds of new factors judged at $t > 2$ & \textbf{No} & So many factors have been tested on the same data that many are false discoveries, and a new factor should clear a $t$ of about 3. & Cochrane (2011); Harvey, Liu and Zhu (2016) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Together, these findings turn into three conditions that a factor must meet before it is accepted:
+
+\begin{enumerate}
+  \item \textbf{It explains returns that existing factors do not.} A higher $R^2$ is a start, but the pricing errors, the alphas, must also shrink toward zero.
+  \item \textbf{It clears a bar that allows for the search.} Because hundreds of factors have been tested on the same data, a $t$-statistic of about 2 is weak evidence, and a hurdle closer to 3 is safer.
+  \item \textbf{It matters economically.} The premium must be large enough to survive risk, trading costs and implementation constraints, and there should be a convincing reason why it exists.
+\end{enumerate}
+
+\textbf{What would change the picture.} The evidence would support the claim more strongly if the size and value premiums held up in data that played no part in their discovery, such as other countries and the years after publication, with a settled explanation of why they exist. It would weaken the claim if the profitability and investment factors, like many others in the zoo, faded once they were published.
+
+\section{What practitioners and investors can use}
+\label{sec:04-investors}
+
+The evidence in Section~\ref{sec:04-verdict} suggests a few useful habits for judging any claim about returns.
+
+\textbf{Rules of thumb:}
+\begin{enumerate}
+  \item \textbf{Separate alpha from factor exposure.} Many index funds and factor ETFs now offer exposure to size, value and other known factors at low cost. When a fund charges higher fees for active management, or claims that its manager has skill, check how much of its return comes from steady exposure to those same factors. 
+  \item \textbf{Be cautious with new factors that only just clear the usual bar.} Because so many factors have been tested on the same data, a $t$-statistic of 2 is weaker evidence than it looks. Harvey, Liu and Zhu (2016) suggest a hurdle closer to 3. Remember, too, that among 25 portfolios tested at the 5\% level, one or two will usually look significant by chance.
+  \item \textbf{Look at returns after costs.} A statistically significant alpha can still be too small to survive trading costs, short-selling fees and management fees. Chapter~\ref{ch:17} shows how to make that comparison.
+\end{enumerate}
+
+\textbf{Questions to ask fund managers:}
+\begin{itemize}
+  \item How much of your performance comes from alpha, and how much from exposure to factors that a low-cost index or factor fund would also provide?
+  \item How many models or variations did you test before choosing this strategy?
+  \item What is the confidence interval for your alpha, and how large is the alpha after fees and trading costs?
+\end{itemize}
+
+\section*{Exercises}
+\addcontentsline{toc}{section}{Exercises}
+
+\subsection*{Conceptual (all readers)}
+\begin{enumerate}
+  \item An active equity manager reports a CAPM alpha of 3.2\% per year ($t = 2.5$). Under a Fama--French three-factor model, the alpha drops to 0.1\% ($t = 0.2$), with an $SMB$ loading of 0.70 and an $HML$ loading of 0.50. Explain the source of the manager's excess return, and what it implies for the fee the manager should charge.
+  \item A stock has a market beta of 0.8, a residual standard deviation of 6\% a month, and the market's standard deviation is 4.5\% a month. Use Equation~\eqref{eq:04-vardec-capm} to compute the share of its variance that is systematic. What would the share be for an equally weighted portfolio of 50 such stocks with independent residuals?
+  \item Fama and French (2015) found that the value factor becomes redundant once profitability and investment factors are added. Using the dividend discount model argument of Section~\ref{sec:04-multifactor}, explain why value stocks might load on these two factors, and discuss what the finding implies for reading $HML$ as a distress factor.
+  \item Explain why adding factors to a model can always make an alpha smaller, and state what economic and statistical evidence you would require before accepting a newly proposed factor.
+  \item Daily returns show minimal autocorrelation, yet absolute daily returns show strong autocorrelation. Explain how both statements can be true, and why this matters for standard errors.
+  \item A long-horizon regression of 5-year returns on dividend yields uses 50 years of monthly data ($T=600$, $k=60$). How many independent observations does it contain, and why are classical $t$-statistics misleading?
+  \item Why must a time-series bootstrap resample blocks of observations rather than individual months?
+  \item Explain why a factor alpha with $t = 3.2$ might lack economic significance, and list what you would need to know before investing in it.
+\end{enumerate}
+
+\subsection*{Lab Extensions (technical readers)}
+\begin{enumerate}
+  \setcounter{enumi}{8}
+  \item Replicate Part B of Lab~\ref{ch:04} across two sub-samples: 1963--1992 and 1993--present. Compare changes in factor risk premia and GRS test rejections.
+  \item Compute $t$-statistics for 25 portfolio alphas using four methods: Classical OLS, White, Newey--West, and Stationary Block Bootstrap. Identify portfolios with the largest SE discrepancies, and explain what features of their returns might cause them.
+  \item Pair monthly returns with 1,000 simulated non-predictive predictors ($\rho = 0.98$). Run long-horizon regressions ($k=1$ to $60$) and plot false-positive rates for OLS, Newey--West, and Hodrick standard errors. Then set the correlation between predictor shocks and return shocks to $-0.9$ and describe how the Stambaugh bias changes the results.
+\end{enumerate}
