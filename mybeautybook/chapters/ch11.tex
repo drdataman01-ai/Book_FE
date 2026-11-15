@@ -3,6 +3,7 @@
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
 \providecolor{feshade}{HTML}{F3F5FA}
+\providecolor{feorange}{HTML}{D9822B}
 \makeatletter
 \@ifundefined{callout}{%
   \newtcolorbox{callout}{breakable, enhanced,
@@ -39,7 +40,137 @@ By the end of the chapter you will be able to:
 
 The \textbf{spot rate}\index{spot rate|textbf} $S$ is the price of one currency in terms of another. In this chapter $S$ is the number of U.S. dollars per unit of foreign currency, so a rise in $S$ means the foreign currency has \textbf{appreciated}, or become more valuable. Changes are measured in logs: $\Delta s_{t+1} = \ln(S_{t+1}/S_t)$.
 
+
+% USD/JPY spot and implied one-year forward rate, 2016--2026.
+% Values digitized from the source chart; replace with the original data when available.
+% Requires: pgfplots, pgfplotstable, textcomp (for \textyen).
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feorange}{HTML}{D9822B}
+\providecolor{fered}{HTML}{B2182B}
+\pgfplotstableread{
+  year spot fwd
+  2016.890 113.88 112.44
+  2017.220 110.80 109.51
+  2017.484 111.80 110.16
+  2017.968 112.09 109.61
+  2018.232 105.73 103.35
+  2018.485 110.21 107.13
+  2018.738 112.99 109.71
+  2018.991 109.11 106.18
+  2019.233 110.21 107.13
+  2019.475 107.22 105.24
+  2019.992 108.02 106.13
+  2020.223 107.03 106.58
+  2020.344 107.03 106.83
+  2020.454 107.42 106.83
+  2020.619 106.23 105.83
+  2020.762 104.84 104.54
+  2020.894 103.65 103.30
+  2020.960 103.25 102.65
+  2021.048 103.95 104.49
+  2021.180 108.81 107.72
+  2021.279 110.40 109.91
+  2021.334 110.21 109.91
+  2021.411 110.60 110.21
+  2021.719 110.80 110.50
+  2021.807 111.70 111.05
+  2021.950 113.88 113.78
+  2022.038 115.77 114.78
+  2022.210 121.70 119.35
+  2022.500 135.94 132.11
+  2022.731 144.29 138.27
+  2022.790 150.15 143.00
+  2023.006 130.87 125.71
+  2023.226 132.46 126.50
+  2023.490 144.09 136.73
+  2023.732 149.06 141.70
+  2023.820 151.34 143.80
+  2023.974 142.40 135.99
+  2024.238 151.24 144.54
+  2024.315 158.89 150.74
+  2024.480 160.98 154.10
+  2024.656 147.37 142.10
+  2024.986 156.90 151.40
+  2025.261 149.65 144.48
+  2025.492 144.19 139.72
+  2025.745 147.86 143.39
+  2025.999 156.71 152.73
+  2026.252 156.61 152.53
+  2026.384 157.90 153.63
+  2026.450 159.29 155.56
+  2026.575 163.86 159.10
+  2026.681 158.69 155.22
+  2026.747 156.81 153.23
+  2026.890 159.80 155.28
+}\usdjpydata
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.65}{%
+\begin{tikzpicture}[
+  note/.style={draw=gray!70, fill=white, rounded corners=2pt, font=\small,
+               align=left, inner sep=3pt},
+  pointer/.style={-stealth, thin},
+]
+\begin{axis}[
+  scale only axis, width=1.02\linewidth, height=0.5\linewidth,
+  xmin=2016.6, xmax=2027.0, ymin=90, ymax=172,
+  xtick={2017,2018,...,2026},
+  xticklabel style={/pgf/number format/1000 sep={}},
+  ytick={100,110,...,170},
+  ylabel={Japanese yen per U.S. dollar (\textyen)},
+  grid=major, major grid style={gray!25}, set layers,
+  legend style={at={(0.5,-0.1)}, anchor=north, font=\small, draw=gray!60,
+                legend columns=2, cells={anchor=west},
+                /tikz/every even column/.append style={column sep=1.2em}},
+  clip=false,
+]
+  % Regime shading
+  \begin{pgfonlayer}{axis background}
+    \fill[fenavy!7]   (axis cs:2016.6,90) rectangle (axis cs:2022.0,172);
+    \fill[feorange!9] (axis cs:2022.0,90) rectangle (axis cs:2026.95,172);
+  \end{pgfonlayer}
+  \addlegendimage{area legend, fill=fenavy!7, draw=fenavy!25}
+  \addlegendentry{2016--2021: stable range (\textyen103--\textyen115)}
+  \addlegendimage{area legend, fill=feorange!9, draw=feorange!30}
+  \addlegendentry{2022--2026: weaker yen, wide forward discount}
+
+  % Series
+  \addplot[fenavy, very thick] table[x=year, y=spot] {\usdjpydata};
+  \addlegendentry{Spot USD/JPY (\textyen\ per \$1)}
+  \addplot[feorange, very thick, dashed] table[x=year, y=fwd] {\usdjpydata};
+  \addlegendentry{Implied 1-year forward (covered interest parity)}
+
+  % Annotations
+  \node[note, anchor=north east] (n1) at (axis cs:2020.5,101.5) {\textbf{Dec 2020 low}\\\textyen103.25};
+  \draw[pointer] (n1.east) -- (axis cs:2020.93,103.0);
+  \node[note, anchor=east] (n2) at (axis cs:2021.55,126) {\textbf{Mar 2022}\\\textbf{Fed hikes begin}\\(\textyen121.70)};
+  \draw[pointer] (n2.east) -- (axis cs:2022.17,121.4);
+  \node[note, anchor=east] (n3) at (axis cs:2022.25,152.5) {\textbf{Oct 2022}\\\textbf{BoJ intervention}\\(\textyen150.15)};
+  \draw[pointer] (n3.east) -- (axis cs:2022.75,150.3);
+  \node[note, draw=fered, text=fered, anchor=east] (n4) at (axis cs:2026.1,167) {\textbf{Jul 29, 2026 peak}\\\textyen163.86};
+  \draw[pointer, fered] (n4.east) -- (axis cs:2026.53,164.0);
+
+  % End labels
+  \node[fenavy, anchor=west, font=\small\bfseries] at (axis cs:2027.05,160.6) {Spot: \textyen159.80};
+  \node[feorange, anchor=west, font=\small\bfseries] at (axis cs:2027.05,154.6) {1Y Fwd: \textyen155.28};
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{USD/JPY spot rate and implied one-year forward rate, 2016--2026. The forward rate comes from covered interest parity. It lies below the spot rate because U.S. interest rates exceed Japanese rates, and the gap widened after the Federal Reserve began raising rates in 2022.}
+\label{fig:06-usdjpy}
+\end{figure}
+
+
 \subsection{Forward rates and covered interest parity (CIP)}
+
+A \textbf{forward rate} is an interest rate or currency exchange rate locked in today for a transaction taking place on a specific future date. Calculated from current market yields or interest rate differentials, it serves as the market’s break-even benchmark for future borrowing costs or currency conversions.
+
+A forward contract has two sides. The party that agrees to deliver a currency on the future date \textbf{sells it forward}, and the party that agrees to receive it \textbf{buys it forward}. Every currency trade swaps one currency for another, so selling dollars forward for yen is the same as buying yen forward. A Japanese exporter that will be paid in dollars sells dollars forward. A U.S. importer that owes a Japanese supplier yen buys yen forward.
+
+Companies use forward rates to remove the currency risk from payments they already know they will make or receive. Figure~\ref{fig:06-usdjpy} gives an example. It quotes the exchange rate as yen per dollar, the usual market convention, which is the inverse of the $S$ used in this chapter. At the end of the sample, the spot rate was \textyen159.80 per dollar and the one-year forward rate was \textyen155.28. Suppose a Japanese car exporter expects to receive \$10 million from U.S. customers in a year. By selling the dollars forward today, it locks in \textyen1,552.8 million, whatever happens to the exchange rate. If it does not hedge, its yen income depends on the spot rate a year later. In 2024 the dollar fell from about \textyen161 to about \textyen147 within a few months. A fall of that size would leave the exporter with only \textyen1,470 million, about \textyen83 million less than the hedge guarantees. If instead the dollar stays at \textyen159.80, the exporter would have received \textyen1,598 million without the hedge, so the hedge costs it \textyen45.2 million. \textbf{Hedging is therefore not free, but its cost is known in advance.}
+
+The forward rate lies below the spot rate because U.S. interest rates are higher than Japanese rates. The ratio $159.80/155.28 \approx 1.029$ means that the one-year dollar rate exceeds the yen rate by about 2.9 percentage points, as Equation~\eqref{eq:06-cip} below shows. An investor who holds dollars earns that extra interest, and the lower forward rate takes it back when the dollars are converted, so hedged dollars and hedged yen pay the same. The figure also shows how the gap follows interest rates. From 2016 to 2021, when interest rates in both countries were close to zero, the forward rate stayed close to the spot rate. After the Federal Reserve began raising rates in March 2022, while Japanese rates stayed far lower, the gap widened to several yen.
 
 A forward contract fixes today the exchange rate $F$ for a trade at a future date. An investor with dollars has two safe ways to earn interest. She can earn the dollar rate $i$ directly. Or she can convert her dollars into foreign currency, earn the foreign rate $i^*$, and lock in the rate for converting back with a forward\index{forward rate} contract. Both routes are free of currency risk, so arbitrage\index{arbitrage} makes them pay the same:
 \begin{equation}
@@ -56,6 +187,61 @@ For a high-interest currency, the forward rate is therefore below the spot rate.
   \label{eq:06-uip}
 \end{equation}
 Unlike covered interest parity, UIP is not enforced by arbitrage. Holding a foreign currency without a forward contract is risky, so UIP holds only if investors demand no extra return for that risk.
+
+Figure~\ref{fig:06-uip} shows the difference with the numbers of the worked example below. An investor with \$1 million can earn the U.S. rate of 1\% and end the year with \$1,010,000 for certain. Or she can buy Australian dollars, earn 5\%, and convert back at whatever the spot rate turns out to be. With a forward contract, the second route would also pay \$1,010,000 for certain; that is covered interest parity. Without one, its dollar payoff depends on the future spot rate $S_1$, which nobody knows today. UIP says that investors expect $S_1$ to equal the forward rate, \$0.673, so that the two routes have the same \emph{expected} payoff. Only the first route, however, is free of risk.
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.8}{%
+\begin{tikzpicture}[
+  box/.style={draw=fenavy, fill=fenavy!6, rounded corners=3pt, line width=0.8pt,
+              align=center, inner sep=6pt, text width=4.6cm},
+  plain/.style={draw=black, fill=white, rounded corners=3pt, line width=0.8pt,
+              align=center, inner sep=6pt, text width=4.6cm},
+  risky/.style={draw=feorange, fill=feorange!8, rounded corners=3pt, line width=0.8pt,
+              dashed, align=center, inner sep=6pt, text width=4.6cm},
+  wide/.style={draw=fenavy, fill=fenavy!6, rounded corners=3pt, line width=0.8pt,
+              align=center, inner sep=7pt, text width=12cm},
+  arr/.style={-stealth, line width=0.9pt},
+]
+  % Start
+  \node[box, text width=5.2cm] (start) at (0,0) {\large\bfseries \$1,000,000 today};
+
+  % Left route: U.S. deposit
+  \node[plain] (usd) at (-3.5,-1.8) {\textbf{U.S. deposit}\\Earn 1\% for 1 year};
+  \node[plain] (usdend) at (-3.5,-7.95)
+    {\textbf{\$1,010,000}\\known today, no risk};
+
+  % Right route: unhedged Australian deposit
+  \node[box] (buy) at (3.5,-1.8) {\textbf{Buy A\$ at spot, \$0.70}\\A\$1,428,571.43};
+  \node[box] (earn) at (3.5,-3.55) {\textbf{Earn 5\%}\\A\$1,500,000};
+  \node[risky] (conv) at (3.5,-5.45)
+    {\textbf{No forward contract}\\Sell A\$ at next year's\\spot rate $S_1$, unknown today};
+  \node[risky] (audend) at (3.5,-7.95)
+    {\textbf{A\$1,500,000} $\times\, S_1$\\[2pt]
+     \small unchanged at 0.70: \$1,050,000\\
+     \small down 10\% to 0.63: \$945,000};
+
+  % Bottom: the UIP condition
+  \node[wide] (uip) at (0,-10.1)
+    {\textbf{Uncovered interest parity:} both routes have the same \emph{expected} payoff\\[4pt]
+     $E[S_1] = 0.70 \times \dfrac{1.01}{1.05} \approx 0.673 = F$
+     \quad$\Rightarrow$\quad expected payoff $\approx$ \textbf{\$1,010,000}};
+
+  % Arrows
+  \draw[arr] (start.south) -- ++(0,-0.35) -| (usd.north);
+  \draw[arr, fenavy] (start.south) -- ++(0,-0.35) -| (buy.north);
+  \draw[arr] (usd.south) -- node[fill=white, inner sep=3pt] {Hold for 1 year} (usdend.north);
+  \draw[arr, fenavy] (buy) -- (earn);
+  \draw[arr, fenavy] (earn) -- (conv);
+  \draw[arr, feorange] (conv) -- (audend);
+  \draw[arr, gray] (usdend.south) -- (usdend.south |- uip.north);
+  \draw[arr, gray] (audend.south) -- (audend.south |- uip.north);
+\end{tikzpicture}%
+}
+\caption{Uncovered interest parity, with the numbers of the worked example: one year, a spot rate of \$0.70 per Australian dollar, 1\% in U.S. dollars and 5\% in Australian dollars. The Australian route is not hedged, so its dollar payoff depends on next year's spot rate $S_1$. UIP says that investors expect the Australian dollar to fall to the forward rate of about \$0.673, so the two routes have the same expected payoff. Only the U.S. route is certain.}
+\label{fig:06-uip}
+\end{figure}
 
 \subsection{The carry trade}
 
