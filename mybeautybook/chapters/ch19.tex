@@ -102,7 +102,6 @@ Using every available predictor does not necessarily produce better forecasts, a
 
 Let's use archery to explain the two kinds of error (Figure~\ref{fig:20-targets}). Imagine that the same model is estimated many times, each time on a different sample of training data, and that each estimate takes one shot at the target. \textbf{Bias}\index{bias (of an estimator)|textbf} is how far the average shot lands from the bullseye. A model that leaves out a real effect is biased: however many samples it sees, it misses in the same direction. \textbf{Variance}\index{variance|textbf} is how widely the shots are scattered around their own average. A model with many parameters has high variance, because each new sample moves its estimates, and its forecasts, a long way.
 
-
 \begin{figure}[htbp]
   \centering
   \begin{tikzpicture}[
@@ -143,7 +142,6 @@ A forecast's expected squared error can be split into three parts:
   \label{eq:20-biasvar}
 \end{equation}
 The \textbf{irreducible error}\index{irreducible error|textbf} is the part of the return that is pure noise, which no model can predict however good it is. The \textbf{bias}, squared here, comes from a model that is systematically wrong, and the \textbf{variance} comes from estimating the model on one particular sample of data. Only the bias and the variance depend on the model, and they move in opposite directions. Adding parameters lowers bias, because the model can capture more of the true relationship, but it raises variance, because there is more to estimate from the same data. This is the \textbf{bias--variance trade-off}\index{bias--variance trade-off|textbf}, which Geman, Bienenstock and Doursat (1992) set out for neural networks and which applies to every model in this chapter. As Figure~\ref{fig:09-biasvar} shows, total error is lowest at an intermediate level of complexity.
-
 
 \providecolor{fegray}{HTML}{4D4D4D}
 
@@ -202,7 +200,6 @@ The \textbf{irreducible error}\index{irreducible error|textbf} is the part of th
 Figure~\ref{fig:09-biasvar} can be read from left to right. The horizontal axis measures \textbf{model complexity}\index{model complexity|textbf}, which is roughly the number of parameters the model estimates: OLS-3 sits near the left end, and the kitchen-sink regression with 920 inputs sits far to the right. For other models, complexity means the depth of a tree, the number of trees, or the number of neurons in a network. The vertical axis measures the model's \emph{expected forecast error}, its average squared error on new data that it was not fitted to, not its error on the training data. At the left end, the model is too simple: it underfits, and its error is dominated by bias. At the right end, it is too flexible: it overfits, and its error is dominated by variance. The irreducible error is a flat floor beneath both, because no amount of complexity can remove it. The total error, the sum of the three, falls at first, reaches its lowest point, and then rises again, and the best model sits at that low point.
 
 The trade-off matters most when the signal is weak relative to the noise, as it is for stock returns. Then the variance from estimating many parameters quickly outweighs the small reduction in bias, so the low point of the curve lies far to the left, and a simple model often forecasts better than a rich one, even when the rich one is closer to the truth. This does not mean that rich models must be abandoned. The remedy is \textbf{regularization}\index{regularization|textbf}, which keeps a rich model but limits how far its estimates may move to fit the particular sample. It accepts a little more bias in exchange for a large reduction in variance, and so moves the model toward the low point of the curve. The next section shows how it works.
-
 
 \section{Regularization}
 \label{sec:20-models}
@@ -268,7 +265,6 @@ The reason for the difference is easiest to see by thinking of the penalty as a 
 \end{equation}
 The weight $\omega$, between 0 and 1, sets the mix. Setting $\omega = 0$ gives ridge, setting $\omega = 1$ gives the lasso, and values in between combine them. With $\lambda = 0$, all three methods collapse to OLS.
 
-
 \subsection{Which predictors to keep?}
 
 The choice matters most when predictors are correlated, as many stock characteristics are. Ridge spreads the weight across a group of correlated predictors so that they share it. In the extreme case of $k$ identical predictors, each receives the same coefficient, one $k$-th of the total. The lasso, by contrast, tends to keep one predictor from the group and set the others to zero.
@@ -278,7 +274,6 @@ Ridge therefore suits a world in which many characteristics each carry a little 
 \subsection{A related approach: dimension reduction}
 
 Another way to tame many correlated predictors is to compress them into a few combinations before running the regression. \textbf{Principal components regression}\index{principal components regression|textbf} first finds the combinations of the predictors that capture most of their joint variation, and then regresses returns on the first few of them. \textbf{Partial least squares}\index{partial least squares|textbf} instead chooses the combinations according to how strongly they relate to the return. In both methods, the number of combinations kept is the hyperparameter. These methods remain linear, but they replace hundreds of noisy slopes with a handful of well-estimated ones.
-
 
 \section{Regression trees}
 \label{sec:20-trees}
@@ -492,7 +487,6 @@ Gradient boosting applies the same idea, with one twist. Instead of stepping a s
 \section{Neural networks}
 \label{sec:20-nn}
 
-
 Neural networks are often introduced with pictures of the brain, which makes them seem more mysterious than they are. A reader who knows regression already knows most of what is needed. This section explains a network from a regression one step at a time, following Kuo (2024a). For a step-by-step treatment of neural networks, see Chapters 11 and 12 of Kuo (2026), ``Foundations of Deep Learning'' and ``Training Deep Learning Models.''
 
 \subsection{A regression is a network with no hidden layer}
@@ -591,14 +585,11 @@ With one hidden layer of $K$ ReLU neurons, the return forecast is
 \end{equation}
 Reading from the inside out: hidden neuron $k$ computes a weighted sum of the characteristics $\mathbf{z}$, with weights $\mathbf{w}_k$ and bias $a_k$, and switches off if the sum is negative. The output neuron then adds up the hidden neurons' results with weights $v_k$ and bias $c$. Because a return can take any value, the output neuron has no activation, as in a linear regression.
 
-
 \subsection{Training a network}
 
 A regression's coefficients come from a formula, but a network's weights do not, because no formula exists for them. They are found instead by the gradient descent of Section~\ref{sec:20-gbm}, applied to every weight at once.
 
 Training works as follows. The weights start at small random values. The slope of the loss with respect to every weight is computed by an efficient use of the chain rule called \emph{backpropagation}, and every weight then takes a small step downhill, as in Equation~\eqref{eq:20-gd}. To save time, each step uses a small random batch of the training data rather than all of it, which is why the method is often called \emph{stochastic} gradient descent\index{neural network!gradient descent}. One pass through all the training data is called an \emph{epoch}, and training usually runs for many epochs.
-
-
 
 \section{Measuring success and interpreting a model}
 \label{sec:20-measure}
@@ -616,7 +607,6 @@ For individual stocks, Gu, Kelly and Xiu (2020) use a forecast of zero, and they
   \label{eq:20-r2}
 \end{equation}
 The only change is in the denominator, which holds the benchmark's squared errors. In Equation~\eqref{eq:20-r2-mean} the benchmark forecasts the historical mean; in Equation~\eqref{eq:20-r2} it forecasts zero, so its squared errors are simply the squared returns.
-
 
 Each version uses whichever benchmark is harder to beat in its setting.
 
@@ -660,7 +650,6 @@ Because the two statistics use different benchmarks, they cannot be compared dir
 \caption{Monthly out-of-sample $R^2$ for individual U.S. stocks, 1987--2016, from Gu, Kelly and Xiu (2020). Trees and neural networks roughly doubled the $R^2$ of a three-characteristic OLS model. OLS on all 920 covariates, at $-3.46\%$, was far worse than forecasting zero.}
 \label{fig:20-gkx}
 \end{figure}
-
 
 \section{Where machine learning works in finance}
 \label{sec:20-applications}
@@ -714,8 +703,6 @@ Credit scoring\index{credit scoring} shows the favorable case. Khandani, Kim and
 
 One response to these difficulties is to use machine learning inside an economic model rather than in place of one. Instrumented principal components\index{IPCA (instrumented principal components)} analysis, or IPCA (Kelly, Pruitt and Su 2019), lets stocks' exposures to a few factors depend on their characteristics, and finds that a handful of such factors explains the cross-section\index{cross-section of returns} of returns better than the standard factors. Gu, Kelly and Xiu (2021) extended the idea with an \emph{autoencoder}\index{autoencoder}, a neural network that compresses many returns into a few factors, and Chen, Pelger and Zhu (2024) used deep networks constrained by the condition that they must price all assets. Other studies use shrinkage to tame the factor zoo directly. Freyberger, Neuhierl and Weber (2020) found that only a small set of characteristics carries independent information about returns, while Kozak, Nagel and Santosh (2020) found that a model with many small exposures priced the cross-section better than one with a few characteristics. Economic structure makes these results easier to interpret, and it reduces the variance that pure prediction suffers from.
 
-
-
 \section{The claim}
 \label{sec:20-claim}
 
@@ -730,7 +717,6 @@ The claim has three parts, each of which can fail on its own:
   \item \textbf{Hidden:} the gain comes from interactions or nonlinear effects, not from simply using more of the characteristics already known to predict returns.
   \item \textbf{Economic:} the gain survives trading costs and holds among stocks large enough to trade.
 \end{itemize}
-
 
 \section{The original evidence and the debate it started}
 \label{sec:20-evidence}
@@ -835,7 +821,6 @@ The exchange offers two lessons for testing any complex model. First, compare it
 
 The broader lesson confirms Chapter~\ref{ch:09}. In-sample fit is a poor guide to forecasting: the unpenalized regression on 920 inputs fit the training data best and forecast worst. The methods that worked are the ones that build shrinkage and validation into the estimator. Their gains are largest in the cross-section and in corners of the market that are hard to trade, and smallest, and most disputed, for the market as a whole.
 
-
 \section{Lab~\thechapter: Replicating Gu, Kelly and Xiu (2020) on a portfolio panel}
 \label{sec:20-lab}
 
@@ -861,7 +846,7 @@ The broader lesson confirms Chapter~\ref{ch:09}. In-sample fit is a poor guide t
 \end{itemize}
 On real data, the lab answers what the simulation cannot: whether real portfolios contain nonlinear structure that flexible models find, and whether it survives costs.
 
-\section{Stress tests}
+\subsection{Robustness checks}
 \label{sec:20-stress}
 
 Five checks determine whether a machine-learning result is robust\index{robustness}.
@@ -876,26 +861,54 @@ Five checks determine whether a machine-learning result is robust\index{robustne
 
 For the virtue of complexity, Nagel's argument implies one sharp test: if a complex model's timing signal is close to a simple volatility-scaled momentum rule, the complexity adds little. Exercise~\ref{ex:20-volmom} runs that comparison.
 
-\section{Verdict}
+\subsection*{Your verdict}
+
+Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:20-verdict}. If your verdict differs, explain which of your results led you there.
+
+\section{Where the evidence stands}
 \label{sec:20-verdict}
 
-\begin{callout}
-\textbf{Verdict: weakens} (as of October 2026). The statistical part of the claim holds: in broad samples of U.S. stocks, regularized nonlinear models forecast returns better out of sample than linear models with a few characteristics, and the improvement is too large and consistent to be luck (Gu, Kelly and Xiu 2020). The other two parts are much weaker.
-\end{callout}
+The published studies cited in this chapter point to a mixed picture: \textbf{in broad samples of U.S. stocks, regularized nonlinear models forecast returns better out of sample than linear models with a few characteristics, but they rely on familiar signals, and their gains are concentrated where trading is costly.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+Out-of-sample forecasts in broad samples & \textbf{Yes} & Neural networks and trees roughly doubled the performance of leading regression-based strategies, and unregularized OLS on all inputs did worst. & Gu, Kelly and Xiu (2020) \\
+\addlinespace[3pt]
+Hidden structure & \textbf{Weakly} & The models rely on momentum, reversal, liquidity and volatility; their gain comes mainly from interactions among these familiar signals. & Gu, Kelly and Xiu (2020) \\
+\addlinespace[3pt]
+Value-weighted portfolios & \textbf{Partly} & The long--short Sharpe ratio was 1.35 value-weighted, against 2.45 equal-weighted. & Gu, Kelly and Xiu (2020) \\
+\addlinespace[3pt]
+Hard-to-arbitrage stocks excluded, after costs & \textbf{Weakly} & Excluding micro-caps and distressed firms, or volatile periods, cut profits considerably, and turnover eroded them further. & Avramov, Cheng and Metzker (2023) \\
+\addlinespace[3pt]
+A retail-dominated market & \textbf{Yes} & Predictability in China was stronger than in the United States, concentrated in small stocks, and significant after costs. & Leippold, Wang and Zhou (2022) \\
+\addlinespace[3pt]
+Very large models for market timing & \textbf{Disputed} & Timing improved with thousands of random features, but the strategy may be volatility-timed momentum in disguise. & Kelly, Malamud and Zhou (2024); Nagel (2025) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Machine learning is a better tool for an old job, not a source of hidden alpha.
+
+\textbf{What would change the picture.} The evidence would support the economic part of the claim if value-weighted, net-of-cost machine-learning portfolios beat regularized linear ones among large stocks, out of sample after 2016, by a significant margin.
+
+\subsection{Open questions}
+\label{sec:20-open}
 
 \begin{itemize}
-  \item \textbf{Not very hidden.} The models rely mostly on well-known signals, such as momentum, short-term reversal, size, liquidity and volatility. Much of their gain comes from combining many such signals with shrinkage, which a well-regularized linear model also partly captures.
-  \item \textbf{Not easily captured.} The gains are concentrated in small and distressed stocks and in volatile periods, and they shrink after realistic trading costs (Avramov, Cheng and Metzker 2023).
-  \item \textbf{Complexity disputed.} The virtue of complexity in market timing may be volatility-timed momentum in disguise (Nagel 2025).
+  \item \textbf{Does the edge survive among large stocks?} The strongest machine-learning results come from broad samples dominated by small stocks. How much remains in the largest 500 or 1,000?
+  \item \textbf{Hidden or known?} Do flexible models find genuinely new interactions, or mostly better ways to combine momentum, volatility and liquidity?
+  \item \textbf{Complexity or momentum?} Is the virtue of complexity in market timing a general result or, as Nagel argues, a disguised volatility-timed momentum strategy?
+  \item \textbf{New models and new data.} Chapters~\ref{ch:21} to~\ref{ch:23} ask the parallel question for transformers and time-series foundation models\index{foundation models}.
 \end{itemize}
 
-Machine learning is a better tool for an old job, not a source of hidden alpha. The verdict would move to \emph{survives} if value-weighted, net-of-cost machine-learning portfolios beat regularized linear ones among large stocks, out of sample after 2016, by a significant margin.
-
-
-\section{What investors can use}
+\section{What practitioners and investors can use}
 \label{sec:20-investors}
 
-The evidence in this chapter leads to five practical lessons for anyone offered a machine-learning strategy.
+The evidence in Section~\ref{sec:20-verdict} leads to five practical lessons for anyone offered a machine-learning strategy.
 
 \begin{itemize}
   \item \textbf{Machine learning is a better blender, not a crystal ball.} Its proven value lies in combining many well-known signals while guarding against overfitting. Expect a modest improvement over a well-built linear multi-factor model, not a new source of returns.
@@ -905,29 +918,11 @@ The evidence in this chapter leads to five practical lessons for anyone offered 
   \item \textbf{Expect decay.} Signals published in the academic literature lose part of their power after publication (Chapter~\ref{ch:19}), and a model trained on them inherits that decay.
 \end{itemize}
 
-\begin{itemize}
-  \item \textbf{Machine learning is a better blender, not a crystal ball.} Its proven value is in combining many known signals with care about overfitting. Expect modest improvements over a well-built linear multi-factor model, not a new source of returns.
-  \item \textbf{Ask where the returns come from.} A strategy whose edge sits in microcaps, in the short side or in months of market stress may not be available at scale or after costs.
-  \item \textbf{Insist on the net, value-weighted number.} Equal-weighted, gross-of-cost backtests\index{backtest} flatter flexible models most.
-  \item \textbf{Treat interpretability\index{interpretability} as a risk control.} If a manager cannot say which signals drive the forecasts, it is impossible to judge whether they will persist.
-  \item \textbf{Expect decay.} Signals published in the academic literature lose part of their power after publication (Chapter~\ref{ch:19}). A model trained on them inherits the decay.
-\end{itemize}
-
 The six questions of Section~\ref{sec:09-investors} apply to any machine-learning model an investor is shown. For a machine-learning strategy, three further questions matter most. How much of the return comes from the 20\% smallest stocks, and from the short side? What is the monthly turnover, and what trading costs are assumed? And how much do the results change with the random seed or with small changes to the training window?
 
 \begin{callout}
 \textbf{What Failed: the AI fund that trailed the index.} In 2017 the AI Powered Equity ETF (ticker AIEQ\index{AI Powered Equity ETF (AIEQ)}) launched as the first exchange-traded fund run by artificial intelligence. Its manager, EquBot, used IBM Watson to process news, filings and market data and to monitor tens of thousands of models. By January 2022 the fund was up 57\% since inception, while the S\&P 500 total return\index{return!total} index was up 84\% over the same period (Tech Brew 2022). Assets were about \$150 million. The models were sophisticated; the difficulty was the task. Stock returns carry little signal, the competition for it is intense, and a model that learns from the past is always learning about a market that has already moved on.
 \end{callout}
-
-\section{Open questions}
-\label{sec:20-open}
-
-\begin{itemize}
-  \item \textbf{Does the edge survive among large stocks?} The strongest machine-learning results come from broad samples dominated by small stocks. How much remains in the largest 500 or 1,000?
-  \item \textbf{Hidden or known?} Do flexible models find genuinely new interactions, or mostly better ways to combine momentum, volatility and liquidity?
-  \item \textbf{Complexity or momentum?} Is the virtue of complexity in market timing a general result or, as Nagel argues, a disguised volatility-timed momentum strategy?
-  \item \textbf{New models and new data.} Chapters~\ref{ch:21} to~\ref{ch:23} ask the parallel question for transformers and time-series foundation models\index{foundation models}.
-\end{itemize}
 
 \section*{Exercises}
 \addcontentsline{toc}{section}{Exercises}

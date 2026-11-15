@@ -201,7 +201,7 @@ Here $T$ is the number of periods, $\Delta t$ the length of each period in years
 
 Each is compared with the market on excess return, volatility, Sharpe ratio, skewness, worst month, drawdown, beta and CAPM alpha, over its own history and over a common period (Lab Figure~\ref{ch:16}.3).
 
-\textbf{Part C, stress tests.} Returns in crisis periods, the five worst market months, up and down betas, and the MPPM (Lab Figure~\ref{ch:16}.4).
+\textbf{Part C, robustness checks.} Returns in crisis periods, the five worst market months, up and down betas, and the MPPM (Lab Figure~\ref{ch:16}.4).
 
 \textbf{Part D, equity versus volatility.} Each strategy's excess return is split into the part explained by beta and the alpha that remains. The lab compares it with the market scaled to the same beta, and with a pure short variance swap struck at VIX$^2$, sized to 10\% annual volatility (Lab Figure~\ref{ch:16}.5).
 
@@ -209,10 +209,12 @@ The rebuilt strategies are deliberately simple, and that matters for interpretat
 
 \textbf{What the simulated run shows.} The simulation builds in a VIX 12\% above expected volatility. The lab finds the premium (implied above realized in 83\% of months), a put-write with a beta of about 0.5, strongly negative skewness and a down beta near 0.9 against an up beta near 0.15. The rebuilt put-write and covered call show positive alphas\index{alpha} when options are priced at the inflated VIX. The Cboe-like series, priced 2 points lower, show none. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
 
-\section{Stress tests}
+\subsection{Robustness checks}
 \label{sec:16-stress}
 
-\textbf{Crashes.} The months that decide the verdict are few: October 1987, August 1998, September 2008 to February 2009, February and March 2020. In each, the market fell sharply, realized volatility jumped far above the implied volatility priced a month earlier, and option sellers lost most of what the market lost. A put-write cushions a crash only by one month's premium, typically 1--3\% of the strike. Lab Figure~\ref{ch:16}.2 shows the pattern for the variance premium: many small positive months and a few large negative ones.
+The full-sample results can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
+
+\textbf{Crashes.} The months that decide the outcome are few: October 1987, August 1998, September 2008 to February 2009, February and March 2020. In each, the market fell sharply, realized volatility jumped far above the implied volatility priced a month earlier, and option sellers lost most of what the market lost. A put-write cushions a crash only by one month's premium, typically 1--3\% of the strike. Lab Figure~\ref{ch:16}.2 shows the pattern for the variance premium: many small positive months and a few large negative ones.
 
 \textbf{Skewness.}\index{skewness|textbf} On the Sharpe ratio\index{Sharpe ratio}, put-writing and covered calls often look better than the market, because they cut volatility more than they cut returns. On the MPPM with risk aversion\index{risk aversion} 3, expect the advantage to shrink, because the measure prices the crash months. A strategy whose apparent edge vanishes once skewness is priced is being paid for crash risk\index{crash risk}, not earning alpha.
 
@@ -222,32 +224,56 @@ The rebuilt strategies are deliberately simple, and that matters for interpretat
 
 \textbf{Implementation.} Real options have bid--ask spreads, and covered-call funds pay management fees. Israelov and Nielsen (2015) found that the strategy's equity-reversal exposure, created by mechanically resetting the strike each month, adds risk without return. These frictions are small per trade but large relative to a premium of a few percent a year.
 
-\section{Verdict}
+\subsection*{Your verdict}
+
+Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:16-verdict}. If your verdict differs, explain which of your results led you there.
+
+\section{Where the evidence stands}
 \label{sec:16-verdict}
 
-\begin{callout}
-\textbf{Verdict: survives for the variance risk premium; weakens for option-income strategies} (as of October 2026). Implied volatility has exceeded subsequent realized volatility on average, in most months, across decades and markets. That premium is real and is compensation for crash risk. But covered-call and put-writing strategies earn most of their return from equity exposure, carry negative skewness and lose most of what the market loses in crashes. Measured against a beta-matched portfolio and with skewness priced, their advantage is small.
-\end{callout}
+The published studies cited in this chapter point to a clear pattern: \textbf{implied volatility has exceeded realized volatility on average, so the variance risk premium is real, but covered-call and put-writing strategies earn most of their return from stock-market exposure and lose most of what the market loses in crashes.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
 
-What survives:
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+Implied above realized variance & \textbf{Yes} & Implied variance has been well above realized variance on average for the S\&P 500 and other indexes. & Carr and Wu (2009) \\
+\addlinespace[3pt]
+Option buyers pay for volatility & \textbf{Yes} & Zero-beta straddles lost about 3\% a week, and delta-hedged option positions lost money on average. & Coval and Shumway (2001); Bakshi and Kapadia (2003) \\
+\addlinespace[3pt]
+An economic reason for the premium & \textbf{Yes} & Demand for crash insurance raises option prices, and the size of the premium predicts market returns. & Bollen and Whaley (2004); G\^arleanu, Pedersen and Poteshman (2009); Bollerslev, Tauchen and Zhou (2009) \\
+\addlinespace[3pt]
+Covered calls against the index & \textbf{Partly} & The BuyWrite Index matched the S\&P 500's return with lower volatility from 1988 to 2006. & Whaley (2002); Callan Associates (2006) \\
+\addlinespace[3pt]
+Covered calls after adjusting for beta & \textbf{Weakly} & Equity exposure drove most of the risk and return; the short-volatility part was under 10\% of the risk. & Israelov and Nielsen (2015) \\
+\addlinespace[3pt]
+Risk adjustment that prices skewness & \textbf{Weakly} & Selling options can raise a Sharpe ratio without skill; measures that price the tail show a smaller advantage. & Goetzmann, Ingersoll, Spiegel and Welch (2007) \\
+\addlinespace[3pt]
+Mispricing, judged from put returns & \textbf{No} & Very negative, noisy put returns are expected under standard models with jumps, so they are not by themselves evidence of mispricing. & Broadie, Chernov and Johannes (2009) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The two parts of the claim come apart. The premium for bearing volatility risk is real; the strategies sold to collect it are mostly stock-market positions with a worse tail.
+
+\textbf{What would change the picture.} The evidence for option-income strategies would strengthen if their alpha against a beta-matched benchmark remained significant after pricing skewness and costs over a full cycle of crises. It would weaken further if, after accounting for beta, the premium were consistently eaten by costs and fees.
+
+\subsection{Open questions}
+\label{sec:16-open}
 
 \begin{itemize}
-  \item \textbf{The variance risk premium.}\index{variance|textbf} Studies using the VIX, synthetic variance swaps and option returns agree that index option buyers pay more than realized volatility justifies on average (Coval and Shumway 2001; Bakshi and Kapadia 2003; Carr and Wu 2009). The premium has an economic explanation, demand for crash insurance, and predicts market returns (Bollerslev, Tauchen and Zhou 2009).
-  \item \textbf{Lower volatility for covered calls.} Covered calls and put-writes have delivered market-like returns with lower volatility over long periods. For an investor who has to hold equities, that is a real benefit.
+  \item \textbf{Has the boom in short-dated options changed the premium?} Options expiring the same day (zero days to expiry, or 0DTE) made up over 61\% of S\&P 500 index option volume in May 2025, according to Cboe (Cboe Global Markets 2025). Do they change the price of one-month volatility, or the size of the variance premium?
+  \item \textbf{How large is the premium net of costs for retail investors?} Covered-call ETFs on single stocks and indexes have grown rapidly. What do they deliver after fees, spreads and taxes\index{taxes}, compared with a beta-matched index position?
+  \item \textbf{Is the premium compensation or mispricing\index{mispricing}?} Rational models with crash risk explain much of it (Broadie, Chernov and Johannes 2009). Does demand pressure from hedgers add a mispricing on top?
+  \item \textbf{Can the premium be harvested with less crash risk?} Delta-hedged\index{delta hedging} positions, variance swaps with caps, or strategies that cut exposure when volatility rises all aim to keep the premium and avoid the tail. Do they survive out of sample\index{in-sample versus out-of-sample}?
 \end{itemize}
 
-What weakens it:
-
-\begin{itemize}
-  \item \textbf{Most of the return is equity.} With betas of 0.5 to 0.7, the strategies earn most of the equity premium through their stock exposure. The short-volatility component is a small share of their risk (Israelov and Nielsen 2015).
-  \item \textbf{The Sharpe ratio flatters them.}\index{Sharpe ratio|textbf} Negative skewness and down betas near 1 mean that measures accounting for the tail, such as the MPPM, show a smaller advantage than the Sharpe ratio does.
-  \item \textbf{The premium is paid for crash risk.} A pure short-volatility position earns a high Sharpe ratio most of the time and suffers severe losses in volatility spikes. Whether that is attractive depends on whether the investor can survive the spikes.
-\end{itemize}
-
-The verdict on option-income strategies would move to \emph{survives} if their alpha against a beta-matched benchmark remained significant after skewness and costs over a full cycle of crises. It would move to \emph{fails} if, after accounting for beta, the premium were consistently eaten by costs and fees.
-
-\section{What investors can use}
+\section{What practitioners and investors can use}
 \label{sec:16-investors}
+
+The evidence in Section~\ref{sec:16-verdict} suggests several practical lessons.
 
 \textbf{What an option-income fund actually delivers.} Covered-call and put-writing funds advertise high distributions. Three facts help interpret them; Israelov and Nielsen (2014) discuss these and other common misconceptions about covered calls.
 
@@ -271,18 +297,8 @@ The verdict on option-income strategies would move to \emph{survives} if their a
 
 In 2021 the SEC charged LJM and two portfolio managers with misleading investors about the funds' risk management. According to the SEC, the firm had told investors it stress-tested for a worst-case daily loss of 20\% in its mutual fund, but that figure had been derived from a historical single-day loss of about 9\%, doubled and rounded up.
 
-The episode illustrates this chapter's verdict in its sharpest form. The variance risk premium is real, and selling volatility earned it for years. But the premium is payment for exactly the kind of day that ended LJM. Leverage turned a strategy that should lose heavily in a spike into one that could not survive it.
+The episode illustrates this chapter's evidence in its sharpest form. The variance risk premium is real, and selling volatility earned it for years. But the premium is payment for exactly the kind of day that ended LJM. Leverage turned a strategy that should lose heavily in a spike into one that could not survive it.
 \end{callout}
-
-\section{Open questions}
-\label{sec:16-open}
-
-\begin{itemize}
-  \item \textbf{Has the boom in short-dated options changed the premium?} Options expiring the same day (zero days to expiry, or 0DTE) made up over 61\% of S\&P 500 index option volume in May 2025, according to Cboe (Cboe Global Markets 2025). Do they change the price of one-month volatility, or the size of the variance premium?
-  \item \textbf{How large is the premium net of costs for retail investors?} Covered-call ETFs on single stocks and indexes have grown rapidly. What do they deliver after fees, spreads and taxes\index{taxes}, compared with a beta-matched index position?
-  \item \textbf{Is the premium compensation or mispricing\index{mispricing}?} Rational models with crash risk explain much of it (Broadie, Chernov and Johannes 2009). Does demand pressure from hedgers add a mispricing on top?
-  \item \textbf{Can the premium be harvested with less crash risk?} Delta-hedged\index{delta hedging} positions, variance swaps with caps, or strategies that cut exposure when volatility rises all aim to keep the premium and avoid the tail. Do they survive out of sample\index{in-sample versus out-of-sample}?
-\end{itemize}
 
 \section*{Exercises}
 \addcontentsline{toc}{section}{Exercises}

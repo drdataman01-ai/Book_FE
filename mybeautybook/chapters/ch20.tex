@@ -243,8 +243,10 @@ The command \texttt{python lab20.py -{}-source sim -{}-models standin} tests the
 
 Run with the foundation models on real data, the lab answers the chapter's question directly: whether they beat AR and HAR, whether their edge survives the cutoff and whether their intervals are honest.
 
-\section{Stress tests}
+\subsection{Robustness checks}
 \label{sec:21-stress}
+
+The full-sample results can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
 
 \textbf{Benchmark strength.} Most claims of superiority are made against naive forecasts or against classical models that were not tuned for the target series. Against the historical mean for returns, AR for macroeconomic series and HAR for volatility, the gap narrows or disappears.
 
@@ -258,24 +260,54 @@ Run with the foundation models on real data, the lab answers the chapter's quest
 
 \textbf{Context length.} Foundation models normalize each input window. Giving them 64 rather than 512 months of history can change both the forecast and its interval.
 
-\section{Verdict}
+\subsection*{Your verdict}
+
+Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:21-verdict}. If your verdict differs, explain which of your results led you there.
+
+\section{Where the evidence stands}
 \label{sec:21-verdict}
 
-\begin{callout}
-\textbf{Verdict: provisional} (as of October 2026). The evidence so far does not support the claim, but it is too new and too thin to reject it.
-\end{callout}
+The published studies cited in this chapter point to an early picture: \textbf{zero-shot foundation models beat naive forecasts easily and sometimes match well-specified classical models, but rarely beat them by a meaningful margin; the evidence is new and thin.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+The developers' benchmarks & \textbf{Partly} & The models matched or beat dataset-specific models, most strongly on data in their training corpus, on archives with few financial series. & Ansari et al.\ (2024); Das et al.\ (2024) \\
+\addlinespace[3pt]
+Daily stock returns & \textbf{No} & Zero-shot Chronos and TimesFM had out-of-sample $R^2$ of $-1.37\%$ and $-2.80\%$; pretraining on financial data helped. & Rahimikia, Ni and Wang (2025) \\
+\addlinespace[3pt]
+Realized volatility & \textbf{Weakly} & Only one of nine models beat log-HAR on average per-asset QLIKE, by 1 to 2\%; pooled wins came from a few outlier assets. & Brini (2026) \\
+\addlinespace[3pt]
+Other financial series & \textbf{Partly} & The models beat naive baselines, but specialized models matched or beat them in two of three tasks. & Marconi (2025) \\
+\addlinespace[3pt]
+As part of a combination & \textbf{Partly} & An equal-weight average of a foundation model and log-HAR was among the best forecasts for almost every asset. & Brini (2026) \\
+\addlinespace[3pt]
+Macroeconomic series, after the cutoff & \textbf{Untested} & Clean evaluations on data published after the training cutoff are still scarce. & None yet \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+So far the evidence does not support the claim, but it is too new to reject it. Pretraining on financial data helps, which suggests that the problem is the domain, not the architecture.
+
+\textbf{What would change the picture.} The evidence would support the claim if a foundation model beat AR and HAR significantly on data it cannot have seen, over several years. It would count against it if successive generations of models continued to fall short of them.
+
+\subsection{Open questions}
+\label{sec:21-open}
 
 \begin{itemize}
-  \item \textbf{Returns.} Zero-shot foundation models forecast stock returns worse than simple benchmarks (Rahimikia, Ni and Wang 2025). Pretraining on financial data helps, which suggests the problem is the domain, not the architecture.
-  \item \textbf{Volatility.}\index{volatility|textbf} Most foundation models do not beat a well-specified HAR model on average. The best one beats it by one or two percent, and the most reliable forecast combines the two (Brini 2026).
-  \item \textbf{Other financial series.} Foundation models beat naive baselines but are matched or beaten by specialised models in most tasks studied (Marconi 2025).
-  \item \textbf{Macroeconomic series.} Clean, post-cutoff evaluations are still scarce.
+  \item \textbf{Finance-specific pretraining.} Will models pretrained on large financial datasets beat classical and tree-based benchmarks out of sample, and by enough to matter after costs?
+  \item \textbf{Clean evaluation.} Can the field agree on post-cutoff benchmarks for financial and macroeconomic series, so that each new model is tested on data it cannot have seen?
+  \item \textbf{Multivariate and conditional forecasts.} Most zero-shot tests are univariate. Can foundation models use related series, such as option-implied volatility\index{volatility!implied} for realized volatility, as classical models can?
+  \item \textbf{Language and numbers.} Large language models can read news and filings. Does combining text with time-series models improve forecasts of returns, volatility or the economy?
 \end{itemize}
 
-The field changes quickly, and models pretrained on financial data are appearing. The verdict should be revisited when there are post-cutoff evaluations of several years for the main financial and macroeconomic series. It would move to \emph{survives} if a foundation model beat AR and HAR significantly on data it cannot have seen, and to \emph{fails} if successive generations continued to fall short of them.
-
-\section{What investors can use}
+\section{What practitioners and investors can use}
 \label{sec:21-investors}
+
+The evidence in Section~\ref{sec:21-verdict} suggests several practical lessons.
 
 \begin{itemize}
   \item \textbf{Benchmark before you buy.} Any forecasting tool, foundation model or not, should be compared with the historical mean for returns, an autoregression for macroeconomic series and HAR for volatility, on the same rolling origins.
@@ -298,16 +330,6 @@ The field changes quickly, and models pretrained on financial data are appearing
 \begin{callout}
 \textbf{What Failed: forecasting home prices at scale.} In 2018 Zillow began buying homes directly through Zillow Offers, relying on its price-estimation models to decide what to pay and expecting to resell at a profit. In November 2021 the company announced it would wind the business down (Zillow Group 2021). It wrote down its home inventory by \$304.4 million in the third quarter, having bought homes at prices above what it now expected to sell them for, and cut about a quarter of its workforce. Zillow cited home pricing unpredictability, capacity\index{capacity} constraints and other operational challenges. The models were sophisticated and trained on vast data, but a forecast that is accurate on average can still fail when it is acted on at scale, in a market that turns, against counterparties who know more about the specific asset. The lesson for any new forecasting technology is to test it where the decision is made, not where the benchmark is easiest.
 \end{callout}
-
-\section{Open questions}
-\label{sec:21-open}
-
-\begin{itemize}
-  \item \textbf{Finance-specific pretraining.} Will models pretrained on large financial datasets beat classical and tree-based benchmarks out of sample, and by enough to matter after costs?
-  \item \textbf{Clean evaluation.} Can the field agree on post-cutoff benchmarks for financial and macroeconomic series, so that each new model is tested on data it cannot have seen?
-  \item \textbf{Multivariate and conditional forecasts.} Most zero-shot tests are univariate. Can foundation models use related series, such as option-implied volatility\index{volatility!implied} for realized volatility, as classical models can?
-  \item \textbf{Language and numbers.} Large language models can read news and filings. Does combining text with time-series models improve forecasts of returns, volatility or the economy?
-\end{itemize}
 
 \section*{Exercises}
 \addcontentsline{toc}{section}{Exercises}

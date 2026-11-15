@@ -205,8 +205,10 @@ Two caveats apply. The Fed's curve is a fitted curve, not a set of traded bonds,
 
 \textbf{What the simulated run shows.} The simulation adds a time-varying term premium to the expected path of short rates, so the EH is false by construction. The lab finds what it should: Fama--Bliss slopes of about 0.6 to 0.7, significantly above zero; Campbell--Shiller slopes negative and well below 1; higher excess returns after steep curves. The tests on data where the EH holds exactly recover slopes of 0 and 1. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
 
-\section{Stress tests}
+\subsection{Robustness checks}
 \label{sec:07-stress}
+
+The full-sample results can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
 
 \textbf{Subperiods.} The postwar sample contains very different monetary regimes: the inflation of the 1970s, the Volcker disinflation, the long decline in rates from the 1980s, the zero lower bound after 2008 and the rapid tightening of 2022--23. A term premium that varies with inflation uncertainty would be most visible in the first half. Part C shows whether the rejection of the EH is a product of one era.
 
@@ -218,32 +220,54 @@ Two caveats apply. The Fed's curve is a fitted curve, not a set of traded bonds,
 
 \textbf{Small samples.} Bauer and Hamilton (2018) showed that standard errors can understate uncertainty badly in these regressions. Their bootstrap\index{bootstrap} tests are beyond this lab, but Exercise 4 asks how far the lab's $t$-statistics can be trusted. Treat $t$-statistics near 2 with suspicion.
 
-\section{Verdict}
+\subsection*{Your verdict}
+
+Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:07-verdict}. If your verdict differs, explain which of your results led you there.
+
+\section{Where the evidence stands}
 \label{sec:07-verdict}
 
-\begin{callout}
-\textbf{Verdict: fails} (as of October 2026). Forward rates are not unbiased forecasts of future short rates. Bond risk premia vary over time, and the slope of the yield curve forecasts excess returns on long bonds, not just changes in short rates. The more ambitious claim, that a richer function of the forward curve forecasts bond returns with high $R^2$, is weaker than it once appeared, but that does not rescue the expectations hypothesis.
-\end{callout}
+The published studies cited in this chapter point to a clear pattern: \textbf{forward rates contain information about future short rates but are biased forecasts of them, because a term premium that varies over time drives much of the slope of the yield curve; how well that premium can be forecast in real time is disputed.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
 
-What fails:
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+Forward spreads and excess returns & \textbf{No} & Forward spreads forecast one-year excess returns on long bonds, which the hypothesis rules out. & Fama and Bliss (1987) \\
+\addlinespace[3pt]
+Long yields when the curve is steep & \textbf{No} & Long yields tended to fall rather than rise, and the slopes became more negative as maturity increased. & Campbell and Shiller (1991) \\
+\addlinespace[3pt]
+Forward rates at long horizons & \textbf{Partly} & Forward rates forecast changes in short rates several years ahead, because rates mean-revert. & Fama and Bliss (1987) \\
+\addlinespace[3pt]
+A constant term premium & \textbf{No} & A single combination of forward rates forecast excess returns on all maturities and rose in bad times. & Cochrane and Piazzesi (2005) \\
+\addlinespace[3pt]
+Strength of the forecasting evidence & \textbf{Disputed} & Robust small-sample tests weaken the evidence that variables beyond level, slope and curvature forecast bond returns. & Bauer and Hamilton (2018) \\
+\addlinespace[3pt]
+Value to an investor out of sample & \textbf{Partly} & Forecasts from forward rates gave little economic value out of sample to an investor choosing between bonds. & Thornton and Valente (2012) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The evidence is strong that the term premium varies, and weaker on how well anyone can track it in real time. That weakness does not rescue the expectations hypothesis, which requires the premium to be constant.
+
+\textbf{What would change the picture.} The evidence would move toward the claim if the rejection of the hypothesis were confined to one monetary regime and disappeared in the others.
+
+\subsection{Open questions}
+\label{sec:07-open}
 
 \begin{itemize}
-  \item \textbf{Forward spreads forecast excess returns.} In the classic studies and their updates, Fama--Bliss slopes are positive and significant. The forward spread is partly a forecast of rates and partly a premium for holding long bonds.
-  \item \textbf{Long yields move the wrong way.} Campbell--Shiller slopes are below 1, and often negative, across maturities. On average, a steep curve has been followed by falling, not rising, long yields.
-  \item \textbf{The premium is counter-cyclical.} Expected bond excess returns are higher in bad times, which the EH rules out.
+  \item \textbf{Has central-bank bond buying changed the term premium?} Large-scale asset purchases after 2008 and in 2020 were designed to lower long yields by reducing the term premium. Did they change its behaviour or its predictability?
+  \item \textbf{Is the Cochrane--Piazzesi factor real?} Robust small-sample tests weaken it. Does it survive in other countries and in data after 2003?
+  \item \textbf{What drives the term premium?} Inflation uncertainty, risk aversion, supply and demand all play a part. Which dominates now?
+  \item \textbf{Do macroeconomic variables add to the yield curve?} Several studies find that measures of real activity forecast bond returns beyond yields. Does that evidence survive the same robust tests?
 \end{itemize}
 
-What survives:
-
-\begin{itemize}
-  \item \textbf{Forward rates contain information about future short rates}, especially at horizons of several years, because rates mean-revert. They are biased forecasts, not useless ones.
-  \item \textbf{The term premium is hard to forecast precisely.} Small-sample corrections and out-of-sample tests weaken the case for large, exploitable predictability (Bauer and Hamilton 2018; Thornton and Valente 2012). The evidence is strong that the premium varies, and weaker on how well anyone can track it in real time.
-\end{itemize}
-
-The verdict would move to \emph{weakens} if the rejection of the EH were confined to one monetary regime and disappeared in the others.
-
-\section{What investors can use}
+\section{What practitioners and investors can use}
 \label{sec:07-investors}
+
+The evidence in Section~\ref{sec:07-verdict} suggests several practical lessons.
 
 \textbf{Read forward rates as forecasts plus a premium.} A market-implied path for policy rates, extracted from forwards or futures, includes a term premium. It overstates expected rate rises when the premium is positive and understates them when the premium is negative. Estimated term premiums, such as those published by the Federal Reserve Bank of New York from the Adrian, Crump and Moench (2013) model, are one way to separate the two, though they are model estimates with wide uncertainty.
 
@@ -264,16 +288,6 @@ The verdict would move to \emph{weakens} if the rejection of the EH were confine
 
 The conundrum was a puzzle only if long yields were pure forecasts of short rates. Term-premium models attributed much of the decline to a falling term premium, which various explanations linked to lower inflation uncertainty, foreign official purchases of Treasuries and demand from pension funds. Investors and policymakers who read the long end of the curve as the market's forecast of policy rates misread both the market and its signal. The same error recurs whenever a change in the term premium is taken for a change in expected policy.
 \end{callout}
-
-\section{Open questions}
-\label{sec:07-open}
-
-\begin{itemize}
-  \item \textbf{Has central-bank bond buying changed the term premium?} Large-scale asset purchases after 2008 and in 2020 were designed to lower long yields by reducing the term premium. Did they change its behaviour or its predictability?
-  \item \textbf{Is the Cochrane--Piazzesi factor real?} Robust small-sample tests weaken it. Does it survive in other countries and in data after 2003?
-  \item \textbf{What drives the term premium?} Inflation uncertainty, risk aversion, supply and demand all play a part. Which dominates now?
-  \item \textbf{Do macroeconomic variables add to the yield curve?} Several studies find that measures of real activity forecast bond returns beyond yields. Does that evidence survive the same robust tests?
-\end{itemize}
 
 \section*{Exercises}
 \addcontentsline{toc}{section}{Exercises}

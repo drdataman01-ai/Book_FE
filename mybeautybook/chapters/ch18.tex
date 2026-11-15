@@ -249,25 +249,6 @@ The two readings matter for the claim. If most of the decline happens when the s
 
 This chapter's lab adds a check the original study could not make: a simulated literature in which the truth is known. If only significant results are published, returns appear to fall after the sample ends even when nothing changes. The size of that purely statistical decline is a benchmark for how much of the observed decay is selection.
 
-\section{Lab~\thechapter: Replicating both sides of the anomaly debate}
-\label{sec:19-lab}
-
-\begin{callout}
-\textbf{Lab~\ref{ch:19} at a glance.} \emph{Papers replicated:} Hou, Xue and Zhang (2020); Jensen, Kelly and Pedersen (2023); McLean and Pontiff (2016). All data are free. \emph{The question:} applying each side's standards to the same data, what share of published predictors survive, and how much of their return remains after their samples end and after publication? \emph{Data:} Open Source Asset Pricing: monthly long--short returns for more than 200 predictors as constructed in the original papers, and the signal documentation giving each paper's sample period and publication year. Optionally, a second construction of the same signals, value-weighted or excluding micro-caps, for the methodology comparison. \emph{Code:} repository folder \texttt{ch10-anomalies/}, with a guided notebook.
-\end{callout}
-
-\textbf{The setup.}
-
-\begin{itemize}
-  \item \textbf{Part A, replication.} Each predictor's t-statistic over its own original sample. The share clearing $t > 1.96$, $t > 3$\index{t-statistic!$t>3$ hurdle}, and a Benjamini--Hochberg test, which limits the expected share of false discoveries among the predictors it declares significant.
-  \item \textbf{Part B, decay.} Average returns in-sample, after the sample ended but before publication, and after publication. A \textbf{pooled regression}\index{regression!pooled|textbf}, which combines all predictors into one regression in the style of McLean and Pontiff, measures the proportional decline in each period with errors clustered by\index{standard error!clustered} month.
-  \item \textbf{Part C, methodology.} The same statistics for an alternative construction, if supplied. This is the core of the disagreement between Hou, Xue and Zhang and the defense.
-  \item \textbf{Part D, shrinkage.} An empirical Bayes estimate of each predictor's true mean, pulled toward the average in proportion to its noise; the share with more than 95\% probability of a positive true mean; and whether shrunk estimates predict post-publication returns better than raw ones.
-  \item \textbf{Part E, known truth.} A simulated literature in which only signals with in-sample $t > 2$ are published, run with no true decay and with a 30\% decay after publication.
-\end{itemize}
-
-\textbf{What readers will find.} The simulation alone delivers one of the chapter's central lessons. When the lab's simulated literature was run with \textbf{no} true change after publication, the pooled regression still measured returns about 45\% lower after the samples ended and about 54\% lower after publication, purely because publication selected lucky in-sample results. With a true 30\% post-publication decay added, the measured post-publication decline rose to about 68\%. Readers who run the lab on the real data can compare McLean and Pontiff's figures, and their own, with this benchmark.
-
 \section{Why the two sides disagree}
 \label{sec:19-why}
 
@@ -291,30 +272,73 @@ Neither side is wrong on its own terms. A factor that appears only among micro-c
 
 The practical lesson is that ``does this anomaly replicate?'' is not a well-posed question until the purpose is stated. For understanding how markets price risk, pure replication and pooled evidence are appropriate. For deciding what to invest in, value-weighted, liquid-universe, out-of-sample, after-cost evidence is what matters.
 
-\section{Verdict: a split decision}
+\section{Lab~\thechapter: Replicating both sides of the anomaly debate}
+\label{sec:19-lab}
+
+\begin{callout}
+\textbf{Lab~\ref{ch:19} at a glance.} \emph{Papers replicated:} Hou, Xue and Zhang (2020); Jensen, Kelly and Pedersen (2023); McLean and Pontiff (2016). All data are free. \emph{The question:} applying each side's standards to the same data, what share of published predictors survive, and how much of their return remains after their samples end and after publication? \emph{Data:} Open Source Asset Pricing: monthly long--short returns for more than 200 predictors as constructed in the original papers, and the signal documentation giving each paper's sample period and publication year. Optionally, a second construction of the same signals, value-weighted or excluding micro-caps, for the methodology comparison. \emph{Code:} repository folder \texttt{ch10-anomalies/}, with a guided notebook.
+\end{callout}
+
+\textbf{The setup.}
+
+\begin{itemize}
+  \item \textbf{Part A, replication.} Each predictor's t-statistic over its own original sample. The share clearing $t > 1.96$, $t > 3$\index{t-statistic!$t>3$ hurdle}, and a Benjamini--Hochberg test, which limits the expected share of false discoveries among the predictors it declares significant.
+  \item \textbf{Part B, decay.} Average returns in-sample, after the sample ended but before publication, and after publication. A \textbf{pooled regression}\index{regression!pooled|textbf}, which combines all predictors into one regression in the style of McLean and Pontiff, measures the proportional decline in each period with errors clustered by\index{standard error!clustered} month.
+  \item \textbf{Part C, methodology.} The same statistics for an alternative construction, if supplied. This is the core of the disagreement between Hou, Xue and Zhang and the defense.
+  \item \textbf{Part D, shrinkage.} An empirical Bayes estimate of each predictor's true mean, pulled toward the average in proportion to its noise; the share with more than 95\% probability of a positive true mean; and whether shrunk estimates predict post-publication returns better than raw ones.
+  \item \textbf{Part E, known truth.} A simulated literature in which only signals with in-sample $t > 2$ are published, run with no true decay and with a 30\% decay after publication.
+\end{itemize}
+
+\textbf{What readers will find.} The simulation alone delivers one of the chapter's central lessons. When the lab's simulated literature was run with \textbf{no} true change after publication, the pooled regression still measured returns about 45\% lower after the samples ended and about 54\% lower after publication, purely because publication selected lucky in-sample results. With a true 30\% post-publication decay added, the measured post-publication decline rose to about 68\%. Readers who run the lab on the real data can compare McLean and Pontiff's figures, and their own, with this benchmark.
+
+\subsection*{Your verdict}
+
+Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:19-verdict}. If your verdict differs, explain which of your results led you there. State the standard of evidence you apply and why, and date your verdict with the sample you tested.
+
+\section{Where the evidence stands}
 \label{sec:19-verdict}
 
-This chapter's verdict is deliberately left to the reader, with the evidence summarized:
+The published studies cited in this chapter point to a split picture: \textbf{most published anomalies are not pure statistical flukes, but most are smaller than reported, concentrated in small stocks, partly arbitraged away, and not profitable to trade after costs.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
 
 \begin{center}
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.22\linewidth}@{}}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
 \toprule
-Standard & What the evidence suggests & Verdict on ``most anomalies are false'' \\
+Situation & Holds? & Why & Evidence \\
 \midrule
-Original construction, conventional hurdle & Most published predictors reproduce & Fails \\
-Micro-caps de-emphasized, value-weighted & Most fail to clear $t = 1.96$ (Hou, Xue and Zhang) & Survives \\
-Bayesian pooling across related factors and countries & Most replicate and work out of sample (Jensen, Kelly and Pedersen) & Fails \\
-Out of sample, after publication & Returns about half their in-sample level, part of it selection (McLean and Pontiff; Part E) & Weakens the anomalies, without making most false \\
-After costs, for an investor & Little expected return remains for the average anomaly (Chen and Velikov 2023; Chapter~\ref{ch:17}) & Survives, in practice \\
+Original construction, conventional hurdle & \textbf{No} & Predictors whose original papers reported clear evidence almost all reproduce with the original methods. & Chen and Zimmermann (2022) \\
+\addlinespace[3pt]
+Micro-caps de-emphasized, value-weighted & \textbf{Yes} & 65\% of 452 anomalies fail to clear $t = 1.96$, and 82\% fail a hurdle of 2.78; 96\% of the trading-frictions anomalies fail. & Hou, Xue and Zhang (2020) \\
+\addlinespace[3pt]
+The right hurdle for multiple testing & \textbf{Disputed} & One side asks for a $t$ of about 3; the other estimates that about 1.8 is enough for published predictors. & Harvey, Liu and Zhu (2016); Chen and Zimmermann (2020) \\
+\addlinespace[3pt]
+Bayesian pooling across factors and countries & \textbf{No} & Most factors replicate, cluster into 13 themes and work out of sample in 93 countries. & Jensen, Kelly and Pedersen (2023) \\
+\addlinespace[3pt]
+Out of sample, after publication & \textbf{Partly} & Returns were 26\% lower after the original samples and 58\% lower after publication, and part of the decline is selection. & McLean and Pontiff (2016); Part E of the lab \\
+\addlinespace[3pt]
+After costs, for an investor & \textbf{Yes} & Little expected return remains for the average anomaly. & Chen and Velikov (2023); Chapter~\ref{ch:17} \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-A defensible summary: \textbf{most published anomalies are not pure statistical flukes, but most are smaller than reported, concentrated in small stocks, partly arbitraged away, and not profitable to trade after costs.} Whether that makes them ``false'' depends on whether the question is scientific or practical. Readers should write their own verdict, stating the standard they apply and why, and date it with the sample they tested.
+Whether these findings make most anomalies ``false'' depends on whether the question is scientific or practical. The two sides agree on most facts and disagree on the four choices in Section~\ref{sec:19-why}, so a verdict on this claim is a choice of standard as much as a reading of the data.
 
-\section{What investors can use}
+\textbf{What would change the picture.} A shared replication standard, such as pre-registered\index{pre-registration} hurdles or value-weighted, micro-cap-robust results reported alongside the original construction, would narrow the disagreement more than any new data set.
+
+\subsection{Open questions}
+\label{sec:19-open}
+
+\begin{itemize}
+  \item \textbf{What replication standard should the field adopt?} Should journals require value-weighted, micro-cap-robust results, pre-registered\index{pre-registration} hurdles, or Bayesian posteriors?
+  \item \textbf{How many signals were tested but never published?} The unknown size of this \textbf{file drawer}\index{publication bias|textbf}, the studies left unpublished, limits every correction for multiple testing.
+  \item \textbf{Is post-publication decay learning or selection?} Part E's benchmark separates the two in simulation; doing so convincingly in real data remains open.
+  \item \textbf{Do anomalies reflect risk or mispricing?} Their decay after publication favors mispricing for many; their persistence\index{persistence} across countries favors something more durable for a few themes.
+\end{itemize}
+
+\section{What practitioners and investors can use}
 \label{sec:19-investors}
+
+The evidence in Section~\ref{sec:19-verdict} suggests several practical lessons.
 
 \textbf{A checklist for judging any new factor fund or signal:}
 
@@ -330,16 +354,6 @@ A defensible summary: \textbf{most published anomalies are not pure statistical 
 \begin{callout}
 \textbf{What Failed: the trading-frictions anomalies.} A family of anomalies based on liquidity\index{liquidity}, idiosyncratic volatility\index{idiosyncratic volatility} and other trading frictions looked strong in the papers that introduced them. In Hou, Xue and Zhang's replication, 96\% of the anomalies in this category failed to clear a t-statistic of 1.96 once micro-caps were de-emphasized with NYSE breakpoints and value weights. Their returns had come mostly from the smallest, least liquid stocks, exactly where costs and frictions are largest. The claim that frictions-based anomalies offer returns an investor can capture \textbf{fails}; whether they reveal something real about how illiquid stocks are priced is a separate and open question.
 \end{callout}
-
-\section{Open questions}
-\label{sec:19-open}
-
-\begin{itemize}
-  \item \textbf{What replication standard should the field adopt?} Should journals require value-weighted, micro-cap-robust results, pre-registered\index{pre-registration} hurdles, or Bayesian posteriors?
-  \item \textbf{How many signals were tested but never published?} The unknown size of this \textbf{file drawer}\index{publication bias|textbf}, the studies left unpublished, limits every correction for multiple testing.
-  \item \textbf{Is post-publication decay learning or selection?} Part E's benchmark separates the two in simulation; doing so convincingly in real data remains open.
-  \item \textbf{Do anomalies reflect risk or mispricing?} Their decay after publication favors mispricing for many; their persistence\index{persistence} across countries favors something more durable for a few themes.
-\end{itemize}
 
 \section*{Exercises}
 \addcontentsline{toc}{section}{Exercises}
