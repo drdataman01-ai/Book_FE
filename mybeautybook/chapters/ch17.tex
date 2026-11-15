@@ -1,5 +1,5 @@
 % Chapter 18 -- Claim: Low-Risk Stocks Beat High-Risk Stocks
-% Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
+% Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
 \providecolor{feshade}{HTML}{F3F5FA}
@@ -15,23 +15,21 @@
 \chapter{Claim: Low-Risk Stocks Beat High-Risk Stocks}
 \label{ch:18}
 
-The capital asset pricing model\index{capital asset pricing model (CAPM)} makes one central prediction: assets that move more with the market should earn more. Double the beta\index{beta}, double the expected excess return\index{return!excess}. The prediction was among the first in finance to be tested, and Chapter~\ref{ch:04} showed that it failed early: Black, Jensen and Scholes (1972) and Fama and MacBeth (1973) found the relation between beta and average return positive but far flatter than the theory implied. Black (1972) offered an explanation. Investors who cannot borrow freely, but want more risk, bid up the prices of high-beta stocks, which lowers their later returns.
+The capital asset pricing model\index{capital asset pricing model (CAPM)} makes one central prediction: assets that move more with the market should earn more. If a stock's beta\index{beta} doubles, its expected excess return\index{return!excess} should double too. This was among the first predictions in finance to be tested, and Chapter~\ref{ch:04} showed that it failed early. Black, Jensen and Scholes (1972) and Fama and MacBeth (1973) found that average returns did rise with beta, but far less steeply than the theory implied. Black (1972) offered an explanation. Some investors want more risk but cannot borrow freely. Instead of borrowing, they buy high-beta stocks, which pushes up their prices and lowers their later returns.
 
-For two decades the flat security market line was treated as a curiosity. It became a claim about profits when later research made it larger and easier to trade. Ang, Hodrick, Xing and Zhang (2006) found that stocks with high idiosyncratic volatility\index{volatility} earned strikingly low returns, Baker, Bradley and Wurgler (2011) argued that fund managers judged against a benchmark have little incentive to correct the mispricing, and Frazzini and Pedersen (2014) built a leveraged ``betting-against-beta'' factor that earned high risk-adjusted returns in many countries and asset classes. The pattern is now called the \textbf{low-risk anomaly}\index{low-risk anomaly|textbf}. Novy-Marx and Velikov (2022) then argued that much of the betting-against-beta performance comes from the way the factor is constructed rather than from low risk itself.
+For two decades the flat security market line was treated as a curiosity. It became a claim about profits when later research made the effect larger and easier to trade. Ang, Hodrick, Xing and Zhang (2006) found that stocks with high idiosyncratic volatility\index{volatility}, the part of volatility not explained by the market, earned strikingly low returns. Baker, Bradley and Wurgler (2011) argued that fund managers judged against a benchmark have little reason to correct the mispricing. Frazzini and Pedersen (2014) built a leveraged ``betting-against-beta'' factor that earned high risk-adjusted returns in many countries and asset classes. The pattern is now called the \textbf{low-risk anomaly}\index{low-risk anomaly|textbf}. Novy-Marx and Velikov (2022) later argued that much of the betting-against-beta performance comes from the way the factor is built, not from low risk itself.
 
-The implications are practical. Low-volatility funds grew rapidly after 2010, companies still use beta to set hurdle rates, and the leverage needed to exploit the anomaly is exactly what the explanation says investors avoid. The claim on trial\index{claims-on-trial method} is: \textbf{low-beta and low-volatility stocks earn higher risk-adjusted returns than high-risk stocks, and a leveraged long--short portfolio captures the difference.}
+The question matters in practice. Low-volatility funds grew rapidly after 2010, and companies still use beta to set the return a new project must earn. The anomaly is also hard to exploit, because exploiting it needs leverage, which is exactly what the explanation says investors avoid. The claim on trial\index{claims-on-trial method} is: \textbf{low-beta and low-volatility stocks earn higher risk-adjusted returns than high-risk stocks, and a leveraged long--short portfolio captures the difference.}
 
-The lab in Section~\ref{sec:18-lab} replicates the security market line of Black, Jensen and Scholes (1972) and the cross-sectional regressions of Fama and MacBeth (1973) on the free beta- and variance-sorted portfolios of the Kenneth R. French Data Library, and rebuilds the betting-against-beta factor of Frazzini and Pedersen (2014) for comparison with AQR's free published series, in order to check whether low-risk stocks still earn more than the CAPM predicts after costs and construction choices are taken into account.
+The lab in Section~\ref{sec:18-lab} repeats two classic tests on the free beta- and variance-sorted portfolios of the Kenneth R. French Data Library: the security market line of Black, Jensen and Scholes (1972) and the cross-sectional regressions of Fama and MacBeth (1973). It then rebuilds the betting-against-beta factor of Frazzini and Pedersen (2014) and compares it with AQR's free published series. The goal is to check whether low-risk stocks still earn more than the CAPM predicts once costs and construction choices are taken into account.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
   \item estimate a beta, split total risk\index{risk!total} into systematic and idiosyncratic parts, and compute a CAPM alpha\index{alpha};
-  \item draw the security market line\index{security market line} and explain how leverage\index{leverage} constraints flatten it;
-  \item build a beta-neutral\index{market-neutral} betting-against-beta portfolio and explain why a naive low-minus-high portfolio can lose money despite a positive alpha;
-  \item state the weak and strong forms of the low-risk claim and summarize the evidence for each;
-  \item compare the explanations: leverage constraints, lottery preferences\index{lottery preference}, benchmarking, and missing risk factors;
-  \item judge whether a minimum-volatility or BAB\index{betting against beta (BAB)} fund delivers what its backtest\index{backtest} promises.
+  \item draw the security market line\index{security market line}, and explain how limits on leverage\index{leverage} flatten it;
+  \item build a beta-neutral\index{market-neutral} betting-against-beta\index{betting against beta (BAB)} portfolio, and compare the explanations for the anomaly, such as leverage limits and lottery preferences\index{lottery preference};
+  \item judge whether a minimum-volatility or BAB fund can deliver what its backtest\index{backtest} promises.
 \end{itemize}
 
 \section{Foundations: beta, the CAPM and the security market line}
@@ -39,13 +37,17 @@ By the end of the chapter you will be able to:
 
 \subsection{Beta, the CAPM and the security market line}
 
-Chapter~\ref{ch:04} introduced beta, the CAPM and the security market line (Section~\ref{sec:04-capm}). Beta is the slope of a regression of an asset's excess return on the market's excess return (Equation~\eqref{eq:04-capm}), the market itself has a beta of 1, and the CAPM says that expected excess returns rise in a straight line with beta. Two consequences of the model matter for this chapter. First, the security market line passes through the risk-free rate\index{risk-free rate} at $\beta = 0$ and through the market at $\beta = 1$, so its slope equals the market premium. Second, an asset's \textbf{total risk}\index{risk!total|textbf}, the variance\index{variance} of its return, splits into a systematic part, $\beta_i^2\,\mathrm{Var}(R_m)$, and an idiosyncratic part, the variance of the regression residual\index{regression!residuals}. Only the systematic part is priced, because investors can diversify\index{diversification} the idiosyncratic part away for free. Two stocks with the same volatility can therefore have very different betas, and the CAPM says they should have very different expected returns\index{return!expected}.
+Chapter~\ref{ch:04} introduced beta, the CAPM and the security market line (Section~\ref{sec:04-capm}). Beta is the slope of a regression of an asset's excess return on the market's excess return (Equation~\eqref{eq:04-capm}). The market itself has a beta of 1. The CAPM says that expected excess returns rise in a straight line with beta. Two consequences of the model matter for this chapter.
+
+First, the security market line passes through the risk-free rate\index{risk-free rate} at $\beta = 0$ and through the market at $\beta = 1$, so its slope equals the market premium.
+
+Second, an asset's \textbf{total risk}\index{risk!total|textbf}, the variance\index{variance} of its return, splits into two parts. The systematic part is $\beta_i^2\,\mathrm{Var}(R_m)$. The idiosyncratic part is the variance of the regression residual\index{regression!residuals}. Only the systematic part earns a reward, because investors can diversify\index{diversification} the idiosyncratic part away at no cost. Two stocks with the same volatility can therefore have very different betas, and the CAPM says they should have very different expected returns\index{return!expected}.
 
 \subsection{Alpha}
 
 An asset's alpha, often called Jensen's alpha, is the intercept of the same regression: the average return beyond what beta explains (Section~\ref{sec:04-capm}). Under the CAPM every alpha is zero. A multifactor alpha adds other factors to the regression, such as size, value and momentum\index{momentum} (Chapter~\ref{ch:04}). The low-risk anomaly is a claim about how alpha varies with beta: low-beta stocks have had positive alphas and high-beta stocks negative ones.
 
-The CAPM assumes that investors can borrow and lend freely at the risk-free rate. An investor who wants more risk than the market then borrows and buys the market, or any efficient portfolio. Many investors cannot do this. Mutual funds and pension plans face limits on \textbf{leverage}\index{leverage|textbf}, borrowing to hold more than their capital. Individuals face \textbf{margin} requirements and pay more than the risk-free rate to borrow. Black (1972) showed that without riskless borrowing the SML is still straight but flatter: it starts at the return on a \textbf{zero-beta portfolio}\index{zero-beta portfolio|textbf}, a portfolio uncorrelated with the market, which lies above the risk-free rate.
+The CAPM assumes that investors can borrow and lend freely at the risk-free rate. An investor who wants more risk than the market can then borrow and buy more of the market. Many investors cannot do this. Mutual funds and pension plans face limits on \textbf{leverage}\index{leverage|textbf}, which means borrowing to hold more than their capital. Individuals face \textbf{margin} requirements and pay more than the risk-free rate to borrow. Black (1972) showed that without riskless borrowing the SML is still a straight line, but a flatter one. It starts at the return on a \textbf{zero-beta portfolio}\index{zero-beta portfolio|textbf}, a portfolio uncorrelated with the market, whose return lies above the risk-free rate.
 
 \textbf{Worked example.} The risk-free rate is 3\% and the market premium is 6\% (Figure~\ref{fig:18-sml}).
 
@@ -58,6 +60,7 @@ The CAPM assumes that investors can borrow and lend freely at the risk-free rate
 
 \begin{figure}[htbp]
 \centering
+\scalebox{0.8}{%
 \begin{tikzpicture}[
   % CAPM: r = 3 + 6 * beta. A = (0.6, 9), B = (1.5, 10); the line through A and B
   declare function={capm(\b) = 3 + 6*\b;  flat(\b) = 9 + (\b - 0.6)/0.9;}
@@ -66,7 +69,7 @@ The CAPM assumes that investors can borrow and lend freely at the risk-free rate
   width=0.6\linewidth, height=0.34\linewidth,
   axis lines=left, axis line style={-stealth},
   xmin=0, xmax=2, ymin=0, ymax=15.5,
-  xtick={0,0.2,...,2}, ytick={0,5,10,15},
+  xtick={0,0.5,...,2}, ytick={0,5,10,15},
   xticklabel style={/pgf/number format/fixed},
   xlabel={Beta}, ylabel={Average return (\%)},
   clip=false,
@@ -77,14 +80,15 @@ The CAPM assumes that investors can borrow and lend freely at the risk-free rate
   \fill (axis cs:1,9)    circle (2.6pt);
   \fill (axis cs:1.5,10) circle (2.6pt);
   \node[anchor=south] at (axis cs:0.6,9.5) {A: $\alpha = +2.4\%$};
-  \node[anchor=north west] at (axis cs:1.02,8.8) {market};
-  \node[anchor=north west] at (axis cs:1.52,9.8) {B: $\alpha = -2\%$};
+  \node[anchor=north west] at (axis cs:0.98,8.4) {market};
+  \node[anchor=north west] at (axis cs:1.47,9.1) {B: $\alpha = -2\%$};
   \node[anchor=north west] at (axis cs:0.02,2.7) {$r_f = 3\%$};
   \node[fenavy, anchor=west] at (axis cs:2.02,15) {CAPM line};
   \node[fegray, anchor=west, align=left] at (axis cs:2.02,{flat(2)})
     {line through\\A and B};
 \end{axis}
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{The security market line in the worked example. The CAPM line runs from the risk-free rate of 3\% through the market at a beta of 1. Stock A lies above it (positive alpha) and stock B below it (negative alpha), so the line through A and B is flatter than the CAPM predicts.}
 \label{fig:18-sml}
 \end{figure}
@@ -102,7 +106,7 @@ There are three ways to sort stocks on risk, and the literature uses all three.
 
 The three measures are strongly correlated. High-beta stocks tend to be volatile, and volatile stocks tend to have high idiosyncratic risk\index{risk!idiosyncratic}. Separating them is one of the open problems in this chapter.
 
-A flat SML shows up in two ways. The first is \emph{alphas}: low-risk portfolios have positive CAPM alphas and high-risk portfolios negative ones. The second is a \emph{long-short portfolio\index{long--short portfolio}}. The naive version, long low-risk stocks and short high-risk stocks, has a strongly negative beta. It loses money in rising markets even if the SML is flat, and its average return can be negative while its alpha is positive. \textbf{Betting against beta (BAB)}\index{betting against beta (BAB)|textbf} fixes this. It levers the low-beta leg up to a beta of 1 and scales the high-beta leg down to a beta of 1, so the portfolio is \textbf{beta-neutral}\index{market-neutral|textbf}, with no net exposure to the market (Figure~\ref{fig:18-bab}):
+A flat SML shows up in two ways. The first is in \emph{alphas}: low-risk portfolios have positive CAPM alphas, and high-risk portfolios negative ones. The second is in a \emph{long-short portfolio\index{long--short portfolio}}. The simple version buys low-risk stocks and sells high-risk stocks short. It has a strongly negative beta, so it loses money in rising markets even when the SML is flat. Its average return can be negative while its alpha is positive. \textbf{Betting against beta (BAB)}\index{betting against beta (BAB)|textbf} fixes this. It levers the low-beta leg up to a beta of 1 and scales the high-beta leg down to a beta of 1. The portfolio is then \textbf{beta-neutral}\index{market-neutral|textbf}, with no net exposure to the market (Figure~\ref{fig:18-bab}):
 \begin{equation}
   r_{\mathrm{BAB}} = \frac{r_L - r_f}{\beta_L} - \frac{r_H - r_f}{\beta_H}
   \label{eq:18-bab}
@@ -111,6 +115,7 @@ If the SML is flat, this portfolio earns a positive return with no market exposu
 
 \begin{figure}[htbp]
 \centering
+\scalebox{0.8}{%
 \begin{tikzpicture}
 \begin{axis}[
   width=0.6\linewidth, height=0.34\linewidth,
@@ -119,7 +124,8 @@ If the SML is flat, this portfolio earns a positive return with no market exposu
   ymin=-2, ymax=2.2, ytick={-2,-1,0,1,2},
   ylabel={Dollars per \$1 of capital},
   symbolic x coords={L,H}, xtick=data,
-  xticklabels={Low-beta leg ($\beta_L = 0.6$), High-beta leg ($\beta_H = 1.5$)},
+  xticklabels={{Low-beta leg\\($\beta_L = 0.6$)}, {High-beta leg\\($\beta_H = 1.5$)}},
+  xticklabel style={align=center},
   enlarge x limits=0.45,
   nodes near coords,
   nodes near coords style={font=\small},
@@ -132,12 +138,13 @@ If the SML is flat, this portfolio earns a positive return with no market exposu
   \addplot[fill=gray!40, draw=none] coordinates {(L,1) (H,-1)};
   \legend{position size, resulting beta exposure}
 \end{axis}
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{Building a BAB portfolio from the worked example. Per dollar of capital, it holds \$1.67 of the low-beta stock ($\beta_L = 0.6$) and shorts \$0.67 of the high-beta stock ($\beta_H = 1.5$). Each leg then carries a beta exposure of 1, in opposite directions, so the portfolio's beta is zero.}
 \label{fig:18-bab}
 \end{figure}
 
-The explanations divide into those that treat the anomaly\index{anomaly} as \textbf{mispricing}\index{mispricing|textbf} and those that treat it as \textbf{compensation for a risk the CAPM misses}. Section~\ref{sec:18-explanations} sets them out. They matter because they predict different things about when the anomaly should be strongest, and about whether it should survive its own popularity.
+The explanations fall into two groups. One treats the anomaly\index{anomaly} as \textbf{mispricing}\index{mispricing|textbf}. The other treats it as \textbf{compensation for a risk the CAPM misses}. Section~\ref{sec:18-explanations} sets them out. The difference matters because the two groups predict different things: when the anomaly should be strongest, and whether it should survive once it becomes popular.
 
 \section{The claim}
 \label{sec:18-claim}
@@ -158,22 +165,22 @@ To test it we need to specify four things.
 \section{The original evidence}
 \label{sec:18-evidence}
 
-\textbf{A flat line from the start.} Black, Jensen and Scholes (1972) sorted NYSE stocks from 1931 to 1965 into ten portfolios by past beta, so that estimation error\index{estimation error} in individual betas would average out. Average returns rose with beta, but much less than the CAPM predicted. Low-beta portfolios had positive alphas and high-beta portfolios negative ones. Fama and MacBeth (1973) confirmed a positive but modest slope. Haugen and Heins (1975) reported that low-volatility portfolios had matched or beaten high-volatility ones, and Fama and French (1992) found almost no relation between beta and average return from 1963 to 1990 once size was controlled for.
+\textbf{A flat line from the start.} Black, Jensen and Scholes (1972) sorted NYSE stocks from 1931 to 1965 into ten portfolios by past beta. Grouping stocks this way averages out the errors in individual betas\index{estimation error}. Average returns rose with beta, but much less than the CAPM predicted. Low-beta portfolios had positive alphas, and high-beta portfolios negative ones. Fama and MacBeth (1973) confirmed a positive but modest slope. Haugen and Heins (1975) reported that low-volatility portfolios had matched or beaten high-volatility ones. Fama and French (1992) found almost no relation between beta and average return from 1963 to 1990, once size was taken into account.
 
-\textbf{Idiosyncratic volatility.}\index{idiosyncratic volatility|textbf} Ang, Hodrick, Xing and Zhang (2006) sorted U.S. stocks on idiosyncratic volatility measured over the previous month. The highest-volatility quintile earned 1.06\% a month less than the lowest, and its Fama--French alpha was 1.31\% a month lower. The result was a strong form of the anomaly: an inverted relation between this risk and raw returns. Their 2009 paper found the same pattern in 23 developed markets.
+\textbf{Idiosyncratic volatility.}\index{idiosyncratic volatility|textbf} Ang, Hodrick, Xing and Zhang (2006) sorted U.S. stocks on idiosyncratic volatility over the previous month. The fifth of stocks with the highest volatility earned 1.06\% a month less than the fifth with the lowest. Its Fama--French alpha was 1.31\% a month lower. This is a strong form of the anomaly, because riskier stocks earned lower raw returns, not just lower risk-adjusted ones. Their 2009 paper found the same pattern in 23 developed markets.
 
-\textbf{From anomaly to strategy.} Baker, Bradley and Wurgler (2011) documented the low-risk anomaly for investors and argued that benchmarking prevents institutions from exploiting it. Frazzini and Pedersen (2014) built the BAB factor described in Section~\ref{sec:18-how} from individual stocks, using rank weights and shrunk betas. In U.S. stocks from 1926 to 2012 it had a Sharpe ratio\index{Sharpe ratio} of 0.78. It earned significant alphas after size, value, momentum and liquidity\index{liquidity} controls, in 19 international equity markets, and in Treasury bonds, corporate bonds and futures. They also found that BAB returns were lower when funding constraints were tight, which their leverage-constraint theory predicts.
+\textbf{From anomaly to strategy.} Baker, Bradley and Wurgler (2011) presented the low-risk anomaly to investors, and argued that benchmarking stops institutions from exploiting it. Frazzini and Pedersen (2014) built the BAB factor described in Section~\ref{sec:18-how} from individual stocks, using rank weights and betas pulled toward 1. In U.S. stocks from 1926 to 2012 it had a Sharpe ratio\index{Sharpe ratio} of 0.78. Its alphas stayed significant after controls for size, value, momentum and liquidity\index{liquidity}. It also worked in 19 international stock markets and in Treasury bonds, corporate bonds and futures. BAB returns were lower when borrowing was hard to obtain, as their leverage theory predicts.
 
 By 2014 the low-risk anomaly looked like one of the best-documented patterns in finance. Low-volatility index funds launched in the United States around 2011 and grew quickly.
 
 \section{Explanations}
 \label{sec:18-explanations}
 
-\textbf{Leverage constraints.}\index{leverage|textbf} Black (1972) and Frazzini and Pedersen (2014) argue that investors who want high expected returns but cannot borrow overweight high-beta stocks instead of levering the market. That bids up high-beta stocks and flattens the SML. The theory predicts that constrained investors, such as mutual funds and individuals, hold high-beta portfolios, and that BAB does worse when funding tightens. Both predictions have empirical support.
+\textbf{Leverage constraints.}\index{leverage|textbf} Black (1972) and Frazzini and Pedersen (2014) argue as follows. Some investors want high expected returns but cannot borrow, so they buy high-beta stocks instead of a levered market portfolio. This bids up high-beta stocks and flattens the SML. The theory predicts that constrained investors, such as mutual funds and individuals, hold high-beta portfolios, and that BAB does worse when borrowing becomes harder. Both predictions have empirical support.
 
-\textbf{Lottery preferences.}\index{lottery preference|textbf} Some investors like stocks with a small chance of a very large gain, as with a lottery ticket, and overpay for them. Barberis and Huang (2008) derive this from probability weighting in prospect theory\index{prospect theory}. Bali, Cakici and Whitelaw (2011) found that stocks with the largest daily returns over the past month subsequently underperform, and that this absorbs much of the idiosyncratic volatility effect. Lottery demand explains volatility sorts more naturally than beta sorts.
+\textbf{Lottery preferences.}\index{lottery preference|textbf} Some investors like stocks with a small chance of a very large gain, as with a lottery ticket, and they overpay for them. Barberis and Huang (2008) derive this from prospect theory\index{prospect theory}, in which people give too much weight to unlikely outcomes. Bali, Cakici and Whitelaw (2011) found that stocks with the largest one-day returns over the past month go on to underperform. This effect explains much of the idiosyncratic volatility effect. Lottery demand fits volatility sorts more naturally than beta sorts.
 
-\textbf{Benchmarking.} Most institutional managers are judged against a capitalization-weighted index. For them, a low-beta stock with positive alpha is not attractive: it adds \textbf{tracking error}\index{tracking error|textbf}, the volatility of the return difference from the benchmark, and lags in rising markets. Baker, Bradley and Wurgler (2011) argue that this keeps institutions from correcting the mispricing. Part D of the lab measures how large that tracking error is.
+\textbf{Benchmarking.} Most institutional managers are judged against an index weighted by market value. For them, a low-beta stock with a positive alpha is not attractive. It adds \textbf{tracking error}\index{tracking error|textbf}, the volatility of the gap between the fund's return and the benchmark's, and it lags in rising markets. Baker, Bradley and Wurgler (2011) argue that this keeps institutions from correcting the mispricing. Part D of the lab measures how large that tracking error is.
 
 \textbf{Overpricing that is hard to short.} Liu, Stambaugh\index{Stambaugh bias} and Yuan (2018) found that the beta anomaly comes from beta's correlation\index{correlation} with idiosyncratic volatility, and that it is concentrated among overpriced stocks, where short-selling\index{short selling} is costly.
 
@@ -185,7 +192,7 @@ By 2014 the low-risk anomaly looked like one of the best-documented patterns in 
   \item \emph{Conditional betas.} Cederburg and O'Doherty (2016) found that betas vary over time in ways that bias unconditional alphas, and that modelling time-varying betas\index{beta!time-varying} largely eliminates the alpha gap between low- and high-beta stocks.
 \end{itemize}
 
-The explanations are not mutually exclusive. Asness, Frazzini, Gormsen and Pedersen (2020) split BAB into a bet against correlation, which they link to leverage constraints, and a bet against volatility, which they link to lottery demand, and report that both earn returns.
+The explanations can all be partly true at once. Asness, Frazzini, Gormsen and Pedersen (2020) split BAB into two bets. One is a bet against correlation, which they link to leverage constraints. The other is a bet against volatility, which they link to lottery demand. They report that both bets earn returns.
 
 \section{Lab~\thechapter: Replicating Black, Jensen and Scholes (1972) and Frazzini and Pedersen (2014)}
 \label{sec:18-lab}
@@ -225,7 +232,7 @@ This is a simpler construction than Frazzini and Pedersen's. They use individual
 
 The full-sample results can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
 
-\textbf{Micro-caps and weighting.}\index{micro-caps|textbf} Novy-Marx and Velikov (2022) found that AQR's BAB factor, through its rank weighting and leverage, commits on average about \$1.05 of each dollar to the smallest 1\% of stocks by market capitalization\index{market capitalization}. Those stocks are expensive to trade (Chapter~\ref{ch:17}). After costs BAB still earned positive returns, but they attribute part of them to exposure to profitability and investment. The lab's equal- versus value-weighted\index{index weighting!value-weighted} comparison is a coarse version of this test. If the effect is much stronger in equal-weighted portfolios, small stocks are doing much of the work (Section~\ref{sec:02-microcaps}).
+\textbf{Micro-caps and weighting.}\index{micro-caps|textbf} Novy-Marx and Velikov (2022) examined AQR's BAB factor. Because of its rank weighting and leverage, it puts on average about \$1.05 of each dollar into the smallest 1\% of stocks by market capitalization\index{market capitalization}. Those stocks are expensive to trade (Chapter~\ref{ch:17}). After costs BAB still earned positive returns, but the authors attribute part of them to exposure to profitability and investment. The lab's comparison of equal and value weights\index{index weighting!value-weighted} is a rough version of this test. If the effect is much stronger with equal weights, small stocks are doing much of the work (Section~\ref{sec:02-microcaps}).
 
 \textbf{Other factors.} Fama and French (2016) found that profitability and investment factors absorb much of the low-risk alphas. The lab uses four factors, so its alphas probably overstate what remains. Exercise 6 adds the five-factor model.
 
@@ -235,7 +242,7 @@ The full-sample results can hide weaknesses. The checks below test the claim und
 
 \textbf{Drawdowns.}\index{drawdown|textbf} Low-risk portfolios are meant to protect in crashes. Check 2008 and March 2020. A beta-neutral BAB portfolio is a different matter. It is long levered low-beta stocks and short high-beta stocks, and it can lose heavily when high-beta stocks rebound sharply, as in 2009 and in the 2020 recovery.
 
-\textbf{Estimation error in beta.}\index{estimation error|textbf} Sorting on noisy past betas means the low-beta portfolio contains stocks whose true betas are higher than estimated, and the reverse. This biases the SML toward flatness even if the CAPM holds. Black, Jensen and Scholes used portfolios to reduce the problem, and the French portfolios do the same. Novy-Marx and Velikov (2022) also showed that Frazzini and Pedersen's beta estimator, which combines correlations and volatilities measured over different windows, introduces its own biases.
+\textbf{Estimation error in beta.}\index{estimation error|textbf} Past betas are measured with error. A portfolio sorted on low past betas therefore contains stocks whose true betas are higher than estimated, and the high-beta portfolio the reverse. This makes the SML look flatter even if the CAPM holds. Black, Jensen and Scholes used portfolios to reduce the problem, and the French portfolios do the same. Novy-Marx and Velikov (2022) also showed that Frazzini and Pedersen's beta estimator introduces its own biases, because it combines correlations and volatilities measured over different windows.
 
 \subsection*{Your verdict}
 
@@ -244,14 +251,24 @@ Reach your own verdict on the claim from the numbers in your own run, using the 
 \section{Where the evidence stands}
 \label{sec:18-verdict}
 
-The published studies cited in this chapter point to a clear pattern: \textbf{the security market line is flatter than the CAPM predicts, one of the most robust findings in empirical finance, but whether low risk earns a separate premium that a beta-neutral portfolio can harvest depends on construction, small stocks and overlap with other factors.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+The published studies cited in this chapter point to a clear pattern: \textbf{the security market line is flatter than the CAPM predicts, which is one of the most robust findings in empirical finance. Whether low risk earns a separate premium that a beta-neutral portfolio can collect depends on how the portfolio is built, on small stocks and on overlap with other factors.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
 
-\begin{center}
-\small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+{\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.48\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
 \toprule
 Situation & Holds? & Why & Evidence \\
 \midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
 A flat security market line & \textbf{Yes} & Average returns rise with beta far less than the market premium implies, in the United States and abroad. & Black, Jensen and Scholes (1972); Fama and MacBeth (1973); Fama and French (1992) \\
 \addlinespace[3pt]
 Idiosyncratic volatility & \textbf{Yes} & The highest-volatility stocks earned about 1\% a month less than the lowest, in 23 developed markets; demand for lottery-like stocks absorbs much of the effect. & Ang, Hodrick, Xing and Zhang (2006); Bali, Cakici and Whitelaw (2011) \\
@@ -265,9 +282,8 @@ With betas that vary over time & \textbf{Weakly} & Modelling time-varying betas 
 Interest-rate exposure & \textbf{Partly} & Low-volatility portfolios lose when rates rise, and an interest-rate premium explains part, but not all, of the anomaly. & Driessen, Kuiper, Nazliben and Beilo (2019) \\
 \addlinespace[3pt]
 Why the line is flat & \textbf{Disputed} & Leverage constraints, lottery preferences, benchmarking and costly short selling all have support. & Frazzini and Pedersen (2014); Baker, Bradley and Wurgler (2011); Liu, Stambaugh and Yuan (2018) \\
-\bottomrule
-\end{tabularx}
-\end{center}
+\end{longtable}
+}
 
 Low-volatility portfolios have delivered returns close to the market's with less volatility, so their Sharpe ratios have been higher, which is useful to an unconstrained investor. Inflows into low-volatility funds after 2011 are likely to have raised the prices of low-risk stocks, which would make past returns a poor guide to future ones.
 
@@ -308,7 +324,7 @@ The evidence in Section~\ref{sec:18-verdict} suggests several practical lessons.
 \end{itemize}
 
 \begin{callout}
-\textbf{What Failed: the CAPM as a hurdle rate.} The CAPM's empirical problems have been known since the early 1970s, yet it remains the standard way to set the cost of equity. In a survey of 392 U.S. CFOs, Graham and Harvey (2001) found that 73.5\% of respondents always or almost always used it. A flat SML means that the CAPM overstates the cost of capital for high-beta projects and understates it for low-beta ones. Firms that rely on it may reject good low-beta projects and accept poor high-beta ones.
+\textbf{What Failed: the CAPM as a hurdle rate.} The CAPM's empirical problems have been known since the early 1970s. Yet it remains the standard way to set the cost of equity. In a survey of 392 U.S. chief financial officers, Graham and Harvey (2001) found that 73.5\% always or almost always used it. A flat SML means that the CAPM overstates the cost of capital for high-beta projects and understates it for low-beta ones. Firms that rely on it may therefore reject good low-beta projects and accept poor high-beta ones.
 
 The lesson is not that the CAPM is useless. Beta is a good measure of exposure to the market, and that is what risk management needs. The failure is treating a model of \emph{risk} as a reliable model of \emph{expected return} when the evidence has long said otherwise.
 \end{callout}

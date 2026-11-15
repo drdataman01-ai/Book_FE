@@ -1,5 +1,5 @@
 % Chapter 17 -- Claim: A Profitable Backtest Is Profitable to Trade
-% Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
+% Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
 \providecolor{feshade}{HTML}{F3F5FA}
@@ -15,23 +15,20 @@
 \chapter{Claim: A Profitable Backtest Is Profitable to Trade}
 \label{ch:17}
 
-Most of the claims tested so far, from size and value to momentum and trend following, were documented with \textbf{paper returns}\index{return!paper versus implementable}: the returns of portfolios rebuilt every month at recorded closing prices, in any size, at no cost. Researchers have long known that this is a simplification, and the reason it matters goes back to the definition of an efficient market. Jensen (1978) argued that a market is efficient with respect to some information if no one can earn \emph{economic} profits by trading on it, which means profits after all the costs of trading. Grossman and Stiglitz (1980) went further and showed that prices cannot reflect all information perfectly, because then no one would be paid for the cost of gathering it. On this view, some return patterns should survive on paper but not after costs, since costs are exactly what keeps them from being traded away.
+Most of the claims tested so far, from size and value to momentum and trend following, were documented with \textbf{paper returns}\index{return!paper versus implementable}: the returns of portfolios rebuilt every month at recorded closing prices, in any size, at no cost. Researchers have long known that this is a simplification. It matters because of how an efficient market is defined. Jensen (1978) argued that a market is efficient with respect to some information if no one can earn \emph{economic} profits by trading on it, meaning profits after all the costs of trading. Grossman and Stiglitz (1980) went further. They showed that prices cannot reflect all information perfectly, because then no one would be paid for the cost of collecting it. On this view, some patterns in returns should survive on paper but not after costs, since costs are exactly what stops investors from trading them away.
 
-The question became pressing in the early 2000s, when researchers began to price the trades behind the best-known anomalies\index{anomaly}. Lesmond, Schill and Zhou (2004) found that momentum\index{momentum} trades concentrate in stocks that are expensive to trade, and concluded that its profits largely disappear after costs. Korajczyk and Sadka (2004) measured how prices move when large orders are executed and found that momentum profits shrink as the size of the portfolio grows. Novy-Marx and Velikov (2016) then estimated trading costs for 23 well-known anomalies and found that most strategies that trade more than half of their portfolio each month lose their significance after costs. Frazzini, Israel and Moskowitz (2018) challenged the size of these estimates: using a large manager's own trading records, they found costs far below what the academic estimates assumed. The same patterns look profitable or unprofitable depending on whose costs are used.
+The question became pressing in the early 2000s, when researchers began to work out what it would cost to trade the best-known anomalies\index{anomaly}. Lesmond, Schill and Zhou (2004) found that momentum\index{momentum} trades are concentrated in stocks that are expensive to trade, and concluded that most of its profits disappear after costs. Korajczyk and Sadka (2004) measured how much large orders move prices, and found that momentum profits shrink as the portfolio grows. Novy-Marx and Velikov (2016) then estimated trading costs for 23 well-known anomalies. Most strategies that replace more than half of their portfolio each month were no longer significant after costs. Frazzini, Israel and Moskowitz (2018) challenged the size of these estimates. Using a large manager's own trading records, they found costs far below what the academic estimates assumed. The same patterns therefore look profitable or unprofitable depending on whose costs are used.
 
-This chapter opens Part VII, which returns to the classical findings with the tools of the last two decades. The answer matters for both research and practice. For research, it decides whether an anomaly is evidence against market efficiency or only a pattern that no investor could exploit. For practice, it decides which published strategies are worth running, how much money each can manage, and whether a fund that offers them can deliver its backtest. The claim on trial\index{claims-on-trial method} is the assumption behind most published backtests\index{backtest}: \textbf{a strategy that is profitable in a backtest is profitable to trade.}
+This chapter opens Part VII, which returns to the classic findings with the tools of the last two decades. The answer matters for research and for practice. For research, it decides whether an anomaly is evidence against market efficiency, or only a pattern that no investor could exploit. For practice, it decides which published strategies are worth running, how much money each can manage, and whether a fund that offers them can deliver its backtest. The claim on trial\index{claims-on-trial method} is the assumption behind most published backtests\index{backtest}: \textbf{a strategy that is profitable in a backtest is profitable to trade.}
 
-The lab in Section~\ref{sec:17-lab} replicates the main calculations of Novy-Marx and Velikov (2016) and Frazzini, Israel and Moskowitz (2018) for three free long--short factors from the Kenneth R. French Data Library, value, momentum and short-term reversal, plus a simulated stock universe, in order to find out which strategies stay profitable after costs, what cost level would wipe out each one, and how much money each can manage.
+The lab in Section~\ref{sec:17-lab} repeats the main calculations of Novy-Marx and Velikov (2016) and Frazzini, Israel and Moskowitz (2018). It uses three free long--short factors from the Kenneth R. French Data Library, value, momentum and short-term reversal, together with a simulated market of individual stocks. The goal is to find out which strategies stay profitable after costs, what level of costs would wipe out each one, and how much money each can manage.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item read a limit order book\index{order book}, and explain bid--ask spreads\index{bid--ask spread}, market orders\index{market order} and limit orders\index{limit order};
-  \item explain how long and short positions work, what short selling\index{short selling} costs, and what a zero-investment portfolio\index{long--short portfolio} is;
-  \item break trading costs into commissions, bid--ask spreads, market impact\index{market impact} and the costs of short selling, and estimate the main ones from public data;
-  \item compute a strategy's turnover\index{turnover} and explain what drives it;
-  \item convert gross returns into net returns, and compute the break-even cost\index{transaction costs!break-even} a strategy can bear;
-  \item estimate how market impact limits the money a strategy can manage;
+  \item read a limit order book\index{order book} and explain bid--ask spreads\index{bid--ask spread}, market and limit orders\index{market order}\index{limit order}, short selling\index{short selling} and long--short portfolios\index{long--short portfolio};
+  \item break trading costs into their parts, including market impact\index{market impact}, and estimate the main ones from public data;
+  \item compute a strategy's turnover\index{turnover}, its net return and the break-even cost\index{transaction costs!break-even} it can bear, and explain how market impact limits the money it can manage;
   \item design strategies that trade less without giving up much of their signal.
 \end{itemize}
 
@@ -42,7 +39,7 @@ In the lab you will take three of the best-known long--short strategies, value, 
 
 \subsection{The order book}
 
-Most stocks trade on electronic exchanges that keep a \textbf{limit order book}\index{order book|textbf}: a list of standing offers to buy (\textbf{bids}) and to sell (\textbf{asks}), each at a stated price and quantity (Figure~\ref{fig:17-book}). The highest bid and the lowest ask form the \textbf{best quotes}; the gap between them is the \textbf{bid--ask spread}\index{bid--ask spread|textbf}, and their average is the \textbf{midpoint}\index{midpoint|textbf}. Spreads are quoted in \textbf{basis points}\index{basis point|textbf}, hundredths of a percent, of the midpoint: 100 basis points make 1\%.
+Most stocks trade on electronic exchanges that keep a \textbf{limit order book}\index{order book|textbf}. This is a list of standing offers to buy, called \textbf{bids}, and offers to sell, called \textbf{asks}, each at a stated price and quantity (Figure~\ref{fig:17-book}). The highest bid and the lowest ask are the \textbf{best quotes}. The gap between them is the \textbf{bid--ask spread}\index{bid--ask spread|textbf}, and their average is the \textbf{midpoint}\index{midpoint|textbf}. Spreads are quoted in \textbf{basis points}\index{basis point|textbf} of the midpoint. A basis point is a hundredth of a percent, so 100 basis points make 1\%.
 
 \providecolor{fenavy}{HTML}{1B2A6B}
 \providecolor{feorange}{HTML}{B8481C}
@@ -128,15 +125,15 @@ Large orders are usually broken into many small ones and executed over hours or 
 
 \subsection{Long and short positions}
 
-A \textbf{long} position owns a security and gains when its price rises. A \textbf{short} position borrows shares, sells them, and must later buy them back to return them; it gains when the price falls. The short seller pays any dividends to the lender, posts \textbf{collateral}\index{collateral|textbf} (cash or securities held as security for the loan), and pays a \textbf{borrowing fee}\index{borrowing fee|textbf} set in the securities-lending market. Most large stocks are cheap to borrow; a minority are hard to borrow and expensive, and the lender can \textbf{recall} the loan, forcing the short seller to buy the shares back.
+A \textbf{long} position owns a security and gains when its price rises. A \textbf{short} position borrows shares, sells them, and later buys them back to return them, so it gains when the price falls. The short seller pays any dividends to the lender. It also posts \textbf{collateral}\index{collateral|textbf}, cash or securities held as security for the loan, and pays a \textbf{borrowing fee}\index{borrowing fee|textbf} set in the securities-lending market. Most large stocks are cheap to borrow. A minority are hard to borrow and expensive. The lender can also \textbf{recall} the loan, which forces the short seller to buy the shares back.
 
 \subsection{Long--short portfolios}
 
-Academic factors such as HML\index{factor!HML (value)}, introduced in Section~\ref{sec:04-factors}, are \textbf{zero-investment} portfolios: one dollar long, one dollar short, so the proceeds of the short sale pay for the long side. Their returns are the difference between the two sides, so a factor's ``return'' is a spread, not the return on capital invested. In practice a long--short fund must hold collateral and capital against both sides, and returns are quoted relative to that capital.
+Academic factors such as HML\index{factor!HML (value)}, introduced in Section~\ref{sec:04-factors}, are \textbf{zero-investment} portfolios. They hold one dollar long and one dollar short, so the proceeds of the short sale pay for the long side. A factor's ``return'' is therefore the difference between the two sides, not a return on capital invested. A real long--short fund must hold collateral and capital against both sides, and it quotes its returns relative to that capital.
 
 \subsection{Turnover}
 
-\textbf{Turnover}\index{turnover|textbf} measures how much of a portfolio is traded in a period. One-sided\index{hypothesis testing!one-sided and two-sided} monthly turnover of 10\% means a tenth of the portfolio is sold, and replaced, each month. Turnover multiplies every per-trade cost: a strategy that replaces its whole portfolio monthly pays its trading costs twelve times a year on each side.
+\textbf{Turnover}\index{turnover|textbf} measures how much of a portfolio is traded in a period. A one-sided\index{hypothesis testing!one-sided and two-sided} monthly turnover of 10\% means that a tenth of the portfolio is sold, and replaced, each month. Turnover multiplies every cost of trading: a strategy that replaces its whole portfolio every month pays its trading costs twelve times a year on each side.
 
 \textbf{Worked example.} A stock is quoted at \$49.98 bid and \$50.02 ask. The midpoint is \$50.00 and the spread is \$0.04, or $0.04/50 = 0.0008$, 8 basis points. Buying with a market order and immediately selling would lose 8 basis points; the one-way cost\index{transaction costs!one-way and round-trip}, half the spread, is 4 basis points.
 
@@ -180,9 +177,9 @@ Short-selling costs & Fees to borrow shares, the risk of recall, rules that rest
 
 The unit used throughout this chapter is the \textbf{one-way cost}\index{transaction costs!one-way and round-trip|textbf}: the cost of buying, or of selling, one dollar of stock, as a fraction of the dollar. For a small trade it is roughly half the bid--ask spread plus commissions. A \textbf{round trip}, buying and later selling, costs twice the one-way cost.
 
-\textbf{Costs have fallen, unevenly.} U.S. equity spreads narrowed sharply after prices moved from fractions to decimals in 2001, a change called \textbf{decimalization}\index{decimalization|textbf}, and as electronic trading spread. Large-cap stocks now trade at spreads of a few basis points; small, illiquid stocks still cost far more. This matters for interpreting long histories: a strategy tested from 1963 faced costs in its early decades that were several times today's, so applying today's costs to the whole history flatters the past, and applying the past's costs to today understates what is possible now.
+\textbf{Costs have fallen, unevenly.} U.S. stock spreads narrowed sharply in 2001, when prices moved from fractions of a dollar to cents, a change called \textbf{decimalization}\index{decimalization|textbf}, and again as electronic trading spread. Large stocks now trade at spreads of a few basis points, but small, illiquid stocks still cost far more. This matters when reading long histories. A strategy tested from 1963 faced costs in its early decades several times higher than today's. Charging today's costs over the whole history therefore flatters the past, while charging the past's costs today understates what is now possible.
 
-\textbf{Short selling.}\index{short selling|textbf} A short seller borrows shares and pays a lending fee. D'Avolio (2002) found that the large majority of U.S. stocks were cheap to borrow, but that a small set of ``special'' stocks carried high fees, and that these were often exactly the stocks with the strongest short signals. Borrowing can also be recalled at inconvenient times, and regulators can ban shorting outright, as the U.S. Securities and Exchange Commission did for financial stocks in September 2008. Miller (1977) argued that when pessimists cannot short, prices reflect only the optimists' views, so overpricing can persist; Stambaugh\index{Stambaugh bias}, Yu and Yuan (2012) found that many anomalies\index{anomaly} earn most of their profits on the short side, where these frictions bite. A long--short paper portfolio that ignores them overstates what is achievable, sometimes by most of the premium.
+\textbf{Short selling.}\index{short selling|textbf} A short seller borrows shares and pays the lender a fee. D'Avolio (2002) found that most U.S. stocks were cheap to borrow, but that a small group of ``special'' stocks carried high fees, and that these were often the very stocks with the strongest signals to sell short. The lender can also recall the shares at an awkward time, and regulators can ban short selling outright, as the U.S. Securities and Exchange Commission did for financial stocks in September 2008. Miller (1977) argued that when pessimists cannot sell short, prices reflect only the optimists' views, so overpricing can last. Stambaugh\index{Stambaugh bias}, Yu and Yuan (2012) found that many anomalies\index{anomaly} earn most of their profits on the short side, exactly where these obstacles bite. A long--short paper portfolio that ignores them overstates what an investor can achieve, sometimes by most of the premium.
 
 The lab uses a single one-way cost and a single borrowing fee for transparency. Real costs vary across stocks and over time, and Section~\ref{sec:17-measuring} shows how they can be estimated.
 
@@ -212,14 +209,14 @@ Effective spreads are usually smaller than quoted ones, because many trades exec
 
 These estimators are noisy for any one stock and month, but useful averaged across portfolios, which is how Novy-Marx and Velikov (2016) used them to estimate the costs of dozens of anomalies.
 
-\textbf{Estimates from practice.} Frazzini, Israel and Moskowitz (2018) studied \$1.7 trillion of actual trades by a large institutional manager across 21 developed markets over 19 years, and found trading costs an order of magnitude smaller than earlier academic estimates suggested. Their result is a reminder that costs depend on who is trading and how: a patient institution that provides liquidity pays far less than the generic investor assumed by spread estimators. It is also a reminder that the evidence comes from one manager's experience, under that manager's trading methods.
+\textbf{Estimates from practice.} Frazzini, Israel and Moskowitz (2018) studied \$1.7 trillion of actual trades by a large institutional manager, across 21 developed markets over 19 years. They found trading costs about ten times smaller than earlier academic estimates suggested. The result shows that costs depend on who is trading and how. A patient institution that supplies liquidity pays far less than the typical investor assumed by spread estimators. The evidence, however, comes from a single manager using its own trading methods.
 
 The practical consequence is that a cost assumption is a judgment. A careful study reports results across a range of costs, and the lab does so, from zero to 100 basis points one way.
 
 \section{Turnover, net returns and break-even costs}
 \label{sec:17-turnover}
 
-\textbf{Turnover}\index{turnover|textbf} measures how much a portfolio trades. One-sided monthly turnover is the share of the portfolio sold, and replaced, each month: half the sum of the absolute changes in portfolio weights, measured against the weights the portfolio would have drifted to with no trading. A value-weighted\index{index weighting!value-weighted} portfolio whose membership never changes has zero turnover, however much its prices move.
+\textbf{Turnover}\index{turnover|textbf} measures how much a portfolio trades. One-sided monthly turnover is the share of the portfolio sold, and replaced, each month. It equals half the sum of the absolute changes in portfolio weights. The changes are measured against the weights the portfolio would have drifted to if it had not traded. A value-weighted\index{index weighting!value-weighted} portfolio whose members never change has zero turnover, however much its prices move.
 
 What drives turnover is how fast the signal changes relative to how often the portfolio is rebuilt:
 
@@ -257,13 +254,14 @@ Short-term reversal & 90.9\% & 0.37 & 1.65 & $-1.28$ & about 0.1\% \\
 \end{tabularx}
 \end{center}
 
-The three strategies sit on very different sides of realistic costs (Figure~\ref{fig:17-breakeven}). Value could pay several percent per trade and still profit. Momentum survives costs of up to roughly one percent per trade, which a careful institution can achieve but a careless one may not. Short-term reversal, profitable on paper, would need to trade for about ten basis points per trade, below what most investors pay for the small, recently volatile stocks it buys and sells. Its paper profit is real, but tiny relative to the trading it requires.
+The three strategies differ sharply in how much cost they can bear (Figure~\ref{fig:17-breakeven}). Value could pay several percent per trade and still make a profit. Momentum survives costs of up to about one percent per trade. A careful institution can trade that cheaply, but a careless one may not. Short-term reversal is profitable on paper, but it would need to trade for about ten basis points per trade. That is less than most investors pay for the small, recently volatile stocks it buys and sells. Its paper profit is real, but tiny compared with the trading it needs.
 
 \providecolor{fenavy}{HTML}{1B2A6B}
 
 \begin{figure}[htbp]
   \centering
-  \begin{tikzpicture}[
+  \scalebox{0.8}{%
+\begin{tikzpicture}[
     % Gross return (% a month) and monthly one-way turnover, from the table.
     % Net return = gross - 4 * turnover * cost; break-even = gross / (4 * turnover).
     declare function={
@@ -305,7 +303,8 @@ The three strategies sit on very different sides of realistic costs (Figure~\ref
     \node[anchor=west, font=\small] at (axis cs:1.31,{momG-4*momT*1.3}) {momentum};
     \node[anchor=west, font=\small] at (axis cs:0.48,-1.05) {short-term reversal};
   \end{axis}
-  \end{tikzpicture}
+  \end{tikzpicture}%
+}
   \caption{Net return against one-way trading cost, from the turnover and gross
     returns in the table. Each line falls at a rate of four times the strategy's
     turnover; it crosses zero at the break-even cost. Value's line is nearly
@@ -327,18 +326,19 @@ A gross ranking by Sharpe ratio\index{Sharpe ratio} or t-statistic\index{t-stati
 
 Spreads are roughly a fixed cost per dollar traded. Market impact is not: the more a strategy trades relative to the market's volume, the more each dollar costs. This is what gives every strategy a \textbf{capacity}\index{capacity|textbf}, a size beyond which its net returns shrink toward zero.
 
-\textbf{Why prices move.} Kyle (1985) modeled market makers who cannot tell informed orders from uninformed ones and so move prices in the direction of every order. Large orders, which are more likely to be informed and more costly to absorb, move prices more. Empirical studies of institutional executions find that impact grows roughly with the square root of an order's size relative to daily volume (Almgren, Thum, Hauptmann and Li 2005; T\'oth et al.\ 2011). A common working model is
+\textbf{Why prices move.} Kyle (1985) described market makers who cannot tell orders from well-informed traders apart from other orders, so they move their prices in the direction of every order. Large orders are more likely to carry information and harder to absorb, so they move prices more. Studies of real institutional trades find that the price impact grows roughly with the square root of an order's size relative to the day's trading volume (Almgren, Thum, Hauptmann and Li 2005; T\'oth et al.\ 2011). A common working model is
 \begin{equation}
   \text{impact per dollar} \approx Y\,\sigma_{daily}\,\sqrt{\frac{Q}{V}}
   \label{eq:17-impact}
 \end{equation}
-where $Q$ is the order size, $V$ is daily volume, $\sigma_{daily}$ is daily volatility and $Y$ is a constant of order one. The ratio $Q/V$ is the \textbf{participation rate}\index{participation rate|textbf}, the order's share of the day's trading. Trading 1\% of a day's volume in a stock with 2\% daily volatility costs about $2\% \times \sqrt{0.01} = 0.2\%$ in impact; trading 10\% costs about $2\% \times \sqrt{0.10} \approx 0.6\%$ (Figure~\ref{fig:17-impact}).
+Here $Q$ is the order size, $V$ is daily volume, $\sigma_{daily}$ is daily volatility and $Y$ is a constant close to one. The ratio $Q/V$ is the \textbf{participation rate}\index{participation rate|textbf}, the order's share of the day's trading. Trading 1\% of a day's volume in a stock with 2\% daily volatility costs about $2\% \times \sqrt{0.01} = 0.2\%$ in impact. Trading 10\% costs about $2\% \times \sqrt{0.10} \approx 0.6\%$ (Figure~\ref{fig:17-impact}).
 
 \providecolor{fenavy}{HTML}{1B2A6B}
 
 \begin{figure}[htbp]
   \centering
-  \begin{tikzpicture}[
+  \scalebox{0.8}{%
+\begin{tikzpicture}[
     % Impact (%) = Y * sigma * sqrt(Q/V), with Y = 1 and sigma = 2%.
     % x is Q/V in percent, so impact = 2 * sqrt(x/100) = 0.2 * sqrt(x).
     declare function={impact(\x) = 0.2*sqrt(\x);}
@@ -348,18 +348,18 @@ where $Q$ is the order size, $V$ is daily volume, $\sigma_{daily}$ is daily vola
     axis lines=left,
     axis line style={-stealth, thin},
     xmin=0, xmax=20.5, ymin=0, ymax=1,
-    xtick={0,2,...,20},
+    xtick={0,5,...,20},
     ytick={0,0.2,0.4,0.6,0.8,1},
     yticklabel style={/pgf/number format/fixed},
     tick label style={font=\small},
     xlabel={Order size as a share of daily volume, $Q/V$ (\%)},
-    ylabel={Impact per dollar traded (\%)},
+    ylabel={Impact per dollar (\%)},
     samples=200, domain=0:20,
     clip=false,
   ]
     % If impact were linear (for comparison)
     \addplot[gray!70, densely dashed, thin, samples=2] {0.0215*x};
-    \node[gray!40!black, font=\small, anchor=west] at (axis cs:20.2,0.43)
+    \node[gray!40!black, font=\small, anchor=west] at (axis cs:20.2,0.36)
       {if impact were linear};
 
     % Square-root impact
@@ -373,10 +373,11 @@ where $Q$ is the order size, $V$ is daily volume, $\sigma_{daily}$ is daily vola
     \node[font=\small, anchor=west] at (axis cs:4.6,0.34) {1\% of volume: 0.2\%};
 
     \fill[fenavy] (axis cs:10,0.632) circle (2.2pt);
-    \node[font=\small, anchor=north west] at (axis cs:10.3,0.6)
+    \node[font=\small, anchor=north west] at (axis cs:10.5,0.62)
       {10\% of volume: 0.6\%};
   \end{axis}
-  \end{tikzpicture}
+  \end{tikzpicture}%
+}
   \caption{Square-root market impact for a stock with 2\% daily volatility,
     from Equation~\eqref{eq:17-impact} with $Y = 1$. Ten times the order size
     costs about three times as much per dollar, not ten times; but total
@@ -391,7 +392,7 @@ where $Q$ is the order size, $V$ is daily volume, $\sigma_{daily}$ is daily vola
 %\label{fig:17-impact}
 %\end{figure}
 
-\textbf{From impact to capacity.} A strategy managing assets $A$ with turnover $T$ trades about $2TA$ on each side every month, spread across its holdings. As $A$ grows, the participation rate $Q/V$ rises, impact per dollar rises with its square root, and total impact cost rises faster than the assets. Net return therefore falls with size, slowly at first and then quickly. Capacity can be defined as the size at which the net return is halved, or reaches zero; an investor would want to stop well before either.
+\textbf{From impact to capacity.} A strategy that manages assets $A$ with turnover $T$ trades about $2TA$ on each side every month, spread across its holdings. As $A$ grows, the participation rate $Q/V$ rises. Impact per dollar rises with its square root, so total impact cost rises faster than the assets. Net return therefore falls as the fund grows, slowly at first and then quickly. Capacity can be defined as the size at which the net return is halved, or the size at which it reaches zero. An investor would want to stop well before either point.
 
 Three features\index{features and targets} of a strategy set its capacity:
 
@@ -401,7 +402,7 @@ Three features\index{features and targets} of a strategy set its capacity:
   \item \textbf{Gross premium.} A larger premium can absorb more cost before it is gone.
 \end{enumerate}
 
-Capacity also has an industry-wide side. If many managers follow similar signals, their combined trades determine impact, and a strategy's capacity is shared among everyone trading it. Berk and Green (2004) argued that in a competitive market, money flows into skilled managers until their returns after costs are no better than the alternative, a theme Chapter~\ref{ch:03} returns to.
+Capacity also has an industry-wide side. If many managers follow similar signals, their combined trades set the price impact. A strategy's capacity is then shared among everyone who trades it. Berk and Green (2004) argued that in a competitive market, money flows to skilled managers until their returns after costs are no better than the alternatives. Chapter~\ref{ch:03} returns to this theme.
 
 The capacity estimates in this chapter's lab rest on stated assumptions about volume, spreads and the impact constant. They are an illustration of how capacity arises and what it depends on, not a forecast for any real fund.
 
@@ -420,10 +421,10 @@ A paper portfolio is built as if trading were free, so it trades whenever the si
 
 Each rule trades a little signal for a lot less trading. The trade-off depends on how fast the signal decays: banding costs little for momentum, whose ranks change gradually, and cannot rescue short-term reversal, whose signal is gone within a month.
 
-\textbf{Cost mitigation is also a search.} Every design choice, a band width, a rebalancing frequency, a liquidity screen, can be tuned to make a backtest look better, and the warnings about selection and overfitting\index{overfitting} in Section~\ref{sec:01-backtests} apply in full. Chen and Velikov (2023) examined 204 anomalies, accounting for effective spreads, post-publication\index{anomaly!post-publication decay} decay and the modern era of trading technology, and found that the average anomaly's expected return net of these effects was about 4 basis points a month. Strategies with impressive net returns in-sample, after cost mitigation, did not escape that conclusion. A cost-aware design should be specified in advance, and judged out of sample like any other part of the strategy.
+\textbf{Saving costs is also a search.} Every design choice, such as the width of a band, how often to rebalance or which stocks to exclude, can be tuned to make a backtest look better, so the warnings about selection and overfitting\index{overfitting} in Section~\ref{sec:01-backtests} apply in full. Chen and Velikov (2023) studied 204 anomalies, allowing for effective spreads, the decline in returns after publication\index{anomaly!post-publication decay} and modern trading technology. They found that the average anomaly's expected return, net of these effects, was about 4 basis points a month. Strategies that looked impressive after costs in their own samples, once cost-saving rules were added, did not escape that conclusion. A cost-saving design should therefore be fixed in advance and judged out of sample, like any other part of a strategy.
 
 \begin{callout}
-\textbf{What Failed: buying last month's losers.} Jegadeesh (1990) and Lehmann (1990) documented that stocks with low returns over the past week or month tended to rebound, and stocks with high returns to fall back. The pattern is strong and statistically robust on paper, and the Fama--French\index{Fama--French factors} short-term reversal factor still records a positive average return. But the strategy replaces almost its whole portfolio every month, concentrating in stocks that have just moved sharply, often small and illiquid ones, exactly where spreads are widest. Novy-Marx and Velikov (2016) estimated that its costs exceeded its gross return by more than a percentage point a month. Much of the reversal itself may be compensation for providing liquidity to impatient traders (Nagel 2012), a return that accrues to market makers who face low costs, not to investors who must pay the spread. As a strategy for an ordinary investor, the claim that buying recent losers is profitable \textbf{fails} once costs are counted.
+\textbf{What Failed: buying last month's losers.} Jegadeesh (1990) and Lehmann (1990) showed that stocks with low returns over the past week or month tended to rebound, and stocks with high returns tended to fall back. On paper the pattern is strong and statistically robust, and the Fama--French\index{Fama--French factors} short-term reversal factor still has a positive average return. The trouble is trading. The strategy replaces almost its whole portfolio every month. It buys and sells stocks that have just moved sharply, often small and illiquid ones, where spreads are widest. Novy-Marx and Velikov (2016) estimated that its costs were larger than its gross return by more than a percentage point a month. Nagel (2012) argued that much of the reversal is a reward for supplying liquidity to impatient traders. That reward goes to market makers, who trade cheaply, not to investors who must pay the spread. For an ordinary investor, the claim that buying recent losers is profitable \textbf{fails} once costs are counted.
 \end{callout}
 
 \section{Lab~\thechapter: Replicating Novy-Marx and Velikov (2016)}
@@ -437,7 +438,7 @@ The lab takes the three factors and asks what each would have earned after costs
 
 \textbf{Part A: gross performance.} Average returns, t-statistics and Sharpe ratios as published. On paper, all three look like discoveries.
 
-\textbf{Part B: turnover.} The French library does not publish holdings, so turnover comes from two sources. The first is Novy-Marx and Velikov's estimates for value-weighted versions of the same strategies. The second is a simulated stock universe of 1,000 stocks over 40 years, with fat-tailed\index{fat tails} returns, a realistic spread of company sizes, and portfolios built exactly as the Fama--French factors are: value-weighted 30/70 sorts, value updated each June, momentum and reversal each month. Because the simulated universe has no delistings\index{delisting} or new listings, its turnover is a lower bound. In the version shipped with the lab it gives about 2\% a month for value, 25\% for momentum and 76\% for reversal, the same ordering and similar magnitudes as the published estimates, which shows that turnover follows mechanically from how each signal is built.
+\textbf{Part B: turnover.} The French library does not publish holdings, so turnover comes from two sources. The first is Novy-Marx and Velikov's estimates for value-weighted versions of the same strategies. The second is a simulated universe of 1,000 stocks over 40 years. Its returns have fat tails\index{fat tails}, its company sizes vary realistically, and its portfolios are built just as the Fama--French factors are. They are value-weighted 30/70 sorts, with value updated each June and momentum and reversal updated each month. The simulated universe has no delistings\index{delisting} or new listings, so its turnover is a lower bound. In the version shipped with the lab, turnover is about 2\% a month for value, 25\% for momentum and 76\% for reversal. The ordering and the sizes are close to the published estimates. Turnover therefore follows mechanically from how each signal is built.
 
 \textbf{Part C: costs.} Net returns across one-way costs from 0 to 100 basis points, plus a short-borrowing fee of 0.25\% a year; break-even costs; and the ranking of the three strategies by Sharpe ratio before and after costs at a headline cost of 20 basis points. Lab Figure~\ref{ch:17}.1 plots each strategy's net return against cost, with its break-even point marked; Lab Figure~\ref{ch:17}.2 shows the growth of a dollar on paper and after costs.
 
@@ -456,12 +457,22 @@ Reach your own verdict on the claim from the numbers in your own run, using the 
 
 The published studies cited in this chapter point to a clear pattern: \textbf{whether a profitable backtest is profitable to trade depends on how much the strategy trades, what it trades and how much money is behind it: slow strategies in liquid stocks survive realistic costs, while fast strategies in small stocks often do not.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
 
-\begin{center}
-\small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+{\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.48\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
 \toprule
 Situation & Holds? & Why & Evidence \\
 \midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
 Slow strategies, such as value & \textbf{Yes} & Turnover of about 3\% a month gives a break-even cost of about 4\% per trade. & Novy-Marx and Velikov (2016) \\
 \addlinespace[3pt]
 Momentum & \textbf{Partly} & It survives one-way costs of up to about 1\%, which a careful institution can achieve, but its profits concentrate in costly stocks and shrink as the portfolio grows. & Novy-Marx and Velikov (2016); Lesmond, Schill and Zhou (2004); Korajczyk and Sadka (2004) \\
@@ -475,9 +486,8 @@ For a large, patient institution & \textbf{More often} & Actual trading costs we
 Strategies that rely on the short side & \textbf{Often not} & Many anomalies earn most of their profit on the short side, where borrowing fees, recalls and bans bite. & D'Avolio (2002); Stambaugh, Yu and Yuan (2012) \\
 \addlinespace[3pt]
 The average anomaly & \textbf{No} & After costs and post-publication decay, its expected return is about 4 basis points a month. & Chen and Velikov (2023) \\
-\bottomrule
-\end{tabularx}
-\end{center}
+\end{longtable}
+}
 
 The claim holds only for strategies whose break-even costs sit well above what their investors actually pay, at the size they intend to run.
 

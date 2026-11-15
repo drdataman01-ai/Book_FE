@@ -1,5 +1,5 @@
 % Chapter 19 -- Claim: Most Published Anomalies Fail to Replicate
-% Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
+% Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
 \providecolor{feshade}{HTML}{F3F5FA}
@@ -15,24 +15,21 @@
 \chapter{Claim: Most Published Anomalies Fail to Replicate}
 \label{ch:19}
 
-By the 2010s academic finance had published hundreds of variables said to predict the cross-section of stock returns. Harvey, Liu and Zhu (2016) counted more than 300 and argued that, given how many had been tried, a new factor should clear a $t$-statistic of about 3 rather than 2. The concern was not new, because Chapter~\ref{ch:01} showed how searching produces records that luck alone can explain, but it now applied to a whole literature. McLean and Pontiff (2016) took a different approach. They followed 97 predictors after their original samples ended and after publication, and found average returns about 26\% lower out of sample and 58\% lower after publication.
+By the 2010s academic finance had published hundreds of variables said to predict which stocks would earn more than others. Harvey, Liu and Zhu (2016) counted more than 300. They argued that, because so many had been tried, a new factor should clear a $t$-statistic of about 3 rather than 2. The worry was not new. Chapter~\ref{ch:01} showed how searching produces records that luck alone can explain. What was new was that the worry now applied to a whole literature. McLean and Pontiff (2016) took a different approach. They followed 97 predictors after their original samples ended and after they were published. Average returns were about 26\% lower after the sample ended, and 58\% lower after publication.
 
-The debate sharpened in two large replication studies. Hou, Xue and Zhang (2020) rebuilt 452 anomalies with value weighting and breakpoints from NYSE stocks, which limit the influence of micro-caps, and found that about two thirds failed even the conventional test. Jensen, Kelly and Pedersen (2023) rebuilt 153 factors in 93 countries, used a Bayesian method that shrinks each estimate toward what the others suggest, and concluded that most of them do replicate. Chen and Zimmermann (2022) published open code and data for more than 200 predictors so that anyone could check. Respected researchers, using largely the same data, reached opposite conclusions because they asked slightly different questions and applied different standards.
+Two large replication studies sharpened the debate. Hou, Xue and Zhang (2020) rebuilt 452 anomalies. They weighted stocks by market value and set group cut-offs using NYSE stocks only, two choices that limit the influence of the tiniest stocks, called micro-caps. About two thirds of the anomalies then failed even the conventional test. Jensen, Kelly and Pedersen (2023) rebuilt 153 factors in 93 countries. They used a Bayesian method that pulls each factor's estimate toward what similar factors suggest, and concluded that most factors do replicate. Chen and Zimmermann (2022) published open code and data for more than 200 predictors, so that anyone could check. Respected researchers using largely the same data reached opposite conclusions, because they asked slightly different questions and applied different standards.
 
-The implications concern the credibility of a whole field. If most anomalies are false, much of the factor-investing industry rests on noise; if most are real but decay after publication, investors are learning from research and trading the patterns away. The verdict depends less on the data than on the rules of evidence, so the reader is asked to choose those rules and defend them. The claim on trial\index{claims-on-trial method} is: \textbf{most published cross-sectional return predictors do not replicate once micro-caps, multiple testing and publication are accounted for.}
+At stake is the credibility of a whole field. If most anomalies are false, much of the factor-investing industry rests on noise. If most are real but fade after publication, investors are learning from research and trading the patterns away. The verdict depends less on the data than on the rules of evidence, so this chapter asks the reader to choose those rules and defend them. The claim on trial\index{claims-on-trial method} is: \textbf{most published cross-sectional return predictors do not replicate once micro-caps, multiple testing and publication are accounted for.}
 
-The lab in Section~\ref{sec:19-lab} replicates both sides of the debate on the free Open Source Asset Pricing data of Chen and Zimmermann, applying the standards of Hou, Xue and Zhang (2020) and of Jensen, Kelly and Pedersen (2023) to the same predictors, and measures the decay of McLean and Pontiff (2016), in order to find out why careful researchers reached opposite conclusions and which choices drive the difference.
+The lab in Section~\ref{sec:19-lab} uses the free Open Source Asset Pricing data of Chen and Zimmermann. It applies the standards of Hou, Xue and Zhang (2020) and of Jensen, Kelly and Pedersen (2023) to the same predictors, and it measures the decay found by McLean and Pontiff (2016). The goal is to see why careful researchers reached opposite conclusions, and which choices drive the difference.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item explain the three forms of market efficiency\index{efficient market hypothesis} and the joint-hypothesis problem\index{joint-hypothesis problem};
-  \item define an anomaly, and distinguish reproduction\index{reproduction}, pure replication\index{replication!pure, scientific and out-of-sample}, scientific replication and out-of-sample replication;
+  \item explain market efficiency\index{efficient market hypothesis}, the joint-hypothesis problem\index{joint-hypothesis problem}, and the kinds of replication, from reproduction\index{reproduction} to pure, scientific and out-of-sample replication\index{replication!pure, scientific and out-of-sample};
   \item explain how publication bias\index{publication bias} inflates published results, and how empirical Bayes\index{empirical Bayes} shrinkage\index{shrinkage} corrects noisy estimates;
-  \item list the design choices that can change whether an anomaly replicates;
-  \item set out the prosecution's and the defense's cases, and explain why they reach opposite verdicts from similar data;
-  \item separate post-publication\index{anomaly!post-publication decay} decay due to selection from decay due to investors' learning;
-  \item write and defend your own verdict, stating the standard of evidence you apply.
+  \item set out the prosecution's and the defense's cases, and the design choices that lead them to opposite verdicts;
+  \item separate post-publication\index{anomaly!post-publication decay} decay caused by selection from decay caused by investors' learning, and defend your own verdict.
 \end{itemize}
 
 \section{Foundations: market efficiency, anomalies and replication}
@@ -44,11 +41,11 @@ Section~\ref{sec:01-efficient-markets} introduced the efficient market hypothesi
 
 \subsection{The joint-hypothesis problem}
 
-Section~\ref{sec:01-efficient-markets} also introduced the joint-hypothesis problem: a strategy that beats a model such as the CAPM\index{capital asset pricing model (CAPM)} shows either that the market is inefficient or that the model is wrong, and the two cannot be separated (Fama 1970). For anomalies the consequence is direct, because the same evidence can be read as mispricing\index{mispricing} by one researcher and as compensation for an unmodeled risk by another.
+Section~\ref{sec:01-efficient-markets} also introduced the joint-hypothesis problem. A strategy that beats a model such as the CAPM\index{capital asset pricing model (CAPM)} shows either that the market is inefficient or that the model is wrong, and the two cannot be separated (Fama 1970). For anomalies this has a direct consequence. One researcher can read the same evidence as mispricing\index{mispricing}, and another as a reward for a risk the model leaves out.
 
 \subsection{Anomalies}
 
-An \textbf{anomaly}\index{anomaly|textbf} is a pattern in returns that a benchmark asset pricing model cannot explain: a characteristic, such as a valuation ratio or past return, that predicts future returns after adjusting for the model's risk factors. Anomalies are usually documented with portfolio sorts\index{portfolio sort} and long--short returns (Section~\ref{sec:05-foundations}) and judged by the t-statistic\index{t-statistic} of the average return or alpha\index{alpha}.
+An \textbf{anomaly}\index{anomaly|textbf} is a pattern in returns that a benchmark asset pricing model cannot explain. It is a characteristic, such as a valuation ratio or a past return, that predicts future returns after adjusting for the model's risk factors. Anomalies are usually found with portfolio sorts\index{portfolio sort} and long--short returns (Section~\ref{sec:05-foundations}). They are judged by the t-statistic\index{t-statistic} of the average return or of the alpha\index{alpha}.
 
 \subsection{Replication, reproduction and robustness}
 
@@ -65,21 +62,22 @@ The two sides of this chapter's debate differ largely in which of these they dem
 
 \subsection{Publication bias}
 
-Journals are more likely to publish significant results. If only strong in-sample\index{in-sample versus out-of-sample} results are published, the published estimates are biased upward even if every individual study was done honestly: the published set is selected for luck as well as truth. Part E of this chapter's lab measures how large this effect can be.
+Journals are more likely to publish significant results. If only strong in-sample\index{in-sample versus out-of-sample} results are published, the published estimates are too high on average, even if every study was done honestly. The reason is that the published set has been selected for luck as well as for truth. Part E of this chapter's lab measures how large this effect can be.
 
 \subsection{Shrinkage}
 
-When many noisy estimates are made at once, a better estimate of each true value pulls it toward the average of all of them, more for noisier estimates and less for precise ones. A very high estimate is more likely to be partly luck than a moderate one, so pulling it back improves it on average. This idea, from \textbf{empirical Bayes}\index{empirical Bayes|textbf} statistics (Efron and Morris 1975), in which the data themselves supply the average toward which estimates are pulled, is the basis of the defense's methodology.
+Suppose many noisy estimates are made at once. Each one can be improved by pulling it toward the average of all of them. Noisy estimates are pulled more, and precise ones less. A very high estimate is more likely to be partly luck than a moderate one, so pulling it back makes it more accurate on average. This idea comes from \textbf{empirical Bayes}\index{empirical Bayes|textbf} statistics (Efron and Morris 1975). It is called ``empirical'' because the data themselves supply the average toward which the estimates are pulled. It is the basis of the defense's method.
 
-\textbf{Worked example.} One hundred honest researchers each test a different trading signal with no true predictive power. By chance, about five will find t-statistics beyond $\pm 1.96$, and those five publish (Figure~\ref{fig:19-pubbias}). Every published paper reports a significant result; none is real. A reader who saw only the journals would find a literature with a 100\% success rate.
+\textbf{Worked example.} One hundred honest researchers each test a different trading signal, and none of the signals has any real predictive power. By chance, about five will find t-statistics beyond $\pm 1.96$, and those five publish (Figure~\ref{fig:19-pubbias}). Every published paper reports a significant result, yet none of the results is real. A reader who saw only the journals would find a literature with a 100\% success rate.
 
 \begin{figure}[htbp]
 \centering
+\scalebox{0.8}{%
 \begin{tikzpicture}[declare function={npdf(\x) = exp(-\x*\x/2)/sqrt(2*pi);}]
 \begin{axis}[
   width=0.68\linewidth, height=0.34\linewidth,
   axis lines=left, axis line style={-stealth},
-  xmin=-4, xmax=4.1, ymin=0, ymax=0.62,
+  xmin=-4, xmax=4.1, ymin=0, ymax=0.66,
   xtick={-1.96,0,1.96}, xticklabels={$-1.96$,$0$,$1.96$},
   ytick=\empty,
   xlabel={t-statistic of a signal with no true power},
@@ -92,13 +90,14 @@ When many noisy estimates are made at once, a better estimate of each true value
   \addplot[fenavy] fill between[of=curve and base, soft clip={domain=1.96:4}];
   \addplot[fegray, thick] {npdf(x)};
 
-  \node[align=center] at (axis cs:0,0.52) {about 95 signals: not significant,\\never published};
-  \node[fenavy, align=center, font=\small] (L) at (axis cs:-2.4,0.36) {about 2.5 signals:\\``significant,'' published};
-  \node[fenavy, align=center, font=\small] (R) at (axis cs:2.9,0.36) {about 2.5 signals:\\``significant,'' published};
-  \draw[-stealth, fenavy] (axis cs:-2.5,0.30) -- (axis cs:-2.3,0.03);
-  \draw[-stealth, fenavy] (axis cs:2.85,0.30) -- (axis cs:2.3,0.03);
+  \node[align=center] at (axis cs:0,0.56) {about 95 signals: not significant,\\never published};
+  \node[fenavy, align=center, font=\footnotesize, anchor=south] (L) at (axis cs:-2.75,0.13) {about 2.5 signals:\\``significant,''\\published};
+  \node[fenavy, align=center, font=\footnotesize, anchor=south] (R) at (axis cs:2.75,0.13) {about 2.5 signals:\\``significant,''\\published};
+  \draw[-stealth, fenavy] (axis cs:-2.7,0.12) -- (axis cs:-2.3,0.03);
+  \draw[-stealth, fenavy] (axis cs:2.7,0.12) -- (axis cs:2.3,0.03);
 \end{axis}
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{Publication bias. One hundred signals with no true power produce t-statistics spread around zero. Only the few in the shaded tails, about 2.5 on each side, look significant and get published. The published record shows only the tails.}
 \label{fig:19-pubbias}
 \end{figure}
@@ -106,16 +105,16 @@ When many noisy estimates are made at once, a better estimate of each true value
 \section{How it works: the factor zoo and how replications are designed}
 \label{sec:19-how}
 
-\textbf{The zoo.} For decades, finance explained why some stocks earn more than others with a single factor, the market, as in the CAPM, and later with a handful, such as size, value and momentum\index{momentum}. By the time John Cochrane gave his presidential address to the American Finance Association in 2011, the literature had produced so many candidate predictors that he called it a ``zoo of new factors'' (Cochrane 2011). He argued that the field needed to work out which of them were truly independent, which were redundant, and which were simply noise. Harvey, Liu and Zhu (2016) counted 316 factors published in leading journals, and the count has kept growing since.
+\textbf{The zoo.} For decades, finance explained why some stocks earn more than others with a single factor, the market, as in the CAPM. Later it used a handful, such as size, value and momentum\index{momentum}. By 2011 the literature had produced so many candidate predictors that John Cochrane, in his presidential address to the American Finance Association, called it a ``zoo of new factors'' (Cochrane 2011). He argued that the field needed to sort out which factors were truly independent, which were redundant, and which were simply noise. Harvey, Liu and Zhu (2016) counted 316 factors published in leading journals, and the count has kept growing.
 
-The problem is statistical as much as economic. When thousands of researchers test thousands of variables on the same U.S. stock data, some will look significant by luck alone: at the conventional cutoff of a t-statistic near 2, roughly one useless variable in twenty passes, and journals mostly publish the ones that pass (Section~\ref{sec:19-foundations}). The published zoo is therefore a mixture of real effects and false discoveries. Many of its members are also the same idea measured in slightly different ways, such as several versions of the finding that cheap stocks beat expensive ones. Since Harvey, Liu and Zhu's count, two open data projects have made it possible to rebuild most of the zoo:
+The problem is statistical as much as economic. Thousands of researchers test thousands of variables on the same U.S. stock data, so some variables will look significant by luck alone. At the usual cut-off of a t-statistic near 2, about one useless variable in twenty passes, and journals mostly publish the ones that pass (Section~\ref{sec:19-foundations}). The published zoo is therefore a mixture of real effects and false discoveries. Many of its members are also the same idea measured in slightly different ways, such as several versions of the finding that cheap stocks beat expensive ones. Since Harvey, Liu and Zhu's count, two open data projects have made it possible to rebuild most of the zoo:
 
 \begin{itemize}
   \item Chen and Zimmermann's \textbf{Open Source Asset Pricing}\index{Open Source Asset Pricing|textbf} (2022) replicates more than 200 cross-sectional predictors from the original papers' descriptions and publishes their portfolio returns and code.
   \item Jensen, Kelly and Pedersen (2023) built a \textbf{global factor database} of 153 factors across 93 countries, with harmonized definitions, meaning each factor is built the same way in every country.
 \end{itemize}
 
-No table can list hundreds of predictors, but it does not need to, because most of them are variations on a few ideas. Hou, Xue and Zhang\index{q-factor model} (2020) sort their 452 anomalies into six categories, and Table~\ref{tab:19-zoo} shows two or three well-known predictors from each. The sign shows whether stocks with a high value of the predictor earned higher (+) or lower ($-$) average returns in the original study. The full lists, with definitions and code for every predictor, are in the Open Source Asset Pricing and JKP documentation, and Jensen, Kelly and Pedersen (2023) group their 153 factors into 13 themes along similar lines.
+No table can list hundreds of predictors, but none needs to, because most of them are variations on a few ideas. Hou, Xue and Zhang\index{q-factor model} (2020) sort their 452 anomalies into six categories. Table~\ref{tab:19-zoo} shows two or three well-known predictors from each. The sign shows whether stocks with a high value of the predictor earned higher (+) or lower ($-$) average returns in the original study. The Open Source Asset Pricing and JKP documentation give the full lists, with definitions and code for every predictor. Jensen, Kelly and Pedersen (2023) group their 153 factors into 13 similar themes.
 
 \begin{table}[htbp]
 \centering
@@ -169,7 +168,7 @@ Benchmark & Raw returns, CAPM alpha, or alpha against a multifactor model & A fa
 \end{tabularx}
 \end{center}
 
-\textbf{NYSE breakpoints}\index{NYSE breakpoints|textbf} set the cut-offs between groups using only stocks listed on the New York Stock Exchange, which are larger on average, so the many tiny Nasdaq stocks do not crowd the extreme portfolios. A \textbf{Bayesian posterior}\index{Bayesian posterior|textbf} is the probability of a hypothesis after combining a prior belief with the data.
+\textbf{NYSE breakpoints}\index{NYSE breakpoints|textbf} set the cut-offs between groups using only stocks listed on the New York Stock Exchange. These stocks are larger on average, so the many tiny Nasdaq stocks do not crowd the extreme portfolios. A \textbf{Bayesian posterior}\index{Bayesian posterior|textbf} is the probability of a hypothesis after a prior belief has been combined with the data.
 
 \textbf{Pure and scientific replication again.} A replication that copies the original method tests whether the paper's numbers can be reproduced. One that changes the universe, weighting or hurdle tests whether the finding is robust. Both are valuable, but they answer different questions, and the debate in this chapter turns partly on that difference.
 
@@ -193,9 +192,9 @@ Stated so that it can fail:
 \section{The prosecution}
 \label{sec:19-prosecution}
 
-\textbf{Harvey, Liu and Zhu (2016)} argued from statistics: with hundreds of factors tested, and many more tested but never published, the conventional $t > 2$ hurdle lets through too many false discoveries. Adjusting for the number of tests, they proposed that a new factor should clear a t-statistic of about 3, and concluded that many published factors were likely false.
+\textbf{Harvey, Liu and Zhu (2016)} argued from statistics. Hundreds of factors have been tested, and many more were tested but never published. The usual hurdle of $t > 2$ therefore lets through too many false discoveries. After adjusting for the number of tests, they proposed that a new factor should clear a t-statistic of about 3. They concluded that many published factors were likely false.
 
-\textbf{Hou, Xue and Zhang (2020)}\index{q-factor model|textbf} argued from replication. They rebuilt 452 anomalies with a common method designed to limit the influence of micro-caps\index{micro-caps}: NYSE breakpoints and value-weighted\index{index weighting!value-weighted} returns. Under that method, 65\% of the anomalies could not clear the single-test hurdle of an absolute t-statistic of 1.96, and raising the hurdle to 2.78 to allow for multiple testing raised the failure rate to 82\%. Anomalies based on \textbf{trading frictions}\index{trading frictions|textbf}, the costs and obstacles of trading, such as illiquidity\index{illiquidity} and idiosyncratic risk measures, failed most often, 96\% of them. \textbf{Idiosyncratic risk}\index{risk!idiosyncratic|textbf} is the part of a stock's volatility\index{volatility} not explained by the market or other factors. Their conclusion: most anomalies are either false or confined to micro-caps that are too small and costly to matter.
+\textbf{Hou, Xue and Zhang (2020)}\index{q-factor model|textbf} argued from replication. They rebuilt 452 anomalies with one common method, designed to limit the influence of micro-caps\index{micro-caps}: NYSE breakpoints and value-weighted\index{index weighting!value-weighted} returns. With that method, 65\% of the anomalies failed the single-test hurdle of an absolute t-statistic of 1.96. Raising the hurdle to 2.78, to allow for multiple testing, raised the failure rate to 82\%. Anomalies based on \textbf{trading frictions}\index{trading frictions|textbf}, the costs and obstacles of trading, failed most often: 96\% of them failed. This group includes illiquidity\index{illiquidity} and measures of idiosyncratic risk. \textbf{Idiosyncratic risk}\index{risk!idiosyncratic|textbf} is the part of a stock's volatility\index{volatility} that the market and other factors do not explain. Their conclusion was that most anomalies are either false or confined to micro-caps, which are too small and costly to matter.
 
 The prosecution's case rests on two premises: that the right hurdle is high because many tests have been run, and that the right portfolio construction gives little weight to the smallest stocks.
 
@@ -213,39 +212,41 @@ The prosecution's case rests on two premises: that the right hurdle is high beca
 
 Their approach treats each factor's alpha as a draw from a common distribution and shrinks noisy estimates toward the average of related factors, rather than judging each one in isolation against a fixed hurdle.
 
-\textbf{Chen and Zimmermann (2022)} found that the predictors whose original papers reported clear statistical evidence almost all reproduce with the original methods. \textbf{Chen and Zimmermann (2020)} estimated publication bias directly across 156 published predictors and concluded that bias-adjusted returns are only about 12\% smaller than in-sample returns, and that for predictors that survive journal review, a t-statistic hurdle of about 1.8 is enough to control for multiple testing. \textbf{Chen (2021)} argued that the sheer size of published t-statistics is hard to explain by \textbf{p-hacking}\index{p-hacking|textbf}, trying analyses until one crosses the significance line, alone.
+\textbf{Chen and Zimmermann (2022)} found that almost all predictors whose original papers reported clear statistical evidence can be reproduced with the original methods. \textbf{Chen and Zimmermann (2020)} estimated publication bias directly across 156 published predictors. They concluded that returns adjusted for bias are only about 12\% smaller than in-sample returns. For predictors that survive journal review, they found that a t-statistic hurdle of about 1.8 is enough to control for multiple testing. \textbf{Chen (2021)} argued that published t-statistics are too large to be explained by \textbf{p-hacking}\index{p-hacking|textbf} alone, that is, by trying analyses until one crosses the significance line.
 
-The defense's case rests on different premises: that the question is whether the original findings are real, not whether they survive a construction that de-emphasizes small stocks, and that evidence should be pooled across related factors rather than judged one test at a time.
+The defense's case rests on two different premises. First, the question is whether the original findings are real, not whether they survive a method that plays down small stocks. Second, evidence should be pooled across related factors rather than judged one test at a time.
 
 \section{Post-publication decay}
 \label{sec:19-decay}
 
-Whatever the replication standard, out-of-sample performance is a separate question. \textbf{McLean and Pontiff (2016)}\index{anomaly!post-publication decay|textbf} followed 97 predictors after their original samples ended and after publication. Portfolio returns were 26\% lower out of sample and 58\% lower after publication (Figure~\ref{fig:19-decay}). They interpreted the first figure as an upper bound on the effect of data mining\index{data mining}, since nothing changed in the world when a sample ended except that researchers stopped looking, and attributed the further decline after publication to investors trading on the published results.
+Whatever the replication standard, performance outside the original sample is a separate question. \textbf{McLean and Pontiff (2016)}\index{anomaly!post-publication decay|textbf} followed 97 predictors after their original samples ended and after publication. Portfolio returns were 26\% lower after the sample ended and 58\% lower after publication (Figure~\ref{fig:19-decay}). They read the first figure as an upper bound on the effect of data mining\index{data mining}. Nothing in the world changed when a sample ended, except that researchers stopped looking. They put the further decline after publication down to investors trading on the published results.
 
 \begin{figure}[htbp]
 \centering
+\scalebox{0.8}{%
 \begin{tikzpicture}
 \begin{axis}[
-  width=0.56\linewidth, height=0.34\linewidth,
+  width=0.8\linewidth, height=0.34\linewidth,
   ybar, bar width=0.68cm,
   axis lines=left, axis line style={-stealth},
   ymin=0, ymax=118, ytick={0,50,100},
-  ylabel={Average return (in-sample $= 100$)},
+  ylabel={Return (in sample $= 100$)},
   symbolic x coords={A,B,C},
   xtick=data,
-  xticklabels={In sample, {After sample\\before publication}, {After\\publication}},
-  xticklabel style={align=center, text width=2.4cm, font=\small},
+  xticklabels={In sample, {After sample,\\before\\publication}, {After\\publication}},
+  xticklabel style={align=center, text width=2.3cm, font=\small},
   enlarge x limits=0.25,
   nodes near coords,
 ]
   \addplot[fill=fenavy, draw=none] coordinates {(A,100) (B,74) (C,42)};
 \end{axis}
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{Post-publication decay in McLean and Pontiff (2016). With in-sample returns set to 100, the average predictor earned 74 between the end of its original sample and publication, and 42 after publication.}
 \label{fig:19-decay}
 \end{figure}
 
-The two readings matter for the claim. If most of the decline happens when the sample ends, the original results were inflated by selection: a sign of data mining. If most happens after publication, the results were real but have been arbitraged away by investors: a sign of learning, which is consistent with the original finding having been true. McLean and Pontiff's numbers suggest both forces matter, with the publication effect the larger.
+The two readings matter for the claim. If most of the decline happens when the sample ends, the original results were inflated by selection, which is a sign of data mining. If most happens after publication, the results were real but investors have traded them away. That is a sign of learning, and it suggests the original finding was true. McLean and Pontiff's numbers suggest that both forces matter, and that the publication effect is the larger one.
 
 This chapter's lab adds a check the original study could not make: a simulated literature in which the truth is known. If only significant results are published, returns appear to fall after the sample ends even when nothing changes. The size of that purely statistical decline is a benchmark for how much of the observed decay is selection.
 
@@ -268,7 +269,7 @@ Kind of replication & Scientific: does it survive reasonable alternative choices
 \end{tabularx}
 \end{center}
 
-Neither side is wrong on its own terms. A factor that appears only among micro-caps may be real and still irrelevant to an investor who cannot trade micro-caps. A factor that fails a $t > 3$ hurdle may be real and simply estimated with noise. A Bayesian estimate that pools related factors is more efficient if the pooling assumptions are right and misleading if a whole theme was mined together.
+Neither side is wrong on its own terms. A factor that appears only among micro-caps may be real, yet irrelevant to an investor who cannot trade micro-caps. A factor that fails a $t > 3$ hurdle may be real but measured with a lot of noise. A Bayesian estimate that pools related factors is more accurate if its assumptions are right. It is misleading if a whole theme was mined together.
 
 The practical lesson is that ``does this anomaly replicate?'' is not a well-posed question until the purpose is stated. For understanding how markets price risk, pure replication and pooled evidence are appropriate. For deciding what to invest in, value-weighted, liquid-universe, out-of-sample, after-cost evidence is what matters.
 
@@ -289,7 +290,7 @@ The practical lesson is that ``does this anomaly replicate?'' is not a well-pose
   \item \textbf{Part E, known truth.} A simulated literature in which only signals with in-sample $t > 2$ are published, run with no true decay and with a 30\% decay after publication.
 \end{itemize}
 
-\textbf{What readers will find.} The simulation alone delivers one of the chapter's central lessons. When the lab's simulated literature was run with \textbf{no} true change after publication, the pooled regression still measured returns about 45\% lower after the samples ended and about 54\% lower after publication, purely because publication selected lucky in-sample results. With a true 30\% post-publication decay added, the measured post-publication decline rose to about 68\%. Readers who run the lab on the real data can compare McLean and Pontiff's figures, and their own, with this benchmark.
+\textbf{What readers will find.} The simulation alone delivers one of the chapter's central lessons. The lab first ran a simulated literature with \textbf{no} true change after publication. The pooled regression still measured returns about 45\% lower after the samples ended and about 54\% lower after publication. This decline came purely from publication selecting lucky in-sample results. When a true 30\% post-publication decay was added, the measured post-publication decline rose to about 68\%. Readers who run the lab on real data can compare McLean and Pontiff's figures, and their own, with this benchmark.
 
 \subsection*{Your verdict}
 
@@ -298,14 +299,24 @@ Reach your own verdict on the claim from the numbers in your own run, using the 
 \section{Where the evidence stands}
 \label{sec:19-verdict}
 
-The published studies cited in this chapter point to a split picture: \textbf{most published anomalies are not pure statistical flukes, but most are smaller than reported, concentrated in small stocks, partly arbitraged away, and not profitable to trade after costs.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+The published studies cited in this chapter point to a split picture: \textbf{most published anomalies are not pure statistical flukes. But most are smaller than reported, concentrated in small stocks, partly traded away, and not profitable to trade after costs.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
 
-\begin{center}
-\small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+{\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.48\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
 \toprule
 Situation & Holds? & Why & Evidence \\
 \midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
 Original construction, conventional hurdle & \textbf{No} & Predictors whose original papers reported clear evidence almost all reproduce with the original methods. & Chen and Zimmermann (2022) \\
 \addlinespace[3pt]
 Micro-caps de-emphasized, value-weighted & \textbf{Yes} & 65\% of 452 anomalies fail to clear $t = 1.96$, and 82\% fail a hurdle of 2.78; 96\% of the trading-frictions anomalies fail. & Hou, Xue and Zhang (2020) \\
@@ -317,9 +328,8 @@ Bayesian pooling across factors and countries & \textbf{No} & Most factors repli
 Out of sample, after publication & \textbf{Partly} & Returns were 26\% lower after the original samples and 58\% lower after publication, and part of the decline is selection. & McLean and Pontiff (2016); Part E of the lab \\
 \addlinespace[3pt]
 After costs, for an investor & \textbf{Yes} & Little expected return remains for the average anomaly. & Chen and Velikov (2023); Chapter~\ref{ch:17} \\
-\bottomrule
-\end{tabularx}
-\end{center}
+\end{longtable}
+}
 
 Whether these findings make most anomalies ``false'' depends on whether the question is scientific or practical. The two sides agree on most facts and disagree on the four choices in Section~\ref{sec:19-why}, so a verdict on this claim is a choice of standard as much as a reading of the data.
 
@@ -352,7 +362,7 @@ The evidence in Section~\ref{sec:19-verdict} suggests several practical lessons.
 \end{enumerate}
 
 \begin{callout}
-\textbf{What Failed: the trading-frictions anomalies.} A family of anomalies based on liquidity\index{liquidity}, idiosyncratic volatility\index{idiosyncratic volatility} and other trading frictions looked strong in the papers that introduced them. In Hou, Xue and Zhang's replication, 96\% of the anomalies in this category failed to clear a t-statistic of 1.96 once micro-caps were de-emphasized with NYSE breakpoints and value weights. Their returns had come mostly from the smallest, least liquid stocks, exactly where costs and frictions are largest. The claim that frictions-based anomalies offer returns an investor can capture \textbf{fails}; whether they reveal something real about how illiquid stocks are priced is a separate and open question.
+\textbf{What Failed: the trading-frictions anomalies.} A family of anomalies based on liquidity\index{liquidity}, idiosyncratic volatility\index{idiosyncratic volatility} and other trading frictions looked strong in the papers that introduced them. Hou, Xue and Zhang played down micro-caps with NYSE breakpoints and value weights. In their replication, 96\% of the anomalies in this group then failed to clear a t-statistic of 1.96. Their returns had come mostly from the smallest and least liquid stocks, where costs and frictions are largest. The claim that frictions-based anomalies offer returns an investor can capture \textbf{fails}. Whether they reveal something real about how illiquid stocks are priced is a separate, open question.
 \end{callout}
 
 \section*{Exercises}
