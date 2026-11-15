@@ -1,7 +1,7 @@
 \chapter{Claim: Optimized Portfolios Beat Naive Ones}
 \label{ch:12}
 
-In 1952 Harry Markowitz\index{mean--variance optimization} showed how to choose a portfolio by trading expected return\index{return!expected} against variance\index{variance}. Given each asset's expected return and the covariances between assets, mean--variance optimization finds the mix with the highest expected return for each level of risk. The idea founded modern portfolio theory and earned Markowitz a share of the 1990 Nobel Prize in economics. It also contained a practical difficulty that took decades to measure: nobody knows the expected returns or the covariances. They must be estimated from history, and the optimizer treats the estimates as exact, putting the most money into assets that look best only because their past returns were luckily high or their past risks luckily low.
+In 1952 Harry Markowitz\index{mean--variance optimization} showed that an investor should judge an asset not by its own risk but by what it adds to the risk of the whole portfolio, which depends on how the asset moves with the others. From that insight he built a method for choosing a portfolio by trading expected return\index{return!expected} against variance\index{variance}. Given each asset's expected return and the covariances between assets, mean--variance optimization finds the mix with the highest expected return for each level of risk. The insight founded modern portfolio theory, and it is the reason Markowitz shared the 1990 Nobel Prize in economics. Using the method in practice, however, raised a difficulty that took decades to measure. The optimizer needs the true expected returns and covariances, and nobody knows them. They must be estimated from history, and the optimizer treats these estimates as exact, so it puts the most money into the assets that look best only because their past returns were luckily high or their past risks luckily low.
 
 The question became pressing as optimization moved from textbooks into practice. Pension funds, endowments and later robo-advisers built portfolios with it, and researchers proposed repairs. Jagannathan and Ma (2003) showed that ruling out short sales acts like shrinking the covariance matrix, Ledoit and Wolf (2004) proposed shrinking the sample covariance toward a simple target, and Kirby and Ostdiek (2012) proposed timing strategies that need fewer estimates. DeMiguel, Garlappi and Uppal (2009) then put the whole approach to the test. They compared fourteen optimized strategies, several with safeguards built in, against the simplest rule there is: put an equal amount of money in every asset. None of the fourteen beat it consistently out of sample.
 
@@ -361,7 +361,6 @@ Despite these weaknesses, optimization is widely used. Practitioners protect it 
 
 Each of these approaches accepts that the inputs are uncertain and builds a portfolio that can survive that uncertainty. The practical lesson is the same in every case. Optimization is most useful when the number of assets is small, the inputs are constrained or shrunk, and the user understands which market conditions the portfolio is built to handle.
 
-
 \section{The claim}
 \label{sec:12-claim}
 
@@ -479,8 +478,10 @@ The lab has four parts:
 
 Run on real data, the lab will answer the question the simulation cannot: whether real assets differ enough in expected return and risk for optimization to earn back its estimation error.
 
-\section{Stress tests}
+\subsection{Robustness checks}
 \label{sec:12-stress}
+
+The full-sample results can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
 
 \textbf{Estimation window.} DGU's critical window for 25 assets, about 3,000 months, is far longer than any real sample. Longer windows reduce estimation noise but use older data, which may no longer describe today's markets. Part C shows how the ranking changes as the window grows from five to twenty years.
 
@@ -494,25 +495,54 @@ Run on real data, the lab will answer the question the simulation cannot: whethe
 
 \textbf{Statistical power.}\index{statistical power|textbf} Sharpe ratios estimated over 90 years still have standard errors of roughly 0.1. A rule would need a large edge over 1/N for the difference to be detectable. Failing to reject equality is not proof that two rules are equally good.
 
-\section{Verdict}
+\subsection*{Your verdict}
+
+Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:12-verdict}. If your verdict differs, explain which of your results led you there.
+
+\section{Where the evidence stands}
 \label{sec:12-verdict}
 
-\begin{callout}
-\textbf{Verdict: fails} (as of October 2026). In its plain form the claim fails. Sample mean-variance optimization, the method the claim is built on, does not beat equal weighting out of sample in the published evidence. DGU's estimate of the data needed for it to win, about 3,000 months for 25 assets, exceeds any real sample by a wide margin.
-\end{callout}
+The published studies cited in this chapter point to a clear pattern: \textbf{sample mean--variance optimization loses to equal weighting out of sample, and the repaired versions mostly tie with it: they lower risk, but rarely raise the Sharpe ratio after costs.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
 
-The repaired versions do better but do not rescue the claim:
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+Sample mean--variance against 1/N & \textbf{No} & Estimation error in expected returns outweighs the gain from optimizing; none of fourteen models beat 1/N consistently. & DeMiguel, Garlappi and Uppal (2009) \\
+\addlinespace[3pt]
+Data needed for sample mean--variance to win & \textbf{No} & About 3,000 months for 25 assets and 6,000 for 50, against about 1,100 months of U.S. stock data. & DeMiguel, Garlappi and Uppal (2009) \\
+\addlinespace[3pt]
+Mean--variance with less estimation risk & \textbf{Partly} & Standard mean--variance often beat 1/N before costs in other designs, but high turnover eroded the advantage. & Kirby and Ostdiek (2012) \\
+\addlinespace[3pt]
+Constrained and shrunk minimum variance & \textbf{Partly} & These rules reliably lower volatility, but do not reliably raise the Sharpe ratio above 1/N. & Jagannathan and Ma (2003); Ledoit and Wolf (2004) \\
+\addlinespace[3pt]
+Risk-based rules & \textbf{No} & Inverse volatility, equal risk contribution and hierarchical risk parity tend to tie with 1/N, which they resemble when assets have similar risks; the evidence for hierarchical risk parity comes mainly from simulations. & L\'opez de Prado (2016) \\
+\addlinespace[3pt]
+Timing rules that ignore correlations & \textbf{Yes} & Volatility timing and reward-to-risk timing beat 1/N even with high trading costs, because they trade little. & Kirby and Ostdiek (2012) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The strongest case for the weak form of the claim, Kirby and Ostdiek's timing rules, succeeds by ignoring correlations and trading little, which is to say by giving up most of what makes optimization optimization.
+
+\textbf{What would change the picture.} The evidence would support the weak form if a disciplined optimizer beat 1/N significantly, net of costs, across several different sets of assets, in data not used to design it.
+
+\subsection{Open questions}
+\label{sec:12-open}
 
 \begin{itemize}
-  \item Constrained and shrunk minimum-variance portfolios reliably lower volatility. They do not reliably raise the Sharpe ratio above 1/N.
-  \item Risk-based rules (inverse volatility, equal risk contribution, hierarchical risk parity) tend to tie with 1/N, which they closely resemble when assets have similar risks.
-  \item Kirby and Ostdiek's timing rules are the strongest case for the weak form. They succeed by ignoring correlations and trading little, which is to say by giving up most of what makes optimization optimization.
+  \item \textbf{Many assets.} With hundreds of stocks, sample covariance matrices become singular. Do newer nonlinear shrinkage and factor-based estimators make large-scale optimization competitive with 1/N?
+  \item \textbf{Machine-learning allocations.} Do methods that learn weights directly from data avoid estimation error, or simply hide it in more parameters? Chapter~\ref{ch:20} took up the general question.
+  \item \textbf{Cost-aware optimization.} Optimizing net of trading costs, with turnover penalties, changes both the weights and the comparison. How much of DGU's result survives?
+  \item \textbf{Diversification in stress.}\index{diversification|textbf} Risk-based portfolios depend on correlations staying stable. Chapter~\ref{ch:13} asks what happens when they do not.
 \end{itemize}
 
-The verdict would change if the lab, run on real data, showed a disciplined optimizer beating 1/N significantly, net of costs, across all three asset sets.
-
-\section{What investors can use}
+\section{What practitioners and investors can use}
 \label{sec:12-investors}
+
+The evidence in Section~\ref{sec:12-verdict} suggests several practical lessons.
 
 \begin{itemize}
   \item \textbf{Treat 1/N as the benchmark.} Any optimized allocation should be compared with equal weighting of the same assets, out of sample and net of costs. A strategy that cannot beat it is adding complexity, not value.
@@ -535,16 +565,6 @@ The verdict would change if the lab, run on real data, showed a disciplined opti
 \begin{callout}
 \textbf{What Failed: the optimizer nobody would use.} In the early 1990s Fischer Black and Robert Litterman, working in Goldman Sachs's fixed-income division, reported that quantitative asset-allocation models had not played the important role in global portfolio management that their logic deserved. Investment professionals found the models difficult to use, and the portfolios they produced were ``badly behaved'': concentrated, extreme and sensitive to small changes in inputs. Black and Litterman's fix was to stop trusting historical means. They started from the expected returns implied by market equilibrium and let managers tilt away only where they had confident views. Michaud reached the same diagnosis from the other side: unconstrained optimization maximizes the effects of errors in its inputs. The lesson has outlived both papers. The optimizer works exactly as designed; the problem is what it is fed.
 \end{callout}
-
-\section{Open questions}
-\label{sec:12-open}
-
-\begin{itemize}
-  \item \textbf{Many assets.} With hundreds of stocks, sample covariance matrices become singular. Do newer nonlinear shrinkage and factor-based estimators make large-scale optimization competitive with 1/N?
-  \item \textbf{Machine-learning allocations.} Do methods that learn weights directly from data avoid estimation error, or simply hide it in more parameters? Chapter~\ref{ch:20} took up the general question.
-  \item \textbf{Cost-aware optimization.} Optimizing net of trading costs, with turnover penalties, changes both the weights and the comparison. How much of DGU's result survives?
-  \item \textbf{Diversification in stress.}\index{diversification|textbf} Risk-based portfolios depend on correlations staying stable. Chapter~\ref{ch:13} asks what happens when they do not.
-\end{itemize}
 
 \section*{Exercises}
 \addcontentsline{toc}{section}{Exercises}
