@@ -1,5 +1,5 @@
 % Chapter 13 -- Claim: Diversification Fails When You Need It Most
-% Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
+% Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
 \providecolor{feshade}{HTML}{F3F5FA}
@@ -15,46 +15,54 @@
 \chapter{Claim: Diversification Fails When You Need It Most}
 \label{ch:13}
 
-Diversification\index{diversification} is often called the only free lunch in finance. Combine assets that do not move in lockstep, and the portfolio's risk falls below the average risk of its parts at no cost in expected return\index{return!expected}. Every balanced fund, target-date fund and pension portfolio rests on that arithmetic. The crash of October 1987, when markets around the world fell together, raised a doubt that has never gone away: perhaps correlations\index{correlation} rise exactly when diversification is needed.
+Diversification\index{diversification} is often called the only free lunch in finance. If you combine assets that do not move in lockstep, the portfolio is less risky than the average of its parts, and you give up no expected return\index{return!expected} to get that benefit. Every balanced fund, target-date fund and pension portfolio relies on this arithmetic. The crash of October 1987, when stock markets around the world fell together, raised a doubt that has never gone away: perhaps assets start moving together, and correlations\index{correlation} rise, exactly when diversification is needed most.
 
-Testing the doubt turned out to be subtle. Longin and Solnik (2001) used extreme-value methods on international equity markets and found that correlations rise in large market falls but not in large rises. Ang and Chen (2002) found the same asymmetry for U.S. stock portfolios. Forbes and Rigobon (2002) then showed that a correlation measured in a turbulent period is biased upward simply because volatility is higher, so part of the apparent ``contagion'' is a statistical artefact. Campbell, Sunderam and Viceira (2017) turned to the other pillar of diversification, government bonds, and showed that the correlation between stocks and bonds changed sign around 2000 as the inflation regime changed. In 2022, when inflation returned, stocks and Treasury bonds fell together.
+Testing this doubt turned out to be harder than it looks. Longin and Solnik (2001) studied the largest monthly moves in international stock markets. They found that markets move more closely together in large falls than in large rises. This is the worst pattern an investor could face, because diversification weakens just when losses arrive. Ang and Chen (2002) found the same pattern among U.S. stock portfolios. Forbes and Rigobon (2002) then pointed out a trap in measuring it. When markets become more volatile, their measured correlation rises even if the link between them has not changed. Part of the apparent ``contagion'', a crisis spreading from one market to another, is therefore a statistical illusion.
 
-The implications reach every asset allocator. If correlations rise in crises, risk models built on calm-period data understate losses, and investors need assets that hedge specifically in bad times. If the rise is mostly an artefact, the free lunch is safer than its critics claim. The claim on trial\index{claims-on-trial method} is: \textbf{correlations between stocks, and between stocks and bonds, rise in crashes, so diversification fails in exactly the periods it is meant for.}
+Campbell, Sunderam and Viceira (2017) turned to the other pillar of diversification, government bonds. Bonds protect a stock portfolio when their correlation with stocks is negative, because they then rise as stocks fall. The authors showed that this correlation changed from positive to negative around 2000, after inflation became low and stable. In 2022, when inflation returned, stocks and Treasury bonds fell together.
 
-The lab in Section~\ref{sec:13-lab} replicates the exceedance correlations of Longin and Solnik (2001) and the correction of Forbes and Rigobon (2002) with free U.S., international and industry returns from the Kenneth R. French Data Library, and follows the stock--bond correlation of Campbell, Sunderam and Viceira (2017) with FRED yields and inflation, in order to check whether diversification really fails in crises and which assets still protected investors when it mattered.
+
+The answer matters to everyone who allocates money across assets. If correlations really rise in crises, risk models built on data from calm periods understate the losses to expect, and investors need assets that protect them specifically in bad times. If the rise is mostly a statistical illusion, the free lunch is safer than its critics claim. 
+
+
+Thus, the claim on trial\index{claims-on-trial method} in this chapter is: \textbf{in a market crash, correlations go to one, both among stocks and between stocks and bonds, so diversification breaks down just when investors need it most.}
+
+The lab in Section~\ref{sec:13-lab} repeats the tests of Longin and Solnik (2001) and the correction of Forbes and Rigobon (2002), using free U.S., international and industry returns from the Kenneth R. French Data Library. It also follows the stock--bond correlation of Campbell, Sunderam and Viceira (2017) with free bond yields and inflation data from FRED. The goal is to check whether diversification really fails in crises, and which assets still protected investors when it mattered.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item compute portfolio volatility\index{volatility} from correlations, and explain why average correlation sets a floor on diversification;
-  \item measure the diversification ratio\index{diversification!ratio};
-  \item explain why measured correlation rises with volatility, and apply the Forbes--Rigobon\index{correlation!Forbes--Rigobon correction} correction;
-  \item interpret exceedance correlations\index{correlation!exceedance} and tail dependence\index{tail dependence} against a normal benchmark;
-  \item explain why the stock--bond correlation\index{correlation!stock--bond} changes sign with the inflation\index{inflation} regime;
-  \item separate the statistical claim (correlations rise in crises) from the economic one (diversified portfolios fail), and judge a portfolio by its losses in bad months.
+  \item explain why the average correlation limits diversification, and measure its benefit with the diversification ratio\index{volatility}\index{diversification!ratio};
+  \item correct crisis correlations for higher volatility with the Forbes--Rigobon\index{correlation!Forbes--Rigobon correction} method, and read tail correlations against a normal benchmark\index{correlation!exceedance}\index{tail dependence};
+  \item explain why the stock--bond correlation\index{correlation!stock--bond} changes sign with inflation\index{inflation};
+  \item judge a portfolio by what it lost in bad months.
 \end{itemize}
+
 
 \section{Foundations: correlation, diversification and how crisis correlations are measured}
 \label{sec:13-foundations}
 
 \subsection{Correlation and diversification}
 
-For two assets with weights $w_1$ and $w_2$, volatilities $\sigma_1$ and $\sigma_2$ and correlation $\rho$, portfolio variance\index{variance} is
+Consider two assets with weights $w_1$ and $w_2$, volatilities $\sigma_1$ and $\sigma_2$, and correlation $\rho$. The variance\index{variance} of the portfolio is
 \begin{equation}
-  \sigma_p^2 = w_1^2\sigma_1^2 + w_2^2\sigma_2^2 + 2w_1w_2\rho\,\sigma_1\sigma_2
+  \sigma_p^2 = w_1^2\sigma_1^2 + w_2^2\sigma_2^2 + 2w_1w_2\rho\,\sigma_1\sigma_2.
   \label{eq:13-var2}
 \end{equation}
-The lower the correlation, the lower the portfolio's risk. With $N$ assets of equal volatility $\sigma$ and equal pairwise correlation $\rho$, an equally weighted portfolio has variance
+The last term carries the correlation, so the lower the correlation, the lower the portfolio's risk. 
+
+Now consider $N$ assets that all have the same volatility $\sigma$ and the same correlation $\rho$ with each other. An equally weighted portfolio of them has variance
 \begin{equation}
-  \sigma_p^2 = \sigma^2\left[\rho + \frac{1 - \rho}{N}\right]
+  \sigma_p^2 = \sigma^2\left[\rho + \frac{1 - \rho}{N}\right].
   \label{eq:13-varN}
 \end{equation}
-As $N$ grows, the variance falls toward $\rho\sigma^2$. The average correlation therefore sets a floor on how much risk diversification can remove (Figure~\ref{fig:13-floor}). The \textbf{diversification ratio}\index{diversification!ratio|textbf}, the weighted average of the assets' volatilities divided by the portfolio's volatility, measures the benefit. A ratio of 1 means none.
+As more assets are added, the second term shrinks, and the variance falls toward $\rho\sigma^2$ but never below it. The average correlation therefore sets a floor on how much risk diversification can remove (Figure~\ref{fig:13-floor}). The benefit is often measured by the \textbf{diversification ratio}\index{diversification!ratio|textbf}: the weighted average volatility of the assets divided by the volatility of the portfolio. A ratio of 1 means no benefit at all, and higher values mean more.
 
-\textbf{Worked example.} Ten industries each have 20\% volatility. At an average correlation of 0.6, an equally weighted portfolio has volatility $20\% \times \sqrt{0.6 + 0.4/10} = 16.0\%$. If the correlation rises to 0.8, the volatility rises to $20\% \times \sqrt{0.8 + 0.2/10} = 18.1\%$. A rise in correlation of that size wipes out half of the diversification benefit, from 4 points of volatility to under 2.
+\textbf{Worked example.} Ten industries each have a volatility of 20\%. If their average correlation is 0.6, an equally weighted portfolio has a volatility of $20\% \times \sqrt{0.6 + 0.4/10} = 16.0\%$. If the correlation rises to 0.8, the portfolio's volatility rises to $20\% \times \sqrt{0.8 + 0.2/10} = 18.1\%$. Diversification first cut risk by 4 points, from 20\% to 16\%. After the rise in correlation it cuts risk by less than 2 points, so half of the benefit is gone.
 
 \begin{figure}[htbp]
 \centering
+\scalebox{0.8}{%
 \begin{tikzpicture}[
   % Equally weighted portfolio of N assets, each with 20% volatility
   declare function={pvol(\n,\r) = 20*sqrt(1/\n + (1 - 1/\n)*\r);}
@@ -80,22 +88,24 @@ As $N$ grows, the variance falls toward $\rho\sigma^2$. The average correlation 
   \node[fegray, anchor=west, align=left] at (axis cs:51,17.9) {$\rho = 0.8$:\\floor 17.9\%};
   \node[fenavy, anchor=west, align=left] at (axis cs:51,15.5) {$\rho = 0.6$:\\floor 15.5\%};
 \end{axis}
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{Volatility of an equally weighted portfolio of assets with 20\% volatility each. Adding assets helps only down to a floor set by the average correlation: 15.5\% at a correlation of 0.6 and 17.9\% at 0.8. With ten assets, as in the worked example, a rise from 0.6 to 0.8 lifts volatility from 16.0\% to 18.1\%.}
 \label{fig:13-floor}
 \end{figure}
 
 \subsection{Why measured correlation rises when volatility rises}
 
-Suppose $y = \beta x + e$, with the noise $e$ unchanged when $x$ becomes more volatile. The correlation of $x$ and $y$ is
+Suppose the return of one market, $y$, is linked to the return of another, $x$, by $y = \beta x + e$, where $e$ is unrelated noise. The link $\beta$ and the size of the noise stay the same, but $x$ becomes more volatile. The correlation between the two markets is
 \begin{equation}
-  \rho = \frac{\beta\sigma_x}{\sqrt{\beta^2\sigma_x^2 + \sigma_e^2}}
+  \rho = \frac{\beta\sigma_x}{\sqrt{\beta^2\sigma_x^2 + \sigma_e^2}},
   \label{eq:13-bias}
 \end{equation}
-which rises with $\sigma_x$ even though the link between the two markets, $\beta$, has not changed (Figure~\ref{fig:13-bias}). Correlations measured in turbulent periods are therefore \textbf{biased upward} (Boyer, Gibson and Loretan 1999).
+which rises as $\sigma_x$ rises. The measured correlation goes up even though the link between the markets has not changed (Figure~\ref{fig:13-bias}). The reason is that the common part of the returns grows while the noise does not, so the common part dominates. Correlations measured in turbulent periods are therefore \textbf{biased upward} (Boyer, Gibson and Loretan 1999).
 
 \begin{figure}[htbp]
 \centering
+\scalebox{0.8}{%
 \begin{tikzpicture}[
   % y = x + e with sigma_e = 20%: measured correlation = sigma_x / sqrt(sigma_x^2 + 20^2)
   declare function={rho(\s) = \s/sqrt(\s*\s + 400);}
@@ -115,48 +125,49 @@ which rises with $\sigma_x$ even though the link between the two markets, $\beta
   \fill (axis cs:30,{rho(30)}) circle (2.4pt);
   \node[anchor=north west] at (axis cs:15.5,0.58) {calm, $\sigma_x = 15\%$: 0.60};
   \node[anchor=north west] at (axis cs:30.5,{rho(30)-0.02}) {turbulent, $\sigma_x = 30\%$: 0.83};
-  \node[anchor=west] at (axis cs:2,0.93) {same link throughout: $y = x + e$, $\sigma_e = 20\%$};
+  \node[anchor=west] at (axis cs:17,0.2) {same link throughout: $y = x + e$, $\sigma_e = 20\%$};
 \end{axis}
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{The volatility bias in measured correlation. The link between the two markets never changes ($y = x + e$, with noise of 20\%), yet the measured correlation rises from 0.60 when $x$ has 15\% volatility to 0.83 when it has 30\%.}
 \label{fig:13-bias}
 \end{figure}
 
 \subsection{The Forbes--Rigobon correction}
 
-Forbes and Rigobon (2002) proposed a correction. If $\rho_c$ is the correlation measured in a period when the variance of $x$ is higher by a factor $1 + \delta$, the correlation that would hold at normal variance is
+Forbes and Rigobon (2002) proposed a way to remove this bias. Suppose a correlation $\rho_c$ is measured in a crisis, when the variance of market $x$ is $1 + \delta$ times its normal level. The correlation that would hold at normal variance is
 \begin{equation}
-  \rho^* = \frac{\rho_c}{\sqrt{1 + \delta\,(1 - \rho_c^2)}}
+  \rho^* = \frac{\rho_c}{\sqrt{1 + \delta\,(1 - \rho_c^2)}}.
   \label{eq:13-fr}
 \end{equation}
-For example, a crisis correlation of 0.8, measured when variance is four times its normal level ($\delta = 3$), corresponds to $0.8/\sqrt{1 + 3 \times 0.36} = 0.55$ in normal times. The correction assumes the extra volatility starts in $x$. If the link itself strengthens in crises, the correction removes part of a real change.
+For example, a correlation of 0.8 measured when variance is four times its normal level ($\delta = 3$) corresponds to $0.8/\sqrt{1 + 3 \times 0.36} = 0.55$ in normal times. The correction assumes that the crisis made market $x$ more volatile but did not change the link between the markets. If the link itself strengthens in a crisis, the correction removes part of a real change.
 
-\subsection{Conditioning on the tails}
+\subsection{Looking only at the tails}
 
-Truncating a sample also changes its correlation. For a bivariate normal distribution\index{distribution!normal}, the correlation among observations where both variables are below some threshold is lower than the full-sample correlation, and falls further as the threshold moves into the tail. \textbf{Exceedance correlations}\index{correlation!exceedance|textbf} (Longin and Solnik 2001; Ang and Chen 2002) are measured over observations where both returns are beyond a quantile\index{quantile}, and are compared with what a normal distribution with the same overall correlation would produce. The gap between the two, not the raw level, is the evidence of asymmetry.
+Selecting only extreme observations also changes a correlation. Take two variables that follow a normal distribution\index{distribution!normal}, and keep only the months in which both fall below some threshold. The correlation within those months is lower than in the full sample, and it falls further as the threshold moves deeper into the tail. \textbf{Exceedance correlations}\index{correlation!exceedance|textbf} (Longin and Solnik 2001; Ang and Chen 2002) are correlations measured only in months when both returns are beyond a threshold, such as their worst 10\%\index{quantile}. They are compared with what a normal distribution with the same overall correlation would produce. The evidence of a crisis effect is the gap between the two, not the level of the correlation itself.
 
 \subsection{Tail dependence}
 
-\textbf{Tail dependence}\index{tail dependence|textbf} asks how likely one asset is to have an extreme loss when another does: $P(Y \text{ in its worst } p\text{-tail} \mid X \text{ in its worst } p\text{-tail})$. For independent assets the answer is $p$. For a normal distribution it falls toward $p$ as $p$ shrinks. Fat-tailed\index{fat tails} joint distributions, modelled with \textbf{copulas}\index{copula|textbf} (functions that join marginal distributions into a joint one) such as the Student $t$ or Clayton, keep it higher.
+\textbf{Tail dependence}\index{tail dependence|textbf} asks a simpler question: when one asset has one of its worst months, how likely is the other to have one of its worst months too? If the assets are independent and ``worst'' means the bottom 5\%, the answer is 5\%. For a normal distribution, the answer approaches that independent level as the tail becomes more extreme, so extreme losses rarely coincide. Distributions with fat tails\index{fat tails}, which are modelled with \textbf{copulas}\index{copula|textbf} (functions that join the distributions of single assets into a joint distribution) such as the Student $t$ or the Clayton, keep the answer higher, so extreme losses tend to arrive together.
 
 \subsection{The stock--bond correlation}
 
-Government bonds hedge stocks when bad economic news lowers both expected profits and interest rates. They fail as hedges when inflation news dominates, because rising inflation hurts both bond prices and, through higher discount rates\index{discount rate}, stock prices. The sign of the stock--bond correlation has changed over the decades.
+Government bonds protect a stock portfolio when bad economic news lowers both expected profits and interest rates, because falling rates raise bond prices just as stocks fall. They fail as protection when news about inflation dominates. Rising inflation lowers bond prices directly, and it lowers stock prices too, because investors then discount future profits at higher rates\index{discount rate}. Over the decades, the stock--bond correlation has therefore switched between positive and negative.
 
 \section{How it works}
 \label{sec:13-how}
 
-Three different things can make diversification look weaker in a crisis, and they have different implications for investors.
+Three different things can make diversification look weaker in a crisis, and they mean different things for investors.
 
 \begin{itemize}
-  \item \textbf{A measurement effect.} When volatility rises, measured correlation rises even if the underlying relationship is unchanged. This part is an artefact, and correcting for it shrinks the apparent increase.
-  \item \textbf{A common shock.} In a crisis, one factor, such as a global panic, a funding squeeze or a recession scare, comes to dominate returns. Assets that usually move on separate news now move on the same news. This is a real change, and it is the one that hurts investors.
-  \item \textbf{A change of regime.} Some relationships flip sign with the economic environment. The stock--bond correlation is the main example: negative when growth shocks dominate, positive when inflation shocks dominate.
+  \item \textbf{A measurement effect.} When volatility rises, measured correlation rises even if the underlying link is unchanged. This part is an illusion, and correcting for it shrinks the apparent increase.
+  \item \textbf{A common shock.} In a crisis, a single force, such as a global panic, a shortage of funding or a fear of recession, comes to drive most returns. Assets that usually respond to separate news now respond to the same news. This is a real change, and it is the one that hurts investors.
+  \item \textbf{A change of regime.} Some relationships reverse when the economic environment changes. The main example is the stock--bond correlation, which is negative when news about growth dominates and positive when news about inflation dominates.
 \end{itemize}
 
-What matters to an investor is not the correlation itself but the return of the portfolio in bad times. A portfolio can lose less than stocks in a crash even if correlations rise, provided some assets fall less than others. Diversification fails in the investor's sense only when every holding falls about as much as the riskiest one.
+What matters to an investor is not the correlation itself but what the portfolio earns in bad times. A portfolio can lose less than stocks in a crash even when correlations rise, as long as some of its assets fall less than others. Diversification fails in the sense that matters to an investor only when every holding falls about as much as the riskiest one.
 
-The mechanisms also differ by asset. International stocks share the global equity factor, so their correlation with U.S. stocks is high to begin with and may rise further in sell-offs. Industries within one market are even more closely linked. Treasury bonds and commodities respond to different forces, and their link to stocks can change sign.
+The forces also differ by asset. International stocks are driven largely by the same global stock market, so their correlation with U.S. stocks is high to begin with and may rise further in sell-offs. Industries within one country are linked even more closely. Treasury bonds and commodities respond to different forces, and their relationship with stocks can change sign.
 
 \section{The claim}
 \label{sec:13-claim}
@@ -165,29 +176,29 @@ The mechanisms also differ by asset. International stocks share the global equit
 \textbf{Claim.} Correlations rise in crises, so diversification fails exactly when investors need it most.
 \end{callout}
 
-The claim has two parts, and each can be tested separately:
+The claim has two parts, and each can be tested on its own:
 
 \begin{itemize}
-  \item \textbf{The statistical part:} correlations between risky assets are higher in down markets and turbulent periods than in calm ones, by more than the volatility bias and the normal distribution would imply.
-  \item \textbf{The economic part:} as a result, diversified portfolios offer little protection in the worst months.
+  \item \textbf{The statistical part:} correlations between risky assets are higher in falling and turbulent markets than in calm ones, by more than the volatility bias and a normal distribution would produce.
+  \item \textbf{The economic part:} as a result, diversified portfolios give little protection in the worst months.
 \end{itemize}
 
-The first part can be true while the second is false. That happens if diversifiers such as Treasury bonds keep their low or negative correlation with stocks while equity correlations rise.
+The first part can be true while the second is false. That happens if assets such as Treasury bonds keep their low or negative correlation with stocks while the correlations among stocks rise.
 
 \section{The original evidence}
 \label{sec:13-evidence}
 
-\textbf{International equity markets (Longin and Solnik 2001).} Using monthly returns for the U.S., the U.K., France, Germany and Japan from 1959 to 1996, Longin and Solnik applied extreme value theory to the tails of the joint distribution. They found that the correlation of large negative returns rises in bear markets but not in bull markets. Multivariate normality was rejected for the negative tail but not for the positive one. They concluded that the market's direction, not volatility alone, drives the increase. They also warned that simply conditioning on large absolute returns can create a spurious rise in correlation.
+\textbf{International stock markets (Longin and Solnik 2001).} Longin and Solnik studied monthly returns for the U.S., the U.K., France, Germany and Japan from 1959 to 1996. Using statistical methods designed for extreme events, they found that the correlation of large negative returns rises in bear markets but not in bull markets. The large negative returns did not fit a normal distribution, while the large positive ones did. They concluded that the direction of the market, not volatility alone, drives the increase. They also warned that simply selecting months with large moves, up or down, can create a rise in correlation that is not real.
 
-\textbf{U.S. stocks (Ang and Chen 2002).} Ang and Chen found that correlations between U.S. stock portfolios and the market are much greater for downside moves than for upside moves, especially extreme ones. Conditional on the downside, correlations in the data differed from those implied by a normal distribution by 11.6\%. Small stocks, value stocks\index{value versus growth} and past losers\index{winners and losers} showed the most asymmetry. Among the models they tried, regime-switching models captured the asymmetry best; GARCH\index{GARCH} models did poorly.
+\textbf{U.S. stocks (Ang and Chen 2002).} Ang and Chen found that U.S. stock portfolios are much more correlated with the market when it falls than when it rises, especially in extreme moves. In falling markets, the correlations in the data differed from those a normal distribution would produce by 11.6\%. Small stocks, value stocks\index{value versus growth} and stocks that had recently lost money\index{winners and losers} showed the biggest difference between falling and rising markets. Of the models they tried, those that switch between calm and turbulent regimes captured the pattern best, and GARCH\index{GARCH} models did poorly.
 
-\textbf{Contagion or interdependence (Forbes and Rigobon 2002).} Forbes and Rigobon studied three crises: the 1987 U.S. crash, the 1994 Mexican peso collapse and the 1997 East Asian crisis. With unadjusted correlations, several countries showed evidence of \textbf{contagion}\index{contagion|textbf}, meaning correlations that rose in the crisis. After correcting for the higher volatility, there was virtually none. They concluded that the high co-movement reflected strong linkages that existed all along, which they called \textbf{interdependence}\index{interdependence|textbf}.
+\textbf{Contagion or interdependence (Forbes and Rigobon 2002).} Forbes and Rigobon studied three crises: the 1987 U.S. crash, the 1994 collapse of the Mexican peso and the 1997 East Asian crisis. Without any adjustment, several countries showed \textbf{contagion}\index{contagion|textbf}, meaning correlations that rose during the crisis. After the correction for higher volatility, almost none did. They concluded that markets moved together in these crises because of strong links that had existed all along, which they called \textbf{interdependence}\index{interdependence|textbf}.
 
-\textbf{Investor-focused evidence (Page and Panariello 2018).} Using monthly data from 1970 to mid-2017, Page and Panariello reported that the correlation between U.S. and non-U.S. developed stocks was $-17\%$ during the strongest U.S. rallies and $+87\%$ during the worst 1\% of U.S. sell-offs. They found a similar pattern for real estate, corporate and high-yield\index{credit rating} bonds, emerging markets and hedge funds. Treasury bonds usually decoupled from stocks in sell-offs, but the authors noted that the stock--bond correlation can turn positive when inflation or interest rates drive markets. Their correlations are conditioned on U.S. returns alone, so part of the asymmetry may reflect the truncation effect described in Section~\ref{sec:13-foundations}.
+\textbf{Evidence for investors (Page and Panariello 2018).} Using monthly data from 1970 to mid-2017, Page and Panariello found that the correlation between U.S. and other developed stock markets was $-17\%$ in the strongest U.S. rallies and $+87\%$ in the worst 1\% of U.S. sell-offs. They found a similar pattern for real estate, corporate and high-yield\index{credit rating} bonds, emerging markets and hedge funds. Treasury bonds usually moved apart from stocks in sell-offs, but the authors noted that the stock--bond correlation can turn positive when inflation or interest rates drive markets. Because they selected months by U.S. returns alone, part of the pattern they found may come from the tail-selection effect described in Section~\ref{sec:13-foundations}.
 
-\textbf{The stock--bond correlation (Campbell, Sunderam and Viceira 2017).} Campbell, Sunderam and Viceira found that the covariance between Treasury bond and stock returns was slightly positive on average over 1953 to 2009 but varied a great deal. It was unusually high in the early 1980s and negative in the 2000s, especially in the 2000--02 and 2007--09 downturns. They linked the change to how inflation and real rates co-move with the real economy.
+\textbf{The stock--bond correlation (Campbell, Sunderam and Viceira 2017).} Campbell, Sunderam and Viceira found that Treasury bonds and stocks moved slightly together on average from 1953 to 2009, but the relationship varied a great deal. It was unusually strong in the early 1980s and negative in the 2000s, especially in the downturns of 2000--02 and 2007--09. They traced these changes to how inflation and real interest rates move with the economy.
 
-The evidence supports the statistical part of the claim for equities, with caveats about measurement. It contradicts any simple version for bonds, whose hedging value depends on the inflation regime.
+The evidence supports the statistical part of the claim for stocks, with caveats about measurement. It contradicts any simple version of the claim for bonds, whose value as protection depends on the inflation regime.
 
 \section{Lab~\thechapter: Replicating Longin and Solnik (2001) and Forbes and Rigobon (2002)}
 \label{sec:13-lab}
@@ -196,47 +207,47 @@ The evidence supports the statistical part of the claim for equities, with cavea
 \textbf{Lab~\ref{ch:13} at a glance.} \emph{Papers replicated:} Longin and Solnik (2001); Forbes and Rigobon (2002); the stock--bond correlation of Campbell, Sunderam and Viceira (2017). \emph{Claim on trial\index{claims-on-trial method}:} diversification fails when it is needed most. \emph{Data:} U.S. market excess returns\index{return!excess} from 1926, international developed-market returns from 1990 and 10 industry portfolios, all from the Kenneth R. French Data Library\index{Kenneth French data library}; the 10-year Treasury yield (GS10, from 1953), consumer prices (CPIAUCSL) and the spot oil price (WTISPLC) from FRED\index{FRED}. All are free. \emph{Code:} runs as a script (\texttt{python lab19.py}) or as a notebook (\texttt{lab19\_walkthrough.ipynb}) with a prediction prompt before each step.
 \end{callout}
 
-Bond returns are built from yields by buying a 10-year par bond each month and selling it a month later at the new yield.
+Bond returns are built from yields: each month the lab buys a 10-year bond priced at par and sells it a month later at the new yield.
 
 The lab has four parts:
 
 \begin{itemize}
-  \item \textbf{Part A} measures the correlation of U.S. stocks with international stocks, bonds and oil, and the average pairwise correlation of the ten industries. It reports each in calm months, in high-volatility months (the top fifth by trailing 12-month U.S. volatility), after the Forbes--Rigobon correction and in the worst 10\% of U.S. months. It also plots exceedance correlations against a normal benchmark (Lab Figures~\ref{ch:13}.1 and~\ref{ch:13}.2).
-  \item \textbf{Part B} measures tail dependence at the 5\%, 10\% and 20\% levels, against a normal distribution with the same correlation.
-  \item \textbf{Part C} tracks the rolling 36-month stock--bond correlation and relates it to inflation. It reports results by decade and by inflation regime, and for 2022 (Lab Figure~\ref{ch:13}.3).
-  \item \textbf{Part D} compares 100\% stocks, a 60/40 stock--bond portfolio and an equal-weight mix of U.S. stocks, international stocks, bonds and oil. It reports average returns in the worst and best 5\% of stock months, drawdowns\index{drawdown}, five crisis periods and the diversification ratio (Lab Figures~\ref{ch:13}.4 and~\ref{ch:13}.5).
+  \item \textbf{Part A} measures the correlation of U.S. stocks with international stocks, bonds and oil, and the average correlation among the ten industries. It reports each one in calm months, in high-volatility months (the fifth of months with the highest U.S. volatility over the previous year), after the Forbes--Rigobon correction, and in the worst 10\% of U.S. months. It also compares exceedance correlations with a normal benchmark (Lab Figures~\ref{ch:13}.1 and~\ref{ch:13}.2).
+  \item \textbf{Part B} measures tail dependence in the worst 5\%, 10\% and 20\% of months, and compares it with a normal distribution that has the same correlation.
+  \item \textbf{Part C} tracks the stock--bond correlation over rolling 36-month windows and relates it to inflation. It reports the correlation by decade, by inflation regime and for 2022 (Lab Figure~\ref{ch:13}.3).
+  \item \textbf{Part D} compares three portfolios: 100\% stocks, 60\% stocks and 40\% bonds, and an equal mix of U.S. stocks, international stocks, bonds and oil. It reports their average returns in the worst and best 5\% of months for stocks, their drawdowns\index{drawdown}, their returns in five crises and their diversification ratios (Lab Figures~\ref{ch:13}.4 and~\ref{ch:13}.5).
 \end{itemize}
 
 The command \texttt{python lab19.py -{}-source sim} tests the code on simulated data.
 
-\textbf{What the simulated run shows.} The lab was run end to end only on simulated data. The simulation was built so that the true correlation between U.S. and international stocks rises from 0.60 in calm regimes to 0.75 in stress, and so that the stock--bond correlation rises with inflation. The results test the code and illustrate the measurement problems; they say nothing about real markets.
+\textbf{What the simulated run shows.} So far the lab has been run from start to finish only on simulated data. The simulation was built so that the true correlation between U.S. and international stocks rises from 0.60 in calm periods to 0.75 in stressed ones, and so that the stock--bond correlation rises with inflation. The results test the code and illustrate the measurement problems. They say nothing about real markets.
 
 \begin{itemize}
-  \item The raw correlation between U.S. and international stocks rose from 0.61 in calm months to 0.70 in high-volatility months. The Forbes--Rigobon correction brought it down to 0.47, below the calm level, even though the simulation contained a true increase. The correction overshoots when the link itself strengthens in a crisis.
-  \item In the worst 10\% of U.S. months, the same correlation was 0.45, lower than in calm months, because conditioning on one tail truncates the data.
-  \item The average industry correlation rose from 0.68 to 0.80 in high-volatility months, and fell to 0.61 after correction.
-  \item The stock--bond correlation was $-0.17$ when prior inflation was below 3\% and $+0.17$ when it was 3\% or more.
-  \item In the worst 5\% of stock months, when stocks lost 8.5\% on average, the 60/40 portfolio lost 5.0\% and the equal-weight mix 4.7\%. The 60/40 diversification ratio fell from 1.26 in calm months to 1.16 in high-volatility months: smaller, but not zero.
+  \item The raw correlation between U.S. and international stocks rose from 0.61 in calm months to 0.70 in high-volatility months. The Forbes--Rigobon correction brought it down to 0.47, below the calm level, even though the simulation contained a real increase. The correction goes too far when the link itself strengthens in a crisis.
+  \item In the worst 10\% of U.S. months, the same correlation was only 0.45, lower than in calm months, because selecting the tail of one market lowers the correlation.
+  \item The average correlation among industries rose from 0.68 in calm months to 0.80 in high-volatility months, and fell to 0.61 after the correction.
+  \item The stock--bond correlation was $-0.17$ when inflation over the previous year was below 3\%, and $+0.17$ when it was 3\% or more.
+  \item In the worst 5\% of months for stocks, when stocks lost 8.5\% on average, the 60/40 portfolio lost 5.0\% and the equal mix lost 4.7\%. The 60/40 portfolio's diversification ratio fell from 1.26 in calm months to 1.16 in high-volatility months: the benefit shrank, but it did not disappear.
 \end{itemize}
 
-On real data the lab answers the question the simulation cannot: whether the rise in correlations survives the correction, and whether diversified portfolios still cushioned the worst months.
+On real data, the lab answers the questions that the simulation cannot: whether the rise in correlations survives the correction, and whether diversified portfolios still softened the worst months.
 
 \subsection{Robustness checks}
 \label{sec:13-stress}
 
-The full-sample results can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
+Results over the full sample can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
 
-\textbf{The definition of a crisis.} Results depend on how bad times are defined: high volatility, falling markets, recessions or a list of named crises. Correlations conditioned on direction (Longin and Solnik's bear markets) and on volatility (Forbes and Rigobon's turmoil) answer different questions. The lab offers both, and Exercise 4 adds recessions.
+\textbf{What counts as a crisis.} The results depend on how bad times are defined: as months of high volatility, falling markets, recessions or a list of named crises. Correlations measured in falling markets, as in Longin and Solnik, and in volatile markets, as in Forbes and Rigobon, answer different questions. The lab offers both, and Exercise 4 adds recessions.
 
-\textbf{The correction's assumption.} The Forbes--Rigobon adjustment assumes the extra volatility comes from the conditioning market and that the link between markets is fixed. If a crisis strengthens the link, the correction removes part of a real change, as the simulated run showed. The raw and corrected numbers are best read as upper and lower bounds.
+\textbf{The correction's assumption.} The Forbes--Rigobon correction assumes that the extra volatility comes from one market and that the link between markets stays fixed. If a crisis strengthens the link, the correction removes part of a real change, as the simulated run showed. The raw and corrected correlations are best read as upper and lower bounds.
 
-\textbf{Frequency.} Monthly data smooth over the days when correlations spike. Daily correlations in October 1987 or March 2020 were higher than monthly ones. For a long-horizon investor, though, monthly or quarterly co-movement matters more than daily.
+\textbf{Data frequency.} Monthly data smooth over the days on which correlations jump. Daily correlations in October 1987 and March 2020 were higher than monthly ones. For a long-term investor, though, how assets move together over months or quarters matters more than how they move on a single day.
 
-\textbf{Sample period.} International data begin in 1990, after the long era of capital controls ended. The stock--bond correlation depends heavily on whether the sample includes the high-inflation 1970s and early 1980s. A sample running from 2000 to 2021 shows bonds as a strong hedge; one including 1965--1985 or 2022 does not.
+\textbf{Sample period.} International data begin in 1990, after most countries had removed controls on capital flows. The stock--bond correlation depends heavily on whether the sample includes the high inflation of the 1970s and early 1980s. A sample from 2000 to 2021 shows bonds as strong protection; a sample that includes 1965--1985 or 2022 does not.
 
-\textbf{Bond construction.} Returns built from constant-maturity yields approximate a bond index. They miss the coupon effects and roll of actual bonds but capture the duration\index{duration} risk that dominated 2022.
+\textbf{How bond returns are built.} Returns built from yields on bonds of a constant maturity only approximate a bond index. They miss some details of real bonds, such as coupon timing, but they capture the sensitivity to interest rates\index{duration} that dominated 2022.
 
-\textbf{Statistical power.}\index{statistical power|textbf} High-volatility months are a fifth of the sample, and extreme tails much less. With about 70 high-volatility months for international stocks, a correlation of 0.7 has a standard error\index{standard error} near 0.06, so differences of a few hundredths are noise.
+\textbf{Statistical power.}\index{statistical power|textbf} High-volatility months are only a fifth of the sample, and the extreme tails are much smaller. With about 70 high-volatility months for international stocks, a correlation of 0.7 has a standard error\index{standard error} of about 0.06, so differences of a few hundredths are just noise.
 
 \subsection*{Your verdict}
 
@@ -245,41 +256,50 @@ Reach your own verdict on the claim from the numbers in your own run, using the 
 \section{Where the evidence stands}
 \label{sec:13-verdict}
 
-The published studies cited in this chapter point to a clear pattern: \textbf{correlations among stock markets and industries rise in falling markets by more than the volatility bias explains, but diversification across asset classes has usually held up, and the protection from bonds depends on the inflation regime.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+The published studies cited in this chapter point to a clear pattern: \textbf{correlations among stock markets and among industries rise in falling markets by more than the volatility bias explains, but diversification across asset classes has usually held up, and the protection that bonds give depends on inflation.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you check these findings with free data.
 
-\begin{center}
-\small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+{\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.48\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
 \toprule
 Situation & Holds? & Why & Evidence \\
 \midrule
-Equity correlations in bear markets & \textbf{Yes} & Correlations of large negative returns rise in bear markets but not in bull markets, and normality is rejected only for the lower tail. & Longin and Solnik (2001); Ang and Chen (2002) \\
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Stock correlations in bear markets & \textbf{Yes} & Correlations of large negative returns rise in bear markets but not in bull markets, and only the large negative returns depart from a normal distribution. & Longin and Solnik (2001); Ang and Chen (2002) \\
 \addlinespace[3pt]
-After correcting for higher volatility & \textbf{Partly} & Much of the measured rise in crises disappears after the correction, although methods built to avoid the bias still find an asymmetry. & Forbes and Rigobon (2002); Longin and Solnik (2001) \\
+After correcting for higher volatility & \textbf{Partly} & Much of the measured rise in crises disappears after the correction, although methods designed to avoid the bias still find a difference between falling and rising markets. & Forbes and Rigobon (2002); Longin and Solnik (2001) \\
 \addlinespace[3pt]
-Other risky assets in U.S. sell-offs & \textbf{Yes} & Non-U.S. stocks, real estate, credit, emerging markets and hedge funds moved much closer to U.S. stocks in the worst months. & Page and Panariello (2018) \\
+Other risky assets in U.S. sell-offs & \textbf{Yes} & Non-U.S. stocks, real estate, corporate bonds, emerging markets and hedge funds moved much more closely with U.S. stocks in the worst months. & Page and Panariello (2018) \\
 \addlinespace[3pt]
-Treasury bonds, 2000--2021 & \textbf{No} & The stock--bond correlation was negative, especially in the 2000--02 and 2007--09 downturns. & Campbell, Sunderam and Viceira (2017) \\
+Treasury bonds, 2000--2021 & \textbf{No} & The stock--bond correlation was negative, especially in the downturns of 2000--02 and 2007--09. & Campbell, Sunderam and Viceira (2017) \\
 \addlinespace[3pt]
 Treasury bonds when inflation dominates & \textbf{Yes} & The correlation was high in the early 1980s, and stocks and bonds fell together in 2022. & Campbell, Sunderam and Viceira (2017); Dimensional Fund Advisors (2023) \\
 \addlinespace[3pt]
-Stock--bond portfolios in the worst months & \textbf{Mostly no} & Treasury bonds usually decoupled from stocks in sell-offs, so mixed portfolios lost much less than stocks. & Page and Panariello (2018) \\
-\bottomrule
-\end{tabularx}
-\end{center}
+Stock--bond portfolios in the worst months & \textbf{Mostly no} & Treasury bonds usually moved apart from stocks in sell-offs, so mixed portfolios lost much less than stocks alone. & Page and Panariello (2018) \\
+\end{longtable}
+}
 
-The claim is therefore true for the diversification most investors rely on least, within equities, and conditional for the diversification they rely on most, between stocks and bonds.
+The claim is therefore true for the kind of diversification that investors rely on least, across different stocks, and only conditionally true for the kind they rely on most, between stocks and bonds.
 
-\textbf{What would change the picture.} The evidence would support the claim more fully if stock--bond protection also failed in crises driven by growth shocks. It would weaken the statistical part if equity correlations showed no asymmetry after the volatility correction.
+\textbf{What would change the picture.} The evidence would support the claim more fully if bonds also failed to protect stock portfolios in crises driven by news about growth. It would weaken the statistical part of the claim if stock correlations showed no difference between falling and rising markets after the volatility correction.
 
 \subsection{Open questions}
 \label{sec:13-open}
 
 \begin{itemize}
-  \item \textbf{Which regime are we in?} Can the stock--bond correlation be forecast from inflation, inflation uncertainty or central-bank credibility well enough to adjust allocations in time?
-  \item \textbf{Better crisis correlations.} Do regime-switching, copula or dynamic conditional correlation models forecast crisis co-movement out of sample\index{in-sample versus out-of-sample}, or only describe it after the fact?
-  \item \textbf{Private assets.} Smoothed valuations make private equity and real estate look like diversifiers. How large is their true crisis correlation with public stocks?
-  \item \textbf{New hedges.} Have trend-following\index{trend following}, long-volatility or tail-hedging strategies delivered crisis protection at an acceptable cost? Chapter~\ref{ch:16}'s evidence on option selling is the mirror image of this question.
+  \item \textbf{Which regime are we in?} Can the stock--bond correlation be forecast from inflation, uncertainty about inflation or trust in the central bank, early enough to adjust a portfolio in time?
+  \item \textbf{Better models of crisis correlations.} Do models that switch between regimes, copulas, or models of correlations that change over time forecast how assets move together in a crisis out of sample\index{in-sample versus out-of-sample}, or do they only describe it after the fact?
+  \item \textbf{Private assets.} Private equity and real estate are valued infrequently, which smooths their reported returns and makes them look like good diversifiers. How closely do they really move with public stocks in a crisis?
+  \item \textbf{New sources of protection.} Have trend-following\index{trend following}, long-volatility or tail-hedging strategies protected investors in crises at an acceptable cost? Chapter~\ref{ch:16}'s evidence on selling options looks at the same question from the other side.
 \end{itemize}
 
 \section{What practitioners and investors can use}
@@ -288,11 +308,11 @@ The claim is therefore true for the diversification most investors rely on least
 The evidence in Section~\ref{sec:13-verdict} suggests several practical lessons.
 
 \begin{itemize}
-  \item \textbf{Use stress correlations, not average ones.} Plan with the correlations seen in the worst months, not the full-sample figure. For equities, assume they move closer together in a sell-off.
-  \item \textbf{Diversify across risks, not labels.} Ten equity funds in different regions or styles are mostly one bet on the global equity factor. Real diversification needs assets driven by different forces, such as interest rates or inflation.
-  \item \textbf{Know what your hedge hedges.} Long-term Treasury bonds hedge recessions and deflationary panics. They do not hedge inflation shocks. Cash, short-term bonds, inflation-linked bonds and some commodities behave differently.
+  \item \textbf{Plan with crisis correlations, not average ones.} Use the correlations seen in the worst months, not those over the whole sample. For stocks, assume they will move closer together in a sell-off.
+  \item \textbf{Diversify across risks, not labels.} Ten stock funds in different regions or styles are mostly one bet on the global stock market. Real diversification needs assets driven by different forces, such as interest rates or inflation.
+  \item \textbf{Know what your protection protects against.} Long-term Treasury bonds protect against recessions and deflationary panics. They do not protect against inflation shocks. Cash, short-term bonds, inflation-linked bonds and some commodities behave differently.
   \item \textbf{Judge by portfolio losses.} Ask what the whole portfolio lost in past crises, not whether correlations rose.
-  \item \textbf{Rebalance.}\index{rebalancing|textbf} Diversified portfolios that rebalance sell what held up and buy what fell, which helps recoveries even when diversification disappointed in the fall.
+  \item \textbf{Rebalance.}\index{rebalancing|textbf} A diversified portfolio that is rebalanced sells what held up and buys what fell. That helps in the recovery, even when diversification disappointed during the fall.
 \end{itemize}
 
 \textbf{Questions to ask a manager or adviser:}
@@ -300,13 +320,13 @@ The evidence in Section~\ref{sec:13-verdict} suggests several practical lessons.
 \begin{itemize}
   \item What did this portfolio lose in 2008, in March 2020 and in 2022?
   \item Which correlations do you use to estimate risk, and from which periods?
-  \item Which of the holdings would be expected to rise if stocks fell 30\% because of a recession? And if they fell because of an inflation shock?
-  \item How much of the portfolio's risk comes from the equity factor?
-  \item Are any reported correlations based on smoothed or appraisal-based prices?
+  \item Which holdings would you expect to rise if stocks fell 30\% because of a recession? Which would rise if stocks fell because of an inflation shock?
+  \item How much of the portfolio's risk comes from the stock market as a whole?
+  \item Are any of the reported correlations based on smoothed or appraisal-based prices?
 \end{itemize}
 
 \begin{callout}
-\textbf{What Failed: bonds as the hedge in 2022.} For most of the two decades before 2022, Treasury bonds rose when stocks fell, and the 60/40 portfolio became the default allocation. Then inflation reached its highest levels in forty years and the Federal Reserve raised rates rapidly. In 2022 the S\&P 500 fell 18.1\% and the U.S. dollar bond market about 13\%. According to Dimensional (Dimensional Fund Advisors 2023), a 60/40 portfolio lost 11\% over the year, with a drawdown of 19\% at its low point, and many bond indices had their worst year on record. Nothing in the correlation had been wrong; it had been estimated in a period dominated by growth shocks and low, stable inflation. When the dominant shock changed, so did the sign. Investors who treated a negative stock--bond correlation as a constant learned that it was a feature\index{features and targets} of a regime.
+\textbf{What Failed: bonds as protection in 2022.} For most of the two decades before 2022, Treasury bonds rose when stocks fell, and the portfolio of 60\% stocks and 40\% bonds became the standard choice. Then inflation reached its highest level in forty years, and the Federal Reserve raised interest rates rapidly. In 2022 the S\&P 500 fell 18.1\%, and the U.S. dollar bond market fell about 13\%. According to Dimensional (Dimensional Fund Advisors 2023), a 60/40 portfolio lost 11\% over the year and was down 19\% at its lowest point, and many bond indices had their worst year on record. The correlation had not been measured wrongly. It had been measured in a period when news about growth dominated and inflation was low and stable. When inflation became the main news, the correlation changed sign. Investors who treated the negative stock--bond correlation as a constant learned that it belonged to one economic regime.
 \end{callout}
 
 \section*{Exercises}
@@ -315,19 +335,19 @@ The evidence in Section~\ref{sec:13-verdict} suggests several practical lessons.
 \subsection*{Conceptual (all readers)}
 
 \begin{enumerate}
-  \item Twenty assets each have 25\% volatility. Compute the volatility of an equally weighted portfolio when the average correlation is 0.3 and when it is 0.7. What share of the diversification benefit is lost?
-  \item A correlation of 0.75 is measured in a crisis when the variance of the conditioning market is three times its normal level. Apply the Forbes--Rigobon correction. What correlation in normal times does it imply?
-  \item Using $y = \beta x + e$ with $\beta = 0.6$, $\sigma_e = 15\%$ and $\sigma_x = 15\%$, compute the correlation of $x$ and $y$. Recompute with $\sigma_x = 30\%$. Explain why the correlation changed even though $\beta$ did not.
+  \item Twenty assets each have a volatility of 25\%. Compute the volatility of an equally weighted portfolio when the average correlation is 0.3 and when it is 0.7. What share of the benefit of diversification is lost?
+  \item A correlation of 0.75 is measured in a crisis, when the variance of one market is three times its normal level. Apply the Forbes--Rigobon correction. What correlation does it imply for normal times?
+  \item Using $y = \beta x + e$ with $\beta = 0.6$, $\sigma_e = 15\%$ and $\sigma_x = 15\%$, compute the correlation of $x$ and $y$. Recompute it with $\sigma_x = 30\%$. Explain why the correlation changed even though $\beta$ did not.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
   \setcounter{enumi}{3}
-  \item Part A: run on real data. For which pairs does the high-volatility correlation exceed the calm one after the Forbes--Rigobon correction? Then define bad times as NBER recession months (FRED series USREC) instead of high-volatility months. Do the conclusions change?
-  \item Compare the exceedance correlations of U.S. and international stocks with the normal benchmark (Lab Figure~\ref{ch:13}.1). Is the gap larger in the lower tail than the upper tail?
+  \item Part A: run the lab on real data. For which pairs of assets is the correlation in high-volatility months still higher than in calm months after the Forbes--Rigobon correction? Then define bad times as NBER recession months (FRED series USREC) instead of high-volatility months. Do the conclusions change?
+  \item Compare the exceedance correlations of U.S. and international stocks with the normal benchmark (Lab Figure~\ref{ch:13}.1). Is the gap larger in falling markets than in rising ones?
   \item Part C: compute the stock--bond correlation for 1965--1985 and for 2000--2021. Relate the difference to average inflation in each period.
-  \item Part D: list the five worst months for U.S. stocks since 1953. What did bonds do in each?
-  \item Forbes and Rigobon say ``no contagion, only interdependence''. Why might an investor care little about the distinction?
-  \item A client says, ``Bonds failed in 2022, so they are useless as a hedge.'' Using the chapter's evidence, write a short reply.
+  \item Part D: list the five worst months for U.S. stocks since 1953. What did bonds do in each of them?
+  \item Forbes and Rigobon say there was ``no contagion, only interdependence''. Why might an investor care little about this distinction?
+  \item A client says, ``Bonds failed in 2022, so they are useless as protection.'' Using the evidence in this chapter, write a short reply.
 \end{enumerate}
