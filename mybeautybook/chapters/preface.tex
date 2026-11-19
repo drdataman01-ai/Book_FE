@@ -54,7 +54,7 @@ Repeated across twenty-two claims, the cycle becomes a habit. That habit, more t
 
 \section*{How the book is organized}
 
-The book has nine parts, twenty-two claim chapters, a capstone and four appendices. Every chapter puts a famous claim on trial, and the chapters are ordered by two rules. Methods climb from simple to complex, so no chapter needs a method taught later. Within that ladder, the chapters follow the dates of the papers that started each claim, so the book moves from the performance tests of the 1960s to the foundation models of 2025 in roughly the order the field itself did.
+The book has nine parts, twenty-two claim chapters, a capstone and four appendices. Every chapter puts a famous claim on trial, and the chapters are ordered by two rules. Methods climb from simple to complex, so no chapter needs a method taught later. Within that ladder, the chapters follow the dates of the papers that started each claim, so the book moves from the performance tests of the 1960s to the foundation models of 2025 in roughly the order the field itself did. The one exception is Part VIII, on derivatives and credit, which comes after Part VII even though its founding papers are older. It is the most technical part of the book, and because no later chapter depends on it, it is \textbf{optional}: you can skip it on a first reading, and a course that does not cover derivatives can leave it out.
 
 \begin{itemize}
   \item Part I tests claims about returns, luck and data, using averages, Sharpe ratios, t-statistics and simulation.
@@ -62,8 +62,8 @@ The book has nine parts, twenty-two claim chapters, a capstone and four appendic
   \item Part III tests claims about forecasting stock returns through time, with trading rules and valuation ratios, and builds the out-of-sample tests the rest of the book reuses.
   \item Parts IV and V move from the mean of returns to their risk: volatility and Value at Risk, then portfolios and diversification.
   \item Part VI turns to currencies and interest rates, testing interest parity and the expectations hypothesis of the yield curve.
-  \item Part VII tests claims about options and credit.
-  \item Part VIII returns to the classical findings with the tools of the last two decades: trading costs, the low-risk anomaly and the replication debate.
+  \item Part VII returns to the classical findings with the tools of the last two decades: trading costs, the low-risk anomaly and the replication debate.
+  \item Part VIII, which is optional, tests claims about credit and options.
   \item Part IX tests the newest claims, about machine learning, transformers and foundation models, and the capstone asks you to replicate a claim of your own choosing.
 \end{itemize}
 
@@ -96,13 +96,13 @@ V & Portfolios and dependence & \ref{ch:12} & Optimized Portfolios Beat an Equal
 VI & Currencies and interest rates & \ref{ch:06} & High-Interest Currencies Depreciate Enough to Offset Their Yield \\
  &  & \ref{ch:07} & Forward Rates Predict Future Interest Rates \\
 \addlinespace
-VII & Derivatives and credit & \ref{ch:14} & Delta Hedging Removes Option Risk \\
- &  & \ref{ch:15} & Credit Spreads Mainly Reflect Expected Defaults \\
- &  & \ref{ch:16} & Selling Options Earns a Reliable Premium \\
-\addlinespace
-VIII & The reckoning: costs, low risk and replication & \ref{ch:17} & A Profitable Backtest Is Profitable to Trade \\
+VII & The reckoning: costs, low risk and replication & \ref{ch:17} & A Profitable Backtest Is Profitable to Trade \\
  &  & \ref{ch:18} & Low-Risk Stocks Beat High-Risk Stocks \\
  &  & \ref{ch:19} & Most Published Anomalies Fail to Replicate \\
+\addlinespace
+VIII & Derivatives and credit (optional) & \ref{ch:15} & Credit Spreads Mainly Reflect Expected Defaults \\
+ &  & \ref{ch:14} & Delta Hedging Removes Option Risk \\
+ &  & \ref{ch:16} & Selling Options Earns a Reliable Premium \\
 \addlinespace
 IX & Machine learning and foundation models & \ref{ch:20} & Machine Learning Predicts Returns Better Than Linear Models \\
  &  & \ref{ch:21} & Foundation Models Forecast Better Than Classical Methods \\
@@ -115,7 +115,7 @@ IX & Machine learning and foundation models & \ref{ch:20} & Machine Learning Pre
 \end{table}
 
 
-The claims were chosen so that testing them carries you through the standard curriculum of financial engineering. Each one rests on a core model: the CAPM, GARCH, Black--Scholes, the yield curve, the Merton model, mean--variance optimization. Every claim chapter opens with a self-contained Foundations section that teaches that model before the claim is tested. You meet the same material as in a conventional course, but you meet each model at the point where it makes a prediction the data can contradict.
+The claims were chosen so that testing them carries you through the standard curriculum of financial engineering. Each one rests on a core model: the CAPM, GARCH, Black--Scholes, the yield curve, expected default losses, mean--variance optimization. Every claim chapter opens with a self-contained Foundations section that teaches that model before the claim is tested. You meet the same material as in a conventional course, but you meet each model at the point where it makes a prediction the data can contradict.
 
 This also means the book can stand on its own, or sit beside the classics. Hull, Cochrane, and Campbell, Lo and MacKinlay teach how the models are built. This book asks whether their predictions hold, and the table later in this preface shows, for each chapter, where those texts treat the topic in depth.
 
@@ -151,12 +151,12 @@ Portfolio construction & Mean--variance, efficient frontier, covariance estimati
 Diversification and dependence & Correlation dynamics, tail dependence & Diversification fails when you need it most & \ref{ch:13} \\
 International finance & Covered and uncovered interest parity, carry & High-interest currencies depreciate enough to offset their yield & \ref{ch:06} \\
 Fixed income & Yield curves, forward rates, duration, expectations hypothesis & Forward rates predict future rates & \ref{ch:07} \\
-Derivative pricing and hedging & Options, Black--Scholes, the Greeks, dynamic hedging & Delta hedging removes option risk & \ref{ch:14} \\
-Credit & Default, recovery, spreads, the Merton model & Credit spreads mainly reflect expected defaults & \ref{ch:15} \\
-Options and volatility premia & Implied volatility, the VIX, the variance risk premium & Selling options earns a reliable premium & \ref{ch:16} \\
 Trading and implementation & Spreads, turnover, break-even costs, capacity & A profitable backtest is profitable to trade & \ref{ch:17} \\
 CAPM and leverage & Security market line, Fama--MacBeth, leverage constraints & Low-risk stocks beat high-risk stocks & \ref{ch:18} \\
 Econometrics of finance & Multiple testing, shrinkage, post-publication tests & Most published anomalies fail to replicate & \ref{ch:19} \\
+Credit & Default, recovery, spreads, the expected-loss spread & Credit spreads mainly reflect expected defaults & \ref{ch:15} \\
+Derivative pricing and hedging & Options, Black--Scholes, the Greeks, dynamic hedging & Delta hedging removes option risk & \ref{ch:14} \\
+Options and volatility premia & Implied volatility, the VIX, the variance risk premium & Selling options earns a reliable premium & \ref{ch:16} \\
 Machine learning & Regularization, trees, neural nets, cross-validation & Machine learning predicts returns better than linear models & \ref{ch:20} \\
 Forecasting & ARIMA, exponential smoothing, zero-shot foundation models & Foundation models forecast better than classical methods & \ref{ch:21} \\
 Asset-pricing theory & Stochastic discount factor, IPCA, attention & Transformers price stocks better than factor models & \ref{ch:22} \\
@@ -208,12 +208,12 @@ Ch. & Foundations covers & Further reading \\
 \ref{ch:13} & Correlation and diversification; why measured correlation rises with volatility; the Forbes--Rigobon correction; tail correlation and tail dependence; the stock--bond correlation & Bodie, Kane and Marcus (2024); Ang (2014) \\
 \ref{ch:06} & Spot and forward exchange rates; covered and uncovered interest parity; the carry trade & Hull (2022); Bodie, Kane and Marcus (2024) \\
 \ref{ch:07} & Zero-coupon yields; forward rates; holding-period returns; duration; the expectations hypothesis & Hull (2022); Tuckman and Serrat (2022) \\
-\ref{ch:14} & Payoffs and put--call parity; the Black--Scholes--Merton model; the Greeks; implied volatility; delta hedging and its profit and loss; discrete hedging; the volatility smile & Hull (2022); Shreve (2004) \\
-\ref{ch:15} & Credit spreads; default probability and recovery; the expected-loss spread; why spreads can exceed expected losses; the Merton model & Hull (2022) \\
-\ref{ch:16} & The VIX; the option seller's payoff & Hull (2022) \\
 \ref{ch:17} & The order book; market and limit orders; who provides liquidity; long and short positions; long--short portfolios; turnover & Harris (2003); Bodie, Kane and Marcus (2024); Hull (2022) \\
 \ref{ch:18} & Beta, the CAPM and the security market line; alpha & Bodie, Kane and Marcus (2024); Ang (2014) \\
 \ref{ch:19} & The efficient market hypothesis; the joint-hypothesis problem; anomalies; replication, reproduction and robustness; publication bias; shrinkage & Bodie, Kane and Marcus (2024); Bali, Engle and Murray (2016) \\
+\ref{ch:15} & Credit spreads; default probability and recovery; the expected-loss spread; why spreads can exceed expected losses & Hull (2022) \\
+\ref{ch:14} & Payoffs and put--call parity; the Black--Scholes--Merton model; the Greeks; implied volatility; delta hedging and its profit and loss; discrete hedging; the volatility smile & Hull (2022); Shreve (2004) \\
+\ref{ch:16} & The VIX; the option seller's payoff & Hull (2022) \\
 \ref{ch:20} & Time-series and cross-sectional questions; a simple factor model; why not use every predictor; overfitting and the bias--variance trade-off & James, Witten, Hastie and Tibshirani (2021); Hastie, Tibshirani and Friedman (2009); L\'opez de Prado (2018) \\
 \ref{ch:21} & Classical benchmarks; foundation models; contamination; fair evaluation & Hyndman and Athanasopoulos (2021) \\
 \ref{ch:22} & The stochastic discount factor and the tangency portfolio; shrinkage SDFs and IPCA; deep SDFs; attention and the transformer & Cochrane (2005); Bali, Engle and Murray (2016) \\
