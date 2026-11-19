@@ -1,0 +1,351 @@
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
+\chapter{Claim: Valuations Predict the Equity Premium Out of Sample}
+\label{ch:09}
+
+Every year, market strategists on television tell viewers whether stocks look cheap or expensive and what that means for the years ahead. The most famous warning of this kind came on 5 December 1996, when Federal Reserve Chairman Alan Greenspan asked in a speech whether ``irrational exuberance'' had pushed stock prices too high. Valuations did look stretched by historical standards, yet the S\&P~500 went on to more than double before it peaked in 2000. This chapter asks how often such valuation-based forecasts would actually have helped an investor who acted on them.
+
+In the 1980s the view that stock returns are unpredictable gave way to a new consensus. The change began with a simple piece of arithmetic. A stock's price reflects the dividends investors expect it to pay, so when prices are high relative to dividends, either dividends must grow quickly in the future or future returns must be low. Fama and French (1988) and Campbell and Shiller (1988) set out to learn which of the two actually happens, and they found that the dividend--price ratio, which is the dividends that companies pay in a year divided by their share prices and is a simple measure of how cheap the market is, predicts the stock market's return over the following years, and later papers added interest rates, yield spreads (the gaps between the interest rates on different kinds of bonds), inflation, corporate issuance (how many new shares companies sell) and other variables. By the early 2000s predictability of the equity premium, the extra return of stocks over safe Treasury bills (Chapter~\ref{ch:01}), was widely taught as a fact, and it had reshaped asset-pricing theory: if expected returns vary over time, then risk premiums, not only cash flows, move prices.
+
+Almost all of that evidence came from regressions fitted to the whole history. Goyal and Welch (2008) asked a sharper question: would an investor who had used these variables in real time, knowing only what was known at each date, have forecast better than someone who simply assumed the average past return? For most predictors the answer was no, and several did worse than the historical mean. In other words, a forecaster who ignored all the clever variables and simply expected stocks to do as well as they had on average would usually have been more accurate. Campbell and Thompson (2008) replied that small, sensible restrictions, such as ruling out negative forecasts of the premium, recover a modest but useful predictability. The debate turned on method as much as on data, and it established the out-of-sample test as the standard for every forecasting claim.
+
+The implications reach investors and researchers. An investor who times the market on valuation ratios is betting that in-sample predictability survives out of sample; a pension fund that sets contributions on an estimate of the equity premium needs to know which estimate is reliable; and every later claim in this book about forecasting, from volatility to machine learning, is judged with the tools this chapter builds. The claim on trial\index{claims-on-trial method} is: \textbf{a predictor that is statistically significant in sample will forecast the equity premium better than the historical mean out of sample, and well enough to be worth using.}
+
+The lab in Section~\ref{sec:09-lab} replicates the horse race of Goyal and Welch (2008) with their free, updated predictor file, applies the sign restrictions of Campbell and Thompson (2008), and uses White's Reality Check to account for the number of predictors tried, in order to check whether any predictor beats the historical mean when it is used as an investor would have used it.
+
+By the end of the chapter you will be able to:
+\begin{itemize}
+  \item explain why in-sample $R^2$ flatters complex models, and why in-sample significance is a poor guide to out-of-sample performance;
+  \item design a walk-forward evaluation using expanding or rolling windows with strict point-in-time information sets;
+  \item recognize and prevent data leakage, applying purging and embargoing for overlapping targets and cross-validation;
+  \item select natural hard-to-beat benchmarks and evaluate out-of-sample explanatory power ($R^2_{\text{OS}}$);
+  \item execute hypothesis tests for forecast accuracy using Diebold--Mariano (for non-nested models) and Clark--West (for nested models);
+  \item evaluate economic significance through certainty-equivalent return (CER) gains;
+  \item apply White's (2000) Reality Check and Hansen's (2005) SPA test to evaluate data mining across multiple candidate forecasting models;
+  \item analyze post-publication decay (McLean and Pontiff 2016) as a natural experiment;
+  \item summarize the Goyal--Welch critique and evaluate the effectiveness of restricted and combined forecasts.
+\end{itemize}
+
+In the lab you will replicate Goyal and Welch's study with updated data, evaluating 14 classic predictors walk-forward from 1965 to the present, and apply White's Reality Check to a universe of predictive rules.
+
+\begin{callout}
+\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain the statistical tests used by specialists, and you can skip them without losing the thread. The Lab and the lab extensions at the end are written for readers who want to run the Python code themselves.
+\end{callout}
+
+\section{Foundations: The Basics of Forecasting}
+\label{sec:09-foundations}
+
+\subsection{Information Sets}
+A forecast made at time $t$ for target $t+1$ must rely exclusively on the information set $\mathcal{F}_t$ available at date $t$: past prices, published macroeconomic releases, and models estimated on past data. A weather forecaster cannot read tomorrow's newspaper, and an honest test of a market forecast must hold to the same rule.
+
+\subsection{Data Splits: Training, Validation, and Test}
+Forecasters divide data into three distinct chronological partitions, much as a student uses practice problems to learn, a practice exam to decide how to study, and the final exam to show what was really learned:
+\begin{itemize}
+  \item \textbf{Training set}: used to estimate model parameters;
+  \item \textbf{Validation set}: used to tune hyperparameters, the settings of a model that are chosen rather than estimated, or select models;
+  \item \textbf{Test set}: held out until final evaluation to measure performance out of sample.
+\end{itemize}
+
+\subsection{In-Sample $R^2$ and Its Flattery}
+The $R^2$ measures the share of the ups and downs in the target that a model accounts for, from 0 (none) to 1 (all). For a model fitted to $T$ observations, the in-sample $R^2$ is:
+\begin{equation}
+  R^2 = 1 - \frac{\sum_{t=1}^T (y_t - \hat{y}_t)^2}{\sum_{t=1}^T (y_t - \bar{y})^2}
+  \label{eq:09-r2}
+\end{equation}
+Because OLS explicitly minimizes the sum of squared residuals, in-sample $R^2$ can never decrease when candidate regressors are added. Consequently, in-sample $R^2$ flatters overfitted models, necessitating out-of-sample evaluation. A tailor who keeps adjusting a suit on one customer will always improve the fit on that customer, but not necessarily on anyone else.
+
+\noindent\textbf{In plain terms.} A fair forecast may use only what was known at the time. A model always looks better on the data it was built from than on new data, so the real test is how it does on data it has never seen.
+
+\section{In-Sample Fit versus Out-of-Sample Performance}
+\label{sec:09-insample}
+
+The standard test asks whether today's value of a variable, such as the dividend--price ratio, helps forecast next month's or next year's excess return on the market. The standard time-series predictive regression evaluates next-period excess return:
+\begin{equation}
+  r_{t+1} = \alpha + \beta x_t + \varepsilon_{t+1}
+  \label{eq:09-pred}
+\end{equation}
+Goyal and Welch (2008) tested whether real-time recursive forecasts from Equation~\eqref{eq:09-pred} beat the simple historical mean $\bar{r}_t$. Most failed. Three primary forces open the gap between fit and forecast:
+\begin{enumerate}
+  \item \textbf{Estimation Error:} In finite samples with low signal-to-noise ratios, sampling noise in $\hat{\alpha}$ and $\hat{\beta}$ dominates the forecast.
+  \item \textbf{Structural Instability:} Economic relationships evolve over time due to structural shifts, learning, and institutional changes.
+  \item \textbf{Selection Bias:} Published predictors were selected because they fit historical data in-sample.
+\end{enumerate}
+In addition, Stambaugh (1999) bias inflates in-sample $t$-statistics when predictors $x_t$ are highly persistent ($\rho \approx 1$) and predictor shocks correlate with return shocks. A persistent predictor is one that changes slowly from month to month, as valuation ratios do, so that it carries much less independent information than its number of observations suggests.
+
+\noindent\textbf{In plain terms.} A variable can look like a strong predictor in a study of the past and still be useless for forecasting the future. The estimates are noisy, the economy changes, and the variables that get published are the ones that happened to fit the past best.
+
+\section{Walk-Forward Evaluation: Expanding and Rolling Windows}
+\label{sec:09-walkforward}
+
+A walk-forward evaluation pretends to stand at each date in history in turn, building the forecast with only the data available on that date and then checking it against what actually happened next. It replays history recursively:
+\begin{enumerate}
+  \item Select an initial forecast date $t_0$, establishing an initial estimation window.
+  \item Estimate parameters using data available up to $t$.
+  \item Forecast target $\hat{r}_{t+1}$ and record the benchmark forecast $\bar{r}_t$.
+  \item Advance to $t+1$, update the training window, and repeat until the sample end.
+\end{enumerate}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Expanding vs. Rolling Window Architectures}
+\label{tab:09-windows}
+\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.18\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.24\linewidth}>{\raggedright\arraybackslash}p{0.24\linewidth}@{}}
+\toprule
+Window Type & Training Data Used at Date $t$ & Key Advantage & Primary Limitation \\
+\midrule
+\textbf{Expanding} & All observations from start to $t$ & Uses maximum data; minimizes parameter estimation noise. & Adapts slowly if underlying data-generating process changes. \\
+\textbf{Rolling} & Fixed window of most recent $w$ observations & Adapts quickly to structural shifts. & Subject to higher parameter estimation error; sensitive to choice of $w$. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+In words, the out-of-sample $R^2$ asks how much smaller the model's forecast errors are than the errors of simply expecting the average past return. Out-of-sample forecast accuracy is evaluated using the Campbell and Thompson (2008) out-of-sample $R^2$:
+\begin{equation}
+  R^2_{\text{OS}} = 1 - \frac{\sum_{t} \left( r_{t+1} - \hat{r}_{t+1} \right)^2}{\sum_{t} \left( r_{t+1} - \bar{r}_t \right)^2}
+  \label{eq:09-r2os}
+\end{equation}
+$R^2_{\text{OS}} > 0$ indicates that model forecasts achieve lower mean squared error than the historical mean.
+
+\subsection{Theoretical Restrictions}
+Campbell and Thompson (2008) showed that imposing economic restrictions improves out-of-sample performance:
+\begin{itemize}
+  \item Set $\hat{\beta} = 0$ if the estimated slope sign contradicts economic theory.
+  \item Truncate negative equity premium forecasts at zero ($\hat{r}_{t+1} = \max(0, \hat{r}_{t+1})$).
+\end{itemize}
+Both restrictions apply common sense: investors should never expect to be paid less for holding risky stocks than for holding safe bills, and a model should not be allowed to forecast the opposite of what economic reasoning implies.
+
+\noindent\textbf{In plain terms.} The honest way to test a forecasting idea is to replay history step by step, never peeking ahead, and to compare the forecasts with the simple rule of expecting the average past return. Adding a little common sense to the forecasts, such as never predicting that stocks will earn less than bills, makes them noticeably more reliable.
+
+\section{Data Leakage: Look-Ahead, Publication Lags, Purging, and Embargoing}
+\label{sec:09-leakage}
+
+Data leakage is any way in which information from the future sneaks into a test of the past. It is the forecasting version of the look-ahead bias described in Chapter~\ref{ch:02}, and it occurs whenever future information enters model training or specification:
+\begin{itemize}
+  \item \textbf{Full-Sample Estimation \& Preprocessing:} Estimating coefficients, standardizing features, or setting winsorizing cutoffs, the limits at which extreme values are trimmed, using full-sample statistics.
+  \item \textbf{Hindsight Model Selection:} Choosing variables or hyperparameters based on full-sample metrics.
+  \item \textbf{Publication Lags \& Revisions:} Ignoring release delays (e.g., CPI releases, the official measure of consumer price inflation, arrive weeks after month-end; macroeconomic data undergo revisions). Point-in-time archives (such as ALFRED) must be used.
+  \item \textbf{Overlapping Targets \& Purging:} When predicting multi-period targets ($k$-period returns), training observations whose target windows overlap the forecast date contain future information. López de Prado (2018) defines \textbf{purging} as dropping these overlapping observations from the training set.
+  \item \textbf{Cross-Validation \& Embargoing:} In $k$-fold cross-validation, which splits the data into $k$ parts and tests on each part in turn while training on the rest, training data follow test folds. \textbf{Embargoing} drops a block of training data immediately after the test fold to eliminate serial correlation leakage.
+\end{itemize}
+
+\section{Benchmarks That Are Hard to Beat}
+\label{sec:09-benchmarks}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Natural Hard-to-Beat Forecasting Benchmarks}
+\label{tab:09-benchmarks}
+\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.30\linewidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Target Quantity & Natural Benchmark & Rationale \\
+\midrule
+Equity Premium & Historical mean return ($\bar{r}_t$) & Minimal estimation noise; avoids unstable parameter fits. \\
+Exchange Rates / Prices & Random Walk ($y_{t+1} = y_t$) & Meese and Rogoff (1983) empirical result. \\
+Interest Rates / Yields & Random Walk or Forward Rate & Yields are highly persistent. \\
+Volatility & Realized Volatility / EWMA & Volatility exhibits strong clustering. \\
+Macroeconomic Variables & Survey Consensus / Last Value & Professional surveys aggregate public information efficiently. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+A random walk forecast simply says that tomorrow's value will equal today's. It sounds naive, but it is remarkably hard to beat. Meese and Rogoff (1983) found that the economic models of exchange rates used by professionals could not forecast better than this naive guess, a result that has proved durable. The lesson for any forecasting claim is to ask first what the simplest sensible forecast would have achieved.
+
+\section{Measuring Forecast Accuracy: Diebold--Mariano and Clark--West}
+\label{sec:09-accuracy}
+
+\subsection{Non-Nested Model Comparison: Diebold--Mariano Test}
+In plain words, the Diebold--Mariano test asks whether one forecast's errors are reliably smaller than another's, or whether the difference could be luck.
+
+\begin{technote}
+\textbf{Technical note: the Diebold--Mariano test.} Diebold and Mariano (1995) test equal predictive accuracy between two non-nested forecasts based on loss differentials $d_t = e^2_{\text{bench},t} - e^2_{\text{model},t}$. The test statistic is a $t$-test on $\bar{d}$ using Newey--West HAC standard errors, with Harvey, Leybourne, and Newbold (1997) small-sample corrections.
+\end{technote}
+
+\subsection{Nested Model Comparison: Clark--West Test}
+When a model adds a predictor to the simple historical mean, the comparison needs a correction, because a model with an extra variable can look slightly worse even when the variable carries real information. The Clark--West test supplies that correction.
+
+\begin{technote}
+\textbf{Technical note: the Clark--West test.} When a predictive regression is compared against the historical mean, the models are nested. Under the null hypothesis ($\beta=0$), estimating $\beta$ introduces parameter estimation noise that elevates the model's mean squared error above the benchmark. The uncorrected Diebold--Mariano test is therefore undersized and biased against discovering true predictability.
+
+Clark and West (2007) adjust for estimation noise by defining the adjusted loss differential:
+\begin{equation}
+  f_t = (r_{t+1} - \bar r_t)^2 - \left[(r_{t+1} - \hat r_{t+1})^2 - (\bar r_t - \hat r_{t+1})^2\right]
+  \label{eq:09-cw}
+\end{equation}
+A one-sided $t$-test on the mean of $f_t$ tests whether the predictor carries significant predictive information.
+\end{technote}
+
+\subsection{Economic Value: Certainty-Equivalent Return (CER)}
+A statistical improvement matters only if it would have made an investor better off. The certainty-equivalent return translates a forecast's value into a guaranteed return: it is the safe return that an investor would consider just as good as following the forecast, so a gain of 1\% a year means the forecast was worth as much as an extra, risk-free 1\% a year. For a mean-variance investor with risk aversion $\gamma$, portfolio weight in equities is $w_t = \frac{\hat{r}_{t+1}}{\gamma \hat{\sigma}^2_{t+1}}$. The gain in Certainty-Equivalent Return ($\Delta \text{CER}$) measures the risk-free return premium the investor would accept to replace benchmark-based allocation with model-based forecasts. Campbell and Thompson (2008) provide the approximation $\Delta E[R] \approx R^2_{\text{OS}} / S^2$, where $S$ is the benchmark Sharpe ratio.
+
+\section{Multiple Testing in Next-Period Forecasting: White's Reality Check}
+\label{sec:09-reality}
+
+When a researcher tests $N$ candidate forecasting rules or models, selecting the top performer induces data-mining bias. White's Reality Check, which Chapter~\ref{ch:08} also uses for trading rules, asks whether the best of many models could have done this well by luck alone. White (2000) introduced the \textbf{Reality Check for Data Mining} to test the null hypothesis that the best model among $N$ candidates does not outperform the benchmark:
+\begin{equation}
+  H_0: \max_{k=1, \dots, N} E[d_k] \le 0
+  \label{eq:09-white-null}
+\end{equation}
+where $d_{k,t} = e^2_{\text{bench},t} - e^2_{k,t}$ represents the performance differential of model $k$ relative to the benchmark.
+
+\subsection{The Reality Check Protocol}
+\begin{technote}
+\textbf{Technical note: running the Reality Check.} The test proceeds in four steps.
+\begin{enumerate}
+  \item Compute observed mean performance differentials $\bar{d}_k = \frac{1}{T} \sum_{t=1}^T d_{k,t}$ for all $k = 1, \dots, N$, and record $V^{\text{obs}} = \max_k \bar{d}_k$.
+  \item Resample performance series jointly using the stationary block bootstrap (Politis and Romano 1994) across $B$ bootstrap iterations.
+  \item Construct the null distribution by centering bootstrapped statistics:
+  \begin{equation}
+    V^{*,b} = \max_{k=1, \dots, N} \left( \bar{d}_{k}^{*,b} - \bar{d}_k \right)
+  \end{equation}
+  \item Calculate the $p$-value as the proportion of bootstrap iterations where $V^{*,b} \ge V^{\text{obs}}$.
+\end{enumerate}
+\end{technote}
+Hansen (2005) refined this test into the Superior Predictive Ability (SPA) test, which reduces sensitivity to poor candidate models.
+
+\begin{callout}
+\noindent \textbf{What Failed: A Century of Technical Trading Rules}
+
+Brock, Lakonishok, and LeBaron (1992) documented significant profits from moving-average and trading-range rules applied to the Dow Jones Index from 1897 to 1986. Sullivan, Timmermann, and White (1999) re-evaluated these results across a universe of thousands of technical rules using White's Reality Check. Once search bias was accounted for, the best rule was statistically indistinguishable from chance out of sample, proving that the original results reflected data mining.
+\end{callout}
+
+\section{Post-Publication Samples as Natural Experiments}
+\label{sec:09-postpub}
+
+McLean and Pontiff (2016) evaluated 97 published anomalies across three distinct periods:
+\begin{enumerate}
+  \item \textbf{In-Sample Period}: original discovery sample;
+  \item \textbf{Post-Sample / Pre-Publication Period}: returns dropped by 26\%, reflecting data-mining bias;
+  \item \textbf{Post-Publication Period}: returns dropped by an additional 32\% (58\% total decline), reflecting arbitrage activities by market participants.
+\end{enumerate}
+For an investor, the practical message is that a pattern reported in a research paper should be expected to deliver well under half of its published historical return once it becomes widely known.
+
+\begin{callout}
+\noindent \textbf{What Failed: The Dividend Yield Out of Sample}
+
+The dividend-price ratio exhibited strong in-sample predictive performance through the 1980s. During the 1990s bull market, however, dividend yields dropped to historical lows, generating persistent negative return forecasts while equity markets surged. Real-time forecasters relying on dividend yields would have remained underweight equities throughout one of the largest bull markets in history. Structural shifts in mean dividend payouts explain much of this out-of-sample breakdown (Lettau and Van Nieuwerburgh 2008; Goyal and Welch 2008).
+\end{callout}
+
+\noindent\textbf{In plain terms.} Most variables that seemed to predict the stock market in studies of the past would not have helped an investor who used them at the time. Simple common-sense limits and averaging many forecasts help a little, and any published pattern should be expected to weaken once others know about it.
+
+\section{Lab~\thechapter: Replicating Goyal and Welch (2008) and White's Reality Check}
+\label{sec:09-lab}
+
+\begin{callout}
+\textbf{Lab~\ref{ch:09} at a glance.} \emph{Papers replicated:} Goyal and Welch (2008); Campbell and Thompson (2008); White (2000). \emph{Claim on trial:} In-sample significant predictors beat the historical mean out of sample. \emph{Data:} Goyal and Welch's updated dataset (\texttt{PredictorData.xlsx}), free from Amit Goyal's website, containing 14 macro predictors (valuation ratios, interest rates, credit spreads, stock variance, net equity expansion, inflation). \emph{Code:} \texttt{ch05-out-of-sample/}.
+\end{callout}
+
+\subsection*{Lab Setup and Structure}
+\begin{table}[htbp]
+\centering
+\small
+\caption{The 14 Macroeconomic Predictors of Goyal and Welch}
+\label{tab:09-goyal-predictors}
+\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Category & Predictors \\
+\midrule
+Valuation Ratios & Dividend--price ratio, dividend yield, earnings--price ratio, dividend payout ratio, book-to-market ratio. \\
+Interest Rates & Treasury-bill rate, long-term government yield, long-term bond return, term spread. \\
+Credit & Default yield spread (Baa minus Aaa), default return spread. \\
+Other & Stock variance, net equity expansion, inflation (lagged 2 months). \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+A few of these predictors need a word of explanation. The term spread is the gap between long-term and short-term government interest rates. The default yield spread is the gap between the yields on corporate bonds with lower (Baa) and higher (Aaa) credit ratings, a measure of how worried investors are about companies defaulting. Net equity expansion measures how much new stock companies are issuing relative to the market's size.
+
+\begin{itemize}
+  \item \textbf{Part A: In-Sample Regressions.} Run univariate regressions for all 14 predictors; record slope, White $t$-statistic, and $R^2$.
+  \item \textbf{Part B: Out-of-Sample Walk-Forward.} Generate recursive forecasts starting in 1965. Compute $R^2_{\text{OS}}$, Clark--West, and Diebold--Mariano statistics. Plot cumulative squared error differences.
+  \item \textbf{Part C: Remedies.} Evaluate Campbell--Thompson sign restrictions, forecast combinations, and certainty-equivalent return gains ($\Delta \text{CER}$).
+  \item \textbf{Part D: Post-Publication Natural Experiment.} Evaluate predictive performance in the post-2005 sample.
+  \item \textbf{Part E: White's Reality Check.} Apply White's Reality Check to a simulated technical trading universe to measure search bias.
+\end{itemize}
+
+\subsection*{Your verdict}
+
+Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:09-verdict}. If your verdict differs, explain which of your results led you there.
+
+\section{Where the evidence stands}
+\label{sec:09-verdict}
+
+The published studies cited in this chapter point to a clear pattern: \textbf{statistical significance in sample rarely carries over to forecasting out of sample, and most single predictors fail to beat the historical mean, although economic restrictions and combined forecasts recover a modest gain.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+In-sample predictability & \textbf{Yes} & The dividend--price ratio and other variables predict the equity premium in regressions fitted to the whole history. & Fama and French (1988); Campbell and Shiller (1988) \\
+\addlinespace[3pt]
+Single predictors out of sample & \textbf{No} & Most predictors fail to beat the historical mean in real time, and several do worse. & Goyal and Welch (2008); Goyal, Welch and Zafirov (2024) \\
+\addlinespace[3pt]
+Forecasts with economic restrictions & \textbf{Partly} & Ruling out wrong-signed slopes and negative premium forecasts recovers a modest but useful predictability. & Campbell and Thompson (2008) \\
+\addlinespace[3pt]
+Combined forecasts & \textbf{Partly} & An equal-weighted average of many weak forecasts beats each one by reducing the variance of the forecast. & Rapach, Strauss and Zhou (2010) \\
+\addlinespace[3pt]
+The dividend yield after 1990 & \textbf{No} & Low dividend yields signalled poor returns throughout one of the largest bull markets in history. & Lettau and Van Nieuwerburgh (2008); Goyal and Welch (2008) \\
+\addlinespace[3pt]
+The best of many rules & \textbf{No} & Once the search across thousands of rules is accounted for, the best rule is indistinguishable from chance. & Sullivan, Timmermann and White (1999); White (2000) \\
+\addlinespace[3pt]
+Published return patterns in general & \textbf{Weaker} & Returns fall by about a quarter out of sample and by more than half after publication. & McLean and Pontiff (2016) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{What would change the picture.} The evidence would support the claim more strongly if a predictor chosen in advance kept beating the historical mean in the years after publication, by enough to raise an investor's certainty-equivalent return after costs. It would weaken the claim further if the modest gains from restrictions and combinations also disappeared in new data.
+
+\section{What practitioners and investors can use}
+\label{sec:09-investors}
+
+The evidence in Section~\ref{sec:09-verdict} suggests several practical lessons.
+
+\textbf{Rules of Thumb:}
+\begin{itemize}
+  \item Start from the historical mean: Use the historical mean return as the primary benchmark for asset returns.
+  \item Prefer model combinations: Equal-weighted forecast combinations consistently beat individual predictive models by shrinking variance.
+  \item Inspect cumulative error plots: Plot cumulative squared error differences to verify whether forecast gains are steady or concentrated in single shock events.
+\end{itemize}
+
+\textbf{6-Question Investor Audit Checklist:}
+\begin{enumerate}
+  \item Were forecasts generated strictly walk-forward without look-ahead bias?
+  \item Were point-in-time publication delays and data revisions accounted for?
+  \item Is the benchmark model appropriate and hard to beat?
+  \item Was nested model comparison evaluated using the Clark--West test?
+  \item Does performance survive multiple-testing corrections (White's Reality Check / SPA)?
+  \item Does predictive efficacy persist in post-publication samples?
+\end{enumerate}
+
+\section*{Exercises}
+\addcontentsline{toc}{section}{Exercises}
+
+\subsection*{Conceptual (all readers)}
+\begin{enumerate}
+  \item Explain why in-sample $R^2$ cannot decrease when adding variables, whereas out-of-sample $R^2_{\text{OS}}$ can be negative.
+  \item A forecaster predicts 12-month returns monthly using past data. Explain which training observations must be purged to prevent leakage.
+  \item Why is the uncorrected Diebold--Mariano test biased when comparing nested predictive models? What adjustment does Clark--West provide?
+  \item Describe how White's Reality Check constructs a null distribution for the maximum performance statistic across $N$ models.
+  \item Explain why an equal-weighted combination of 14 weak forecasts often beats every individual forecast out of sample.
+  \item A financial commentator says that stocks are ``obviously overvalued'' and that investors should move to cash until valuations return to normal. Without any calculation, use the evidence in this chapter to explain what could go wrong with following that advice, and what you would want to know about the commentator's past record.
+\end{enumerate}
+
+\subsection*{Lab Extensions (technical readers)}
+\begin{enumerate}
+  \setcounter{enumi}{6}
+  \item Replicate Part B of Lab~\ref{ch:09} across 14 macro predictors. Compute $R^2_{\text{OS}}$ and Clark--West $p$-values for 1965--2005 vs. post-2005 samples.
+  \item Evaluate sensitivity to window choice by rerunning walk-forward forecasts using a 20-year rolling window versus an expanding window.
+  \item Apply White's Reality Check to a universe of 500 technical trading rules applied to daily market index returns. Determine whether the top rule survives multiple-testing penalties.
+\end{enumerate}

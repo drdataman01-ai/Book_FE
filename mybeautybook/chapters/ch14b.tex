@@ -1,0 +1,356 @@
+% Chapter 15 -- Claim: Credit Spreads Mainly Reflect Expected Defaults
+% Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
+% Defines the callout box only if the preamble has not.
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+\@ifundefined{callout}{%
+  \newtcolorbox{callout}{breakable, enhanced,
+    colback=white, colframe=gray!70, boxrule=0.5pt, arc=1mm,
+    borderline west={2.5pt}{0pt}{gray!70},
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
+\chapter{Claim: Credit Spreads Mainly Reflect Expected Defaults}
+\label{ch:15}
+
+A corporate bond fund that pays 5\% when government bonds pay 4\% seems to offer an easy extra percentage point, and most savers assume that the extra interest is simply compensation for the chance that some companies will not pay back what they borrowed. This chapter asks whether that common-sense explanation accounts for the extra yield, or whether investors are really being paid for something else.
+
+A corporate bond pays a higher yield than a Treasury bond of similar maturity, and the obvious reason is that companies can default. Merton (1974) made this reasoning precise. He treated a firm's shares as a call option on the firm's assets, and derived the extra yield, or credit spread\index{credit spread}, from the firm's borrowing, the volatility of its assets and the time to maturity. His work founded the structural approach to credit risk, which explains default from the firm's own finances rather than from its track record alone. On this view, the spread is mostly an insurance charge: the chance of default times the share of the money lost when default happens\index{loss given default}. Many investors think about credit this way, and credit ratings\index{credit rating} are designed around it, since they rank bonds by their expected losses from default\index{credit spread!expected-loss component}.
+
+The view can be tested, because a century of default data shows how often bonds of each rating have defaulted and how much investors got back. When researchers ran the test, the numbers did not add up. If spreads were an insurance charge, expected default losses should account for most of them, and Elton, Gruber, Agrawal and Mann (2001) checked whether they did. They found that expected default losses explain only a small part of corporate spreads, with taxes and a risk premium making up much of the rest. The structural models also predict that a firm's spread should move with its own leverage and the value of its assets. Collin-Dufresne, Goldstein and Martin (2001) tested this prediction and found that changes in spreads are driven mostly by a common force that has little to do with the default risk of individual firms. Huang and Huang (2012) asked whether the structural models could be rescued by fitting them carefully to the default rates actually observed, and they showed that models of default risk, fitted to actual default rates, explain only a small fraction of investment-grade spreads, the spreads on bonds that rating agencies judge relatively safe (rated Baa or BBB and above). This gap became known as the \textbf{credit spread puzzle}\index{credit spread puzzle}. If much of the spread is not about default, it may instead measure how willing investors are to bear risk, and Gilchrist and Zakraj\v{s}ek (2012) set out to measure that part. They split the spread into a part that reflects default risk and a remainder, the excess bond premium, and found that the remainder predicts recessions.
+
+The answer bears on what credit investors are really paid for, why spreads widen in recessions, and why highly rated structured securities proved so dangerous in 2007--08, when products designed around expected losses met a collapse in investors' appetite for risk. The claim on trial\index{claims-on-trial method} is: \textbf{the extra yield on corporate bonds over Treasuries is mostly payment for expected default losses.}
+
+The lab in Section~\ref{sec:15-lab} repeats the analysis of Elton et al.\ (2001) on a century of Moody's corporate bond yields from FRED, using published default and recovery rates. It adds the excess bond premium of Gilchrist and Zakraj\v{s}ek (2012), which the Federal Reserve publishes free, to check how much of the spread reflects expected defaults and what the rest pays for.
+
+By the end of the chapter you will be able to:
+
+\begin{itemize}
+  \item define default probabilities, recovery rates\index{recovery rate} and loss given default, and compute the spread that expected losses justify;
+  \item explain the Merton model\index{Merton model}, in which a firm's shares are a call option\index{option!call} on its assets;
+  \item explain why the timing of defaults matters for the spread, and summarize the evidence on the credit spread puzzle\index{credit spread puzzle}\index{risk-neutral pricing}\index{excess bond premium};
+  \item judge what a credit investor is paid for, and when reaching for yield is likely to disappoint.
+\end{itemize}
+
+\begin{callout}
+\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain more technical distinctions, and you can skip them without losing the thread. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
+\end{callout}
+
+\section{Foundations: spreads, default and recovery}
+\label{sec:15-foundations}
+
+\subsection{Credit spread}
+
+The credit spread is the yield on a corporate bond minus the yield on a Treasury bond of similar maturity. Moody's publishes long yield series, back to 1919, for established bonds rated \textbf{Aaa} and \textbf{Baa}, the highest and lowest investment-grade ratings. The \textbf{Baa--Aaa spread}\index{credit spread!default spread (Baa--Aaa)|textbf} compares two corporate yields, so it avoids some of the differences between corporate and Treasury bonds that have nothing to do with default.
+
+\subsection{Default probability (PD)}
+
+The \textbf{default probability (PD)} is the chance that the issuer fails to pay in a given year. Rating agencies publish historical default rates for each rating. Over 1920--2006, Moody's reported average annual default rates of 0.27\% for Baa issuers, essentially zero for Aaa, and about 1\% for Ba, the highest rating below investment grade (Moody's Investors Service 2007).
+
+\subsection{Recovery rate}
+
+The \textbf{recovery rate ($R$)}\index{recovery rate|textbf} is the share of a bond's face value that investors get back after a default, measured by the bond's price shortly afterwards. Moody's reported an average of 38\% for senior unsecured bonds over 1982--2006. The share that is lost, $1 - R$, is called the \textbf{loss given default}\index{loss given default|textbf}.
+
+\subsection{Expected-loss spread}
+
+An investor who cares only about average payoffs, and not about risk, demands just enough extra yield to cover the losses expected from default. For a one-year horizon with continuous compounding\index{compounding}, that spread is
+\begin{equation}
+  \text{spread} = -\ln\!\left[1 - \mathrm{PD}\,(1 - R)\right] \approx \mathrm{PD}\,(1 - R)
+  \label{eq:15-el}
+\end{equation}
+In words, the spread is roughly the chance of default times the share lost. Any spread above this level pays for something else: risk, difficulty of trading\index{illiquidity} or taxes.
+
+\subsection{Why spreads can exceed expected losses}
+
+\begin{itemize}
+  \item \textbf{A risk premium.}\index{risk premium|textbf} Defaults cluster in recessions, when investors' other wealth is also falling. Investors who dislike risk\index{risk aversion} demand extra pay for losses that arrive at bad times.
+  \item \textbf{Liquidity.}\index{liquidity|textbf} Corporate bonds trade less often than Treasuries, and at wider bid--ask spreads\index{bid--ask spread}.
+  \item \textbf{Taxes.}\index{taxes|textbf} In the United States, interest on corporate bonds is subject to state income tax, while interest on Treasuries is not.
+\end{itemize}
+
+\subsection{The Merton model}
+
+Merton (1974) treated a firm's shares as a call option on its assets, with the amount owed on its debt as the strike price (Figure~\ref{fig:15-merton}). The firm defaults if its assets are worth less than its debt when the debt falls due. The model links credit spreads to how much the firm has borrowed\index{leverage} and how volatile\index{volatility} its assets are. Its descendants, called \textbf{structural models}\index{Merton model|textbf}, are the standard tool for asking whether spreads are consistent with default risk.
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.8}{%
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.6\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=0, xmax=2, ymin=0, ymax=1.1,
+  xtick={0,1}, xticklabels={$0$, face value of debt $F$},
+  ytick={0,1}, yticklabels={$0$,$F$},
+  xlabel={Firm's asset value at maturity, $V$},
+  ylabel={Payoff},
+  clip=false,
+]
+  % Debt: min(V, F)
+  \addplot[fenavy, very thick] coordinates {(0,0) (1,1) (2,1)};
+  % Equity: max(V - F, 0)
+  \addplot[fegray, very thick, dashed] coordinates {(0,0) (1,0) (2,1)};
+  \node[align=center] at (axis cs:0.48,0.84) {default:\\$V < F$};
+  \node[fenavy, anchor=south] at (axis cs:1.5,1.03) {debt: $\min(V, F)$};
+  \node[fegray, anchor=west, align=left] at (axis cs:1.6,0.36)
+    {equity: $\max(V - F, 0)$,\\a call on the assets};
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{Shareholders own what is left after the debt is paid, which makes their shares a call option on the firm. The Merton model. At maturity, debtholders receive the firm's asset value $V$ up to the face value of debt $F$, so debt pays $\min(V, F)$. Shareholders receive what is left, $\max(V - F, 0)$, the payoff of a call option on the firm's assets. If $V < F$, the firm defaults.}
+\label{fig:15-merton}
+\end{figure}
+
+\textbf{Worked example.} A 10-year Baa bond yields 6\% and a 10-year Treasury yields 4\%, a spread of 2\% (Figure~\ref{fig:15-decomp}).
+
+\begin{itemize}
+  \item With $\mathrm{PD} = 0.27\%$ and $R = 38\%$, the expected-loss spread is $-\ln(1 - 0.0027 \times 0.62) \approx 0.17\%$. Expected losses explain only about 8\% of the spread.
+  \item For expected losses to explain the whole 2\%, the annual default rate would have to be about $(1 - e^{-0.02})/0.62 \approx 3.2\%$. That is roughly twelve times the historical Baa average, and well above the long-run average for Ba bonds.
+  \item Even pessimistic assumptions, $\mathrm{PD} = 1\%$ and $R = 20\%$, explain only 0.8 percentage points of the 2\% spread.
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.8}{%
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.61\linewidth, height=2.4cm,
+  axis x line*=bottom, axis y line=none,
+  xmin=0, xmax=2.2, ymin=0, ymax=1,
+  xtick={0,0.5,...,2},
+  xticklabel style={/pgf/number format/fixed},
+  xlabel={Spread over Treasuries (percentage points)},
+  clip=false,
+]
+  \fill[fenavy]  (axis cs:0,0.35)    rectangle (axis cs:0.17,0.75);
+  \fill[gray!35] (axis cs:0.17,0.35) rectangle (axis cs:2,0.75);
+  % Legend
+  \fill[fenavy]  (axis cs:0.02,1.55) rectangle (axis cs:0.1,1.75);
+  \node[anchor=west] at (axis cs:0.11,1.65) {expected default loss (0.17)};
+  \fill[gray!35] (axis cs:0.02,1.10) rectangle (axis cs:0.1,1.30);
+  \node[anchor=west] at (axis cs:0.11,1.20) {everything else (1.83)};
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{Expected default losses explain only a sliver of a typical investment-grade spread. Decomposing the worked example's 2\% Baa spread. At Moody's long-run default and recovery rates, expected default losses account for 0.17 percentage points. The remaining 1.83 points pay for something else: risk, illiquidity or taxes.}
+\label{fig:15-decomp}
+\end{figure}
+
+\noindent\textbf{In plain terms.} The extra yield on a corporate bond, its credit spread, can be compared with the losses that history says to expect from defaults. For a typical Baa bond those expected losses come to well under a fifth of a percentage point a year, while the spread is often one to two percentage points, so most of the extra yield must be paying for something else.
+
+\section{How it works}
+\label{sec:15-how}
+
+A corporate bond's spread over a Treasury can be split into four pieces:
+
+\begin{center}
+\small
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\toprule
+Component & What it pays for & How to measure it \\
+\midrule
+Expected default loss & The average loss from defaults & Historical default rates $\times$ loss given default \\
+Default risk premium & Bearing default losses that cluster in bad times & Residual after expected loss; structural models \\
+Liquidity premium & Costs and delays of trading corporate bonds & Bid--ask spreads, trading volume, bond-specific measures \\
+Tax premium & State taxes on corporate interest & Tax rates applied to the yield \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The claim is that the first piece dominates. The test has two steps. First, estimate expected losses from historical default and recovery data, and compare them with actual spreads. If they explain most of the spread, the claim survives. Second, examine what is left over\index{regression!residuals}. If the remainder is small and stable, it might be liquidity or measurement error. If it is large, rises in recessions and predicts economic activity, it behaves like a risk premium.
+
+In plain words, bond prices imply that companies will default far more often than they actually have, and the gap is what investors charge for bearing the risk. The shaded box gives the technical terms.
+
+\begin{technote}
+\textbf{Technical note: two kinds of default probability.} Bond prices imply a \textbf{risk-neutral}\index{risk-neutral pricing|textbf} default probability: the default rate that would justify the spread for an investor who does not care about risk. Historical data give the \textbf{real-world} default probability: how often bonds actually defaulted. The gap between the two measures how much investors charge for bearing default risk. Hull's textbooks show that this gap is large for investment-grade bonds and smaller, relative to the spread, for junk bonds, the high-yield bonds rated below investment grade.
+\end{technote}
+
+\textbf{Why the timing of defaults matters.} Two bonds with the same expected loss can deserve very different spreads. A bond whose defaults happen at random times adds little risk to a diversified\index{diversification} portfolio. A bond whose defaults all arrive in recessions, when stocks are falling and jobs are at risk, is much less attractive and should pay more. Defaults on investment-grade bonds are rare in normal times and concentrated in severe downturns, which is exactly the pattern that should demand a large premium.
+
+\noindent\textbf{In plain terms.} A corporate bond's extra yield can pay for four things: the average losses from default, the extra risk that those losses arrive in recessions, the difficulty of selling the bond, and taxes. What matters is not only how often a company defaults but when, because losses that arrive together with a recession hurt investors most.
+
+\section{The claim}
+\label{sec:15-claim}
+
+\begin{callout}
+\textbf{Claim.} The extra yield on corporate bonds over Treasuries mostly reflects the losses investors expect from default. Under reasonable assumptions about default and recovery rates, expected losses account for most of the average spread.
+\end{callout}
+
+To test it, three points need to be settled:
+
+\begin{itemize}
+  \item \textbf{What ``mostly'' means.} Here it means more than half of the average spread on investment-grade bonds. The claim could hold for junk bonds and fail for investment-grade bonds, or the reverse.
+  \item \textbf{What counts as reasonable assumptions.} Default and recovery rates vary over time and with how they are measured. The test uses long-run averages from the rating agencies, and asks how far they would have to be stretched to rescue the claim.
+  \item \textbf{What would count against it.} The claim fails if expected losses explain less than half of investment-grade spreads under any plausible assumptions, and if the remainder behaves like payment for risk: rising in recessions and predicting weaker economic activity.
+\end{itemize}
+
+\section{The original evidence}
+\label{sec:15-evidence}
+
+\textbf{Elton, Gruber, Agrawal and Mann (2001).} Using corporate bond prices and historical default and recovery rates, they found that expected default losses explained only a small part of the spread between corporate and Treasury yields. State taxes, which apply to interest on corporate bonds but not on Treasuries, explained a large part. The rest moved with the same risk factors that explain stock returns, which is evidence of a risk premium.
+
+\textbf{Collin-Dufresne, Goldstein and Martin (2001).} If spreads reflect default risk, changes in spreads should be explained by changes in what drives default in structural models: borrowing, the volatility of assets and interest rates. These explained only about a quarter of the changes in spreads. Most of the rest came from a single common force across all bonds, unrelated to the default risk of individual firms.
+
+\textbf{Huang and Huang (2012).} They fitted a wide range of structural models to historical default losses and to the extra return on stocks, and asked how much of actual spreads the models could explain. For investment-grade bonds, credit risk explained only a small share of spreads, and an even smaller share at short maturities. For high-yield bonds it explained much more. This gap became known as the \textbf{credit spread puzzle}\index{credit spread puzzle|textbf}.
+
+\textbf{Gilchrist and Zakraj\v{s}ek (2012).} They split corporate spreads into a part explained by expected default, estimated firm by firm, and a remainder they called the \textbf{excess bond premium}\index{excess bond premium|textbf}. The excess bond premium, not the default part, carried most of the information about the economy's future. A rise in it predicted lower output and employment, consistent with its measuring investors' appetite for risk and the health of banks and other lenders.
+
+Some later work narrows the puzzle by allowing default risk to rise and fall with the business cycle\index{business cycle}. None of it restores expected losses as the main part of investment-grade spreads.
+
+\noindent\textbf{In plain terms.} Study after study has found that expected defaults explain only a small part of the extra yield on safer corporate bonds, while taxes and a reward for bearing recession risk explain much of the rest. That leftover part tends to rise before economic downturns, which suggests it measures investors' fear rather than companies' actual chances of failing.
+
+\section{Lab~\thechapter: Replicating the Elton et al.\ (2001) spread decomposition}
+\label{sec:15-lab}
+
+\begin{callout}
+\textbf{Lab~\ref{ch:15} at a glance.} \emph{Papers replicated:} Elton, Gruber, Agrawal and Mann (2001); the excess bond premium of Gilchrist and Zakraj\v{s}ek (2012). \emph{Claim on trial\index{claims-on-trial method}:} credit spreads mainly reflect expected default losses. \emph{Data:} free monthly data from FRED\index{FRED}: Moody's yields on established Aaa and Baa bonds from 1919, the 10-year Treasury yield from 1953, the NBER recession indicator and industrial production. The Gilchrist--Zakraj\v{s}ek excess bond premium, published by the Federal Reserve, can be added. \emph{Code:} runs as a script (\texttt{python lab17.py}) or as a notebook with a prediction prompt before each step.
+\end{callout}
+
+\textbf{Part A, spreads.} The Baa--Aaa spread since 1919, and the Baa--Treasury and Aaa--Treasury spreads since 1953: their overall averages, their averages by decade, and their averages in recessions and expansions (Lab Figure~\ref{ch:15}.1).
+
+\textbf{Part B, decomposition.} The expected-loss spread under assumptions you can change. By default these are Moody's long-run averages: 0.27\% a year for Baa, zero for Aaa, and a 38\% recovery rate. The lab reports the share of each average spread that expected losses explain, and the default rate that would be needed to explain the whole spread at each date (Lab Figures~\ref{ch:15}.2 and~\ref{ch:15}.3).
+
+\textbf{Part C, the remainder as a risk premium.} Regressions of the growth in industrial production over the next 12 months on each spread, and on the excess bond premium if it is supplied; growth for each fifth of the spread's range; and the average path of the Baa--Aaa spread around the start of recessions (Lab Figure~\ref{ch:15}.4).
+
+\textbf{Part D, robustness checks.} The share of the Baa--Treasury spread explained across a grid of default rates from 0.1\% to 2\% and recovery rates from 20\% to 60\% (Lab Figure~\ref{ch:15}.5), the peaks in spreads in six crises, and averages by subperiod.
+
+Three measurement issues affect the decomposition, and they push in different directions:
+
+\begin{itemize}
+  \item \textbf{Maturity.} Moody's yields are for long bonds, typically 20 years or more, while the Treasury benchmark is 10 years. When long Treasury yields are higher than shorter ones, this widens the Baa--Treasury spread for reasons that have nothing to do with credit. The Baa--Aaa spread avoids the problem.
+  \item \textbf{Taxes.}\index{taxes|textbf} State taxes on corporate interest widen spreads between corporate and Treasury bonds, but not the Baa--Aaa spread.
+  \item \textbf{The timing of defaults.} Average annual default rates understate losses in the worst decades, such as the 1930s. Part D's grid includes default rates several times the average.
+\end{itemize}
+
+\textbf{What the simulated run shows.} The simulation builds the Baa--Aaa spread from a fixed expected loss of 0.15\% plus a premium that jumps in recessions. The lab finds what it should: expected losses explain about a quarter of the Baa--Aaa spread, the spread is higher in recessions, and a high spread predicts weaker growth in output. These results confirm that the code works. They say nothing about real markets. Run the lab on real data to reach your own verdict.
+
+\subsection{Robustness checks}
+\label{sec:15-stress}
+
+Results over the full sample can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
+
+\textbf{Default assumptions.} The obvious defence of the claim is that historical averages understate future defaults. Part D's grid shows how far the assumptions would have to be stretched. With the 1920--2006 Baa average of 0.27\%, expected losses are a small fraction of a spread of one to two percentage points. To explain most of it, Baa bonds would have to default at well over 1\% a year, with low recoveries, every year. That is the long-run record of Ba bonds, which are below investment grade, not of Baa bonds.
+
+\textbf{The Great Depression.} The 1930s are the worst period for investment-grade defaults in Moody's data. A default rate several times the long-run Baa average in those years would raise the share of the spread explained by expected losses sharply for that decade. Even so, the claim would still have to explain the spread in the many decades with almost no Baa defaults.
+
+\textbf{Crises.} Spreads peak in crises: the early 1930s, 1974--75, 1980--82, 2008--09 and March 2020. If spreads were expected losses, these peaks would predict correspondingly large defaults. In 2008--09 and 2020, defaults on investment-grade bonds rose, but stayed far below what the peak spreads would have required. Spreads widened mainly because investors demanded more to hold risk, and because dealers and funds pulled back from the market.
+
+\textbf{Rating categories.} For high-yield bonds, expected losses are a much larger share of the spread (Huang and Huang 2012). The claim may work for junk bonds and fail for investment-grade bonds. Moody's yield series cover only Aaa and Baa, so this lab cannot test this directly. Exercise 1 extends the decomposition using published default rates for lower ratings.
+
+\textbf{Liquidity.}\index{liquidity|textbf} Part of the remainder pays for the difficulty of trading corporate bonds, and it rises in crises when trading dries up. Separating liquidity from risk is hard, because both rise together in bad times. The Gilchrist--Zakraj\v{s}ek excess bond premium, which removes each firm's default risk, is a useful check. If it predicts output as well as the raw spread does, the predictive power does not come from expected defaults.
+
+\subsection*{Your verdict}
+
+Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:15-verdict}. If your verdict differs, explain which of your results led you there.
+
+\section{Where the evidence stands}
+\label{sec:15-verdict}
+
+The published studies cited in this chapter point to a clear pattern: \textbf{for investment-grade bonds, expected default losses explain only a minority of the spread, and the rest behaves like a premium for risk that rises in bad times. For high-yield bonds, expected losses are a much larger share.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you check these findings with free data.
+
+{\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.48\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Investment-grade spreads & \textbf{No} & Expected default losses accounted for only a small part of corporate spreads; state taxes and a risk premium made up much of the rest. & Elton, Gruber, Agrawal and Mann (2001) \\
+\addlinespace[3pt]
+Structural models calibrated to defaults & \textbf{No} & Credit risk explains a small share of investment-grade spreads, and an even smaller share at short maturities. & Huang and Huang (2012) \\
+\addlinespace[3pt]
+High-yield spreads & \textbf{Largely} & Credit risk accounts for a much larger share of the spread. & Huang and Huang (2012) \\
+\addlinespace[3pt]
+Changes in spreads & \textbf{No} & Default-risk variables explain about a quarter of spread changes; a common factor drives most of the rest. & Collin-Dufresne, Goldstein and Martin (2001) \\
+\addlinespace[3pt]
+The residual and the economy & \textbf{No} & The excess bond premium, not the default component, predicts lower output and employment. & Gilchrist and Zakraj\v{s}ek (2012) \\
+\addlinespace[3pt]
+Ranking of spreads by rating & \textbf{Yes} & Lower-rated bonds have higher spreads and higher expected losses, so ratings rank spreads correctly though they do not explain their level. & Moody's Investors Service (2007) \\
+\end{longtable}
+}
+
+Some later work narrows the credit spread puzzle by allowing default risk to rise and fall with the business cycle\index{business cycle}. None of it restores expected losses as the main part of investment-grade spreads.
+
+\textbf{What would change the picture.} The evidence would move toward the claim if a measure of liquidity explained most of the remainder, and that liquidity premium did not change with economic conditions. So far, the remainder and liquidity both rise in bad times.
+
+\subsection{Open questions}
+\label{sec:15-open}
+
+\begin{itemize}
+  \item \textbf{How much of the remainder is liquidity rather than risk?} Both rise in bad times. Better measures of how easily each bond trades, and the growth of bond ETFs, offer new ways to separate them.
+  \item \textbf{Has the mix of investors changed spreads?} Insurance companies, bond funds and ETFs hold most corporate bonds. Do their constraints, such as capital rules tied to ratings or pressure from withdrawals, create premiums unrelated to default?
+  \item \textbf{What did central-bank purchases do?} In 2020 the Federal Reserve announced that it would buy corporate bonds, and spreads fell sharply. How much of the premium is the price of dealers' and banks' limited capacity\index{capacity} to hold bonds?
+  \item \textbf{Do structural models need fixing or replacing?} Models in which risk and default rates change with the economy narrow the credit spread puzzle. Do they fit spreads across ratings and maturities as well as they fit the average?
+\end{itemize}
+
+\section{What practitioners and investors can use}
+\label{sec:15-investors}
+
+The evidence in Section~\ref{sec:15-verdict} suggests several practical lessons.
+
+\textbf{Credit pays for recession risk.} An investor in investment-grade bonds earns a spread well above expected default losses. That is good news on average, but it is pay for a specific risk: losses and falling prices that arrive together with stock-market losses and recessions. Corporate bonds are therefore no substitute for Treasuries in a portfolio meant to protect against stock-market losses.
+
+\textbf{The limits of reaching for yield.} When interest rates are low, investors move into lower-rated or longer-dated corporate bonds to earn more. The extra yield is real, but it is pay for bearing more of the same recession risk. A portfolio that has quietly built up credit exposure will behave like a stock portfolio in a downturn.
+
+\textbf{Ratings measure expected loss, not timing.} A rating ranks bonds by how likely they are to default and how much investors are likely to lose. It says nothing about whether those losses will arrive in a recession, which is what decides the risk premium.
+
+\textbf{Questions to ask a credit manager:}
+
+\begin{itemize}
+  \item What share of the portfolio's extra yield over Treasuries would be lost in a recession with default rates like those of 2009?
+  \item How closely do the portfolio's returns move with stocks in bad months?
+  \item How easily could the holdings be sold in a crisis, and at what cost?
+  \item For structured holdings, how do losses depend on correlations\index{correlation} between the underlying loans?
+\end{itemize}
+
+\begin{callout}
+\textbf{What Failed: highly rated structured credit before 2008.} By 2007, according to Fitch, roughly 60\% of all global structured products carried AAA ratings, compared with less than 1\% of corporate bonds (Coval, Jurek and Stafford 2009). Issuers pooled mortgages and other loans and sliced each pool into \textbf{tranches}\index{tranches|textbf}, claims with different priority on the pool's losses. This let them create large quantities of senior securities whose expected default losses, as estimated by rating models, were as low as those of the safest corporate bonds. These securities were priced accordingly, with spreads similar to those of other AAA debt.
+
+The mistake was the claim this chapter tests: that a spread need only pay for expected losses. Senior tranches lose money only when many of the underlying loans default together, which happens in a severe recession. Their losses are therefore concentrated in the worst possible times, so they deserved much larger risk premiums than corporate bonds with the same expected loss. In 2007, Moody's downgraded 31\% of the asset-backed CDO tranches it rated, including 14\% of those first rated AAA, and many more were downgraded in 2008. Investors who had treated rating-based expected losses as the whole story discovered that when losses arrive matters as much as how large they are on average.
+\end{callout}
+
+\section*{Exercises}
+\addcontentsline{toc}{section}{Exercises}
+
+\subsection*{Conceptual (all readers)}
+
+\begin{enumerate}
+  \item Using Moody's long-run average annual default rates (about 1.1\% for Ba and 3.5\% for B) and a 38\% recovery rate, compute the expected-loss spread for Ba and B bonds. If typical spreads are 3\% and 5\%, what share of each is expected loss? Compare the results with Baa.
+  \item A 5-year Baa bond yields 5.5\% and the 5-year Treasury yields 4\%. With a 40\% recovery rate, what annual default rate would make expected losses equal the spread? What does this say about risk-neutral and real-world default probabilities?
+  \item Explain in words why a bond whose defaults all happen in recessions should pay a higher spread than one with the same expected loss whose defaults happen at random times.
+  \item A retiree is choosing between a government bond fund and a corporate bond fund that pays one percentage point more. Without any calculation, explain what the extra yield is mainly paying for, according to this chapter, and in what kind of year the corporate fund would be most likely to disappoint.
+\end{enumerate}
+
+\subsection*{Lab extensions (technical readers)}
+
+\begin{enumerate}
+  \setcounter{enumi}{4}
+  \item Part B: with the default assumptions, what share of the Baa--Treasury and Baa--Aaa spreads do expected losses explain? Why might the two shares differ?
+  \item Part B: plot the default rate needed to explain the whole spread. In which months was it lowest? Was it ever below the historical Baa default rate?
+  \item Part C: does the Baa--Aaa spread predict growth in industrial production? If you have the excess bond premium, does it predict better?
+  \item Part D: find default and recovery assumptions under which expected losses explain 75\% of the average Baa--Treasury spread. Are they plausible for investment-grade bonds?
+  \item Subtract an estimate of the effect of state taxes (for example, a 4\% tax rate applied to the corporate yield) and recompute the remainder. How much does it shrink?
+  \item A pension fund wants to raise its yield by moving from Treasuries to Baa corporate bonds. Using this chapter's evidence, explain what the fund will be paid for, and when it is likely to regret the move.
+\end{enumerate}
