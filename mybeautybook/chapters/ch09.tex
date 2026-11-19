@@ -37,9 +37,6 @@ By the end of the chapter you will be able to:
   \item judge whether an optimized portfolio beats equal weighting\index{equal weighting (1/N)} after costs, and summarize the evidence.
 \end{itemize}
 
-\begin{callout}
-\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain derivations, and you can skip them without losing the thread. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
-\end{callout}
 
 \section{Foundations: mean-variance optimization}
 \label{sec:12-foundations}
@@ -212,7 +209,6 @@ Solving this problem with Lagrange multipliers shows that every solution has the
 
 This procedure generates a series of genuinely out-of-sample returns that mirrors real-time investing. Portfolio rules are then compared using these realized outcomes rather than their in-sample optimization results.
 
-\noindent\textbf{In plain terms.} Markowitz's method chooses the mix of investments that gives the most expected return for each level of risk, taking into account how the investments move together. The catch is that it needs to know each investment's future average return and risk, which can only be estimated from the past, so the only fair test is how its portfolios perform in later years they were not built on.
 
 \section{Why optimization can fail}
 \label{sec:12-how}
@@ -363,8 +359,6 @@ It falls as the correlation rises, until the optimizer starts to short B at a co
 
 \textbf{The lesson.} Mean-variance optimization combines its least reliable input, expected returns, with its most sensitive operation, inverting a covariance matrix of similar assets. The result is a portfolio that responds strongly to noise. This is why the repairs in Section~\ref{sec:12-repairs} either constrain the weights, shrink the estimates, or drop expected returns altogether, and why the simplest rule of all, equal weighting, is a serious competitor.
 
-\noindent\textbf{In plain terms.} The optimizer pours money into whatever looks best on paper, and what looks best is mostly a matter of which assets happened to do well in the data. A difference in average returns too small to measure reliably can flip the portfolio from one asset to another, so the optimizer amplifies noise rather than information.
-
 
 \section{How optimization is repaired}
 \label{sec:12-repairs}
@@ -425,7 +419,6 @@ Risk-based rules decide how much risk each asset should carry, not how much mone
 
 Rebalancing\index{rebalancing} less often, or penalizing turnover\index{turnover}, reduces trading costs. The price is that the portfolio holds weights based on older information.
 
-\noindent\textbf{In plain terms.} Every repair works by trusting the noisy estimates less, whether by banning extreme bets, toning down extreme numbers, ignoring expected returns or simply trading less. The more an optimizer is protected in this way, the more it ends up looking like an even split across assets.
 
 \section{How allocation rules behave in rising and falling markets}
 \label{sec:12-regimes}
@@ -478,8 +471,6 @@ The 1/N rule gives every asset the same weight, whatever its size. To keep the w
 \subsection{A common weakness: correlations change in a crisis}
 
 Every optimized portfolio relies on correlations estimated from the past, and those estimates are least reliable when they matter most. Longin and Solnik (2001) found that correlations between stock markets rise in bear markets, so the diversification\index{diversification} an optimizer counted on tends to disappear just as prices fall. A portfolio built from data gathered in calm times will therefore be riskier in the next crisis than its optimizer reports.
-
-\noindent\textbf{In plain terms.} Each way of dividing money has a personality: some do better in booms, others lose less in slumps, and some depend on bonds rising when stocks fall. None of them is protected when everything falls together, as stocks and bonds did in 2022.
 
 
 \section{How practitioners use optimization}
@@ -538,7 +529,6 @@ A result counts as evidence for either form only if it meets four conditions:
 
 The literature therefore agrees on the strong form: sample mean--variance loses to 1/N. It disagrees on the weak form, and the answer depends on trading costs, turnover and which assets are used.
 
-\noindent\textbf{In plain terms.} In a famous test, none of fourteen sophisticated methods reliably beat simply splitting money evenly, and the textbook optimizer would need centuries of data to win. Simpler rules that ignore how assets move together and trade rarely have done somewhat better, but only by giving up most of what makes optimization sophisticated.
 
 \section{Lab~\thechapter: Replicating DeMiguel, Garlappi and Uppal (2009)}
 \label{sec:12-lab}

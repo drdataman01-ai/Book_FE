@@ -45,9 +45,6 @@ By the end of the chapter you will be able to:
   \item judge what an option-income fund is likely to deliver, and what can go wrong\index{Black--Scholes--Merton model}\index{Greeks}.
 \end{itemize}
 
-\begin{callout}
-\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain formulas for specialized performance measures, and you can skip them without losing the thread. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
-\end{callout}
 
 \section{Foundations: the VIX and the option seller's payoff}
 \label{sec:16-foundations}
@@ -94,7 +91,6 @@ The VIX, introduced in Section~\ref{sec:10-iv}, is computed from the prices of a
 \label{fig:16-put}
 \end{figure}
 
-\noindent\textbf{In plain terms.} The VIX measures the volatility that option prices imply, and it has usually been higher than the volatility that actually followed. An option seller pockets that gap on average, much as an insurer profits when premiums exceed claims, but a single bad month can wipe out more than a year of gains.
 
 \section{How it works}
 \label{sec:16-how}
@@ -153,7 +149,6 @@ The first two are what most ``option income'' products, for individuals and inst
 
 That shape creates a measurement problem. The Sharpe ratio uses only the average return and the standard deviation, so it cannot see skewness. Selling out-of-the-money options can raise a portfolio's Sharpe ratio while making its worst losses much larger. Section~\ref{sec:16-measure} sets out measures that are harder to game.
 
-\noindent\textbf{In plain terms.} Investors who want protection against crashes pay a premium for it, and sellers are paid for taking the risk. The popular option-income strategies, covered calls and put-writing, carry most of the stock market's risk on top of that bet, so their returns look smooth until a crash arrives.
 
 \section{The claim}
 \label{sec:16-claim}
@@ -188,7 +183,6 @@ To test it, three points need to be settled:
 
 \textbf{The skeptics.} Broadie, Chernov and Johannes (2009) argued that large average losses on index puts are not by themselves evidence that puts are overpriced. Under standard models with crashes and reasonable risk premiums, put returns should be very negative and very noisy, so short samples say little. Israelov and Nielsen (2015) split the returns of covered calls into three parts: exposure to the stock market, a bet against volatility, and an unintended bet that recent market moves will reverse. The stock-market exposure drove most of the risk and return. The bet against volatility had a Sharpe ratio near 1.0 but supplied less than 10\% of the risk, and the reversal bet added about a quarter of the risk with little return. A covered call, in other words, is mostly a stock-market position.
 
-\noindent\textbf{In plain terms.} The research agrees that option buyers have paid more than the volatility they received, so the premium is real. The covered-call strategies sold to ordinary investors, however, earn most of their return simply from owning stocks, and only a small part from the premium itself.
 
 \section{Measuring option-strategy returns}
 \label{sec:16-measure}
@@ -212,7 +206,6 @@ Here $T$ is the number of periods, $\Delta t$ is the length of each period in ye
 
 \textbf{Use a long enough sample.} A strategy that loses heavily once a decade needs several decades of data to estimate its average return (Section~\ref{sec:01-foundations}). Broadie, Chernov and Johannes (2009) showed how noisy put returns are even over twenty years. A backtest that starts after 2009 and ends before 2020, for example, would miss both of the big losses since 1990.
 
-\noindent\textbf{In plain terms.} An option-selling strategy should be compared with a mix of stocks and Treasury bills that carries the same market risk, not with the stock market itself. Its losses in down markets, its rare but severe crashes and the length of its track record all matter more than its smooth average.
 
 \section{Lab~\thechapter: Replicating Carr and Wu (2009) and the Cboe put-write and buy-write indices}
 \label{sec:16-lab}

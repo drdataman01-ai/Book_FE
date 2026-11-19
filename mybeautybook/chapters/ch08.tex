@@ -75,9 +75,6 @@ By the end of the chapter you will be able to:
   \item backtest\index{backtest} a VaR model with the Kupiec\index{Kupiec test} and Christoffersen\index{Christoffersen test} tests and the Basel traffic light\index{Basel framework}\index{Basel traffic light}, and judge a bank's risk disclosures.
 \end{itemize}
 
-\begin{callout}
-\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain the formulas of the statistical tests, and you can skip them without losing the thread. The Lab, the robustness checks and the lab extensions are written for readers who want to run the Python code themselves.
-\end{callout}
 
 \section{Foundations: VaR, expected shortfall and their properties}
 \label{sec:11-foundations}
@@ -184,7 +181,6 @@ Measure & What it reports & Result & Why \\
 \end{tabularx}
 \end{center}
 
-\noindent\textbf{In plain terms.} VaR is the loss a bank expects to exceed only on its worst one day in a hundred, and expected shortfall is the average loss on those worst days. VaR says where the bad days begin but not how bad they get, which is why it can miss rare disasters and can even make diversification look risky.
 
 \section{Six ways to compute VaR}
 \label{sec:11-how}
@@ -212,8 +208,6 @@ Filtered historical simulation (FHS) & GJR-GARCH & Empirical quantile of past \e
 \textbf{EWMA and GARCH}\index{EWMA|textbf} react to volatility within days, which is Chapter~\ref{ch:10}'s central finding. With normal shocks, however, they understate the tail. Even after volatility clustering is removed, daily returns have fatter tails than the normal distribution, so a normal 99\% VaR built on a good volatility forecast\index{volatility!forecasting} is still breached too often.
 
 \textbf{Filtered historical simulation}\index{Value at Risk (VaR)!filtered historical simulation|textbf} (Barone-Adesi, Giannopoulos and Vosper 1999; Hull and White 1998) combines the strengths of both approaches. It first divides each past return by that day's volatility forecast, which puts calm and turbulent days on the same scale; these rescaled returns are called standardized returns. It then reads the VaR from the worst of these rescaled returns, as historical simulation does, which captures the fat tails\index{fat tails} without assuming a distribution. Finally, it multiplies by today's volatility forecast, so the VaR reacts quickly. The GJR\index{GARCH!GJR}-$t$ model follows the same idea but uses a Student-$t$ distribution, a bell-shaped curve with fatter tails than the normal, for the tail.
-
-\noindent\textbf{In plain terms.} A VaR model must guess two things: how turbulent tomorrow will be, and how extreme the worst days can get. Simple methods that look back over a year react too slowly when markets turn, while methods that track recent turbulence and allow for extreme days do much better.
 
 
 
@@ -246,7 +240,6 @@ To test it we need to be precise on four points.
 
 \textbf{Which models work best.} Studies that compare many models reach the same conclusion. Models that combine a GARCH-type volatility forecast with a fat-tailed distribution perform best, while plain historical simulation and normal models with slow-moving volatility perform worst (Kuester, Mittnik and Paolella 2006).
 
-\noindent\textbf{In plain terms.} Banks' own VaR numbers were cautious on average but failed in clusters during market turmoil, and a simple model that tracks recent volatility did as well as the banks' elaborate systems. One year of data is too short to tell a good model from a bad one with confidence.
 
 \section{Backtesting VaR and expected shortfall}
 \label{sec:11-backtest}
@@ -286,8 +279,6 @@ Red & 10 or more & 4.0 & n/a \\
 Even a correct model has bad luck sometimes. It lands in the yellow zone about one year in nine, and almost never in the red (Figure~\ref{fig:11-traffic}). The zones balance two mistakes: punishing banks whose models are good, and letting banks with bad models off lightly.
 
 \textbf{Backtesting expected shortfall.}\index{expected shortfall (ES)|textbf} Since 2016, banks have set capital with 97.5\% ES rather than VaR. ES is harder to backtest, because there is no simple count to check. A breach count tells you whether the VaR line was in the right place, but ES is an average size of loss, and no single day shows whether an average was right. Statisticians call this property being not \textbf{elicitable}\index{elicitability|textbf} (Gneiting 2011). Tests exist nonetheless. The \textbf{exceedance-residual test} of McNeil and Frey (2000) looks only at breach days and checks whether the actual losses on those days match the ES forecast on average. Part D of the lab applies it. Because ES is hard to test, Basel still backtests VaR at 97.5\% and 99\% alongside the ES used for capital.
-
-\noindent\textbf{In plain terms.} A VaR model can be checked every day: either the loss was larger than promised or it was not. A good model gets the number of bad surprises right and spreads them out over time, whereas a poor one bunches them together in a crisis, exactly when the bank needs the model most.
 
 
 \section{Lab~\thechapter: Replicating the Kupiec and Christoffersen backtests}

@@ -45,9 +45,6 @@ By the end of the chapter you will be able to:
   \item test whether momentum still works over time, across markets and through its crashes.
 \end{itemize}
 
-\begin{callout}
-\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain construction details, and you can skip them without losing the thread. The Lab, the robustness checks and the lab extensions are written for readers who want to run the Python code themselves.
-\end{callout}
 
 
 \section{Foundations: past returns, two kinds of momentum, and investor behavior}
@@ -160,7 +157,6 @@ Also, volatility scaling is the main tool for managing momentum's crashes. Momen
 
 Momentum at horizons of a few months to a year fits underreaction or delayed overreaction; the long-run reversals documented by De Bondt and Thaler (1985) fit overreaction followed by correction.
 
-\noindent\textbf{In plain terms.} Momentum means betting that recent winners keep winning for a while. Stock-picking momentum compares stocks with each other, while trend following looks at whether each market has been rising or falling on its own. A common explanation is that investors react to news too slowly at first and too strongly later, and a common way to control the strategy's risk is to hold less of it when markets are turbulent.
 
 \section{How it works}
 \label{sec:05-how}
@@ -210,7 +206,6 @@ Momentum at horizons of a few months to a year fits underreaction or delayed ove
 
 \textbf{Managing the crashes.} Because momentum's volatility rises sharply before and during crashes, scaling the position by forecast volatility, as in Equation~\eqref{eq:05-volscale}, cuts exposure when crashes are most likely. Barroso and Santa-Clara (2015) found that this nearly doubled momentum's Sharpe ratio\index{Sharpe ratio} and largely eliminated its crashes in U.S. data. Daniel and Moskowitz (2016) proposed a dynamic version that also uses a forecast of momentum's mean return.
 
-\noindent\textbf{In plain terms.} Momentum's worst losses are not random. They come when a falling market suddenly turns up, because the strategy is then betting against the battered stocks that rebound hardest. Cutting the position when the strategy's own returns become unusually volatile has historically avoided much of that damage.
 
 \section{The claim}
 \label{sec:05-claim}
@@ -241,7 +236,6 @@ The final clause is what distinguishes this chapter's claim from a simple statem
 
 \textbf{Crashes.} Daniel and Moskowitz (2016) documented that momentum's worst losses come in clusters after market declines, when the market rebounds. In the spring of 2009, as the market recovered from the financial crisis, past losers, many of them battered financial and cyclical stocks, rose far more than past winners. A similar episode occurred in 1932. The crashes were large enough that momentum's long-run return, though positive, came with negative skewness\index{skewness} and extreme drawdowns\index{drawdown}. Barroso and Santa-Clara (2015) showed that scaling by forecast volatility removed much of this risk in U.S. data.
 
-\noindent\textbf{In plain terms.} Momentum has been found in the United States before and after it was published, in most other stock markets and in bonds, currencies and commodities. Its great weakness is the occasional crash, which can wipe out years of gains in a few months.
 
 \section{Lab~\thechapter: Replicating Jegadeesh and Titman (1993) and Daniel and Moskowitz (2016)}
 \label{sec:05-lab}

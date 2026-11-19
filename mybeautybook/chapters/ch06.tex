@@ -37,9 +37,6 @@ By the end of the chapter you will be able to:
 
 In the lab you will replicate Goyal and Welch's study with updated data, evaluating 14 classic predictors walk-forward from 1965 to the present, and apply White's Reality Check to a universe of predictive rules.
 
-\begin{callout}
-\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain the statistical tests used by specialists, and you can skip them without losing the thread. The Lab and the lab extensions at the end are written for readers who want to run the Python code themselves.
-\end{callout}
 
 \section{Foundations: The Basics of Forecasting}
 \label{sec:09-foundations}
@@ -63,7 +60,6 @@ The $R^2$ measures the share of the ups and downs in the target that a model acc
 \end{equation}
 Because OLS explicitly minimizes the sum of squared residuals, in-sample $R^2$ can never decrease when candidate regressors are added. Consequently, in-sample $R^2$ flatters overfitted models, necessitating out-of-sample evaluation. A tailor who keeps adjusting a suit on one customer will always improve the fit on that customer, but not necessarily on anyone else.
 
-\noindent\textbf{In plain terms.} A fair forecast may use only what was known at the time. A model always looks better on the data it was built from than on new data, so the real test is how it does on data it has never seen.
 
 \section{In-Sample Fit versus Out-of-Sample Performance}
 \label{sec:09-insample}
@@ -81,7 +77,6 @@ Goyal and Welch (2008) tested whether real-time recursive forecasts from Equatio
 \end{enumerate}
 In addition, Stambaugh (1999) bias inflates in-sample $t$-statistics when predictors $x_t$ are highly persistent ($\rho \approx 1$) and predictor shocks correlate with return shocks. A persistent predictor is one that changes slowly from month to month, as valuation ratios do, so that it carries much less independent information than its number of observations suggests.
 
-\noindent\textbf{In plain terms.} A variable can look like a strong predictor in a study of the past and still be useless for forecasting the future. The estimates are noisy, the economy changes, and the variables that get published are the ones that happened to fit the past best.
 
 \section{Walk-Forward Evaluation: Expanding and Rolling Windows}
 \label{sec:09-walkforward}
@@ -124,7 +119,6 @@ Campbell and Thompson (2008) showed that imposing economic restrictions improves
 \end{itemize}
 Both restrictions apply common sense: investors should never expect to be paid less for holding risky stocks than for holding safe bills, and a model should not be allowed to forecast the opposite of what economic reasoning implies.
 
-\noindent\textbf{In plain terms.} The honest way to test a forecasting idea is to replay history step by step, never peeking ahead, and to compare the forecasts with the simple rule of expecting the average past return. Adding a little common sense to the forecasts, such as never predicting that stocks will earn less than bills, makes them noticeably more reliable.
 
 \section{Data Leakage: Look-Ahead, Publication Lags, Purging, and Embargoing}
 \label{sec:09-leakage}
@@ -236,7 +230,6 @@ For an investor, the practical message is that a pattern reported in a research 
 The dividend-price ratio exhibited strong in-sample predictive performance through the 1980s. During the 1990s bull market, however, dividend yields dropped to historical lows, generating persistent negative return forecasts while equity markets surged. Real-time forecasters relying on dividend yields would have remained underweight equities throughout one of the largest bull markets in history. Structural shifts in mean dividend payouts explain much of this out-of-sample breakdown (Lettau and Van Nieuwerburgh 2008; Goyal and Welch 2008).
 \end{callout}
 
-\noindent\textbf{In plain terms.} Most variables that seemed to predict the stock market in studies of the past would not have helped an investor who used them at the time. Simple common-sense limits and averaging many forecasts help a little, and any published pattern should be expected to weaken once others know about it.
 
 \section{Lab~\thechapter: Replicating Goyal and Welch (2008) and White's Reality Check}
 \label{sec:09-lab}

@@ -54,9 +54,6 @@ By the end of the chapter you will be able to:
 
 In the lab you will use nearly a century of real market data, together with one controlled simulation, to measure four of these problems. You will see how much each problem can inflate a strategy's apparent performance and how much of that inflation\index{inflation} each fix removes.
 
-\begin{callout}
-\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summary at the end of each major section; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain details that matter mainly to researchers, and you can skip them without losing the thread. The Lab and the lab extensions at the end are written for readers who want to run the Python code themselves.
-\end{callout}
 
 \section{Foundations: where financial data comes from}
 \label{sec:02-foundations}
@@ -127,8 +124,6 @@ A company is \textbf{delisted}\index{delisting|textbf} when its stock stops trad
 \subsection{Dates and timing}
 
 Companies report their accounting results for a \textbf{fiscal year}\index{fiscal year|textbf}, which is a twelve-month reporting period that does not always end in December. These results are published weeks or months after the year ends, so a company whose fiscal year ends on 31 December may not release its annual report until February or March. A study that treats the figures as known on the last day of the fiscal year, rather than on the day they were published, gives itself information that no investor actually had at the time. \textbf{Point-in-time}\index{data!point-in-time|textbf} data avoids this problem by recording what was known on each date, including the original values of any numbers that were later revised.
-
-\noindent\textbf{In plain terms.} A stock's quoted price is not the same as what its owners earned, because splits and dividends change the price without making anyone richer or poorer. How a portfolio weighs big and small companies decides which companies drive its results. Good data must also remember the companies that failed and must record each number on the date it actually became known.
 
 \section{Measuring returns: choosing the right measure}
 \label{sec:02-returns}
@@ -226,8 +221,6 @@ where $\sigma$ is the volatility. For a stock index with 20\% annual volatility,
 \item Whenever a source reports an average return, you should check which kind it is. Lab~\ref{ch:02} measures the gap on real portfolios.
 \end{enumerate}
 
-\noindent\textbf{In plain terms.} The same investment can be reported with very different returns, depending on whether dividends are counted, whether the return on safe Treasury bills is subtracted, and how the yearly returns are averaged. Before comparing two numbers, make sure they were measured the same way, and when you want to know how much money an investor actually made, look at the compound (geometric) average.
-
 \section{Research datasets and their free alternatives}
 \label{sec:02-datasets}
 
@@ -258,8 +251,6 @@ Yahoo Finance and similar & Daily prices for current stocks, ETFs and indexes & 
 \end{center}
 
 A \textbf{predictor}, also called a \textbf{signal}, is a variable that a study uses to forecast returns, such as a valuation ratio or a past return. An ETF, or exchange-traded fund, is a fund whose shares trade on an exchange like a stock, and many ETFs simply track an index. The last row of the table deserves particular attention. Free stock-price sites are convenient, but they mostly cover companies that still exist today. A backtest that downloads today's stocks from such a site and runs them through the past therefore has survivorship bias built into it, which is the problem that Section~\ref{sec:02-survivorship} describes.
-
-\noindent\textbf{In plain terms.} The databases that professional researchers use are expensive, but several free sources are built from them and can be trusted for portfolio-level tests. The free sources to be careful with are the popular stock-price websites, because they mostly show the companies that are still around today.
 
 \section{Survivorship bias: the missing failures}
 \label{sec:02-survivorship}
@@ -299,8 +290,6 @@ If the researcher follows Shumway, the backtest adds one more month with a $-30$
 The estimate won’t be exact for any single company, but on average it is much closer to the truth than assuming a zero loss.
 Do we need to do this fix? Probably not. Only researchers with stock-level data such as CRSP can apply it, because they can see which companies were delisted and which delisting returns are missing. Users of Yahoo Finance can’t, because the failed companies aren’t in the data at all.
 \end{technote}
-
-\noindent\textbf{In plain terms.} Companies that fail tend to vanish from the data, and their losses vanish with them. A test that uses only today's companies therefore looks better than reality, and it can even invent a profitable strategy out of companies that simply happened to survive. The safest choice for most readers is portfolio data built from a complete database that kept the failures.
 
 
 \section{Look-ahead bias: using only what was known}
@@ -383,8 +372,6 @@ The last two rows of the table describe the subtlest problems. In these cases no
 
 \textbf{Point-in-time data}\index{data!point-in-time|textbf} is the general remedy, because it ensures that each date uses only the values that could have been known then. Lab~\ref{ch:02} measures two forms of look-ahead bias on real data, namely trading on the same day's closing price and choosing a rule's parameter with hindsight.
 
-\noindent\textbf{In plain terms.} A fair test of a strategy may use only the information that an investor could have had on each date. Using numbers before they were published, or choosing a rule's settings because they worked best over the whole history, quietly lets the future leak into the past and makes the strategy look better than it could have been.
-
 \section{Micro-caps: results no investor could capture}
 \label{sec:02-microcaps}
 
@@ -457,8 +444,6 @@ The replication\index{replication} debate in Chapter~\ref{ch:19} turns partly on
 \textbf{What Failed: the size effect\index{size premium}.} Banz (1981) found that small companies had earned higher risk-adjusted returns than large ones, meaning higher returns even after allowing for their extra risk, and ``small beats big'' became one of the best-known findings in finance. Later research, however, found that the effect became much weaker after it was published, that it was heavily concentrated among the very smallest stocks, and that in the early studies it was concentrated in January. Size remains a common factor in models of risk, but as a stand-alone source of extra return it has been far less reliable than its early evidence suggested. Lab~\ref{ch:02} tests how much of the size premium comes from micro-caps and how much comes from the years before 1981.
 \end{callout}
 
-\noindent\textbf{In plain terms.} Most listed companies are tiny, but together they hold only a sliver of the market's value, and they are costly to trade. A strategy that gives every stock the same weight can therefore owe its success to companies that no large investor could buy, so always check whether a result survives when the smallest stocks are left out.
-
 \section{Data snooping: when a whole field searches one dataset}
 \label{sec:02-snooping}
 
@@ -473,8 +458,6 @@ Three defenses work, and later chapters use all of them.
   \item \textbf{Higher hurdles.} Require stronger evidence for claims that are tested on heavily used data, such as a t-statistic\index{t-statistic} above 3 (Harvey, Liu and Zhu 2016; Chapter~\ref{ch:19}). The t-statistic, introduced in Chapter~\ref{ch:01}, measures how far a result stands above the noise, and the usual bar is about 2.
     \item \textbf{Economic reasoning stated in advance.} Before running a test, state why the pattern should exist. A story written after a pattern is found proves little, because a clever explanation can be invented for almost any result, including one produced by chance. A reason stated beforehand turns the test into a genuine check, because the data can prove it wrong.
 \end{enumerate}
-
-\noindent\textbf{In plain terms.} When thousands of researchers study the same stock market history, some of them will find patterns that are pure coincidence, even if each of them works honestly. A finding deserves trust only when it also holds in data that played no part in discovering it, such as later years or other countries.
 
 \section{Lab~\thechapter: Replicating the size effect and the survivorship and delisting biases}
 \label{sec:02-lab}

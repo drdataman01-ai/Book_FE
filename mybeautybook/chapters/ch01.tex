@@ -51,9 +51,7 @@ In the lab you will generate 1,000 trading strategies that are random by constru
 \textbf{For readers new to the stock market.} The chapter uses a handful of everyday market terms, and readers who already know them can skip ahead to Section~\ref{sec:01-foundations}. A \textbf{share of stock} is a small piece of ownership in a company, and its price rises and falls as investors change their views about the company's future profits. Some companies also pay part of their profits to shareholders as a \textbf{dividend}. A \textbf{stock market index}, such as the S\&P~500, tracks the combined value of a large group of stocks, in this case about 500 of the largest U.S. companies, so when the news reports that ``the market'' rose 1\% today, it usually means that an index rose 1\%. A \textbf{mutual fund} pools money from many investors and invests it on their behalf. An \textbf{actively managed fund} pays a manager to pick stocks in the hope of beating the index, while an \textbf{index fund} simply buys all the stocks in the index and charges a much lower fee. A \textbf{Treasury bill} is a short-term loan to the U.S. government, and because the government is all but certain to repay it, its interest rate serves as the return an investor can earn without taking any risk. Finally, \textbf{risk} in this book means how much an investment's returns bounce around from year to year, which is why a stock that rises 30\% one year and falls 20\% the next is called riskier than a savings account, even if it ends up ahead.
 \end{callout}
 
-\begin{callout}
-\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summary at the end of each major section. The shaded \emph{Technical note} boxes contain derivations and refinements that support the argument, and you can skip them without losing the thread. The Lab and the lab extensions at the end are written for readers who want to run the Python code themselves.
-\end{callout}
+
 
 \section{Foundations: returns, risk and the Sharpe ratio}
 \label{sec:01-foundations}
@@ -467,10 +465,6 @@ needs about 15 years of data before the t-statistic of its mean return reaches 1
 
 \textbf{Worked example.} A strategy earns an average excess return of 0.5\% a month with a monthly standard deviation of 4\% over 10 years. Its annual mean is 6\%, its annual volatility is 4\% $\times \sqrt{12} \approx 13.9$\%, and its Sharpe ratio is $6/13.9 \approx 0.43$. The t-statistic is $0.5 / (4/\sqrt{120}) \approx 1.37$. This is not significant at the 5\% level, even though the strategy may be genuinely good.
 
-\noindent\textbf{In plain terms.} Stocks have paid more than safe Treasury bills over the long run, but the extra return is small compared with the swings from year to year. To judge an investment fairly, we compare its return with the risk it took, which is what the Sharpe ratio and alpha do. Because returns are so noisy, even a genuinely good strategy needs many years of results before its record clearly stands out from luck.
-
-%\textbf{Further reading.} Bodie, Kane and Marcus, \emph{Investments}, chapters on risk, return and the historical record; Campbell, Lo and MacKinlay, \emph{The Econometrics of Financial Markets}, chapter 1 on returns; Cochrane, \emph{Asset Pricing}, for the theory of why expected returns differ.
-
 
 
 \section{Efficient markets and the random walk}
@@ -508,8 +502,6 @@ Few economists believe the strong form\index{efficient market hypothesis!strong 
 \textbf{The random walk\index{random walk} as a benchmark.} If prices respond only to new, unpredictable information, price changes should look approximately like a random walk, in which tomorrow's change is unrelated to today's. Samuelson (1965) showed that properly anticipated prices fluctuate randomly. In plain words, if today's price already reflects everything investors expect, then only surprises can move it, and surprises by definition cannot be predicted from today's price change. Lo and MacKinlay (1988) later rejected a strict random walk for weekly U.S. returns, finding small but measurable patterns from one week to the next, so the model is not literally true. Even so, it remains the right benchmark, and any strategy must beat what a random walk, or a simple buy-and-hold position, would deliver.
 
 For this book, the practical lesson is a prior belief that we bring to every claim. Before seeing any evidence, we should treat a claim that a simple rule beats the market as unlikely. Such a claim is not impossible, since the following chapters find some rules that survive, but it is unlikely enough to demand strong evidence.
-
-\noindent\textbf{In plain terms.} When many smart, well-funded investors compete to find profitable patterns, the easy patterns disappear quickly. This does not mean prices are always right, but it does mean that anyone who claims a simple rule beats the market should be asked for very good evidence.
 
 \section{Signal and noise}
 \label{sec:01-signal-noise}
@@ -700,8 +692,6 @@ Figure~\ref{fig:01-ten-year} draws the two cases side by side. The curves overla
 
 \textbf{Why prediction is harder than it looks.} The same arithmetic applies to forecasting. A model that explains just 1\% of the variation in monthly returns would be worth a great deal to an investor (Campbell and Thompson 2008 make this point). The share of variation a model explains is called its $R^2$\index{regression!R-squared@$R^2$}. An $R^2$ of 1\% is almost impossible to distinguish from zero in a few decades of data, and almost trivially easy to produce by accident when many models are tried. Small true effects, large noise and short samples together make finance a field where false discoveries are easy and true ones are hard to confirm.
 
-\noindent\textbf{In plain terms.} The difference between a good strategy and a useless one is a few percent a year, while returns swing by twenty percent a year at random. A good strategy needs about fifteen years of results before we can tell it apart from luck, and most track records are much shorter. Recording returns daily instead of monthly does not shorten the wait.
-
 \section{Cautions: Why backtests can mislead}
 \label{sec:01-backtests}
 
@@ -722,8 +712,6 @@ These problems compound. A backtest can be honest in every visible detail, using
 \begin{callout}
 \textbf{What Failed: butter in Bangladesh.} To show how easy data mining\index{data mining} is, David Leinweber searched a United Nations database for series that tracked the S\&P 500. Butter production in Bangladesh fit well. Adding U.S. cheese production and the sheep population of Bangladesh and the United States raised the fit further, until the $R^2$ looked like a breakthrough. The relationship, of course, predicted nothing afterward. The example was a joke with a serious point: if you search enough series, you are guaranteed to find a near-perfect fit. Leinweber later wrote it up as ``Stupid Data Miner Tricks'' (2007).
 \end{callout}
-
-\noindent\textbf{In plain terms.} A backtest shows how a strategy would have done in the past, and it is easy to make one look good without meaning to. The most common trap is trying many versions and showing only the winner, which turns luck into an impressive-looking record.
 
 \section{The claims-on-trial method and the verdict scale}
 \label{sec:01-method}
@@ -757,24 +745,6 @@ Provisional & The evidence is too new or too mixed for a firm verdict. \\
 \end{center}
 
 Two habits make the method work. First, \textbf{decide the test before seeing the result}. Write down the claim, the data and the pass criteria in advance, so that the test cannot be bent to fit the outcome. Second, \textbf{always ask ``compared to what?''} Every claim is judged against a simple benchmark, such as the market, the historical average\index{historical-mean benchmark} or a naive rule, and never against zero.
-
-
-\section{Looking ahead}
-\label{sec:01-ahead}
-
-This chapter showed that prices are hard to predict, that the noise in returns hides real effects and manufactures false ones, and that selection turns luck into impressive backtests. The rest of the book builds on these points, one claim at a time, in roughly the order the field itself studied them. Each chapter introduces a method only a little harder than the one before.
-
-\textbf{Part I continues} with the data itself (Chapter~\ref{ch:02}), which shows how survivorship bias, look-ahead bias and micro-cap\index{micro-caps} stocks inflate results before any statistics are run, and with investors' own returns (Chapter~\ref{ch:03}), which asks whether individuals lose return through their own decisions.
-
-\textbf{Part II} turns to regression and the cross-section of stock returns: the CAPM and the size and value factors (Chapter~\ref{ch:04}), and momentum (Chapter~\ref{ch:05}).
-
-\textbf{Part III} turns to forecasting through time, in currencies, bonds and stocks (Chapters~\ref{ch:06} to~\ref{ch:09}), and builds the out-of-sample tests that the rest of the book reuses.
-
-\textbf{Parts IV to VI} move from the mean of returns to their risk: volatility and Value at Risk (Chapters~\ref{ch:10} and~\ref{ch:11}), portfolios and diversification (Chapters~\ref{ch:12} and~\ref{ch:13}), and options and credit (Chapters~\ref{ch:14} to~\ref{ch:16}).
-
-\textbf{Part VII} returns to the classical findings with the tools of the last two decades: trading costs, the low-risk anomaly and the replication debate (Chapters~\ref{ch:17} to~\ref{ch:19}). \textbf{Part VIII} tests the newest claims, from machine learning to foundation models (Chapters~\ref{ch:20} to~\ref{ch:23}), and the capstone (Chapter~\ref{ch:24}) asks readers to run a trial of their own.
-
-Each chapter ends by summarizing where the published evidence stands, and the lab asks you to reach your own verdict. Some claims hold up well. That is the point of the method. Its aim is not to dismiss every finding, but to separate the findings that hold from the ones that only looked good.
 
 This chapter's lab applies the method to a claim at the root of the whole field: whether a track record can reveal real skill.
 

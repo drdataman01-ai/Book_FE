@@ -44,9 +44,6 @@ By the end of the chapter you will be able to:
   \item compare forecasts with the Diebold--Mariano and Giacomini--White tests, using only data after each model's training cutoff.
 \end{itemize}
 
-\begin{callout}
-\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain formulas and model-design details, and you can skip them without losing the thread. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
-\end{callout}
 
 \section{Foundations: market data, fine-tuning and synthetic data}
 \label{sec:23-foundations}
@@ -125,8 +122,6 @@ The Diebold--Mariano test of Section~\ref{sec:09-accuracy} asks whether one fore
 In practice the researcher chooses a few variables $h_t$ known at time $t$, such as a constant and yesterday's loss difference. A standard Wald test then checks whether the averages of $h_t d_{t+1}$ are all zero. With only a constant, the test reduces to a Diebold--Mariano test, but it stays valid when models are re-estimated on rolling windows. With more variables it can show that one method is better in some conditions, such as calm markets, and worse in others.
 \end{technote}
 
-\noindent\textbf{In plain terms.} A daily price bar records the open, high, low, close and volume, and its range gives a much better measure of a day's turbulence than the closing price alone. Market-trained AI models turn these bars into tokens and learn their patterns, and general models can be retrained on market data. Any such model must be compared with GARCH and HAR on data it has not seen, and must also produce synthetic price paths that behave like real ones.
-
 \section{How it works}
 \label{sec:23-how}
 
@@ -135,8 +130,6 @@ In practice the researcher chooses a few variables $h_t$ known at time $t$, such
 \textbf{Why fine-tuning helps.} Markets change. A model pretrained once, or a general model, may have learned the volatility patterns of a different era or a different domain. Fine-tuning on recent data from the series being forecast lets the model adjust its scale and dynamics. Goel and coauthors found that TimesFM used zero-shot was a reasonable but not leading forecaster of volatility, and that repeated fine-tuning was what made it competitive.
 
 \textbf{A new leakage risk.} A model trained on 45 exchanges has very likely seen the S\&P 500, the major currency pairs and the large stocks that a student would test it on, possibly over the same dates. If so, a test on that history measures memory, not forecasting skill. This is the pretraining leakage\index{leakage!pretraining} that Section~\ref{sec:21-contam} described for general models. It is more severe here, because the training data and the test data come from the same markets. The only clean test uses data that arrived after the model's training data were collected.
-
-\noindent\textbf{In plain terms.} Training on market data teaches a model the patterns that markets actually show, such as bunched turbulence and extreme days, and retraining on recent data helps it keep up with change. The danger is that a model trained on so much market history may simply remember the very data it is later tested on.
 
 \section{The claim}
 \label{sec:23-claim}
@@ -181,8 +174,6 @@ Their findings were mixed. Incrementally fine-tuned versions generally beat thei
 \subsection{Marconi (2025)}
 
 Marconi tested two foundation models, Tiny Time Mixers (TTM) and Chronos, on three financial tasks: changes in the U.S. 10-year Treasury yield, the volatility of the euro--dollar exchange rate, and an equity spread. The pretrained TTM, once fine-tuned, beat an identical network trained from scratch. Its advantage was 25\% to 50\% when data were limited and 15\% to 30\% with longer data. It reached similar accuracy with three to ten fewer years of data. Without fine-tuning, TTM beat naive benchmarks on volatility and the equity spread. Specialized traditional models, however, matched or beat TTM in two of the three tasks. The study's main lesson is that pretraining saves data, not that it beats the best specialized model.
-
-\noindent\textbf{In plain terms.} The developers of Kronos report clear gains on their own tests, and an independent team found that a general model retrained on volatility data can match and sometimes beat the classic econometric models. Other work suggests that the main benefit of pretraining is needing fewer years of data, and no study has yet tested these models on data they could not have seen.
 
 \section{Lab~\thechapter: Replicating Kronos and fine-tuned TimesFM on daily market data}
 \label{sec:23-lab}

@@ -49,9 +49,6 @@ By the end of the chapter you will be able to:
 
 In the lab you will run a horse race between linear models, an elastic net, gradient-boosted trees and a neural network on a panel of 149 portfolios, using only information available at each date. You will then test whether any gain survives among large portfolios, in later years and after trading costs. Finally, you will test whether the ``virtue of complexity\index{virtue of complexity}'' holds when very large models are used to time the stock market.
 
-\begin{callout}
-\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain formulas behind the methods, and you can skip them without losing the thread. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
-\end{callout}
 
 \section{Foundations}
 \label{sec:20-foundations}
@@ -220,8 +217,6 @@ Figure~\ref{fig:09-biasvar} can be read from left to right. The horizontal axis 
 
 The trade-off matters most when the signal is weak relative to the noise, as it is for stock returns. The variance from estimating many parameters then quickly outweighs the small reduction in bias. The low point of the curve lies far to the left, so a simple model often forecasts better than a rich one, even when the rich one is closer to the truth. This does not mean that rich models must be abandoned. The remedy is \textbf{regularization}\index{regularization|textbf}. It keeps a rich model but limits how far its estimates may move to fit the particular sample. It accepts a little more bias in exchange for a large cut in variance, and so moves the model toward the low point of the curve. The next section shows how it works.
 
-\noindent\textbf{In plain terms.} Machine learning predicts an outcome, here next month's return, from many inputs, and an ordinary regression is its simplest form. Adding more inputs always improves the fit to past data but can make forecasts worse, because the model starts memorizing noise. The art is to find the level of complexity that the data can actually support.
-
 \section{Regularization}
 \label{sec:20-models}
 \label{sec:20-shrinkage}
@@ -299,8 +294,6 @@ Ridge therefore suits a world in which many characteristics each carry a little 
 \subsection{A related approach: dimension reduction}
 
 Another way to tame many correlated predictors is to compress them into a few combinations before running the regression. \textbf{Principal components regression}\index{principal components regression|textbf} first finds the combinations of the predictors that capture most of their joint variation, and then regresses returns on the first few of them. \textbf{Partial least squares}\index{partial least squares|textbf} instead chooses the combinations according to how strongly they relate to the return. In both methods, the number of combinations kept is the hyperparameter. These methods remain linear, but they replace hundreds of noisy slopes with a handful of well-estimated ones.
-
-\noindent\textbf{In plain terms.} Regularization adds a penalty for large coefficients, so that a predictor earns a big role only if it clearly improves the fit. Turning the penalty up moves the forecast toward the simple historical average, and turning it down moves it toward the overfitted kitchen-sink regression.
 
 \section{Regression trees}
 \label{sec:20-trees}
@@ -519,8 +512,6 @@ Start from $x_0 = 3$ with $\eta = 0.25$. The slope there is 5, so the first step
 
 Gradient boosting applies the same idea, with one twist. Instead of stepping a single number $x$ downhill, it steps the forecasts themselves. With squared-error loss, the direction in which the loss falls fastest is simply the set of current forecast errors. Fitting a tree to the errors is therefore the same as taking a step downhill. The boosting learning rate plays exactly the role of $\eta$: it sets how big each step is. The same trade-off applies. Large steps reach a good fit quickly but risk overshooting into the noise, while small steps are slower but safer.
 
-\noindent\textbf{In plain terms.} A regression tree forecasts by asking a series of yes-or-no questions, which lets it capture effects that depend on one another, but a single tree overfits easily. Random forests average many different trees, and gradient boosting adds many small trees one after another, each correcting the errors left by the last.
-
 \section{Neural networks}
 \label{sec:20-nn}
 
@@ -629,8 +620,6 @@ Reading from the inside out: hidden neuron $k$ computes a weighted sum of the ch
 A regression's coefficients come from a formula, but a network's weights do not, because no formula exists for them. They are found instead by the gradient descent of Section~\ref{sec:20-gbm}, applied to every weight at once.
 
 Training works as follows. The weights start at small random values. The slope of the loss with respect to every weight is then computed by an efficient use of the chain rule called \emph{backpropagation}. Every weight takes a small step downhill, as in Equation~\eqref{eq:20-gd}. To save time, each step uses a small random batch of the training data rather than all of it. This is why the method is often called \emph{stochastic} gradient descent\index{neural network!gradient descent}. One pass through all the training data is called an \emph{epoch}, and training usually runs for many epochs.
-
-\noindent\textbf{In plain terms.} A neural network is a regression with extra layers in between, and each layer bends and combines the inputs so that the network can learn curved relationships and interactions. Its weights are found by repeatedly nudging them in the direction that reduces the forecast errors.
 
 \section{Measuring success and interpreting a model}
 \label{sec:20-measure}
@@ -869,8 +858,6 @@ Nagel (2025) took a second look at what these models were doing. He showed that 
 The exchange offers two lessons for testing any complex model. First, compare it with the simple strategies it might be reproducing, here volatility-timed momentum. A sophisticated method that only reproduces a simple rule should be judged against that rule. Second, test it on simulated data with a known truth, as in Section~\ref{sec:09-insample}, to check that it finds only the structure that is really there.
 
 The broader lesson confirms Chapter~\ref{ch:09}. In-sample fit is a poor guide to forecasting: the unpenalized regression on 920 inputs fit the training data best and forecast worst. The methods that worked build shrinkage and validation into the estimator. Their gains are largest in the cross-section and in corners of the market that are hard to trade. They are smallest, and most disputed, for the market as a whole.
-
-\noindent\textbf{In plain terms.} In the landmark study, machine-learning models roughly doubled the forecasting power of a simple three-factor regression, mostly by combining familiar signals such as momentum and size in smarter ways. Later work found that much of the gain sits in small, costly-to-trade stocks, and that some impressive results for timing the whole market may be a simple momentum strategy in disguise.
 
 \section{Lab~\thechapter: Replicating Gu, Kelly and Xiu (2020) on a portfolio panel}
 \label{sec:20-lab}

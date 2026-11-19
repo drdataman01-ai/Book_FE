@@ -275,9 +275,6 @@ By the end of the chapter you will be able to:
   \item read a market-implied rate path as a forecast plus a premium, and judge a bond strategy built on carry and roll-down\index{roll-down}.
 \end{itemize}
 
-\begin{callout}
-\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain statistical details, and you can skip them without losing the thread. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
-\end{callout}
 
 \section{Foundations: yields, forward rates and the term premium}
 \label{sec:07-foundations}
@@ -412,7 +409,6 @@ Equivalently, the expected excess returns on bonds of every maturity do not chan
 \label{fig:07-readings}
 \end{figure}
 
-\noindent\textbf{In plain terms.} The yield curve shows the interest rates on government bonds of different lengths, and from it one can work out the rates for future years that can be locked in today. The expectations hypothesis says these locked-in rates are honest forecasts of future rates. The alternative is that they also include a varying reward for the risk of holding long bonds, the term premium.
 
 \section{How it works}
 \label{sec:07-how}
@@ -442,7 +438,6 @@ The tests are statistically delicate, for reasons the shaded box explains.
 \textbf{Technical note: why the tests are hard.} Interest rates change slowly, and annual returns measured every month overlap by eleven months. Both problems make $t$-statistics\index{t-statistic} look larger than they should if they are not handled carefully (Chapter~\ref{ch:04}). The lab therefore uses Newey--West\index{standard error!Newey--West (HAC)} standard errors with 18 lags and adds out-of-sample tests (Chapter~\ref{ch:09}).
 \end{technote}
 
-\noindent\textbf{In plain terms.} If a steep yield curve were a pure forecast, short-term rates would rise to meet it and long bonds would earn no more than rolling over short ones. The tests check which actually happened, and the risk of holding long bonds, which varies with recessions and inflation fears, is the main reason to expect the forecast to be biased.
 
 \section{The claim}
 \label{sec:07-claim}
@@ -470,7 +465,6 @@ To test it, three points need to be settled:
 
 \textbf{The skeptics.} That the EH fails is now widely accepted. How strongly bond returns can be predicted is not. Bauer and Hamilton (2018) showed that standard tests are badly distorted in small samples when the predictors change slowly and the returns overlap\index{overlapping observations}. With more robust tests, the evidence that anything beyond the level, slope and curvature of the curve predicts bond returns, including the Cochrane--Piazzesi combination, became much weaker. Thornton and Valente (2012) found that forecasts from forward rates gave an investor choosing between bonds little economic value out of sample.
 
-\noindent\textbf{In plain terms.} Forward rates have consistently overstated future interest rates, and steep yield curves have been followed by higher returns on long bonds rather than by rising rates. Researchers still disagree about how well anyone can use this pattern in real time to choose between short and long bonds.
 
 \section{Lab~\thechapter: Replicating Fama and Bliss (1987), Campbell and Shiller (1991) and Cochrane and Piazzesi (2005)}
 \label{sec:07-lab}

@@ -152,9 +152,6 @@ By the end of the chapter you will be able to:
   \item judge what risks a ``fully hedged'' option seller or structured-product issuer still carries.
 \end{itemize}
 
-\begin{callout}
-\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain the formulas behind the pricing and hedging results, and you can skip them without losing the thread. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
-\end{callout}
 
 \section{Foundations: options and Black--Scholes}
 \label{sec:14-foundations}
@@ -532,7 +529,6 @@ where vega\index{Greeks!vega} is measured per unit of $\sigma$. For a one-month 
 
 If Black--Scholes were right, every option on the same asset would have the same implied volatility. Section~\ref{sec:14-iv} described the skew: low-strike index puts have higher implied volatilities. When options at both high and low strikes have higher implied volatilities, the pattern is called a \textbf{smile}\index{volatility smile|textbf}. For this chapter, the skew matters because it is the market's admission that returns do not follow the model's assumptions, the very assumptions that delta hedging relies on.
 
-\noindent\textbf{In plain terms.} An option can in principle be copied by holding a changing number of shares, and the cost of that copy is the option's price. The Greeks measure how the option's value responds to the stock price, to volatility and to the passing of time. A hedged option seller earns a little each quiet day and loses on large moves, so its profit depends on whether the market turns out calmer or wilder than the option price assumed.
 
 \section{Where the hedge breaks down}
 \label{sec:14-how}
@@ -561,7 +557,6 @@ The first breakdown comes from the model itself: it would happen even if Black--
 
 \textbf{The smile is the market's response.} After October 1987, dealers began to charge more for the risks that delta hedging cannot remove: crashes and spikes in volatility. They did so by raising the implied volatility of out-of-the-money puts, the options that pay off in crashes. The smile is therefore both evidence against the Black--Scholes assumptions and the price of the risk that delta hedging leaves behind\index{regression!residuals}.
 
-\noindent\textbf{In plain terms.} The copy works well on ordinary days but breaks down when prices jump, when volatility changes and when trading costs add up. Sudden crashes are the hardest problem, because no amount of careful re-hedging can keep up with a price that leaps.
 
 \section{The claim}
 \label{sec:14-claim}
@@ -592,7 +587,6 @@ This claim is what justifies treating an option's Black--Scholes price as its co
 
 \textbf{Portfolio insurance.} The most important test of dynamic replication was not an academic study. In the 1980s, portfolio insurance programs traded index futures to copy a protective put on large stock portfolios. The Brady Commission (Presidential Task Force on Market Mechanisms 1988) estimated that \$60 to \$90 billion of stock portfolios were covered by portfolio insurance when the market crashed in October 1987. The What Failed box in Section~\ref{sec:14-investors} tells what happened.
 
-\noindent\textbf{In plain terms.} The Black--Scholes model was a breakthrough and is still the starting point on every trading floor, but researchers soon showed that trading costs make perfect copying impossible and that market prices since 1987 reflect risks the model ignores. The most dramatic test came in the 1987 crash, when programs that tried to copy options by trading could not keep up with the market.
 
 \section{Lab~\thechapter: Replicating the Black--Scholes hedge along real and simulated paths}
 \label{sec:14-lab}

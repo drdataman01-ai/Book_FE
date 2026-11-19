@@ -100,10 +100,6 @@ By the end of the chapter you will be able to:
   \item judge whether volatility timing pays once forecasts are made in real time.
 \end{itemize}
 
-\begin{callout}
-\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain model details and statistical diagnostics, and you can skip them without losing the thread. The Lab, the robustness checks and the lab extensions are written for readers who want to run the Python code themselves.
-\end{callout}
-
 
 \section{Foundations: measuring and modelling volatility}
 \label{sec:10-foundations}
@@ -355,8 +351,6 @@ Implied volatility has one important bias. In plain words, the VIX tends to run 
 \label{fig:10-vix}
 \end{figure}
 
-\noindent\textbf{In plain terms.} Volatility measures how much prices swing. It can be estimated from recent price moves, with more weight on the latest days, or read from option prices, which reveal how much movement traders expect. Models such as GARCH capture the everyday observation that turbulent days come in bunches and that calm eventually returns.
-
 
 \section[Three facts about volatility]{Three facts about volatility that the models must explain}
 \label{sec:10-how}
@@ -371,7 +365,6 @@ Three regularities in daily stock returns, which Part A of this chapter's lab me
 
 Lab Figure~\ref{ch:10}.1 shows the first fact on U.S. data. The bars for returns hover near zero at every lag, while the bars for absolute returns are positive at lag 1 and still clearly positive after 50 trading days.
 
-\noindent\textbf{In plain terms.} The direction of tomorrow's price move is close to unpredictable, but its size is not: big days follow big days. Extreme days are more common than the bell curve suggests, and falls stir up more turbulence than rises of the same size.
 
 \section{The claim}
 \label{sec:10-claim}
@@ -407,7 +400,6 @@ Once volatility could be measured well, three further questions followed.
 
 \textbf{Can investors profit from the forecasts?} Moreira and Muir (2017) noticed that average returns rise much less than volatility does, and argued that investors can therefore profit. An investor who holds less of a portfolio when its recent volatility is high, and more when it is low, earns a higher Sharpe ratio than one who holds a fixed amount. Cederburg, O'Doherty, Wang and Yan (2020), suspecting that the gains depended on hindsight, challenged this claim. Across 103 equity strategies, they found that the gains mostly disappear when the investor has to choose the scaling in real time, using only data available at the time. Section~\ref{sec:10-investors} returns to what this means in practice.
 
-\noindent\textbf{In plain terms.} Once volatility was measured properly, simple models turned out to forecast it well, and option prices forecast it better still. Whether investors can profit by holding less stock when volatility is high is a separate and much more doubtful question.
 
 \section{Evaluating volatility forecasts}
 \label{sec:10-eval}
@@ -465,7 +457,6 @@ Two further diagnostics, described in the shaded box, check whether a forecast i
 
 A fair comparison also requires real-time forecasts. Every parameter must be estimated only on data available at the forecast date, as in the walk-forward\index{walk-forward evaluation} design of Chapter~\ref{ch:09}.
 
-\noindent\textbf{In plain terms.} Because true volatility is never seen directly, forecasts must be graded against a noisy stand-in, and only some scoring rules give a fair verdict. The fairest rules, used with forecasts made only from data available at the time, consistently show that volatility can be forecast.
 
 \section{Lab~\thechapter: Replicating Andersen and Bollerslev (1998), Hansen and Lunde (2005) and Moreira and Muir (2017)}
 \label{sec:10-lab}

@@ -44,9 +44,6 @@ By the end of the chapter you will be able to:
   \item judge the claim by out-of-sample pricing errors, Sharpe ratios, results by size group, and costs.
 \end{itemize}
 
-\begin{callout}
-\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain derivations and model formulas, and you can skip them without losing the thread. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
-\end{callout}
 
 \section{Foundations: the stochastic discount factor and its machine-learning estimators}
 \label{sec:22-foundations}
@@ -130,8 +127,6 @@ A transformer stacks many such attention steps; the shaded box shows the simples
 where $X_t$ stacks all stocks' characteristics in rows, $W$ is a matrix of attention parameters and $\lambda$ a vector of pricing coefficients. The matrix $X_t W X_t'$ has one row and one column for every stock, and its entry $(i,j)$ says how much stock $i$ borrows from stock $j$.
 \end{technote}
 
-\noindent\textbf{In plain terms.} An asset-pricing model explains average returns by how much each asset pays off in bad times, and finding the best such model is the same as finding the portfolio with the highest possible Sharpe ratio. Researchers have moved from a few hand-picked factors to statistical shrinkage, to neural networks, and now to transformers that let each stock learn from others.
-
 \section{How it works}
 \label{sec:22-how}
 
@@ -140,8 +135,6 @@ where $X_t$ stacks all stocks' characteristics in rows, $W$ is a matrix of atten
 \textbf{What the linear surrogate reveals.} Equation~\eqref{eq:22-linear} looks complicated, but it can be rewritten as an ordinary linear model in a very large set of features: every product of three characteristics. With 132 characteristics there are about 2.3 million such products. The linear transformer is therefore a ridge regression of the kind used throughout Chapter~\ref{ch:20}, on an enormous number of interactions. Its weights can be read as signals for timing portfolios built on characteristics. This rewriting is what makes the model, and this chapter's lab, understandable.
 
 \textbf{More parameters than months.} The full transformer has around a million parameters, estimated in rolling windows of 60 months. Classical statistics would expect such a model to overfit. Chapter~\ref{ch:20} described the ``virtue of complexity'' argument, in which very large models with shrinkage can still forecast well. It also described Nagel's (2025) warning that such models may simply reproduce a simple strategy. Kelly, Kuznetsov, Malamud, Xu and Zhang (2024), in ``Large and Deep Factor Models,'' studied deep networks trained to build an SDF. They showed that such a network splits into two parts. One part discovers useful nonlinear characteristics. The other part prices them and behaves like a linear factor model with ridge shrinkage. Their analysis gives a theoretical reason why very large networks need not overfit, and a way to see what they have learned.
-
-\noindent\textbf{In plain terms.} Stocks are linked through suppliers, customers, competitors and shared shocks, and attention lets a model discover such links on its own. Most of what the transformer learned does not match familiar business links, and its huge number of parameters makes careful testing all the more important.
 
 \section{The claim}
 \label{sec:22-claim}
@@ -207,8 +200,6 @@ Three questions matter for judging the claim.
   \item \textbf{Small stocks.} The highest Sharpe ratios come from small and micro stocks, the segment in which Chapter~\ref{ch:19} found anomalies concentrated and Chapter~\ref{ch:20} found machine-learning gains concentrated.
   \item \textbf{Replication.} The paper is a working paper by a single team, and the result has not yet been reproduced independently. Every other model in Table~\ref{tab:22-aipm} also has a Sharpe ratio far above what investors have earned, which is a reminder that these are hypothetical, frictionless returns.
 \end{itemize}
-
-\noindent\textbf{In plain terms.} In the main study, the transformer priced stocks more accurately than every earlier model, and its advantage held after 2002 and within each size group. But its returns are hypothetical and before costs, its edge is much smaller among large stocks, and no independent team has yet repeated the result.
 
 \section{Lab~\thechapter: Replicating the linear-transformer SDF on anomaly portfolios}
 \label{sec:22-lab}

@@ -45,9 +45,6 @@ By the end of the chapter you will be able to:
   \item design strategies that trade less without giving up much of their signal.
 \end{itemize}
 
-\begin{callout}
-\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain the methods researchers use to estimate trading costs from public data, and you can skip them without losing the thread. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
-\end{callout}
 
 In the lab you will take three of the best-known long--short strategies, value, momentum\index{momentum} and short-term reversal\index{short-term reversal}, measure how much each trades, charge each for trading, and see how their ranking changes. A simulated market with known expected returns\index{return!expected} then shows how much cost-aware design can recover.
 
@@ -154,7 +151,6 @@ Academic factors such as HML\index{factor!HML (value)}, introduced in Section~\r
 
 \textbf{Worked example.} A stock is quoted at \$49.98 bid and \$50.02 ask. The midpoint is \$50.00 and the spread is \$0.04, or $0.04/50 = 0.0008$, 8 basis points. Buying with a market order and immediately selling would lose 8 basis points; the one-way cost\index{transaction costs!one-way and round-trip}, half the spread, is 4 basis points.
 
-\noindent\textbf{In plain terms.} Stocks are bought at a slightly higher price than they are sold for, and that gap, the bid--ask spread, is the most basic cost of trading. Selling short adds borrowing fees, and a strategy that replaces much of its portfolio each month pays these costs over and over.
 
 \section{Paper returns versus implementable returns}
 \label{sec:17-paper}
@@ -202,7 +198,6 @@ The unit used throughout this chapter is the \textbf{one-way cost}\index{transac
 
 The lab uses a single one-way cost and a single borrowing fee for transparency. Real costs vary across stocks and over time, and Section~\ref{sec:17-measuring} shows how they can be estimated.
 
-\noindent\textbf{In plain terms.} The cost of a trade includes the spread, the way a large order pushes the price, the price drifting while an order waits, and the expense of borrowing shares to sell short. Costs have fallen sharply since 2001, but small and hard-to-borrow stocks remain expensive, and they are often exactly where published strategies find their profits.
 
 \section{Measuring costs from public data}
 \label{sec:17-measuring}
@@ -346,7 +341,6 @@ The three strategies differ sharply in how much cost they can bear (Figure~\ref{
 
 A gross ranking by Sharpe ratio\index{Sharpe ratio} or t-statistic\index{t-statistic} therefore says little about which strategy an investor should prefer. The net ranking depends on turnover as much as on the gross premium.
 
-\noindent\textbf{In plain terms.} A strategy's break-even cost is the most it can pay per trade before its profit is gone. Value trades so rarely that it can afford almost any realistic cost, momentum survives only careful, cheap trading, and short-term reversal is profitable only on paper.
 
 \section{Market impact and capacity}
 \label{sec:17-capacity}
@@ -450,7 +444,6 @@ Each rule trades a little signal for a lot less trading. The trade-off depends o
 
 \textbf{Saving costs is also a search.} Every design choice, such as the width of a band, how often to rebalance or which stocks to exclude, can be tuned to make a backtest look better, so the warnings about selection and overfitting\index{overfitting} in Section~\ref{sec:01-backtests} apply in full. Chen and Velikov (2023) studied 204 anomalies, allowing for effective spreads, the decline in returns after publication\index{anomaly!post-publication decay} and modern trading technology. They found that the average anomaly's expected return, net of these effects, was about 4 basis points a month. Strategies that looked impressive after costs in their own samples, once cost-saving rules were added, did not escape that conclusion. A cost-saving design should therefore be fixed in advance and judged out of sample, like any other part of a strategy.
 
-\noindent\textbf{In plain terms.} Every strategy has a capacity, a size beyond which its own trades push prices enough to eat its profit. Sensible design, such as trading only when a stock moves well past a cut-off, can save a great deal of cost, but these rules can also be tuned to flatter a backtest, so they must be chosen before the results are known.
 
 \begin{callout}
 \textbf{What Failed: buying last month's losers.} Jegadeesh (1990) and Lehmann (1990) showed that stocks with low returns over the past week or month tended to rebound, and stocks with high returns tended to fall back. On paper the pattern is strong and statistically robust, and the Fama--French\index{Fama--French factors} short-term reversal factor still has a positive average return. The trouble is trading. The strategy replaces almost its whole portfolio every month. It buys and sells stocks that have just moved sharply, often small and illiquid ones, where spreads are widest. Novy-Marx and Velikov (2016) estimated that its costs were larger than its gross return by more than a percentage point a month. Nagel (2012) argued that much of the reversal is a reward for supplying liquidity to impatient traders. That reward goes to market makers, who trade cheaply, not to investors who must pay the spread. For an ordinary investor, the claim that buying recent losers is profitable \textbf{fails} once costs are counted.

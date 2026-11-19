@@ -48,9 +48,6 @@ By the end of the chapter you will be able to:
 
 In the lab you will replicate the main regressions of Fama and French (1993), decompose the risk of their 25 classic portfolios, measure the stylized facts of returns on real data, compute the portfolios' alphas under four standard error methods, and run a controlled experiment showing how overlapping long-horizon regressions find predictability that is not there.
 
-\begin{callout}
-\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain derivations and statistical details, and you can skip them without losing the thread. The Lab and the lab extensions at the end are written for readers who want to run the Python code themselves.
-\end{callout}
 
 \section{Foundations: Distributions and Regression}
 \label{sec:04-foundations}
@@ -145,7 +142,6 @@ Figure~\ref{fig:04-moments} shows what each moment changes, by comparing the nor
 
 A fifth measure describes behavior over time. \textbf{Autocorrelation}\index{autocorrelation|textbf} is the correlation of a series with its own past values. The first-order autocorrelation ($\rho_1$) compares each month with the month before. A value near $+1$ means that a high month tends to be followed by another high month, a value near $-1$ means that it tends to be followed by a low month, and a value near zero means that the past says nothing about the next month. A return series with zero autocorrelation cannot be predicted from its own history. Daily temperatures are a familiar example of strong positive autocorrelation, since a hot day is usually followed by another warm one; stock returns, by contrast, show very little.
 
-\noindent\textbf{In plain terms.} The average return and the volatility are only part of the story. Two investments with the same average and the same volatility can differ greatly in how often they suffer a crash, and a regression is the basic tool for measuring how one return moves with another.
 
 \subsection{Linear Regression and OLS Assumptions}
 \label{sec:04-regression}
@@ -318,7 +314,6 @@ Empirical tests, however, show that the model fits the data less well than its i
 
 Later research found that the stocks the CAPM could not explain were not random. Their returns were related to company characteristics that the CAPM says should not matter: stocks with low price--earnings ratios (Basu 1977), small companies (Banz 1981) and stocks with high book-to-market ratios\index{book-to-market ratio} (Rosenberg, Reid and Lanstein 1985) all earned more than their betas predicted. Because these anomalies had been found one at a time, Fama and French (1992) tested them together and showed that once size and book-to-market are taken into account, beta adds almost nothing to the explanation of average returns, and Fama and French (1993) built these characteristics into a three-factor model. As a literal description of expected returns, the CAPM is therefore largely rejected, but it remains the benchmark against which every later model is built and tested.
 
-\noindent\textbf{In plain terms.} The CAPM says that the only risk worth paying for is the risk of falling with the market, measured by beta. The idea is elegant and still widely used, but in the data riskier stocks have not earned as much extra as the model promises, and cheap stocks and small stocks have earned more than their betas can explain.
 
 
 \begin{figure}[!htbp]
@@ -435,7 +430,6 @@ asset pricing model used to evaluate it. Any discussion of alpha should make cle
 
 Factor premiums are also far from guaranteed in any given decade. Value investors learned this the hard way: measured by the Fama--French value factor, value stocks trailed growth stocks from 2007 onward, and by mid-2020 the factor had suffered a drawdown of about 55\%, the largest since its data begin in 1963. A premium that is real on average can still disappoint for a decade or more, which is exactly the kind of noise Chapter~\ref{ch:01} warned about.
 
-\noindent\textbf{In plain terms.} Fama and French showed that, beyond the market, a stock's size and its price relative to its accounting value help explain its average return, and later added profitability and investment. With these factors in the model, much of what once looked like a fund manager's skill turns out to be a steady tilt toward certain kinds of stocks.
 
 \subsection{The Factor Zoo}
 \label{sec:04-zoo}
@@ -728,7 +722,6 @@ underlying studies have appropriately addressed issues
 such as heteroskedasticity (volatility that changes over time), autocorrelation, and data
 errors.
 
-\noindent\textbf{In plain terms.} Researchers have tested hundreds of possible factors on the same few decades of data, so some of them were bound to look impressive by chance. A new factor deserves belief only if it clears a higher statistical bar than usual, earns enough to matter after costs, and comes with a sensible reason for why it should work.
 
 \section{Lab~\thechapter: Replicating Fama and French (1993) and the factor zoo}
 \label{sec:04-lab}
