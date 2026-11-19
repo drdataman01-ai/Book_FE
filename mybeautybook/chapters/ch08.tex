@@ -379,27 +379,3 @@ In March 2020, regulators faced the opposite problem. Banks' breaches jumped as 
   \item \textbf{Can risk measures be accurate without deepening crises?} A fast-reacting VaR forces banks to sell in falling markets (Section~\ref{sec:11-investors}). How should regulators balance accuracy against stability?
   \item \textbf{What about portfolios VaR handles badly?} Options, credit and illiquid assets have prices that jump or are rarely updated. How much worse do VaR backtests look for them, and what should replace VaR there?
 \end{itemize}
-
-\section*{Exercises}
-\addcontentsline{toc}{section}{Exercises}
-
-\subsection*{Conceptual (all readers)}
-
-\begin{enumerate}
-  \item A \$5 million position has a daily volatility of 1.5\%. Compute the normal 95\% and 99\% one-day VaR, the 99\% ES and the 10-day 99\% VaR by the square-root rule.
-  \item Using the two-bond example in Section~\ref{sec:11-foundations}, compute the portfolio's 95\% ES and show that ES is subadditive in this case.
-  \item A bank reports 7 breaches of its 99\% VaR in 250 days. Compute the Kupiec statistic and p-value. Which Basel zone is it in, and what is the capital multiplier?
-  \item A bank's annual report says that its daily trading losses exceeded its VaR on only two days last year. Without any calculation, explain what else you would want to know before concluding that the bank measures its risk well.
-\end{enumerate}
-
-\subsection*{Lab extensions (technical readers)}
-
-\begin{enumerate}
-  \setcounter{enumi}{4}
-  \item Parts A and B: which models pass the Kupiec test at 99\%? Which pass the Christoffersen test? Is there a model that passes one but not the other?
-  \item Part B: for historical simulation, compute the average number of days between breaches and compare it with the 100 days expected. What does the spread of these gaps tell you?
-  \item Part C, crises: count each model's breaches in October 1987. After the crash, how many days did each model take before it stopped being breached?
-  \item Part C, deeper in the tail: rerun the backtest at 99.9\%. Which models are within a factor of two of the expected breach rate? How confident can you be, given how few breaches are expected?
-  \item Part D: do the models that pass the VaR backtest also pass the ES backtest? Is there a model that passes VaR but fails ES?
-  \item A regulator proposes requiring all banks to use filtered historical simulation. Using the evidence in this chapter, write the case for and against, including the effect on procyclicality.
-\end{enumerate}

@@ -269,7 +269,7 @@ The full-sample results can hide weaknesses. The checks below test the claim und
 
 \textbf{4. Crashes and their predictability.} A crash that could be predicted only with hindsight is no help to an investor. The lab uses only information available at the start of each month: the past 24-month market return for the bear-market indicator, and past daily volatility for scaling. The test is whether those signals, set in advance, reduce the crashes.
 
-\textbf{5. The volatility-scaling result itself.} A result that improves on a famous anomaly by adjusting it is itself a claim that can be overfit\index{overfitting}. Barroso and Santa-Clara chose a six-month window and a 12\% target; the lab lets readers change both, and an exercise asks how sensitive the improvement is. Chapter~\ref{ch:10} returns to whether volatility timing\index{volatility targeting} works in general.
+\textbf{5. The volatility-scaling result itself.} A result that improves on a famous anomaly by adjusting it is itself a claim that can be overfit\index{overfitting}. Barroso and Santa-Clara chose a six-month window and a 12\% target; the lab lets readers change both and see how sensitive the improvement is. Chapter~\ref{ch:10} returns to whether volatility timing\index{volatility targeting} works in general.
 
 \subsection*{Your verdict}
 
@@ -339,28 +339,3 @@ The evidence in Section~\ref{sec:05-verdict} suggests several practical lessons.
 \begin{callout}
 \textbf{What Failed: holding raw momentum through the 2009 rebound.} By early 2009 momentum had performed well through the financial crisis: it was long defensive winners and short the collapsing financial and cyclical stocks. When the market turned in March 2009, the most beaten-down stocks rebounded hardest. Over the following months, momentum's loser portfolio rose far more than its winner portfolio, and the strategy lost much of a decade's gains in a few months (Daniel and Moskowitz 2016). Nothing about the crash was a mystery afterward: the strategy was short a portfolio of very high-beta stocks at the bottom of a bear market. The failure was in treating momentum's average return as the whole story, and in sizing positions as if the risk were constant. The claim that momentum's historical return could be harvested without managing its crash risk \textbf{fails}.
 \end{callout}
-
-\section*{Exercises}
-\addcontentsline{toc}{section}{Exercises}
-
-\subsection*{Conceptual (all readers)}
-
-\begin{enumerate}
-  \item Why does the standard momentum signal skip the most recent month? What would happen to the strategy's returns if it did not?
-  \item Explain the difference between cross-sectional and time-series momentum. In a year when every stock rises, what does each strategy do?
-  \item Explain, using betas, why momentum loses when a falling market rebounds sharply.
-  \item Volatility scaling raised momentum's Sharpe ratio in the original study. List two reasons the improvement might be smaller for an investor who adopts it now.
-  \item A friend plans to put all of her savings into a fund that buys last year's best-performing stocks. Without any calculation, explain what kind of market event would hurt her most, and what you would suggest she ask before investing.
-\end{enumerate}
-
-\subsection*{Lab extensions (technical readers)}
-
-\begin{enumerate}
-  \setcounter{enumi}{5}
-  \item Re-run Part C with a weight cap of 1.5 and with targets of 8\% and 16\%. How sensitive is the improvement?
-  \item Replace the 24-month bear-market indicator with a 12-month one. Does the crash regression change?
-  \item Compute momentum's net Sharpe ratio after 2001 with a one-way cost of 10 basis points. Is momentum more implementable today?
-  \item In Part D, change the look-back from 12 months to 3 and to 24. How does time-series momentum change?
-  \item Using the JKP data, count the countries in which momentum has a t-statistic above 2. How many would you expect by chance?
-  \item Combine momentum and value (Chapter~\ref{ch:04}) in a 50/50 portfolio. Compare its Sharpe ratio, skewness and worst drawdown with each strategy alone.
-\end{enumerate}

@@ -244,7 +244,7 @@ Results over the full sample can hide weaknesses. The checks below test the clai
 
 \textbf{Stock-market exposure.} Covered calls and put-writes have betas of roughly 0.5 to 0.7. Over a period when stocks did well, a beta of 0.6 alone earns most of their return. The lab's decomposition separates the two. If the alpha is small next to the part explained by beta, the strategy is mainly a stock investment with a different payoff shape.
 
-\textbf{The timing of the sample.} After a crisis, implied volatility can stay high while realized volatility falls, which makes the premium look rich. Before a crisis, the premium can look rich until the crash arrives. A backtest that starts just after a crisis, or ends just before one, will flatter the strategy. Exercise 5 splits the sample at 2008.
+\textbf{The timing of the sample.} After a crisis, implied volatility can stay high while realized volatility falls, which makes the premium look rich. Before a crisis, the premium can look rich until the crash arrives. A backtest that starts just after a crisis, or ends just before one, will flatter the strategy. Splitting the lab's sample at 2008 shows how much this matters.
 
 \textbf{Implementation.} Real options have bid--ask spreads, and covered-call funds charge management fees. Israelov and Nielsen (2015) found that resetting the strike mechanically each month creates a bet on market reversals that adds risk without adding return. These frictions are small on each trade, but large compared with a premium of a few percent a year.
 
@@ -332,27 +332,3 @@ In 2021 the SEC charged LJM and two of its portfolio managers with misleading in
 
 The episode shows this chapter's evidence in its sharpest form. The variance risk premium is real, and selling volatility earned it for years. But the premium is payment for exactly the kind of day that ended LJM. Borrowed money turned a strategy that should lose heavily in a spike into one that could not survive it.
 \end{callout}
-
-\section*{Exercises}
-\addcontentsline{toc}{section}{Exercises}
-
-\subsection*{Conceptual (all readers)}
-
-\begin{enumerate}
-  \item The index is at 4,000, the risk-free rate is 5\%, and one-month implied volatility is 18\%. Price a one-month at-the-money call and put with Black--Scholes, and check put--call parity.
-  \item Use put--call parity to show that a covered call and a cash-secured put with the same strike and expiry have the same payoff. Why do Cboe's BXM and PUT indexes nonetheless have different returns?
-  \item A covered call has a beta of 0.6 and has returned 7\% a year, while the market returned 9\% and Treasury bills 2\%. What is its CAPM alpha? What would a portfolio of the index and bills with the same beta have earned?
-  \item A neighbor says that his covered-call fund ``pays 9\% a year no matter what the market does.'' Without any calculation, explain what this chapter suggests happens to such a fund in a strong rally and in a crash, and what comparison would show whether the fund is really adding value.
-\end{enumerate}
-
-\subsection*{Lab extensions (technical readers)}
-
-\begin{enumerate}
-  \setcounter{enumi}{4}
-  \item Part A: in what share of months was the VIX higher than realized volatility? Compute the average gap separately for months with the VIX above and below 25. Where is the premium larger? Then split the sample at 2008. How different is the premium before and after?
-  \item Part B: run the lab again with \texttt{-{}-iv-shift -2} and \texttt{-4}. How much of the rebuilt put-write's alpha survives? Compare with Cboe's PUT index if you downloaded it.
-  \item Part C: compute the MPPM with a risk aversion of 1, 3 and 6. At what risk aversion does put-writing stop beating the market?
-  \item Part D: what share of each strategy's excess return comes from beta? Compare the skewness of the put-write with that of the market position with the same beta.
-  \item Part D: the pure short variance swap has a high Sharpe ratio. Find its worst month. How much borrowed money could an investor have used before that month would have wiped out the account?
-  \item A retiree is offered an option-income fund paying an 8\% distribution. Using this chapter's evidence, write a one-page explanation of what the fund is likely to deliver and what could go wrong.
-\end{enumerate}

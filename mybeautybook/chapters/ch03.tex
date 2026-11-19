@@ -853,27 +853,3 @@ The evidence in Section~\ref{sec:04-verdict} suggests a few useful habits for ju
   \item How many models or variations did you test before choosing this strategy?
   \item What is the confidence interval for your alpha, and how large is the alpha after fees and trading costs?
 \end{itemize}
-
-\section*{Exercises}
-\addcontentsline{toc}{section}{Exercises}
-
-\subsection*{Conceptual (all readers)}
-\begin{enumerate}
-  \item An active equity manager reports a CAPM alpha of 3.2\% per year ($t = 2.5$). Under a Fama--French three-factor model, the alpha drops to 0.1\% ($t = 0.2$), with an $SMB$ loading of 0.70 and an $HML$ loading of 0.50. Explain the source of the manager's excess return, and what it implies for the fee the manager should charge.
-  \item A stock has a market beta of 0.8, a residual standard deviation of 6\% a month, and the market's standard deviation is 4.5\% a month. Use Equation~\eqref{eq:04-vardec-capm} to compute the share of its variance that is systematic. What would the share be for an equally weighted portfolio of 50 such stocks with independent residuals?
-  \item Fama and French (2015) found that the value factor becomes redundant once profitability and investment factors are added. Using the dividend discount model argument of Section~\ref{sec:04-multifactor}, explain why value stocks might load on these two factors, and discuss what the finding implies for reading $HML$ as a distress factor.
-  \item Explain why adding factors to a model can always make an alpha smaller, and state what economic and statistical evidence you would require before accepting a newly proposed factor.
-  \item Daily returns show minimal autocorrelation, yet absolute daily returns show strong autocorrelation. Explain how both statements can be true, and why this matters for standard errors.
-  \item A long-horizon regression of 5-year returns on dividend yields uses 50 years of monthly data ($T=600$, $k=60$). How many independent observations does it contain, and why are classical $t$-statistics misleading?
-  \item Why must a time-series bootstrap resample blocks of observations rather than individual months?
-  \item Explain why a factor alpha with $t = 3.2$ might lack economic significance, and list what you would need to know before investing in it.
-  \item A friend's fund has beaten the S\&P~500 for five years, and its brochure describes it as a ``small-cap value'' fund. Without any calculation, explain why its record may say little about the manager's skill, and what comparison would be fairer.
-\end{enumerate}
-
-\subsection*{Lab Extensions (technical readers)}
-\begin{enumerate}
-  \setcounter{enumi}{9}
-  \item Replicate Part B of Lab~\ref{ch:04} across two sub-samples: 1963--1992 and 1993--present. Compare changes in factor risk premia and GRS test rejections.
-  \item Compute $t$-statistics for 25 portfolio alphas using four methods: Classical OLS, White, Newey--West, and Stationary Block Bootstrap. Identify portfolios with the largest SE discrepancies, and explain what features of their returns might cause them.
-  \item Pair monthly returns with 1,000 simulated non-predictive predictors ($\rho = 0.98$). Run long-horizon regressions ($k=1$ to $60$) and plot false-positive rates for OLS, Newey--West, and Hodrick standard errors. Then set the correlation between predictor shocks and return shocks to $-0.9$ and describe how the Stambaugh bias changes the results.
-\end{enumerate}

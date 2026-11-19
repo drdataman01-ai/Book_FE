@@ -464,7 +464,7 @@ The lab takes the three factors and asks what each would have earned after costs
 
 \textbf{Part C: costs.} Net returns across one-way costs from 0 to 100 basis points, plus a short-borrowing fee of 0.25\% a year; break-even costs; and the ranking of the three strategies by Sharpe ratio before and after costs at a headline cost of 20 basis points. Lab Figure~\ref{ch:17}.1 plots each strategy's net return against cost, with its break-even point marked; Lab Figure~\ref{ch:17}.2 shows the growth of a dollar on paper and after costs.
 
-\textbf{Part D: capacity.} The simulated universe is scaled to a \$50 trillion market, with daily volume of 0.4\% of each company's value, half-spreads from 2 basis points for the largest stocks to 50 for the smallest, and square-root impact. Each strategy's net return is traced as its assets grow from \$10 million to \$1 trillion. The assumptions are explicit and adjustable, and the exercises ask which matters most.
+\textbf{Part D: capacity.} The simulated universe is scaled to a \$50 trillion market, with daily volume of 0.4\% of each company's value, half-spreads from 2 basis points for the largest stocks to 50 for the smallest, and square-root impact. Each strategy's net return is traced as its assets grow from \$10 million to \$1 trillion. The assumptions are explicit and adjustable, so readers can see which matters most.
 
 \textbf{Part E: mitigation, with known truth.} In the simulated universe, expected returns are known, so cost-mitigation rules can be compared without sampling noise. The lab compares the standard sort with buy/hold spreads of increasing width. For momentum at a one-way cost of 50 basis points, holding stocks until they leave the top 50\% cuts turnover roughly in half, from about 25\% to 12\% a month, gives up about a fifth of the expected gross return, and raises the expected net return from about 0.30\% to 0.41\% a month. For reversal, no band width rescues the strategy at that cost: the signal decays too fast for patience to pay.
 
@@ -529,28 +529,3 @@ Five questions turn the evidence in Section~\ref{sec:17-verdict} into a checklis
 \end{enumerate}
 
 The broader lesson is that costs change the ranking of strategies, not just their level. A modest, slow premium that can be harvested cheaply may be worth more than a spectacular, fast one that cannot. Chapters~\ref{ch:18} and~\ref{ch:19} test more anomalies, and report their evidence after costs as well as before.
-
-\section*{Exercises}
-\addcontentsline{toc}{section}{Exercises}
-
-\subsection*{Conceptual (all readers)}
-
-\begin{enumerate}
-  \item A long--short strategy has one-sided monthly turnover of 20\% and earns 0.6\% a month gross. What is its break-even one-way cost? What is its net return at a one-way cost of 30 basis points?
-  \item Explain why a value-weighted portfolio whose membership never changes has zero turnover, while an equal-weighted one with the same membership does not.
-  \item Why does market impact give a strategy a capacity, while a fixed spread does not?
-  \item A strategy earns most of its paper return on the short side. List three reasons its implementable return could be much lower than its paper return.
-  \item A friend trades several times a week on a ``commission-free'' app and believes her trading costs are zero. Without any calculation, explain what costs she is still paying and why they matter more for her than for someone who buys an index fund once a year.
-\end{enumerate}
-
-\subsection*{Lab extensions (technical readers)}
-
-\begin{enumerate}
-  \setcounter{enumi}{5}
-  \item Re-run the lab from May 2001, after the move to decimal prices, with a one-way cost of 10 basis points. Does short-term reversal survive in the low-cost era?
-  \item Re-run Part C with a borrowing fee of 2\% a year. Which strategy is most exposed to shorting costs, and why?
-  \item In Part D, halve and double the impact constant and the number of days over which trades are spread. Which assumption moves capacity most? What evidence would you want before trusting it?
-  \item In Part E, add a rule that rebalances momentum only once a quarter. Compare its turnover and expected net return with banding.
-  \item Implement the Corwin--Schultz high--low spread estimator and apply it to daily data for a few stocks you can download. How does it compare with their quoted spreads?
-  \item Choose an anomaly from Chapter~\ref{ch:19}'s list. Estimate its turnover from its construction, compute its break-even cost, and judge whether it is likely to survive costs.
-\end{enumerate}

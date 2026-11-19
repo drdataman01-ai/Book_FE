@@ -316,28 +316,3 @@ The evidence in Section~\ref{sec:22-verdict} suggests several practical lessons.
 \begin{callout}
 \textbf{What Failed: the quant quake of August 2007.} In the first two weeks of August 2007, many quantitative equity funds suffered large and sudden losses, followed by a partial rebound. These funds held long--short portfolios built from similar characteristics, such as value, momentum and quality. Khandani and Lo (2011) traced the episode to the rapid sale of one or more large portfolios. The sale pushed down the prices of the stocks that all these funds held long, and pushed up the prices of the stocks they held short. The models were not wrong about average returns. They were wrong about risk. Funds that thought they held different strategies had built nearly the same portfolio from the same characteristics. The claim that a characteristic-based model's backtested risk describes its live risk \textbf{fails} when many investors use similar models. A model that learns from the same public characteristics as everyone else may end up in the same crowded trades.
 \end{callout}
-
-\section*{Exercises}
-\addcontentsline{toc}{section}{Exercises}
-
-\subsection*{Conceptual (all readers)}
-
-\begin{enumerate}
-  \item Explain in words why an asset that pays off in bad times should earn a lower average return, using the SDF of Equation~\eqref{eq:22-pricing}.
-  \item Show that if $M = 1 - w'R^e$ prices two uncorrelated assets with expected excess returns of 4\% and 6\% and variances of 0.04 and 0.09, the weights are $w = (1, 0.67)$. What is the Sharpe ratio of the SDF portfolio?
-  \item In the shrinkage SDF of Equation~\eqref{eq:22-kns}, a principal component has variance 0.0001 and another has variance 0.01, and $\gamma = 0.001$. By what fraction is each component's weight shrunk? Why is this economically sensible?
-  \item Repeat the attention worked example for stock 3. Which stock does stock 3 pay most attention to, and what is its new value?
-  \item Explain why a Sharpe ratio of 4.57 in a research paper does not mean that an investor could have earned it.
-  \item A news headline says that ``AI now understands the stock market better than economists do.'' Without any calculation, use this chapter to explain what the evidence actually shows, and what has not yet been tested.
-\end{enumerate}
-
-\subsection*{Lab extensions (technical readers)}
-
-\begin{enumerate}
-  \setcounter{enumi}{6}
-  \item In Part C, add the JKP theme cluster of each factor as extra characteristics. Does attention concentrate within clusters?
-  \item Run the placebo of Robustness check 1 one hundred times. Where does the real model's alpha fall in the distribution of placebo alphas?
-  \item In Part D, plot the out-of-sample Sharpe ratio against the number of transformer blocks for windows of 60 and 120 months. Does depth help in both?
-  \item Charge costs of 5, 10 and 20 basis points per unit change in factor weights. At what cost does the transformer's advantage over the shrinkage SDF disappear?
-  \item Repeat the full lab with the JKP factors for developed markets outside the United States. Is the ranking of models the same?
-\end{enumerate}

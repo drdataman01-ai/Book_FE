@@ -590,27 +590,3 @@ The benefit is clearer for momentum\index{momentum}, where crashes follow high v
 
 The episode does not contradict this chapter. Volatility forecasts are informative on average. But a forecast that volatility will stay low is weakest exactly when it matters most: at the onset of a spike. A strategy that earns a small premium most days and loses almost everything on one day can look excellent in any backtest that misses that day. Chapter~\ref{ch:11} returns to this problem.
 \end{callout}
-
-\section*{Exercises}
-\addcontentsline{toc}{section}{Exercises}
-
-\subsection*{Conceptual (all readers)}
-
-\begin{enumerate}
-  \item A GARCH(1,1) model has $\omega = 0.000003$, $\alpha = 0.10$ and $\beta = 0.88$. (a) What are the long-run daily and annualized volatilities? (b) What is the half-life of a shock? (c) If tomorrow's variance forecast is 0.0004, what is the forecast volatility over the next 22 days, annualized?
-  \item Show that EWMA is GARCH(1,1) with $\omega = 0$. What does this imply for EWMA forecasts at long horizons?
-  \item A colleague argues that because volatility is forecastable, markets cannot be efficient. Explain why forecastable volatility is consistent with efficiency, and what evidence would change your answer.
-  \item After a week of large daily market swings, a friend says that the turbulence is ``over'' because the market closed flat today. Without any calculation, use this chapter to explain what tomorrow is likely to look like, and why one calm day says little.
-\end{enumerate}
-
-\subsection*{Lab extensions (technical readers)}
-
-\begin{enumerate}
-  \setcounter{enumi}{4}
-  \item Part A: compute the autocorrelations of squared returns as well as absolute returns. Which decays faster, and why might extreme days explain the difference?
-  \item Part B: rank the models by MSE instead of QLIKE. Does the ranking change? Which days drive the MSE comparison?
-  \item Part B: estimate GARCH with Student-$t$ shocks, using the option \texttt{dist="t"} of \texttt{fit\_garch}. Does it forecast better than the normal version?
-  \item Part B: regress realized variance on both the GJR forecast and the VIX. Does each add information? Compare the VIX's Mincer--Zarnowitz slope with 1 and explain.
-  \item Part C: for the first ten trading days of October 2008 and of March 2020, plot each forecast against realized variance. How many days did each model take to catch up?
-  \item Part D: rescale the managed portfolio using only past data and cap the weight at 1.5. How much of the alpha survives? Compare with Cederburg et al.\ (2020).
-\end{enumerate}

@@ -897,7 +897,7 @@ Five checks determine whether a machine-learning result is robust\index{robustne
   \item \textbf{Researcher degrees of freedom.}\index{researcher degrees of freedom|textbf} Every published model survived a search among many designs. Validation controls overfitting within one design, but not the choice among designs (Section~\ref{sec:01-backtests}).
 \end{itemize}
 
-For the virtue of complexity, Nagel's argument implies one sharp test: if a complex model's timing signal is close to a simple volatility-scaled momentum rule, the complexity adds little. Exercise~\ref{ex:20-volmom} runs that comparison.
+For the virtue of complexity, Nagel's argument implies one sharp test: if a complex model's timing signal is close to a simple volatility-scaled momentum rule, the complexity adds little. The lab's forecasts can be correlated with such a rule to run that comparison.
 
 \subsection*{Your verdict}
 
@@ -970,34 +970,3 @@ The six questions of Section~\ref{sec:09-investors} apply to any machine-learnin
 \begin{callout}
 \textbf{What Failed: the AI fund that trailed the index.} In 2017 the AI Powered Equity ETF (ticker AIEQ\index{AI Powered Equity ETF (AIEQ)}) launched as the first exchange-traded fund run by artificial intelligence. Its manager, EquBot, used IBM Watson to process news, filings and market data and to monitor tens of thousands of models. By January 2022 the fund was up 57\% since launch. Over the same period the S\&P 500 total return\index{return!total} index was up 84\% (Tech Brew 2022). The fund held about \$150 million. The models were sophisticated; the difficulty was the task. Stock returns carry little signal, and the competition for that signal is intense. A model that learns from the past is always learning about a market that has already moved on.
 \end{callout}
-
-\section*{Exercises}
-\addcontentsline{toc}{section}{Exercises}
-
-\subsection*{Conceptual (all readers)}
-
-\begin{enumerate}
-  \item In the worked example of Section~\ref{sec:20-shrinkage}, the OLS slope is 0.30 and $S = 120$. Compute the ridge slope for $\lambda = 40$ and $\lambda = 360$, and the lasso slope for $\lambda = 24$. For what value of $\lambda$ does the lasso drop the predictor?
-  \item Explain why a ridge regression's forecast approaches the historical mean as its penalty $\lambda$ grows. What does this imply about how the penalty should be chosen in a walk-forward evaluation, and what goes wrong if it is chosen once on the full sample?
-  \item In the six-stock tree example, compute the sum of squared errors after splitting on momentum at $0.3$ instead of zero, so that D joins A, B and C. Is it a better or worse first split?
-  \item In the network example, compute the forecast for a large loser with momentum $-0.5$ and size $0.6$. Which neuron is switched on?
-  \item A model has a monthly out-of-sample $R^2$ of 0.3\% on stocks with 12\% monthly volatility. What is the standard deviation of its forecasts? What expected return gap separates stocks forecast one standard deviation above and below average?
-  \item Explain why OLS with 920 covariates had an out-of-sample $R^2$ of $-3.46\%$ in Gu, Kelly and Xiu (2020), while OLS with three characteristics had $+0.16\%$.
-  \item A gradient-boosted model uses trees of depth 1. Can it capture an interaction between size and momentum? What about depth 2?
-  \item Explain, using the bias--variance trade-off, why machine learning has a better record in credit scoring than in forecasting stock returns.
-  \item A fund advertises that its artificial-intelligence model ``analyzes millions of data points every day'' to pick stocks. Without any calculation, explain why the amount of data processed says little about whether the fund will beat the market, and what evidence you would ask to see.
-\end{enumerate}
-
-\subsection*{Lab extensions (technical readers)}
-
-\begin{enumerate}
-  \setcounter{enumi}{9}
-  \item Part A: run on real data. Is the Diebold--Mariano statistic of the best nonlinear model against OLS-3 above 2?
-  \item Compare the long--short Sharpe ratio of each model on all portfolios and on large portfolios only. Which model loses most?
-  \item At what cost per unit of turnover does the best model's long--short Sharpe ratio fall below that of OLS-3?
-  \item Part C: rank the characteristics by importance for the trees and for OLS. Do the flexible models rely on anything the linear model ignores?
-  \item\label{ex:20-volmom} Part D: compute a volatility-scaled momentum rule for the market (last 12 months' return divided by trailing volatility) and correlate its timing signal with the complex model's forecasts. How much of the complex model's performance does the simple rule reproduce?
-  \item Gu, Kelly and Xiu report much higher Sharpe ratios for equal-weighted than for value-weighted portfolios. What does that suggest about where the predictability lives, and about whether investors can capture it?
-  \item Using the Goyal--Welch file of Lab~\ref{ch:09}, fit ridge, lasso and elastic-net regressions on the 14 predictors walk-forward, choosing $\lambda$ inside each training window by holding out its last 10 years for validation. Add a random forest and gradient boosting with their hyperparameters chosen the same way. Do any of them beat the historical mean, the kitchen sink and the combination forecast of Lab~\ref{ch:09} by the out-of-sample $R^2$ or by Clark--West? How far does each forecast sit from the historical mean on average?
-  \item A start-up claims its deep-learning model earned a Sharpe ratio of 3 in a backtest over 2010--2024. List the questions you would ask before investing.
-\end{enumerate}

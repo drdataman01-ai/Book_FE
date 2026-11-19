@@ -688,27 +688,3 @@ The evidence in Section~\ref{sec:12-verdict} suggests several practical lessons.
 \begin{callout}
 \textbf{What Failed: the optimizer nobody would use.} In the early 1990s, Fischer Black and Robert Litterman of Goldman Sachs reported that asset-allocation models had not played the role in portfolio management that their logic deserved. Investment professionals found the models hard to use, and the portfolios they produced were ``badly behaved'': concentrated, extreme and sensitive to small changes in the inputs. Black and Litterman's solution was to stop trusting historical averages. They started from the expected returns implied by market equilibrium and let managers depart from them only where they had confident views. Michaud reached the same diagnosis from another direction: an unconstrained optimizer magnifies the errors in its inputs. The lesson has outlived both papers. The optimizer does exactly what it was designed to do; the problem is what it is fed.
 \end{callout}
-
-\section*{Exercises}
-\addcontentsline{toc}{section}{Exercises}
-
-\subsection*{Conceptual (all readers)}
-
-\begin{enumerate}
-  \item Two assets have volatilities of 15\% and 25\% and a correlation of 0.3. Compute the weights of the global minimum-variance portfolio, and then the inverse-volatility weights. Which portfolio has the lower variance, and by how much?
-  \item In the worked example of Section~\ref{sec:12-worked}, with expected returns of 8\% for A and 6\% for B, find the correlation at which the tangency portfolio first takes a short position in B.
-  \item An asset has a volatility of 18\%. How many years of data are needed for the standard error of its average return to fall below 1\% a year? What does your answer imply for estimating the difference in average returns between two industries?
-  \item A friend's retirement plan offers eight funds. A financial website suggests an ``optimized'' mix based on the funds' past ten years of returns, while your friend is inclined to put one-eighth in each. Without any calculation, explain what the evidence in this chapter suggests and what questions your friend should ask about the website's mix.
-\end{enumerate}
-
-\subsection*{Lab extensions (technical readers)}
-
-\begin{enumerate}
-  \setcounter{enumi}{4}
-  \item Part A: run the lab on real data. Which rules beat 1/N on the Sharpe ratio, and are any of the differences significant at the 5\% level?
-  \item Run the lab again with \texttt{-{}-window 240} and \texttt{-{}-window 360}. How quickly does sample mean--variance approach 1/N as the window grows?
-  \item Part B: compare sample minimum variance with its Ledoit--Wolf version on 10, 30 and 25 assets. Why does shrinkage matter more when there are more assets?
-  \item Add a rule that holds half in 1/N and half in the Ledoit--Wolf minimum-variance portfolio. Does this mixture beat both of its parts?
-  \item Kirby and Ostdiek argue that DGU's test favored 1/N. DGU might reply that real investors face exactly the estimation errors their test included. Which side has the better argument, and what evidence would settle it?
-  \item A pension fund holds stocks, bonds, real estate and commodities. Would you expect optimization to do better against 1/N for this fund than for a portfolio of ten U.S. industries? Explain your answer.
-\end{enumerate}

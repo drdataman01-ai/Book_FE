@@ -357,27 +357,3 @@ The evidence in Section~\ref{sec:21-verdict} suggests several practical lessons.
 \begin{callout}
 \textbf{What Failed: forecasting home prices at scale.} In 2018 Zillow began buying homes directly through Zillow Offers. It relied on its price-estimation models to decide what to pay, and expected to resell the homes at a profit. In November 2021 the company announced that it would close the business (Zillow Group 2021). It wrote down its home inventory by \$304.4 million in the third quarter, because it had bought homes at prices above what it now expected to sell them for. It also cut about a quarter of its workforce. Zillow cited the unpredictability of home prices, capacity\index{capacity} constraints and other operational problems. The models were sophisticated and trained on vast data. But a forecast that is accurate on average can still fail when it is acted on at scale, in a market that turns, against sellers who know more about the particular house. The lesson for any new forecasting technology is to test it where the decision is made, not where the benchmark is easiest to beat.
 \end{callout}
-
-\section*{Exercises}
-\addcontentsline{toc}{section}{Exercises}
-
-\subsection*{Conceptual (all readers)}
-
-\begin{enumerate}
-  \item A foundation model's MSE ratio against AR is 0.97 over 120 months. The monthly loss differences have a standard deviation 4 times their mean. Compute the Diebold--Mariano statistic, ignoring autocorrelation. How many months would be needed for the same gain to reach $t = 2$?
-  \item Explain why the historical mean is a strong benchmark for monthly stock returns but a weak one for log realized variance.
-  \item A foundation model was pretrained on a corpus that includes the S\&P 500 index up to 2023. Which of the lab's six series could be affected, and why?
-  \item A software vendor shows a chart in which its AI model ``predicted'' the stock market's path over the past ten years almost perfectly. Without any calculation, explain why the chart may prove little, and what test you would ask the vendor to run instead.
-\end{enumerate}
-
-\subsection*{Lab extensions (technical readers)}
-
-\begin{enumerate}
-  \setcounter{enumi}{4}
-  \item Install Chronos-Bolt and run the lab on real data. On which series does it beat AR, and is any difference significant?
-  \item Compare Chronos-Bolt with HAR on log realized variance. Then average the two forecasts. Does the average beat both?
-  \item Part C: set the cutoff to Chronos-Bolt's release date. How do its MSE ratios before and after compare with the memorizing model's pattern?
-  \item Part D: check the 80\% interval coverage of the foundation models. Are their intervals too narrow, too wide or about right?
-  \item Chronos performed best on datasets that were in its training corpus. Why does that make developers' benchmark results hard to interpret for financial users?
-  \item A colleague argues that because foundation models are improving quickly, it is not worth building classical benchmarks. Write a short reply.
-\end{enumerate}

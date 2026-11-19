@@ -295,29 +295,3 @@ The evidence in Section~\ref{sec:23-verdict} suggests several practical lessons.
 \begin{callout}
 \textbf{What Failed: forecasting volatility from calm data, March 2020.} In mid-February 2020 the VIX was below 15, and models estimated on the calm years before it forecast low volatility. Within a month the S\&P 500 fell by about a third. On March 16 the VIX closed at 82.69, its highest close on record. Every model that forecasts volatility from past data, from GARCH to a foundation model, raised its forecast only after the turmoil had begun. Models that react quickly to new data, such as GARCH and HAR, adjusted within days. Risk measures based on long, equally weighted windows took months. The claim that any model trained on calm data can anticipate a sudden change of regime \textbf{fails}. What a better model can offer is a faster and more accurate response once the change begins, which is exactly what the crisis tests in this chapter measure.
 \end{callout}
-
-\section*{Exercises}
-\addcontentsline{toc}{section}{Exercises}
-
-\subsection*{Conceptual (all readers)}
-
-\begin{enumerate}
-  \item A day's bar has open 50, high 51, low 49 and close 50.5. Compute the Parkinson and Garman--Klass variance estimates and the implied daily volatilities.
-  \item Explain why range-based estimators are biased downward when trading is not continuous, and why they miss overnight risk.
-  \item Why must incremental fine-tuning use only data before each test period? Describe what would go wrong if the whole sample were used.
-  \item List the stylized facts of daily returns. Which of them does a GARCH model with normal shocks fail to reproduce?
-  \item Explain the difference between the Diebold--Mariano test and the Giacomini--White test. When does the difference matter?
-  \item A trading-software company says its AI model ``learned from 12 billion price bars'' and therefore sees market risk coming. Without any calculation, use this chapter to explain what such a model can and cannot be expected to do, especially at the start of a crisis.
-\end{enumerate}
-
-\subsection*{Lab extensions (technical readers)}
-
-\begin{enumerate}
-  \setcounter{enumi}{6}
-  \item In Part B, replace QLIKE with MSE. Does the ranking of models change? Relate your answer to Section~\ref{sec:10-eval}.
-  \item In Part D, compute the leverage effect in each set of synthetic paths. Which generator reproduces it?
-  \item Run Part B twice, once with Garman--Klass variance and once in the fallback mode with squared returns, on the same dates. How much does the QLIKE gap between TimesFM and HAR shrink relative to its standard error? Relate your answer to Andersen and Bollerslev (1998) in Chapter~\ref{ch:10}.
-  \item In Part E, compute the 99\% VaR from Kronos's sampled paths directly, as a quantile, instead of from its variance forecast. Does the backtest improve?
-  \item Add the VIX as a covariate to HAR. Does any foundation model still beat it in Part F?
-  \item Fine-tune Kronos on the first half of the post-release data and test on the second half. Compare the gain from fine-tuning with the gain Goel and coauthors found for TimesFM.
-\end{enumerate}
