@@ -10,14 +10,22 @@
     borderline west={2.5pt}{0pt}{gray!70},
     left=8pt, right=8pt, top=4pt, bottom=4pt}%
 }{}
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
 \makeatother
 
 \chapter{Claim: Volatility Is Predictable}
 \label{ch:10}
 
-In 1961 Benoit Mandelbrot, a mathematician at IBM, visited the Harvard economist Hendrik Houthakker and saw a graph of cotton price changes on his blackboard. Houthakker had been unable to fit the data to the normal distribution, the standard model of price changes since Bachelier (1900). Mandelbrot found why: extreme changes were far more common than the normal distribution allows. He also noticed that large changes tend to be followed by large changes, of either sign, and small changes by small changes (Mandelbrot 1963). \textbf{A quiet day tends to follow another quiet day, and a violent day another violent one;} the 1987 crash, the autumn of 2008 and March 2020 each arrived as a run of violent days. Yet for two decades the pattern had no model.
+Anyone who follows the news knows that the stock market has calm stretches, when prices barely move for weeks, and stormy ones, when headlines report large swings day after day. This chapter asks whether that everyday impression can be turned into a reliable forecast of how much prices will move tomorrow.
 
-The model came from an unexpected direction. Robert Engle, a physicist turned economist, was on sabbatical at the London School of Economics in 1979, studying inflation rather than markets. Friedman (1977) had argued that the uncertainty created by inflation harms the economy, but standard models assumed that this uncertainty never changes. Engle built a model in which today's variance depends on yesterday's \textbf{squared shocks} (Figure~\ref{fig:10-cluster-arch}). His colleague David Hendry named it \textbf{autoregressive conditional heteroskedasticity}, or \textbf{ARCH} (Engle 1982), and it later earned Engle the 2003 Nobel Prize.
+In 1961 Benoit Mandelbrot, a mathematician at IBM, visited the Harvard economist Hendrik Houthakker and saw a graph of cotton price changes on his blackboard. Houthakker had been unable to fit the data to the normal distribution, the familiar bell curve and the standard model of price changes since Bachelier (1900). Mandelbrot found why: extreme changes were far more common than the normal distribution allows. He also noticed that large changes tend to be followed by large changes, of either sign, and small changes by small changes (Mandelbrot 1963). \textbf{A quiet day tends to follow another quiet day, and a violent day another violent one;} the 1987 crash, the autumn of 2008 and March 2020 each arrived as a run of violent days. Yet for two decades the pattern had no model.
+
+The model came from an unexpected direction. Robert Engle, a physicist turned economist, was on sabbatical at the London School of Economics in 1979, studying inflation rather than markets. Friedman (1977) had argued that the uncertainty created by inflation harms the economy, but standard models assumed that this uncertainty never changes. Engle built a model in which today's variance depends on yesterday's \textbf{squared shocks} (Figure~\ref{fig:10-cluster-arch}). His colleague David Hendry named it \textbf{autoregressive conditional heteroskedasticity}, or \textbf{ARCH} (Engle 1982), a long name for a simple idea: the variance, or heteroskedasticity, changes over time in a way that depends on recent events, and it later earned Engle the 2003 Nobel Prize.
 
 ARCH needed many lags to capture volatility that stays high for weeks. Engle's doctoral student Tim Bollerslev, who had come to San Diego from Denmark, solved this by adding yesterday's variance to the equation, so that one term carries the memory of all past shocks (Bollerslev 1986). His \textbf{generalized ARCH}, or \textbf{GARCH}, became the standard model of financial volatility (Figure~\ref{fig:10-cluster-garch}).
 
@@ -75,7 +83,7 @@ ARCH needed many lags to capture volatility that stays high for weeks. Engle's d
 \end{figure}
 
 
-The claim carries a great deal of weight. Option prices, risk limits, Value at Risk\index{Value at Risk (VaR)}, margin requirements\index{margin} and volatility-targeting\index{volatility targeting} funds all assume that volatility\index{volatility} can be forecast. If it could not, a risk manager would have no better guess for tomorrow's risk than the long-run average, and none of these tools would work as intended.
+The claim carries a great deal of weight. Option prices, risk limits, Value at Risk\index{Value at Risk (VaR)}, margin requirements\index{margin} (the deposits that brokers demand from investors who borrow or trade futures) and volatility-targeting\index{volatility targeting} funds all assume that volatility\index{volatility} can be forecast. If it could not, a risk manager would have no better guess for tomorrow's risk than the long-run average, and none of these tools would work as intended.
 
 Yet in the 1990s the evidence looked weak. Researchers judged a GARCH forecast by how well it predicted the next day's squared return, and by that test the forecasts explained only a few percent of the variation. It seemed that the models, though popular, had little real forecasting power.
 
@@ -91,6 +99,10 @@ By the end of the chapter you will be able to:
   \item evaluate forecasts with loss functions\index{loss function} such as QLIKE\index{loss function!QLIKE} and with the Diebold--Mariano test\index{Diebold--Mariano test};
   \item judge whether volatility timing pays once forecasts are made in real time.
 \end{itemize}
+
+\begin{callout}
+\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain model details and statistical diagnostics, and you can skip them without losing the thread. The Lab, the robustness checks and the lab extensions are written for readers who want to run the Python code themselves.
+\end{callout}
 
 
 \section{Foundations: measuring and modelling volatility}
@@ -160,7 +172,7 @@ RiskMetrics set $\lambda = 0.94$ for daily data. Yesterday's squared return gets
     -- (axis cs:33,1.22);
 \end{axis}
 \end{tikzpicture}
-\caption{Response of each estimator to a single 5\% move on day 10 when volatility is otherwise 1\% per day. The 22-day window raises its estimate by a fixed amount for exactly 22 days and then drops back abruptly when the shock leaves the window, even though nothing happened in the market that day. EWMA reacts more strongly at first, because yesterday receives the largest weight, and then lets the shock fade gradually.}
+\caption{EWMA lets an old shock fade gradually instead of dropping it all at once. Response of each estimator to a single 5\% move on day 10 when volatility is otherwise 1\% per day. The 22-day window raises its estimate by a fixed amount for exactly 22 days and then drops back abruptly when the shock leaves the window, even though nothing happened in the market that day. EWMA reacts more strongly at first, because yesterday receives the largest weight, and then lets the shock fade gradually.}
 \label{fig:10-ewma-shock}
 \end{figure}
 
@@ -198,7 +210,10 @@ Each term has a simple meaning.
 \end{itemize}
 EWMA has news and memory but no $\omega$. GARCH adds this third term, and it is what makes volatility return to normal after a storm.
 
-Four useful quantities follow from the parameters. The examples use $\omega = 0.000002$, $\alpha = 0.08$ and $\beta = 0.90$, the values of the worked example below.
+In plain words, a GARCH forecast jumps after a big day and then drifts back toward a normal level. With typical stock-market values, half of a shock's effect fades in about 34 trading days, or roughly seven weeks. The shaded box shows how these numbers follow from the parameters.
+
+\begin{technote}
+\textbf{Technical note: what the GARCH parameters imply.} Four useful quantities follow from the parameters. The examples use $\omega = 0.000002$, $\alpha = 0.08$ and $\beta = 0.90$, the values of the worked example below.
 \begin{itemize}
   \item \textbf{Persistence}\index{persistence|textbf}, $\alpha + \beta$, measures how much of today's shock survives to tomorrow. It must be below 1, or volatility would never settle. In the example it is 0.98.
   \item The \textbf{long-run variance}\index{GARCH!unconditional variance|textbf}, $V = \omega / (1 - \alpha - \beta)$, is the normal level that volatility returns to. In the example $V = 0.0001$, a daily volatility of 1\%, or about 16\% a year.
@@ -211,6 +226,7 @@ Four useful quantities follow from the parameters. The examples use $\omega = 0.
 \end{itemize}
 
 \textbf{EWMA as a special case.} Setting $\omega = 0$, $\alpha = 1 - \lambda$ and $\beta = \lambda$ turns GARCH into EWMA. Its persistence is then exactly 1, so there is no long-run level to return to, and an EWMA forecast stays where it is no matter how far ahead you look.
+\end{technote}
 
 \textbf{Falls matter more than rises.} In stock markets, a fall tends to raise volatility more than a rise of the same size. This asymmetry is called the \textbf{leverage effect}\index{leverage effect|textbf}. \textbf{GJR-GARCH}\index{GARCH!GJR|textbf} captures it by adding one term to the equation, $\gamma\,r^2_{t-1}\,\mathbf{1}[r_{t-1} < 0]$. The indicator $\mathbf{1}[r_{t-1} < 0]$ equals 1 after a down day and 0 otherwise, so the extra term $\gamma$ applies only after falls.
 
@@ -287,14 +303,14 @@ Its use goes beyond option pricing, though. Option traders often quote prices in
   \node[anchor=south west, font=\footnotesize] at (axis cs:60.5,-3.8) {maximum loss: \$4};
 \end{axis}
 \end{tikzpicture}
-\caption{Profit at expiry per barrel from a call and a put on oil, each with a strike of \$80 and a price of \$4. The call gains when the oil price rises above \$84, the strike plus the price paid, and the put gains when the oil price falls below \$76. If the oil price ends near \$80, either option expires and its holder loses only the \$4. Because the losses are capped and the gains are not, an option is worth more when large price moves in either direction are more likely.}
+\caption{An option's losses are capped and its gains are not, which is why options are worth more when big moves are likely. Profit at expiry per barrel from a call and a put on oil, each with a strike of \$80 and a price of \$4. The call gains when the oil price rises above \$84, the strike plus the price paid, and the put gains when the oil price falls below \$76. If the oil price ends near \$80, either option expires and its holder loses only the \$4. Because the losses are capped and the gains are not, an option is worth more when large price moves in either direction are more likely.}
 \label{fig:10-option-payoff}
 \end{figure}
 
 
 The best-known measure of implied volatility is the \textbf{VIX}\index{VIX|textbf}. It measures the market's expected volatility of the S\&P~500 over the next 30 days, computed from the prices of many index options, and it is quoted in annual percentage points. A VIX of 20 means an expected volatility of about 20\% a year, or about $20/\sqrt{252} \approx 1.3\%$ a day.
 
-Implied volatility has one important bias. It is a forecast under the \emph{risk-neutral\index{risk-neutral pricing}} measure, the probabilities that price assets as if investors did not care about risk, not under real-world probabilities. In practice, investors pay extra for options that protect them when volatility jumps, just as they pay for insurance. As a result, the VIX usually exceeds the volatility that actually follows. This gap is the \textbf{variance risk premium}\index{variance risk premium|textbf}. A forecaster who uses implied volatility must allow for it, and an investor who sells options earns it, which is the subject of Chapter~\ref{ch:16}.
+Implied volatility has one important bias. In plain words, the VIX tends to run a little high, because it mixes the market's forecast of volatility with the price investors pay for protection. More precisely, it is a forecast under the \emph{risk-neutral\index{risk-neutral pricing}} measure, the probabilities that price assets as if investors did not care about risk, not under real-world probabilities. In practice, investors pay extra for options that protect them when volatility jumps, just as they pay for insurance. As a result, the VIX usually exceeds the volatility that actually follows. This gap is the \textbf{variance risk premium}\index{variance risk premium|textbf}. A forecaster who uses implied volatility must allow for it, and an investor who sells options earns it, which is the subject of Chapter~\ref{ch:16}.
 
 \begin{figure}[htbp]
 \centering
@@ -335,9 +351,11 @@ Implied volatility has one important bias. It is a forecast under the \emph{risk
   \node[above, font=\small] at (axis cs:2025.27,52) {Tariffs};
 \end{axis}
 \end{tikzpicture}
-\caption{Approximate path of the VIX, 1990--2025, drawn through its major peaks and troughs rather than daily data. The VIX measures the volatility of the S\&P~500 over the next 30 days implied by index option prices. It spends long periods near or below its average of about 20 and then spikes sharply during crises, the same volatility clustering seen in past returns, now visible in forward-looking prices. Exact daily values are available from FRED (series VIXCLS).}
+\caption{The stock market's ``fear gauge'' stays calm for long stretches and spikes in crises. Approximate path of the VIX, 1990--2025, drawn through its major peaks and troughs rather than daily data. The VIX measures the volatility of the S\&P~500 over the next 30 days implied by index option prices. It spends long periods near or below its average of about 20 and then spikes sharply during crises, the same volatility clustering seen in past returns, now visible in forward-looking prices. Exact daily values are available from FRED (series VIXCLS).}
 \label{fig:10-vix}
 \end{figure}
+
+\noindent\textbf{In plain terms.} Volatility measures how much prices swing. It can be estimated from recent price moves, with more weight on the latest days, or read from option prices, which reveal how much movement traders expect. Models such as GARCH capture the everyday observation that turbulent days come in bunches and that calm eventually returns.
 
 
 \section[Three facts about volatility]{Three facts about volatility that the models must explain}
@@ -347,11 +365,13 @@ Three regularities in daily stock returns, which Part A of this chapter's lab me
 
 \begin{itemize}
   \item \textbf{Volatility clustering.}\index{volatility clustering|textbf} Returns themselves have almost no autocorrelation\index{autocorrelation}, but absolute and squared returns are positively autocorrelated, and this autocorrelation decays slowly over weeks and months. The slow decay is why ARCH(1) is not enough and why GARCH and HAR, which carry a long memory, fit better. A forecastable size combined with an unforecastable sign is exactly what an efficient market\index{efficient market hypothesis} with changing risk would produce.
-  \item \textbf{Fat tails.}\index{fat tails|textbf} Daily returns have far more extreme days than a normal distribution\index{distribution!normal} allows. Part of this comes from clustering itself, because a mixture of calm and turbulent periods, each roughly normal, has fat tails overall. Even after allowing for clustering, the standardized returns $r_t / \sigma_t$ remain somewhat fat-tailed, which is why many applications estimate GARCH with Student-$t$ shocks.
-  \item \textbf{The leverage effect.}\index{leverage effect|textbf} Volatility rises more after falls than after rises of the same size, which is why GJR-GARCH adds a term for down days (Section~\ref{sec:10-garch}). Black (1976) attributed this to leverage, since a falling share price raises a firm's debt-to-equity ratio and so the riskiness of its equity. The effect is too large to be explained by leverage alone, however, and it is strongest for the index. Risk premiums and \textbf{volatility feedback}\index{volatility feedback|textbf}, in which higher expected volatility lowers prices, also contribute.
+  \item \textbf{Fat tails.}\index{fat tails|textbf} Daily returns have far more extreme days than a normal distribution\index{distribution!normal} allows. Part of this comes from clustering itself, because a mixture of calm and turbulent periods, each roughly normal, has fat tails overall. Even after allowing for clustering, the standardized returns $r_t / \sigma_t$ remain somewhat fat-tailed, which is why many applications estimate GARCH with Student-$t$ shocks, drawn from a distribution with fatter tails than the bell curve.
+  \item \textbf{The leverage effect.}\index{leverage effect|textbf} Volatility rises more after falls than after rises of the same size, which is why GJR-GARCH adds a term for down days (Section~\ref{sec:10-garch}). Black (1976) attributed this to leverage, since a falling share price raises a firm's debt-to-equity ratio, the size of its borrowing relative to the value of its shares, and so the riskiness of its equity. The effect is too large to be explained by leverage alone, however, and it is strongest for the index. Risk premiums and \textbf{volatility feedback}\index{volatility feedback|textbf}, in which higher expected volatility lowers prices, also contribute.
 \end{itemize}
 
 Lab Figure~\ref{ch:10}.1 shows the first fact on U.S. data. The bars for returns hover near zero at every lag, while the bars for absolute returns are positive at lag 1 and still clearly positive after 50 trading days.
+
+\noindent\textbf{In plain terms.} The direction of tomorrow's price move is close to unpredictable, but its size is not: big days follow big days. Extreme days are more common than the bell curve suggests, and falls stir up more turbulence than rises of the same size.
 
 \section{The claim}
 \label{sec:10-claim}
@@ -375,27 +395,29 @@ A second, separate claim concerns use: that an investor who holds less of the ma
 \section{The original evidence}
 \label{sec:10-evidence}
 
-\textbf{ARCH and GARCH.} Engle (1982) introduced the ARCH model, in which today's variance depends on past squared shocks. His first application was to U.K. inflation\index{inflation}, not stock returns. Bollerslev (1986) added lagged variance, producing GARCH(1,1), which captures long memory with three parameters. Within a decade GARCH-type models had been fitted to almost every financial series, with the same finding each time: persistence close to 1, so volatility shocks die out over weeks to months. Glosten, Jagannathan and Runkle (1993) added the asymmetric term that bears their initials and found strong leverage effects in U.S. stock returns. Engle shared the 2003 Nobel prize for this work.
+\textbf{ARCH and GARCH.} Engle (1982) introduced the ARCH model, in which today's variance depends on past squared shocks. His first application was to U.K. inflation\index{inflation}, not stock returns. To avoid ARCH's many lags, Bollerslev (1986) added lagged variance, producing GARCH(1,1), which captures long memory with three parameters. Within a decade GARCH-type models had been fitted to almost every financial series, with the same finding each time: persistence close to 1, so volatility shocks die out over weeks to months. Because stock volatility rises more after falls than after rises, which GARCH ignores, Glosten, Jagannathan and Runkle (1993) added the asymmetric term that bears their initials and found strong leverage effects in U.S. stock returns. Engle shared the 2003 Nobel prize for this work.
 
 \textbf{The low-$R^2$\index{regression!R-squared@$R^2$} puzzle and its resolution.} Early out-of-sample tests seemed discouraging. Regressions of daily squared returns on GARCH forecasts gave $R^2$ of only a few percent, and some authors concluded that GARCH forecasts were poor. Andersen and Bollerslev (1998) showed that the problem lay not with the models but with how they were tested. A single squared return is a very noisy measure of a day's variance. A day can be risky yet end with the price almost unchanged, and a calm day can end with one large move. Even a perfect forecast would therefore match squared returns poorly. Andersen and Bollerslev replaced the squared daily return with realized variance\index{realized variance}, the sum of squared returns over many short intervals within the day, such as every five minutes. Because it uses the whole day's price path, realized variance measures the day's true variance far more accurately. Judged against it, the same GARCH forecasts explained around half of the variation in volatility.
 
 Once volatility could be measured well, three further questions followed.
 
-\textbf{Can realized variance itself be forecast?}\index{volatility!realized|textbf} Andersen, Bollerslev, Diebold and Labys (2003) treated realized variance as an observable series and modelled it directly. Simple time-series models of realized variance outperformed GARCH models estimated on daily returns. Corsi (2009) proposed the heterogeneous autoregressive, or HAR, model, motivated by traders who operate at daily, weekly and monthly horizons. It forecasts tomorrow's realized variance from its average over the past day, week and month. This simple regression reproduces volatility's long memory with three regressors and has become the standard benchmark for realized-variance forecasts.
+\textbf{Can realized variance itself be forecast?}\index{volatility!realized|textbf} Once realized variance could be computed every day, Andersen, Bollerslev, Diebold and Labys (2003) treated it as an observable series and modelled it directly. Simple time-series models of realized variance outperformed GARCH models estimated on daily returns. Seeking a simpler way to capture how slowly volatility shocks fade, Corsi (2009) proposed the heterogeneous autoregressive, or HAR, model, motivated by traders who operate at daily, weekly and monthly horizons. It forecasts tomorrow's realized variance from its average over the past day, week and month. This simple regression reproduces volatility's long memory with three regressors and has become the standard benchmark for realized-variance forecasts.
 
-\textbf{Which model forecasts best?} Hansen and Lunde (2005) compared 330 models on a Deutsche mark--dollar exchange rate\index{exchange rate} and IBM stock returns, and found that the simple GARCH(1,1) is hard to beat. For the exchange rate, nothing significantly beat it. For IBM, it was clearly inferior to models with a leverage effect, in which volatility rises more after a fall than after a rise. Poon and Granger (2003) reviewed 93 studies. Implied volatility generally forecast best, followed by historical volatility and GARCH roughly together, and all methods did better than a constant.
+\textbf{Which model forecasts best?} With hundreds of volatility models on offer, Hansen and Lunde (2005) asked whether any of them beats GARCH(1,1), and compared 330 models on a Deutsche mark--dollar exchange rate\index{exchange rate} and IBM stock returns, and found that the simple GARCH(1,1) is hard to beat. For the exchange rate, nothing significantly beat it. For IBM, it was clearly inferior to models with a leverage effect, in which volatility rises more after a fall than after a rise. Poon and Granger (2003) reviewed 93 studies to reconcile their conflicting verdicts. Implied volatility generally forecast best, followed by historical volatility and GARCH roughly together, and all methods did better than a constant.
 
-\textbf{Can investors profit from the forecasts?} Moreira and Muir (2017) argued that they can. An investor who holds less of a portfolio when its recent volatility is high, and more when it is low, earns a higher Sharpe ratio than one who holds a fixed amount. Cederburg, O'Doherty, Wang and Yan (2020) challenged this claim. Across 103 equity strategies, they found that the gains mostly disappear when the investor has to choose the scaling in real time, using only data available at the time. Section~\ref{sec:10-investors} returns to what this means in practice.
+\textbf{Can investors profit from the forecasts?} Moreira and Muir (2017) noticed that average returns rise much less than volatility does, and argued that investors can therefore profit. An investor who holds less of a portfolio when its recent volatility is high, and more when it is low, earns a higher Sharpe ratio than one who holds a fixed amount. Cederburg, O'Doherty, Wang and Yan (2020), suspecting that the gains depended on hindsight, challenged this claim. Across 103 equity strategies, they found that the gains mostly disappear when the investor has to choose the scaling in real time, using only data available at the time. Section~\ref{sec:10-investors} returns to what this means in practice.
+
+\noindent\textbf{In plain terms.} Once volatility was measured properly, simple models turned out to forecast it well, and option prices forecast it better still. Whether investors can profit by holding less stock when volatility is high is a separate and much more doubtful question.
 
 \section{Evaluating volatility forecasts}
 \label{sec:10-eval}
 
 Scoring a volatility forecast is harder than scoring a return forecast, because the thing being forecast is never observed. Every comparison uses a proxy, such as the sum of squared daily returns. The proxy is unbiased but noisy. The question is whether the noise can change which model wins.
 
-Patton (2011) answered it. With a noisy proxy, only some loss functions are \textbf{robust}: they rank forecasts in the same order as they would against the true variance. Two common ones are robust (Figure~\ref{fig:10-qlike}).
+Patton (2011) answered it. A loss function is a scoring rule that turns each forecast error into a penalty, so that the model with the smallest average penalty wins. With a noisy proxy, only some loss functions are \textbf{robust}: they rank forecasts in the same order as they would against the true variance. Two common ones are robust (Figure~\ref{fig:10-qlike}).
 
 \begin{itemize}
-  \item \textbf{MSE}\index{loss function!squared-error (MSE)|textbf}, $(RV - F)^2$, where $RV$ is the proxy and $F$ the forecast. It is robust but dominated by the largest days. A few crisis days can decide the whole comparison.
+  \item \textbf{MSE}\index{loss function!squared-error (MSE)|textbf}, the mean squared error, $(RV - F)^2$, where $RV$ is the proxy and $F$ the forecast. It is robust but dominated by the largest days. A few crisis days can decide the whole comparison.
   \item \textbf{QLIKE}\index{loss function!QLIKE|textbf}, $\log F + RV/F$, the loss implied by the normal likelihood. It is robust and penalizes forecasts that are too \emph{low} much more than forecasts that are too high, which suits risk management. Because it depends on the ratio $RV/F$, it is not dominated by the level of volatility in crises.
 \end{itemize}
 
@@ -424,20 +446,26 @@ Patton (2011) answered it. With a noisy proxy, only some loss functions are \tex
   \node[align=center] at (axis cs:2.65,0.9) {too high:\\mildly penalized};
 \end{axis}
 \end{tikzpicture}
-\caption{Two robust loss functions, measured from their minimum. MSE treats a forecast that is too high and one that is too low symmetrically. QLIKE punishes a forecast that is too low far more than one that is too high: underestimating risk is the costlier mistake.}
+\caption{For a risk manager, underestimating risk is the costlier mistake, and QLIKE scores forecasts accordingly. Two robust loss functions, measured from their minimum. MSE treats a forecast that is too high and one that is too low symmetrically. QLIKE punishes a forecast that is too low far more than one that is too high: underestimating risk is the costlier mistake.}
 \label{fig:10-qlike}
 \end{figure}
 
 Others are not robust. Mean absolute error and MSE on volatility rather than variance, both common in early studies, can rank a biased forecast above the true variance when the proxy is noisy. They should be avoided.
 
-Two diagnostics complement the loss comparison.
+Two further diagnostics, described in the shaded box, check whether a forecast is biased and whether one model is reliably better than another.
+
+\begin{technote}
+\textbf{Technical note: two diagnostics.} Two diagnostics complement the loss comparison.
 
 \begin{itemize}
   \item \textbf{Mincer--Zarnowitz regression.} Regress realized on forecast variance. An unbiased forecast has intercept 0 and slope 1. A slope below 1 means the forecast overreacts\index{overreaction}, which is typical of the VIX because of the variance risk premium. The $R^2$ measures informativeness but is capped by the noise in the proxy, as Andersen and Bollerslev showed.
   \item \textbf{Diebold--Mariano test}\index{Diebold--Mariano test|textbf} (Chapter~\ref{ch:09}). Test whether the average loss difference between two models is zero, using Newey--West\index{standard error!Newey--West (HAC)} errors with $h - 1$ lags, since multi-day targets overlap.
 \end{itemize}
+\end{technote}
 
 A fair comparison also requires real-time forecasts. Every parameter must be estimated only on data available at the forecast date, as in the walk-forward\index{walk-forward evaluation} design of Chapter~\ref{ch:09}.
+
+\noindent\textbf{In plain terms.} Because true volatility is never seen directly, forecasts must be graded against a noisy stand-in, and only some scoring rules give a fair verdict. The fairest rules, used with forecasts made only from data available at the time, consistently show that volatility can be forecast.
 
 \section{Lab~\thechapter: Replicating Andersen and Bollerslev (1998), Hansen and Lunde (2005) and Moreira and Muir (2017)}
 \label{sec:10-lab}
@@ -545,7 +573,7 @@ The qualifications are about \emph{how much}, not \emph{whether}. Forecastable v
 
 The evidence in Section~\ref{sec:10-verdict} suggests several practical lessons.
 
-\textbf{Risk forecasts, yes.} Any investor sizing positions, setting stop-losses or computing margin should use a volatility forecast that reacts to recent data, such as EWMA or GARCH, rather than a long-run average. This is uncontroversial and is the basis of Value at Risk (Chapter~\ref{ch:11}).
+\textbf{Risk forecasts, yes.} Any investor sizing positions, setting stop-losses (orders that sell automatically once a price falls to a set level) or computing margin should use a volatility forecast that reacts to recent data, such as EWMA or GARCH, rather than a long-run average. This is uncontroversial and is the basis of Value at Risk (Chapter~\ref{ch:11}).
 
 \textbf{Volatility timing for returns: be skeptical.} Moreira and Muir (2017) found that scaling exposure to the market inversely to last month's variance produced an alpha of about 4.9\% a year over 1926--2015, with similar results for several factors. \textbf{Volatility-targeting}\index{volatility targeting|textbf} funds and \textbf{risk-parity}\index{risk parity|textbf} strategies, which allocate so that each asset contributes equal risk, apply versions of the idea. Three later findings temper it.
 
@@ -567,7 +595,7 @@ The benefit is clearer for momentum\index{momentum}, where crashes follow high v
 \end{itemize}
 
 \begin{callout}
-\textbf{What Failed: selling volatility before February 5, 2018.} For years before 2018, products that bet against volatility were among the best performers in the market. The VelocityShares Daily Inverse VIX Short-Term ETN (XIV) earned the variance risk premium by shorting VIX futures, and it held \$1.9 billion in assets. On February 5, 2018, the VIX rose 115.6\%, its largest one-day increase ever. XIV lost 96.3\% of its value that day, and Credit Suisse, its issuer, closed it within weeks.
+\textbf{What Failed: selling volatility before February 5, 2018.} For years before 2018, products that bet against volatility were among the best performers in the market. The VelocityShares Daily Inverse VIX Short-Term ETN (XIV), an exchange-traded note, which is a bank-issued security that trades like a stock and tracks an index, earned the variance risk premium by shorting VIX futures, that is, by betting that volatility would stay low, and it held \$1.9 billion in assets. On February 5, 2018, the VIX rose 115.6\%, its largest one-day increase ever. XIV lost 96.3\% of its value that day, and Credit Suisse, its issuer, closed it within weeks.
 
 The episode does not contradict this chapter. Volatility forecasts are informative on average. But a forecast that volatility will stay low is weakest exactly when it matters most: at the onset of a spike. A strategy that earns a small premium most days and loses almost everything on one day can look excellent in any backtest that misses that day. Chapter~\ref{ch:11} returns to this problem.
 \end{callout}
@@ -581,12 +609,13 @@ The episode does not contradict this chapter. Volatility forecasts are informati
   \item A GARCH(1,1) model has $\omega = 0.000003$, $\alpha = 0.10$ and $\beta = 0.88$. (a) What are the long-run daily and annualized volatilities? (b) What is the half-life of a shock? (c) If tomorrow's variance forecast is 0.0004, what is the forecast volatility over the next 22 days, annualized?
   \item Show that EWMA is GARCH(1,1) with $\omega = 0$. What does this imply for EWMA forecasts at long horizons?
   \item A colleague argues that because volatility is forecastable, markets cannot be efficient. Explain why forecastable volatility is consistent with efficiency, and what evidence would change your answer.
+  \item After a week of large daily market swings, a friend says that the turbulence is ``over'' because the market closed flat today. Without any calculation, use this chapter to explain what tomorrow is likely to look like, and why one calm day says little.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
-  \setcounter{enumi}{3}
+  \setcounter{enumi}{4}
   \item Part A: compute the autocorrelations of squared returns as well as absolute returns. Which decays faster, and why might extreme days explain the difference?
   \item Part B: rank the models by MSE instead of QLIKE. Does the ranking change? Which days drive the MSE comparison?
   \item Part B: estimate GARCH with Student-$t$ shocks, using the option \texttt{dist="t"} of \texttt{fit\_garch}. Does it forecast better than the normal version?

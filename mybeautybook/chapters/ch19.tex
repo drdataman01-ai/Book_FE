@@ -14,12 +14,25 @@
 }{}
 \makeatother
 
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
 \chapter{Claim: Machine Learning Predicts Returns Better Than Linear Models}
 \label{ch:20}
 
+The same kind of software that recognizes faces in photographs, translates languages and recommends films is now marketed as a way to pick stocks, and several exchange-traded funds advertise that they are run by artificial intelligence. It is natural to wonder whether tools that work so well elsewhere can see patterns in the stock market that human researchers have missed. This chapter asks what the evidence shows.
+
 For half a century the standard tool for predicting stock returns was linear regression, and Chapter~\ref{ch:09} showed how modest its results were. By the late 2010s two things had changed. First, the factor zoo had produced nearly a hundred characteristics that might predict returns, far more than a regression can combine reliably. Second, machine-learning methods that handle many inputs and curved relationships had matured in other fields. Gu, Kelly and Xiu (2020) brought the two together. They used about 30,000 U.S. stocks from 1957 to 2016 and 94 characteristics. Neural networks\index{neural network} and regression trees\index{regression tree} roughly doubled the performance of the best regression-based strategies. Most of the gain came from capturing interactions between familiar signals.
 
-The study changed both research and practice. Machine learning became a standard tool of empirical asset pricing, and funds and exchange-traded funds branded with artificial intelligence followed. The study also started a debate about what the gains mean. Kelly, Malamud and Zhou (2024) argued that very large models can predict better than small ones, which they called a ``virtue of complexity''. Avramov, Cheng and Metzker (2023) found that much of the predictability comes from small, hard-to-trade stocks and fades after costs. Nagel (2025) questioned whether an investor could have captured the reported gains in real time.
+The study changed both research and practice. Machine learning became a standard tool of empirical asset pricing, and funds and exchange-traded funds branded with artificial intelligence followed. The study also started a debate about what the gains mean. Kelly, Malamud and Zhou (2024), puzzled that predictions improved as models grew, argued that very large models can predict better than small ones, which they called a ``virtue of complexity''. Avramov, Cheng and Metzker (2023) asked whether the predictability can be traded, and found that much of it comes from small, hard-to-trade stocks and fades after costs. Nagel (2025) questioned whether an investor could have captured the reported gains in real time.
 
 The stakes are practical. If machine learning finds predictability that linear models miss, it belongs in every quantitative toolkit. If its gains vanish in tradable stocks after costs, the label promises more than it delivers. The claim on trial\index{claims-on-trial method} is: \textbf{machine-learning models find return predictability\index{return predictability} that traditional linear models miss, and it can be turned into profitable portfolios.}
 
@@ -35,6 +48,10 @@ By the end of the chapter you will be able to:
 \end{itemize}
 
 In the lab you will run a horse race between linear models, an elastic net, gradient-boosted trees and a neural network on a panel of 149 portfolios, using only information available at each date. You will then test whether any gain survives among large portfolios, in later years and after trading costs. Finally, you will test whether the ``virtue of complexity\index{virtue of complexity}'' holds when very large models are used to time the stock market.
+
+\begin{callout}
+\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain formulas behind the methods, and you can skip them without losing the thread. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
+\end{callout}
 
 \section{Foundations}
 \label{sec:20-foundations}
@@ -203,6 +220,8 @@ Figure~\ref{fig:09-biasvar} can be read from left to right. The horizontal axis 
 
 The trade-off matters most when the signal is weak relative to the noise, as it is for stock returns. The variance from estimating many parameters then quickly outweighs the small reduction in bias. The low point of the curve lies far to the left, so a simple model often forecasts better than a rich one, even when the rich one is closer to the truth. This does not mean that rich models must be abandoned. The remedy is \textbf{regularization}\index{regularization|textbf}. It keeps a rich model but limits how far its estimates may move to fit the particular sample. It accepts a little more bias in exchange for a large cut in variance, and so moves the model toward the low point of the curve. The next section shows how it works.
 
+\noindent\textbf{In plain terms.} Machine learning predicts an outcome, here next month's return, from many inputs, and an ordinary regression is its simplest form. Adding more inputs always improves the fit to past data but can make forecasts worse, because the model starts memorizing noise. The art is to find the level of complexity that the data can actually support.
+
 \section{Regularization}
 \label{sec:20-models}
 \label{sec:20-shrinkage}
@@ -241,7 +260,10 @@ A regularized regression therefore lies between the kitchen sink and the histori
 
 \subsection{Ridge, lasso and elastic net}
 
-The three methods differ only in how they measure the size of the slopes.
+The three methods differ only in how they measure the size of the slopes. In plain words, ridge shrinks every coefficient a little, the lasso drops weak predictors entirely, and the elastic net mixes the two. The shaded box gives the formulas.
+
+\begin{technote}
+\textbf{Technical note: the three penalties.}
 
 \textbf{Ridge regression.} Ridge regression\index{regularization!ridge|textbf} measures size by the sum of the squared slopes:
 \begin{equation}
@@ -266,6 +288,7 @@ The difference is easiest to see by thinking of the penalty as a force that push
   \label{eq:20-enet}
 \end{equation}
 The weight $\omega$, between 0 and 1, sets the mix. Setting $\omega = 0$ gives ridge, setting $\omega = 1$ gives the lasso, and values in between combine them. With $\lambda = 0$, all three methods collapse to OLS.
+\end{technote}
 
 \subsection{Which predictors to keep?}
 
@@ -276,6 +299,8 @@ Ridge therefore suits a world in which many characteristics each carry a little 
 \subsection{A related approach: dimension reduction}
 
 Another way to tame many correlated predictors is to compress them into a few combinations before running the regression. \textbf{Principal components regression}\index{principal components regression|textbf} first finds the combinations of the predictors that capture most of their joint variation, and then regresses returns on the first few of them. \textbf{Partial least squares}\index{partial least squares|textbf} instead chooses the combinations according to how strongly they relate to the return. In both methods, the number of combinations kept is the hyperparameter. These methods remain linear, but they replace hundreds of noisy slopes with a handful of well-estimated ones.
+
+\noindent\textbf{In plain terms.} Regularization adds a penalty for large coefficients, so that a predictor earns a big role only if it clearly improves the fit. Turning the penalty up moves the forecast toward the simple historical average, and turning it down moves it toward the overfitted kitchen-sink regression.
 
 \section{Regression trees}
 \label{sec:20-trees}
@@ -494,6 +519,8 @@ Start from $x_0 = 3$ with $\eta = 0.25$. The slope there is 5, so the first step
 
 Gradient boosting applies the same idea, with one twist. Instead of stepping a single number $x$ downhill, it steps the forecasts themselves. With squared-error loss, the direction in which the loss falls fastest is simply the set of current forecast errors. Fitting a tree to the errors is therefore the same as taking a step downhill. The boosting learning rate plays exactly the role of $\eta$: it sets how big each step is. The same trade-off applies. Large steps reach a good fit quickly but risk overshooting into the noise, while small steps are slower but safer.
 
+\noindent\textbf{In plain terms.} A regression tree forecasts by asking a series of yes-or-no questions, which lets it capture effects that depend on one another, but a single tree overfits easily. Random forests average many different trees, and gradient boosting adds many small trees one after another, each correcting the errors left by the last.
+
 \section{Neural networks}
 \label{sec:20-nn}
 
@@ -603,12 +630,17 @@ A regression's coefficients come from a formula, but a network's weights do not,
 
 Training works as follows. The weights start at small random values. The slope of the loss with respect to every weight is then computed by an efficient use of the chain rule called \emph{backpropagation}. Every weight takes a small step downhill, as in Equation~\eqref{eq:20-gd}. To save time, each step uses a small random batch of the training data rather than all of it. This is why the method is often called \emph{stochastic} gradient descent\index{neural network!gradient descent}. One pass through all the training data is called an \emph{epoch}, and training usually runs for many epochs.
 
+\noindent\textbf{In plain terms.} A neural network is a regression with extra layers in between, and each layer bends and combines the inputs so that the network can learn curved relationships and interactions. Its weights are found by repeatedly nudging them in the direction that reduces the forecast errors.
+
 \section{Measuring success and interpreting a model}
 \label{sec:20-measure}
 
 \subsection{Measuring success}
 
-The statistical test is the out-of-sample $R^2$\index{out-of-sample R-squared@out-of-sample $R^2$}. The version used for individual stocks differs from the one used for the market in Chapter~\ref{ch:09}. Both compare the model's squared forecast errors with those of a simple benchmark, and they differ only in the benchmark. For the market, Campbell and Thompson (2008) use the historical mean $\bar{R}^{e}_t$, as in Equation~\eqref{eq:09-r2os}:
+The statistical test is the out-of-sample $R^2$\index{out-of-sample R-squared@out-of-sample $R^2$}. The version used for individual stocks differs from the one used for the market in Chapter~\ref{ch:09}. Both compare the model's squared forecast errors with those of a simple benchmark, and they differ only in the benchmark. The shaded box gives the two formulas.
+
+\begin{technote}
+\textbf{Technical note: two versions of the out-of-sample $R^2$.} For the market, Campbell and Thompson (2008) use the historical mean $\bar{R}^{e}_t$, as in Equation~\eqref{eq:09-r2os}:
 \begin{equation}
   R^2_{\text{OS}} = 1 - \frac{\sum_{t} \left(R^{e}_{t+1} - \hat{R}^{e}_{t+1}\right)^2}{\sum_{t} \left(R^{e}_{t+1} - \bar{R}^{e}_t\right)^2}
   \label{eq:20-r2-mean}
@@ -619,6 +651,7 @@ For individual stocks, Gu, Kelly and Xiu (2020) use a forecast of zero, and they
   \label{eq:20-r2}
 \end{equation}
 The only change is in the denominator, which holds the benchmark's squared errors. In Equation~\eqref{eq:20-r2-mean} the benchmark forecasts the historical mean; in Equation~\eqref{eq:20-r2} it forecasts zero, so its squared errors are simply the squared returns.
+\end{technote}
 
 Each version uses whichever benchmark is harder to beat in its setting.
 
@@ -715,7 +748,7 @@ Credit scoring\index{credit scoring} shows the favorable case. Khandani, Kim and
 
 \subsection{Machine learning inside economic models}
 
-One response to these difficulties is to use machine learning inside an economic model rather than in place of one. Instrumented principal components\index{IPCA (instrumented principal components)} analysis, or IPCA (Kelly, Pruitt and Su 2019), lets stocks' exposures to a few factors depend on their characteristics. It finds that a handful of such factors explains the cross-section\index{cross-section of returns} of returns better than the standard factors. Gu, Kelly and Xiu (2021) extended the idea with an \emph{autoencoder}\index{autoencoder}, a neural network that compresses many returns into a few factors. Chen, Pelger and Zhu (2024) used deep networks with the added condition that they must price all assets. Other studies use shrinkage to tame the factor zoo directly. Freyberger, Neuhierl and Weber (2020) found that only a small set of characteristics carries independent information about returns. Kozak, Nagel and Santosh (2020) found that a model with many small exposures priced the cross-section better than one with a few characteristics. Economic structure makes these results easier to interpret, and it reduces the variance that pure prediction suffers from.
+One response to these difficulties is to use machine learning inside an economic model rather than in place of one. Instrumented principal components\index{IPCA (instrumented principal components)} analysis, or IPCA (Kelly, Pruitt and Su 2019), keeps the structure of a factor model while letting the data choose the factors. It lets stocks' exposures to a few factors depend on their characteristics. It finds that a handful of such factors explains the cross-section\index{cross-section of returns} of returns better than the standard factors. Gu, Kelly and Xiu (2021) extended the idea with an \emph{autoencoder}\index{autoencoder}, a neural network that compresses many returns into a few factors. Chen, Pelger and Zhu (2024) used deep networks with the added condition, required by economic theory, that they must price all assets. Other studies use shrinkage to tame the factor zoo directly. Asking how many characteristics are really needed, Freyberger, Neuhierl and Weber (2020) found that only a small set of characteristics carries independent information about returns. Kozak, Nagel and Santosh (2020) questioned that goal and found that a model with many small exposures priced the cross-section better than one with a few characteristics. Economic structure makes these results easier to interpret, and it reduces the variance that pure prediction suffers from.
 
 \section{The claim}
 \label{sec:20-claim}
@@ -836,6 +869,8 @@ Nagel (2025) took a second look at what these models were doing. He showed that 
 The exchange offers two lessons for testing any complex model. First, compare it with the simple strategies it might be reproducing, here volatility-timed momentum. A sophisticated method that only reproduces a simple rule should be judged against that rule. Second, test it on simulated data with a known truth, as in Section~\ref{sec:09-insample}, to check that it finds only the structure that is really there.
 
 The broader lesson confirms Chapter~\ref{ch:09}. In-sample fit is a poor guide to forecasting: the unpenalized regression on 920 inputs fit the training data best and forecast worst. The methods that worked build shrinkage and validation into the estimator. Their gains are largest in the cross-section and in corners of the market that are hard to trade. They are smallest, and most disputed, for the market as a whole.
+
+\noindent\textbf{In plain terms.} In the landmark study, machine-learning models roughly doubled the forecasting power of a simple three-factor regression, mostly by combining familiar signals such as momentum and size in smarter ways. Later work found that much of the gain sits in small, costly-to-trade stocks, and that some impressive results for timing the whole market may be a simple momentum strategy in disguise.
 
 \section{Lab~\thechapter: Replicating Gu, Kelly and Xiu (2020) on a portfolio panel}
 \label{sec:20-lab}
@@ -963,12 +998,13 @@ The six questions of Section~\ref{sec:09-investors} apply to any machine-learnin
   \item Explain why OLS with 920 covariates had an out-of-sample $R^2$ of $-3.46\%$ in Gu, Kelly and Xiu (2020), while OLS with three characteristics had $+0.16\%$.
   \item A gradient-boosted model uses trees of depth 1. Can it capture an interaction between size and momentum? What about depth 2?
   \item Explain, using the bias--variance trade-off, why machine learning has a better record in credit scoring than in forecasting stock returns.
+  \item A fund advertises that its artificial-intelligence model ``analyzes millions of data points every day'' to pick stocks. Without any calculation, explain why the amount of data processed says little about whether the fund will beat the market, and what evidence you would ask to see.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
-  \setcounter{enumi}{8}
+  \setcounter{enumi}{9}
   \item Part A: run on real data. Is the Diebold--Mariano statistic of the best nonlinear model against OLS-3 above 2?
   \item Compare the long--short Sharpe ratio of each model on all portfolios and on large portfolios only. Which model loses most?
   \item At what cost per unit of turnover does the best model's long--short Sharpe ratio fall below that of OLS-3?

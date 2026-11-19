@@ -12,8 +12,21 @@
 }{}
 \makeatother
 
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
 \chapter{Claim: Forward Rates Predict Future Interest Rates}
 \label{ch:07}
+
+Anyone who has compared a one-year and a five-year savings certificate, or a variable and a fixed mortgage, has faced the question behind this chapter: is it better to lock in today's long-term rate or to wait and see what short-term rates do? News reports add a related question whenever long-term interest rates fall below short-term ones, an ``inverted yield curve'' that is often read as a warning of rate cuts and recession. Both questions turn on whether today's interest rates contain a reliable forecast of tomorrow's.
 
 Forward rates predict future interest rates. Chapter~\ref{ch:06} tested a version of this claim in the currency market, where uncovered interest parity says that the forward exchange rate is an unbiased forecast of the future spot rate. The Fama regression rejected it, because high-interest currencies tended to rise rather than fall. This chapter puts the same claim on trial in the \textbf{bond market.}
 
@@ -112,11 +125,11 @@ The \textbf{yield curve}\index{yield curve|textbf} plots the interest rates on g
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Long-term and short-term interest rates in the United States, 2000--2025 (top), and the term spread (bottom), defined as $i^{\mathrm{long}} - i^{\mathrm{short}}$, where $i^{\mathrm{long}}$ is the 10-year Treasury yield and $i^{\mathrm{short}}$ is the 3-month Treasury bill rate. The data are annual averages, and the shaded bands are recessions. The term spread was large in the early 2010s, when short rates were near zero, and it turned negative in 2023 and 2024, when short rates rose above long rates.}
+\caption{Long-term rates are usually above short-term rates, and the rare exceptions draw headlines. Long-term and short-term interest rates in the United States, 2000--2025 (top), and the term spread (bottom), defined as $i^{\mathrm{long}} - i^{\mathrm{short}}$, where $i^{\mathrm{long}}$ is the 10-year Treasury yield and $i^{\mathrm{short}}$ is the 3-month Treasury bill rate. The data are annual averages, and the shaded bands are recessions. The term spread was large in the early 2010s, when short rates were near zero, and it turned negative in 2023 and 2024, when short rates rose above long rates.}
 \label{fig:07-long-short}
 \end{figure}
 
-In the 1980s, new databases of prices for \textbf{zero-coupon bonds}\index{zero-coupon bond|textbf}, which pay a single amount at maturity and no interest along the way, made the theory testable with precision. Fama and Bliss (1987) found that the gap between a forward rate and the current short rate predicts the extra return on long bonds over the next year, and predicts changes in short rates only several years ahead. Campbell and Shiller (1991) found that when the curve is steep, long yields tend to fall, which is the opposite of what the theory requires. 
+In the 1980s, new databases of prices for \textbf{zero-coupon bonds}\index{zero-coupon bond|textbf}, which pay a single amount at maturity and no interest along the way, made the theory testable with precision. Fama and Bliss (1987) asked what forward rates actually forecast, and found that the gap between a forward rate and the current short rate predicts the extra return on long bonds over the next year, and predicts changes in short rates only several years ahead. Campbell and Shiller (1991) tested the theory's prediction that long yields rise when the curve is steep, and found instead that when the curve is steep, long yields tend to fall, which is the opposite of what the theory requires. 
 
 Both results point to a \textbf{term premium}\index{term premium|textbf}, an extra return that investors demand for bearing the risk of long bonds. The premium changes over time and pushes forward rates above the short rates that investors actually expect. Cochrane and Piazzesi (2005) showed that a single combination of forward rates predicts this extra return well, which made the term premium something that could be measured. Figure~\ref{fig:07-forward2} gives a first look at the evidence. Panel~(a) shows the forward rate implied by the 1-year and 2-year yields, and panel~(b) compares each forward rate with the 1-year rate that actually came a year later. The forward rate was usually too high, which is the pattern that a term premium would produce.
 
@@ -241,7 +254,7 @@ Both results point to a \textbf{term premium}\index{term premium|textbf}, an ext
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Forward rates and the yield curve in the United States, 2000--2025. Panel~(a) shows the 1-year and 2-year Treasury yields and the forward rate they imply for the following year, $f = (1 + y^{(2)})^2 / (1 + y^{(1)}) - 1$, where $y^{(n)}$ is the $n$-year yield. When the 2-year yield is above the 1-year yield, the forward rate is above both. Panel~(b) compares each forward rate with the 1-year yield that actually prevailed a year later. If forward rates were unbiased forecasts, the two lines would differ only by random errors. Instead, the forward rate was usually too high, most visibly from 2009 to 2015, when it kept predicting rises that did not come, and it badly missed the rapid rise in 2022. The data are approximate annual averages.}
+\caption{Forward rates have usually predicted higher interest rates than actually arrived. Forward rates and the yield curve in the United States, 2000--2025. Panel~(a) shows the 1-year and 2-year Treasury yields and the forward rate they imply for the following year, $f = (1 + y^{(2)})^2 / (1 + y^{(1)}) - 1$, where $y^{(n)}$ is the $n$-year yield. When the 2-year yield is above the 1-year yield, the forward rate is above both. Panel~(b) compares each forward rate with the 1-year yield that actually prevailed a year later. If forward rates were unbiased forecasts, the two lines would differ only by random errors. Instead, the forward rate was usually too high, most visibly from 2009 to 2015, when it kept predicting rises that did not come, and it badly missed the rapid rise in 2022. The data are approximate annual averages.}
 \label{fig:07-forward2}
 \end{figure}
 
@@ -261,6 +274,10 @@ By the end of the chapter you will be able to:
   \item summarize the evidence, including doubts about how well the premium can be forecast out of sample\index{in-sample versus out-of-sample};
   \item read a market-implied rate path as a forecast plus a premium, and judge a bond strategy built on carry and roll-down\index{roll-down}.
 \end{itemize}
+
+\begin{callout}
+\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain statistical details, and you can skip them without losing the thread. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
+\end{callout}
 
 \section{Foundations: yields, forward rates and the term premium}
 \label{sec:07-foundations}
@@ -302,9 +319,9 @@ Suppose an investor will have \$100 to invest three years from now and wants to 
 \end{enumerate}
 The trades cost her nothing today, because the first pays for the second. In three years she pays \$100, and in four years the four-year bond pays her back a little more than \$100. In effect, she has agreed today to lend \$100 for one year, starting three years from now, and the interest rate on that loan is the forward rate.
 
-A forward rate is therefore not just a number computed from the yield curve, but a rate that investors can actually lock in, and this is what makes the expectations hypothesis testable. If forward rates were reliably too high suggests, locking them in would reliably beat waiting, and investors would earn a predictable extra return that the hypothesis rules out.
+A forward rate is therefore not just a number computed from the yield curve, but a rate that investors can actually lock in, and this is what makes the expectations hypothesis testable. If forward rates were reliably too high, locking them in would reliably beat waiting, and investors would earn a predictable extra return that the hypothesis rules out.
 
-In practice, pension funds, insurers, banks and companies lock in future rates more cheaply with derivatives such as interest-rate futures and swaps. The bond trade still matters for two reasons. Dealers and hedge funds trade zero-coupon Treasury bonds of different maturities, called STRIPS\index{STRIPS}, whenever bond and derivative prices drift apart, and this keeps derivative prices tied to the forward rate. In addition, every choice of maturity carries the same bet: an investor who buys a five-year bond instead of rolling over one-year bonds has in effect locked in the forward rates for years two through five.
+In practice, pension funds, insurers, banks and companies lock in future rates more cheaply with derivatives such as interest-rate futures and swaps, contracts in which two parties exchange fixed interest payments for payments that float with market rates. The bond trade still matters for two reasons. Dealers and hedge funds trade zero-coupon Treasury bonds of different maturities, called STRIPS\index{STRIPS}, whenever bond and derivative prices drift apart, and this keeps derivative prices tied to the forward rate. In addition, every choice of maturity carries the same bet: an investor who buys a five-year bond instead of rolling over one-year bonds has in effect locked in the forward rates for years two through five.
 
 Buying an $n$-year zero and selling an $(n-1)$-year zero locks in today the rate of return for the year from $n-1$ to $n$. That rate is the \textbf{forward rate}\index{forward rate|textbf} (Figure~\ref{fig:07-forward-diagram}):
 \begin{equation}
@@ -391,9 +408,11 @@ Equivalently, the expected excess returns on bonds of every maturity do not chan
   \node at (0,-3.7) {the regressions in this chapter measure the mix};
 \end{tikzpicture}%
 }
-\caption{Two readings of a steep yield curve. Forward rates above short rates can mean that short rates will rise, as the expectations hypothesis says, or that long bonds will earn more than short ones, a term premium. The tests in this chapter measure how much of each.}
+\caption{A steep yield curve can be a forecast of rising rates, extra pay for holding long bonds, or both. Two readings of a steep yield curve. Forward rates above short rates can mean that short rates will rise, as the expectations hypothesis says, or that long bonds will earn more than short ones, a term premium. The tests in this chapter measure how much of each.}
 \label{fig:07-readings}
 \end{figure}
+
+\noindent\textbf{In plain terms.} The yield curve shows the interest rates on government bonds of different lengths, and from it one can work out the rates for future years that can be locked in today. The expectations hypothesis says these locked-in rates are honest forecasts of future rates. The alternative is that they also include a varying reward for the risk of holding long bonds, the term premium.
 
 \section{How it works}
 \label{sec:07-how}
@@ -417,7 +436,13 @@ The first two tests are mirror images. The forward spread equals the expected ch
 
 \textbf{Why the premium might change.} Bonds lose value when inflation\index{inflation} or interest rates rise unexpectedly. Investors demand compensation for that risk, and the amount can change. It tends to be higher in recessions, when investors are more risk-averse\index{risk aversion}, and when inflation is uncertain. Supply and demand matter too: when pension funds and central banks buy long bonds, they push the term premium down. Any of these makes the EH fail.
 
-\textbf{Why the tests are hard.} Interest rates change slowly, and annual returns measured every month overlap by eleven months. Both problems make $t$-statistics\index{t-statistic} look larger than they should if they are not handled carefully (Chapter~\ref{ch:04}). The lab therefore uses Newey--West\index{standard error!Newey--West (HAC)} standard errors with 18 lags and adds out-of-sample tests (Chapter~\ref{ch:09}).
+The tests are statistically delicate, for reasons the shaded box explains.
+
+\begin{technote}
+\textbf{Technical note: why the tests are hard.} Interest rates change slowly, and annual returns measured every month overlap by eleven months. Both problems make $t$-statistics\index{t-statistic} look larger than they should if they are not handled carefully (Chapter~\ref{ch:04}). The lab therefore uses Newey--West\index{standard error!Newey--West (HAC)} standard errors with 18 lags and adds out-of-sample tests (Chapter~\ref{ch:09}).
+\end{technote}
+
+\noindent\textbf{In plain terms.} If a steep yield curve were a pure forecast, short-term rates would rise to meet it and long bonds would earn no more than rolling over short ones. The tests check which actually happened, and the risk of holding long bonds, which varies with recessions and inflation fears, is the main reason to expect the forecast to be biased.
 
 \section{The claim}
 \label{sec:07-claim}
@@ -441,9 +466,11 @@ To test it, three points need to be settled:
 
 \textbf{Campbell and Shiller (1991).} For maturities from a few months to ten years, the yield spread predicted that long yields would move in the \emph{wrong} direction. When the curve was steep, long yields tended to fall over the following period, the opposite of what the EH requires, and the effect grew stronger with maturity. A steep curve thus predicted high returns on long bonds, because falling yields mean rising prices.
 
-\textbf{Cochrane and Piazzesi (2005).} Instead of using one forward spread at a time, they regressed excess returns on all the forward rates at once. A single combination of forward rates, shaped like a tent, predicted one-year excess returns on bonds of all maturities, with $R^2$\index{regression!R-squared@$R^2$} values of up to 43\% in their sample. This combination was largely unrelated to the level, slope and curvature of the yield curve, and it rose in bad times, consistent with a risk premium\index{risk premium} that is high in recessions.
+\textbf{Cochrane and Piazzesi (2005).} Instead of using one forward spread at a time, they regressed excess returns on all the forward rates at once. A single combination of forward rates, shaped like a tent, predicted one-year excess returns on bonds of all maturities, with $R^2$\index{regression!R-squared@$R^2$} values of up to 43\% in their sample. This combination was largely unrelated to the level, slope and curvature of the yield curve, the three standard summaries of how high the curve sits, how steeply it rises and how much it bends, and it rose in bad times, consistent with a risk premium\index{risk premium} that is high in recessions.
 
 \textbf{The skeptics.} That the EH fails is now widely accepted. How strongly bond returns can be predicted is not. Bauer and Hamilton (2018) showed that standard tests are badly distorted in small samples when the predictors change slowly and the returns overlap\index{overlapping observations}. With more robust tests, the evidence that anything beyond the level, slope and curvature of the curve predicts bond returns, including the Cochrane--Piazzesi combination, became much weaker. Thornton and Valente (2012) found that forecasts from forward rates gave an investor choosing between bonds little economic value out of sample.
+
+\noindent\textbf{In plain terms.} Forward rates have consistently overstated future interest rates, and steep yield curves have been followed by higher returns on long bonds rather than by rising rates. Researchers still disagree about how well anyone can use this pattern in real time to choose between short and long bonds.
 
 \section{Lab~\thechapter: Replicating Fama and Bliss (1987), Campbell and Shiller (1991) and Cochrane and Piazzesi (2005)}
 \label{sec:07-lab}
@@ -469,7 +496,7 @@ Two caveats apply. The Fed's curve is fitted to bond prices rather than made of 
 
 Results over the full sample can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
 
-\textbf{Subperiods.} The postwar sample covers very different monetary regimes: the inflation of the 1970s, the Volcker disinflation, the long fall in rates from the 1980s, near-zero rates after 2008, and the rapid rate rises of 2022--23. A term premium that moves with inflation uncertainty should be most visible in the first half. Part C shows whether the rejection of the EH comes from a single era.
+\textbf{Subperiods.} The postwar sample covers very different monetary regimes: the inflation of the 1970s, the Volcker disinflation (the sharp fall in inflation after Federal Reserve Chairman Paul Volcker raised interest rates steeply around 1980), the long fall in rates from the 1980s, near-zero rates after 2008, and the rapid rate rises of 2022--23. A term premium that moves with inflation uncertainty should be most visible in the first half. Part C shows whether the rejection of the EH comes from a single era.
 
 \textbf{Near-zero rates.} From 2008 to 2015 the short rate was held near zero. Forward rates still moved, driven by expectations of when the Fed would raise rates and by the term premium, but the short rates that followed did not. Regressions over this period behave differently, and the older evidence may not apply to it.
 
@@ -477,7 +504,7 @@ Results over the full sample can hide weaknesses. The checks below test the clai
 
 \textbf{Out of sample.}\index{in-sample versus out-of-sample|textbf} In-sample $R^2$ values for bond-return forecasts are inflated by slow-moving predictors and overlapping returns. The lab's out-of-sample test, which uses only data available at each date and leaves an 11-month gap, is the honest test. A negative out-of-sample $R^2$\index{out-of-sample $R^2$} would mean that an investor would have done better by using the historical mean.
 
-\textbf{Small samples.} Bauer and Hamilton (2018) showed that standard errors can badly understate the uncertainty in these regressions. Their bootstrap\index{bootstrap} tests are beyond this lab, but Exercise 4 asks how far the lab's $t$-statistics can be trusted. Treat $t$-statistics near 2 with suspicion.
+\textbf{Small samples.} Bauer and Hamilton (2018) showed that standard errors can badly understate the uncertainty in these regressions. Their bootstrap\index{bootstrap} tests are beyond this lab, but Exercise 5 asks how far the lab's $t$-statistics can be trusted. Treat $t$-statistics near 2 with suspicion.
 
 \subsection*{Your verdict}
 
@@ -566,12 +593,13 @@ The conundrum was a puzzle only if long yields were pure forecasts of short rate
   \item The 1-, 2- and 3-year zero yields are 3\%, 3.5\% and 4\% (continuously compounded). Compute the forward rates $f(2)$ and $f(3)$. Under the expectations hypothesis, what one-year rates are expected one and two years from now?
   \item Using the yields in Exercise 1, compute the one-year excess return on the 3-year bond if the yield curve is unchanged a year from now. What would the excess return be if the expectations hypothesis held?
   \item Show that the Fama--Bliss slopes for excess returns and for changes in short rates add up to 1 when the horizon is one year ($n = 2$).
+  \item A couple choosing a mortgage notices that the five-year fixed rate is well above the one-year rate, and a friend tells them this means rates are ``sure to rise.'' Without any calculation, explain what else the gap might reflect, according to this chapter.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
-  \setcounter{enumi}{3}
+  \setcounter{enumi}{4}
   \item Part A: at which maturities is the Fama--Bliss slope significantly above 0? Is any slope significantly different from 1? Given Bauer and Hamilton's (2018) warning about small-sample distortions, which of these conclusions would you still trust, and why?
   \item Part A: how does the Campbell--Shiller slope change with maturity? Explain in words what a negative slope means for a bond investor.
   \item Part B: compare the in-sample and out-of-sample $R^2$ of the Cochrane--Piazzesi regression. Which of the three sets of predictors does best out of sample?

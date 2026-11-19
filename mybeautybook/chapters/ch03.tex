@@ -2,24 +2,35 @@
 % Figures need tikz and pgfplots (with the fillbetween library) in the preamble.
 \providecolor{fenavy}{HTML}{1B2A6B}
 \providecolor{fegray}{HTML}{4D4D4D}
+\providecolor{feshade}{HTML}{F3F5FA}
+% Shaded box for optional technical material that general readers may skip.
+\makeatletter
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
 
 \chapter{Claim: Size and Value Explain Returns That Beta Cannot}
 \label{ch:04}
 
+Financial websites list a number called ``beta'' next to every stock, and fund brochures describe their funds with labels such as ``small-cap value'' or ``large-cap growth.'' These everyday labels come straight from the research in this chapter. They rest on a simple question that every investor eventually asks: why do some stocks earn more than others over the long run, and is a fund that beats the market showing skill, or just holding a particular kind of stock?
+
 In the 1960s, finance seemed to have a complete answer to one of its oldest questions: why do some stocks earn more than others on average? The Capital Asset Pricing Model of Sharpe (1964) said that a stock's expected return depends on a single number, its \textbf{beta} with the market, as described in Equation~\ref{eq:ch01_beta} and later in Equation~\ref{eq:04-capm}. The answer was elegant, because it said exactly what should \emph{not} matter. For example, a company's size, its price relative to its earnings or book value, and its own volatility should tell an investor nothing about its future return once beta is known.
 
-The model was soon challenged. The early tests of Black, Jensen and Scholes (1972) and Fama and MacBeth (1973) found that returns did rise with beta, though less steeply than the theory said. Over the next decade, more patterns were discovered.
-Basu (1977) found that stocks with low price--earnings ratios earned more than their betas predicted, Banz (1981) found the same for small companies, and Rosenberg, Reid and Lanstein (1985) found it for stocks with high book-to-market ratios.
+The model was soon challenged. The early tests of Black, Jensen and Scholes (1972) and Fama and MacBeth (1973) checked the model's sharpest prediction, that average returns rise with beta along a straight line, and found that returns did rise with beta, though less steeply than the theory said. Over the next decade, researchers tested the other half of the prediction, that nothing besides beta should matter, and more patterns were discovered.
+Basu (1977) asked whether stocks that look cheap relative to their profits could beat an efficient market, and found that stocks with low price--earnings ratios earned more than their betas predicted. Banz (1981) found the same for small companies, and Rosenberg, Reid and Lanstein (1985), looking for evidence of mispricing, found it for stocks with high book-to-market ratios. A price--earnings ratio compares a share's price with the company's profit per share, and a book-to-market ratio compares the company's accounting value with its value on the stock market. Stocks that look cheap on these measures are called \emph{value} stocks, and those that look expensive are called \emph{growth} stocks.
 
-Even so, the CAPM remains the standard way to think about the trade-off between risk and return, because it separates the risk that diversification removes from the risk that investors must be paid to bear. In practice it is still the most common tool for estimating the cost of equity: Graham and Harvey (2001) found that about three quarters of the chief financial officers they surveyed used it, and it remains a staple of valuation, capital budgeting and the regulation of utility rates. 
+Even so, the CAPM remains the standard way to think about the trade-off between risk and return, because it separates the risk that diversification removes from the risk that investors must be paid to bear. In practice it is still the most common tool for estimating the cost of equity, which is the return a company's shareholders expect and therefore the return its new projects must beat: Graham and Harvey (2001) found that about three quarters of the chief financial officers they surveyed used it, and it remains a staple of valuation, capital budgeting and the regulation of utility rates. 
 
 These findings mattered because of what they might mean. 
 Fama (1970) had pointed out that market efficiency can only be tested together with a model of expected returns. An anomaly therefore always has two explanations: either the market is inefficient and misprices stocks, or the market is efficient and the model of risk is wrong.
-The question came to a head when Fama and French (1992) showed that, once size and book-to-market were taken into account, beta had almost no power to explain average returns. Fama and French (1993) then proposed that size and value capture risks the market factor misses, and built the three-factor model on that idea. 
+The question came to a head when Fama and French (1992) showed that, once size and book-to-market were taken into account, beta had almost no power to explain average returns. The finding made headlines, and newspapers summed it up as ``beta is dead.'' Fama and French (1993) then proposed that size and value capture risks the market factor misses, and built the three-factor model on that idea. 
 
 Lakonishok, Shleifer and Vishny (1994) offered the opposite reading, and with it a challenge to the efficient market hypothesis. In their view, value stocks earn more not because they are riskier, but because investors make predictable mistakes. Investors extrapolate past growth too far and overreact to bad news, so they pay too much for glamour stocks with strong recent growth and too little for value stocks with weak recent growth. Overreaction of this kind is a form of mispricing, and the higher returns of value stocks are what investors earn as prices correct. Lakonishok, Shleifer and Vishny also found that value stocks did not do worse than growth stocks in recessions or market declines, which is hard to square with a story about risk. The same numbers therefore supported two stories: in one the market is efficient and the extra return is payment for risk, and in the other the market is inefficient and the extra return comes from investors' mistakes.
 
-The answer has large practical consequences. It decides what counts as skill when a fund manager beats the market, since a manager who simply holds small value stocks may earn a high CAPM alpha and no alpha at all against three factors. It affects the discount rate companies use for new projects (Graham and Harvey 2001), and it underpins the factor and smart-beta funds that now manage large sums for ordinary investors. As researchers have since proposed several hundred factors, the question has also become a statistical one: how many of these factors are real, and how many are the product of searching through the same data? 
+The answer has large practical consequences. It decides what counts as skill when a fund manager beats the market, since a manager who simply holds small value stocks may earn a high CAPM alpha and no alpha at all against three factors. It affects the discount rate companies use for new projects (Graham and Harvey 2001), and it underpins the factor and smart-beta funds that now manage large sums for ordinary investors. A smart-beta fund is an index-like fund that deliberately tilts toward stocks with certain characteristics, such as small size or low prices relative to earnings. As researchers have since proposed several hundred factors, the question has also become a statistical one: how many of these factors are real, and how many are the product of searching through the same data? 
 
 The claim on trial\index{claims-on-trial method} in this chapter is therefore: \textbf{additional factors such as size and value explain differences in portfolio returns that beta cannot, but testing many candidate factors produces false discoveries, so a new factor must clear a higher bar.}
 
@@ -37,10 +48,14 @@ By the end of the chapter you will be able to:
 
 In the lab you will replicate the main regressions of Fama and French (1993), decompose the risk of their 25 classic portfolios, measure the stylized facts of returns on real data, compute the portfolios' alphas under four standard error methods, and run a controlled experiment showing how overlapping long-horizon regressions find predictability that is not there.
 
+\begin{callout}
+\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain derivations and statistical details, and you can skip them without losing the thread. The Lab and the lab extensions at the end are written for readers who want to run the Python code themselves.
+\end{callout}
+
 \section{Foundations: Distributions and Regression}
 \label{sec:04-foundations}
 
-This section collects the basic tools that the rest of the chapter builds on
+This section collects the basic tools that the rest of the chapter builds on.
 Readers who know this material can skim it then go to Section \ref{sec:04-decomposition}, but the notation introduced here is used throughout the book.
 
 \subsection{Describing a Distribution}
@@ -48,7 +63,7 @@ Four numbers, called \textbf{moments}, summarize a return distribution:
 \begin{itemize}
   \item The \textbf{mean}\index{mean} is its center: the average return.
   \item The \textbf{variance}\index{variance|textbf}, or its square root the standard deviation\index{standard deviation}, measures spread: how far returns typically fall from the mean.
-  \item \textbf{Skewness}\index{skewness|textbf} measures asymmetry. It is negative when large losses are more likely than large gains of the same size, as for most stock indexes.
+  \item \textbf{Skewness}\index{skewness|textbf} measures asymmetry. It is negative when large losses are more likely than large gains of the same size, as for most stock indexes. On 19 October 1987, for example, the Dow Jones Industrial Average fell 22.6\% in a single day, a loss far larger than any single-day gain in its history.
   \item \textbf{Kurtosis}\index{kurtosis|textbf} measures tail heaviness. A normal distribution has kurtosis 3; values above 3 indicate \textbf{fat tails}\index{fat tails|textbf}, meaning extreme returns occur far more often than a normal distribution predicts.
 \end{itemize}
 
@@ -123,12 +138,14 @@ Figure~\ref{fig:04-moments} shows what each moment changes, by comparing the nor
   \tikz{\draw[fegray, thick, dashed] (0,0) -- (0.6,0);} Comparison distribution};
 \end{tikzpicture}
 
-  \caption{The four moments of a distribution. Each panel compares the standard normal distribution (solid) with one that differs in a single respect. (a)~The mean sets the center. (b)~The variance sets the spread. (c)~Negative skewness lengthens the left tail, so large losses are more likely than large gains of the same size. (d)~Higher kurtosis puts more weight in the tails: the normal distribution has kurtosis 3, the fat-tailed one shown has kurtosis 9. Panels (c) and (d) keep the mean and variance of the normal distribution.}
+  \caption{Two investments can share the same average and volatility yet differ in how often they crash. The four moments of a distribution. Each panel compares the standard normal distribution (solid) with one that differs in a single respect. (a)~The mean sets the center. (b)~The variance sets the spread. (c)~Negative skewness lengthens the left tail, so large losses are more likely than large gains of the same size. (d)~Higher kurtosis puts more weight in the tails: the normal distribution has kurtosis 3, the fat-tailed one shown has kurtosis 9. Panels (c) and (d) keep the mean and variance of the normal distribution.}
   \label{fig:04-moments}
 \end{figure}
 
 
-A fifth measure describes behavior over time. \textbf{Autocorrelation}\index{autocorrelation|textbf} is the correlation of a series with its own past values. The first-order autocorrelation ($\rho_1$) compares each month with the month before. A value near $+1$ means that a high month tends to be followed by another high month, a value near $-1$ means that it tends to be followed by a low month, and a value near zero means that the past says nothing about the next month. A return series with zero autocorrelation cannot be predicted from its own history.
+A fifth measure describes behavior over time. \textbf{Autocorrelation}\index{autocorrelation|textbf} is the correlation of a series with its own past values. The first-order autocorrelation ($\rho_1$) compares each month with the month before. A value near $+1$ means that a high month tends to be followed by another high month, a value near $-1$ means that it tends to be followed by a low month, and a value near zero means that the past says nothing about the next month. A return series with zero autocorrelation cannot be predicted from its own history. Daily temperatures are a familiar example of strong positive autocorrelation, since a hot day is usually followed by another warm one; stock returns, by contrast, show very little.
+
+\noindent\textbf{In plain terms.} The average return and the volatility are only part of the story. Two investments with the same average and the same volatility can differ greatly in how often they suffer a crash, and a regression is the basic tool for measuring how one return moves with another.
 
 \subsection{Linear Regression and OLS Assumptions}
 \label{sec:04-regression}
@@ -164,7 +181,7 @@ The Capital Asset Pricing Model\index{capital asset pricing model (CAPM)} (Sharp
 \end{itemize}
 Because investors can remove idiosyncratic risk at almost no cost, the model says that they should not expect to be paid for bearing it. Only systematic risk earns a reward.
 
-Formally, the CAPM says that an asset's expected excess return\index{return!excess} is proportional to its \textbf{beta}\index{beta|textbf}, its sensitivity to the market:
+In everyday terms, the CAPM says that a stock should pay more only if it tends to fall when the whole market falls, because that is the risk an investor cannot escape by spreading money across many stocks. Formally, the CAPM says that an asset's expected excess return\index{return!excess} is proportional to its \textbf{beta}\index{beta|textbf}, its sensitivity to the market:
 \begin{equation}
   E[R^{e}_{i}] = \beta_i \, E[R^{e}_{m}], \qquad \beta_i = \frac{\operatorname{Cov}(R_i, R_m)}{\operatorname{Var}(R_m)}
   \label{eq:04-capm}
@@ -234,11 +251,14 @@ This is Equation~\eqref{eq:04-ols} with the asset's excess return as $y$ and the
       {alpha $= 1.16$: the fitted line's\\value when the market return is 0};
   \end{axis}
   \end{tikzpicture}
-\caption{Beta and alpha in a regression of a strategy's monthly excess returns on the market's. Beta is the slope of the fitted line; alpha is its height where the market's excess return is zero, the gap between the fitted line and a line with the same slope through the origin. Simulated data, with an alpha larger than any real strategy's so that it is visible.}
+\caption{Beta measures how strongly a strategy follows the market, and alpha measures what it earns beyond that. Beta and alpha in a regression of a strategy's monthly excess returns on the market's. Beta is the slope of the fitted line; alpha is its height where the market's excess return is zero, the gap between the fitted line and a line with the same slope through the origin. Simulated data, with an alpha larger than any real strategy's so that it is visible.}
 \label{fig:04-alpha}
 \end{figure}
 
-\textbf{The CAPM's variance decomposition.} Taking the variance of both sides of Equation~\eqref{eq:04-capm-ts} splits the asset's total risk into two parts. OLS makes the residuals uncorrelated with the market in the sample, so there is no cross term between them:
+In words, a stock's risk has two parts: the part that comes from the market as a whole and the part that belongs to the company alone, such as a failed product launch or a lawsuit. Holding many stocks shrinks the second part but leaves the first untouched, as the shaded box shows.
+
+\begin{technote}
+\textbf{Technical note: the CAPM's variance decomposition.} Taking the variance of both sides of Equation~\eqref{eq:04-capm-ts} splits the asset's total risk into two parts. OLS makes the residuals uncorrelated with the market in the sample, so there is no cross term between them:
 \begin{equation}
   \operatorname{Var}(R^{e}_{i}) = \beta_i^2 \operatorname{Var}(R^{e}_{m}) + \operatorname{Var}(\varepsilon_i)
   \label{eq:04-vardec-capm}
@@ -250,6 +270,7 @@ Let's understand the two terms:
 \item the second is the \textbf{idiosyncratic variance}\index{variance!idiosyncratic|textbf}, the part that belongs to the asset alone. 
 \end{enumerate}
 The decomposition gives the regression's $R^2$ a direct economic meaning. The share of systematic variance in the total is exactly the $R^2$, so an $R^2$ of 0.9 says that 90\% of the asset's risk comes from the market and only 10\% is its own.
+\end{technote}
 
 \begin{figure}[!htbp]
   \centering
@@ -280,7 +301,7 @@ The decomposition gives the regression's $R^2$ a direct economic meaning. The sh
     \node[fenavy, anchor=west, font=\footnotesize] at (6.0,104) {idiosyncratic 2\%};
     \node[anchor=north, font=\small, align=center] at (4.7,-2) {Portfolio of\\100 stocks};
   \end{tikzpicture}
-  \caption{Splitting total variance into systematic and idiosyncratic parts with Equation~\eqref{eq:04-vardec-capm}. Each stock has a market beta of 1.2 and a residual standard deviation of 8\% a month, and the market's standard deviation is 4.5\% a month. Diversification leaves the systematic variance unchanged but divides the idiosyncratic variance by 100, so the systematic share, which equals the regression's $R^2$, rises from about 31\% to about 98\%. The numbers are illustrative.}
+  \caption{Diversification removes a company's own risk but not the market's. Splitting total variance into systematic and idiosyncratic parts with Equation~\eqref{eq:04-vardec-capm}. Each stock has a market beta of 1.2 and a residual standard deviation of 8\% a month, and the market's standard deviation is 4.5\% a month. Diversification leaves the systematic variance unchanged but divides the idiosyncratic variance by 100, so the systematic share, which equals the regression's $R^2$, rises from about 31\% to about 98\%. The numbers are illustrative.}
   \label{fig:04-vardec}
 \end{figure}
 
@@ -289,13 +310,15 @@ The CAPM implies that a stock's expected return depends not on its total volatil
 Empirical tests, however, show that the model fits the data less well than its influence suggests. If the CAPM were right, average returns would rise with beta along a straight line through the market portfolio, called the \textbf{security market line}\index{security market line|textbf}. Black, Jensen and Scholes (1972) found that the line starts above the risk-free rate and rises less steeply than the market's excess return, so low-beta stocks earned more than the CAPM predicts and high-beta stocks earned less (Figure~\ref{fig:04-sml}). Beta still mattered, but each unit of it was rewarded less than the theory promised. Taking on more market risk did not bring a proportionally higher return. The finding matters because the CAPM is wrong in a specific, systematic direction, and the error has four consequences.
 
 \begin{enumerate}
-  \item \textbf{An opportunity at the low end.} Low-beta portfolios show positive alphas, and high-beta portfolios show negative alphas. An investor who can borrow cheaply could earn the market's return with less market risk by holding low-beta stocks and adding leverage. This is the seed of the low-risk anomaly and of the betting-against-beta strategy of Frazzini and Pedersen (2014), which Chapter~\ref{ch:18} tests.
-  \item \textbf{Possibly wrong costs of capital.} Companies use the CAPM to set the return their projects must beat. If investors really require returns along the flatter line, high-beta firms set their hurdle rates too high and turn down good projects, while low-beta firms set them too low and accept poor ones. If the flat line instead reflects mispricing, the right hurdle rate is open to debate.
+  \item \textbf{An opportunity at the low end.} Low-beta portfolios show positive alphas, and high-beta portfolios show negative alphas. An investor who can borrow cheaply could earn the market's return with less market risk by holding low-beta stocks and adding leverage, that is, investing borrowed money on top of the investor's own. This is the seed of the low-risk anomaly and of the betting-against-beta strategy of Frazzini and Pedersen (2014), which Chapter~\ref{ch:18} tests.
+  \item \textbf{Possibly wrong costs of capital.} Companies use the CAPM to set the return their projects must beat. If investors really require returns along the flatter line, high-beta firms set their hurdle rates, the minimum returns that projects must promise, too high and turn down good projects, while low-beta firms set them too low and accept poor ones. If the flat line instead reflects mispricing, the right hurdle rate is open to debate.
   \item \textbf{Wrong performance evaluation.} A manager who simply holds low-beta stocks looks skilled under the CAPM, and one who holds high-beta stocks looks unskilled, even if neither has any skill.
-  \item \textbf{A clue to the cause.} Black (1972) showed that when investors cannot borrow freely at the risk-free rate, the equilibrium security market line starts at the return on a zero-beta portfolio, above the risk-free rate, and rewards beta less than the standard model. Frazzini and Pedersen (2014) later developed the intuition behind it: investors who want more risk but cannot borrow buy high-beta stocks instead of leveraging the market, which raises their prices and lowers their later returns. The flat line therefore points to a friction in real markets, not just a statistical quirk.
+  \item \textbf{A clue to the cause.} Black (1972) showed that when investors cannot borrow freely at the risk-free rate, the equilibrium security market line starts at the return on a zero-beta portfolio, which is a portfolio built to have no market risk, above the risk-free rate, and rewards beta less than the standard model. Frazzini and Pedersen (2014) later developed the intuition behind it: investors who want more risk but cannot borrow buy high-beta stocks instead of leveraging the market, which raises their prices and lowers their later returns. The flat line therefore points to a friction in real markets, not just a statistical quirk.
 \end{enumerate}
 
-Later research found that the stocks the CAPM could not explain were not random. Their returns were related to company characteristics: stocks with low price--earnings ratios (Basu 1977), small companies (Banz 1981) and stocks with high book-to-market ratios\index{book-to-market ratio} (Rosenberg, Reid and Lanstein 1985) all earned more than their betas predicted. Fama and French (1992) showed that once size and book-to-market are taken into account, beta adds almost nothing to the explanation of average returns, and Fama and French (1993) built these characteristics into a three-factor model. As a literal description of expected returns, the CAPM is therefore largely rejected, but it remains the benchmark against which every later model is built and tested.
+Later research found that the stocks the CAPM could not explain were not random. Their returns were related to company characteristics that the CAPM says should not matter: stocks with low price--earnings ratios (Basu 1977), small companies (Banz 1981) and stocks with high book-to-market ratios\index{book-to-market ratio} (Rosenberg, Reid and Lanstein 1985) all earned more than their betas predicted. Because these anomalies had been found one at a time, Fama and French (1992) tested them together and showed that once size and book-to-market are taken into account, beta adds almost nothing to the explanation of average returns, and Fama and French (1993) built these characteristics into a three-factor model. As a literal description of expected returns, the CAPM is therefore largely rejected, but it remains the benchmark against which every later model is built and tested.
+
+\noindent\textbf{In plain terms.} The CAPM says that the only risk worth paying for is the risk of falling with the market, measured by beta. The idea is elegant and still widely used, but in the data riskier stocks have not earned as much extra as the model promises, and cheap stocks and small stocks have earned more than their betas can explain.
 
 
 \begin{figure}[!htbp]
@@ -342,7 +365,7 @@ Later research found that the stocks the CAPM could not explain were not random.
       {high-beta stocks earn\\less than predicted};
   \end{axis}
   \end{tikzpicture}
-  \caption{The security market line. The CAPM predicts that average excess returns rise in a straight line with beta, passing through zero at a beta of zero and through the market's excess return at a beta of one (solid line). Tests that sort stocks into portfolios by beta typically find a flatter line with a positive intercept (dashed line and dots), so low-beta stocks earn more than predicted and high-beta stocks earn less (Black, Jensen and Scholes 1972). The numbers are illustrative.}
+  \caption{In practice, riskier stocks have been rewarded less than the CAPM promises. The security market line. The CAPM predicts that average excess returns rise in a straight line with beta, passing through zero at a beta of zero and through the market's excess return at a beta of one (solid line). Tests that sort stocks into portfolios by beta typically find a flatter line with a positive intercept (dashed line and dots), so low-beta stocks earn more than predicted and high-beta stocks earn less (Black, Jensen and Scholes 1972). The numbers are illustrative.}
   \label{fig:04-sml}
 \end{figure}
 
@@ -365,10 +388,12 @@ A long--short portfolio involves buying stocks in one group and short-selling st
 
 The beauty of the Fama--French SMB factor is that it captures the difference in returns between small and large companies through a simple long--short strategy. By buying small-company stocks and short-selling large-company stocks, it isolates the performance of smaller firms relative to larger ones. This approach allows investors to measure the size effect directly, without relying on the overall direction of the stock market.
 
-\textbf{The economic argument.} Why should size and value earn premia? 
+\textbf{The economic argument.} Why should size and value earn premia, that is, extra average returns? 
 Fama and French offered a risk-based explanation. They argued that small companies and financially distressed companies face risks that are not fully captured by the overall market factor. Small companies tend to share common return movements that differ from those of large companies. Similarly, value companies, which often have persistently weak earnings, tend to be more financially distressed than growth companies. Their stock returns reflect this additional source of risk. Investors may therefore require higher expected returns to hold these stocks. In this interpretation, SMB and HML capture risks beyond the overall market risk.
 
 \textbf{Alpha decay.} Moving from the CAPM to three factors does not remove any return; it relabels it. Returns that the CAPM counted as alpha are reassigned to exposures to $SMB$ and $HML$. For the 25 portfolios sorted on size and book-to-market, the $R^2$ rises substantially, above 90\% for most portfolios, and the alphas shrink toward zero (Fama and French 1993). This \textbf{alpha decay}\index{alpha!decay|textbf} is the main practical consequence of the new decomposition: a manager who looked skilled under the CAPM may simply have held small value stocks.
+
+Lakonishok, Shleifer and Vishny's behavioral reading has an everyday counterpart. When a restaurant becomes fashionable, diners pay high prices and the place often disappoints, while the unfashionable diner down the street quietly offers better value. In their view, glamour stocks are the fashionable restaurant and value stocks the unfashionable one.
 
 
 \subsection{Beyond Three Factors: The Fama--French Five-Factor Model}
@@ -376,8 +401,10 @@ Fama and French offered a risk-based explanation. They argued that small compani
 
 The Fama--French three-factor model was later extended to include profitability and investment. These two additions were not entirely new
 discoveries. They were motivated by earlier empirical studies showing that firms' profitability and investment decisions are related to
-average stock returns. For example, Titman, Wei, and Xie (2004) found that firms with higher investment tend to earn lower subsequent
-returns. Xing (2008) reported similar evidence. On the profitability side, Fama and French (2006) and Novy-Marx (2013) found that more
+average stock returns. For example, Titman, Wei, and Xie (2004) asked whether the market recognizes that heavy investment often reflects empire-building rather than
+good projects, and found that firms with higher investment tend to earn lower subsequent returns. Xing (2008), arguing that firms invest more
+when their cost of capital falls, reported similar evidence. On the profitability side, a valuation argument implies that, at a given price, a more
+profitable firm should offer a higher expected return, and Fama and French (2006) and Novy-Marx (2013) found that more
 profitable firms tend to earn higher average returns. Building on this earlier research, Fama and French (2015) incorporated profitability
 and investment into their existing three-factor model, creating the five-factor model.
 
@@ -405,6 +432,10 @@ These extensions also change how we interpret alpha. Under the CAPM, alpha measu
 Under the five-factor model, alpha measures the return that cannot be explained by market risk, size, value, profitability, and investment.
 A different set of factors may produce a different alpha. Therefore, alpha is not simply a characteristic of an asset; it depends on the
 asset pricing model used to evaluate it. Any discussion of alpha should make clear which model is being used.
+
+Factor premiums are also far from guaranteed in any given decade. Value investors learned this the hard way: measured by the Fama--French value factor, value stocks trailed growth stocks from 2007 onward, and by mid-2020 the factor had suffered a drawdown of about 55\%, the largest since its data begin in 1963. A premium that is real on average can still disappoint for a decade or more, which is exactly the kind of noise Chapter~\ref{ch:01} warned about.
+
+\noindent\textbf{In plain terms.} Fama and French showed that, beyond the market, a stock's size and its price relative to its accounting value help explain its average return, and later added profitability and investment. With these factors in the model, much of what once looked like a fund manager's skill turns out to be a steady tilt toward certain kinds of stocks.
 
 \subsection{The Factor Zoo}
 \label{sec:04-zoo}
@@ -478,6 +509,8 @@ BAB & Betting Against Beta
 \end{tabularx}
 \end{table}
 
+A few entries in the table use specialist terms. \emph{Accruals} are the part of a company's reported profit that has not yet arrived as cash, such as sales made on credit, so a firm with high accruals reports profits that are less backed by money in the bank. \emph{Liquidity risk} is the danger that a stock becomes hard to sell without pushing its price down, usually just when many investors want out. \emph{Idiosyncratic volatility} is the part of a stock's ups and downs that has nothing to do with the market as a whole.
+
 
 \subsection{Statistical significance versus economic significance}
 \label{subsec:04-statistical-economic-significance}
@@ -509,7 +542,7 @@ For these reasons, evaluating a factor requires several complementary questions:
   \item \textbf{Economic interpretation:} Is there a convincing explanation for why the factor should earn a premium?
 \end{itemize}
 
-These questions are especially important in empirical asset pricing, where researchers may examine hundreds of candidate factors. A statistically significant result can arise by chance, particularly when many hypotheses are tested. Even a factor that survives statistical scrutiny must still demonstrate economic relevance and practical value. A credible factor discovery should therefore combine statistical evidence, economic reasoning and realistic investment considerations.
+These questions are especially important in empirical asset pricing, where researchers may examine hundreds of candidate factors. A statistically significant result can arise by chance, particularly when many hypotheses are tested. Even a factor that survives statistical scrutiny must still demonstrate economic relevance and practical value. A credible factor discovery should therefore combine statistical evidence, economic reasoning and realistic investment considerations. Put simply, a result can be real and still too small, too costly to trade or too poorly understood to be worth acting on.
 
 
 \subsection{Practical and Institutional Implications}
@@ -530,7 +563,9 @@ whether the manager's performance comes from genuine investment
 skill or simply from holding stocks with certain factor
 characteristics. Carhart (1997) found that momentum exposure and
 fund expenses explain much of the apparent persistence in mutual
-fund performance. Fama and French (2010) also found that very few
+fund performance. In other words, funds that seemed to win year
+after year were often just holding the stocks that had recently
+risen, which anyone could do cheaply. Fama and French (2010) also found that very few
 fund managers consistently generate returns that are high enough
 to cover their costs.
 
@@ -540,7 +575,7 @@ generates its returns. By comparing a fund's returns with those
 of different investment style indexes, researchers can identify
 whether the fund follows a growth, value, or other investment
 strategy, even without examining its individual holdings.
-Sharpe (1992) demonstrated this approach using style analysis.
+Sharpe (1992) demonstrated this approach using style analysis, which finds the mix of simple index funds whose combined returns most closely track the fund's returns.
 Institutional investors also monitor a manager's factor exposures
 over time to detect changes in investment strategy, known as
 \textbf{style drift}\index{style drift|textbf}. For example, if a
@@ -595,7 +630,7 @@ a researcher tests 100 factors, none of which has a genuine
 relationship with expected returns. 
 
 If each factor is tested
-individually at the 5\% significance level, Assuming
+individually at the 5\% significance level, assuming
 the tests are independent, the probability of obtaining at least
 one false positive is
 \begin{equation}
@@ -610,7 +645,7 @@ In other words, when 100 independent factors, each with a true premium of zero, 
 there is approximately a 99.4\% 
 chance that at least one will incorrectly appear to have a significant premium.
 
-This issue is known as the \textbf{multiple-testing problem}.
+A fishing trip offers a simple picture of the problem: cast enough lines and something will eventually bite, even in a nearly empty lake. This issue is known as the \textbf{multiple-testing problem}.
 \index{multiple-testing problem|textbf} A conventional $t$-test
 evaluates one hypothesis at a time. It does not account for the
 number of other hypotheses that researchers have examined.
@@ -653,7 +688,10 @@ Their statistical framework therefore attempts to account for
 these unobserved tests rather than treating the published
 literature as the complete record of research activity.
 
-The authors then evaluate how demanding the statistical
+The short answer is that a new factor should usually reach a $t$-statistic of about 3 rather than 2. The shaded box summarizes how the authors arrived at that number.
+
+\begin{technote}
+\textbf{Technical note: how high the bar should be.} The authors then evaluate how demanding the statistical
 significance threshold should be when researchers test many
 potential factors. They consider several approaches that
 differ in how strictly they control the possibility of false
@@ -670,7 +708,8 @@ have a $t$-statistic greater than 3.0.
 The precise threshold is not a universal constant. It depends
 on the number of tests, the dependence among test statistics,
 the assumed number of unreported experiments, and the chosen
-error-control procedure. 
+error-control procedure.
+\end{technote}
 
 \subsection{Economical magnitude}
 A statistically significant result is also not the same
@@ -686,8 +725,10 @@ Finally, multiple-testing adjustments do not replace
 careful empirical methods. Harvey, Liu, and Zhu take the
 reported $t$-statistics as given and assume that the
 underlying studies have appropriately addressed issues
-such as heteroskedasticity, autocorrelation, and data
+such as heteroskedasticity (volatility that changes over time), autocorrelation, and data
 errors.
+
+\noindent\textbf{In plain terms.} Researchers have tested hundreds of possible factors on the same few decades of data, so some of them were bound to look impressive by chance. A new factor deserves belief only if it clears a higher statistical bar than usual, earns enough to matter after costs, and comes with a sensible reason for why it should work.
 
 \section{Lab~\thechapter: Replicating Fama and French (1993) and the factor zoo}
 \label{sec:04-lab}
@@ -733,7 +774,7 @@ To see why, consider 1,000 candidate factors, each of which has a true expected 
 
 The experiment applies two significance thresholds:
 \begin{itemize}
-  \item The conventional threshold, $|t|>1.96$, corresponding approximately to a two-sided 5\% test.
+  \item The conventional threshold, $|t|>1.96$, corresponding approximately to a two-sided 5\% test, which counts a result as a discovery whether the premium looks surprisingly positive or surprisingly negative.
   \item A more demanding threshold, $|t|>3.0$, inspired by the recommendations of Harvey, Liu and Zhu (2016).
 \end{itemize}
 
@@ -833,11 +874,12 @@ The evidence in Section~\ref{sec:04-verdict} suggests a few useful habits for ju
   \item A long-horizon regression of 5-year returns on dividend yields uses 50 years of monthly data ($T=600$, $k=60$). How many independent observations does it contain, and why are classical $t$-statistics misleading?
   \item Why must a time-series bootstrap resample blocks of observations rather than individual months?
   \item Explain why a factor alpha with $t = 3.2$ might lack economic significance, and list what you would need to know before investing in it.
+  \item A friend's fund has beaten the S\&P~500 for five years, and its brochure describes it as a ``small-cap value'' fund. Without any calculation, explain why its record may say little about the manager's skill, and what comparison would be fairer.
 \end{enumerate}
 
 \subsection*{Lab Extensions (technical readers)}
 \begin{enumerate}
-  \setcounter{enumi}{8}
+  \setcounter{enumi}{9}
   \item Replicate Part B of Lab~\ref{ch:04} across two sub-samples: 1963--1992 and 1993--present. Compare changes in factor risk premia and GRS test rejections.
   \item Compute $t$-statistics for 25 portfolio alphas using four methods: Classical OLS, White, Newey--West, and Stationary Block Bootstrap. Identify portfolios with the largest SE discrepancies, and explain what features of their returns might cause them.
   \item Pair monthly returns with 1,000 simulated non-predictive predictors ($\rho = 0.98$). Run long-horizon regressions ($k=1$ to $60$) and plot false-positive rates for OLS, Newey--West, and Hodrick standard errors. Then set the correlation between predictor shocks and return shocks to $-0.9$ and describe how the Stambaugh bias changes the results.

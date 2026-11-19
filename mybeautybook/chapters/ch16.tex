@@ -12,12 +12,25 @@
 }{}
 \makeatother
 
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
 \chapter{Claim: A Profitable Backtest Is Profitable to Trade}
 \label{ch:17}
 
+Many brokers now advertise commission-free trading, and it is easy to conclude that buying and selling shares costs nothing. It does not. Every purchase is made at a slightly higher price than every sale, and large orders push prices against the trader. These hidden costs are small on any one trade, but a strategy that trades often pays them again and again. This chapter asks how much of a strategy's backtested profit survives them.
+
 Most of the claims tested so far, from size and value to momentum and trend following, were documented with \textbf{paper returns}\index{return!paper versus implementable}: the returns of portfolios rebuilt every month at recorded closing prices, in any size, at no cost. Researchers have long known that this is a simplification. It matters because of how an efficient market is defined. Jensen (1978) argued that a market is efficient with respect to some information if no one can earn \emph{economic} profits by trading on it, meaning profits after all the costs of trading. Grossman and Stiglitz (1980) went further. They showed that prices cannot reflect all information perfectly, because then no one would be paid for the cost of collecting it. On this view, some patterns in returns should survive on paper but not after costs, since costs are exactly what stops investors from trading them away.
 
-The question became pressing in the early 2000s, when researchers began to work out what it would cost to trade the best-known anomalies\index{anomaly}. Lesmond, Schill and Zhou (2004) found that momentum\index{momentum} trades are concentrated in stocks that are expensive to trade, and concluded that most of its profits disappear after costs. Korajczyk and Sadka (2004) measured how much large orders move prices, and found that momentum profits shrink as the portfolio grows. Novy-Marx and Velikov (2016) then estimated trading costs for 23 well-known anomalies. Most strategies that replace more than half of their portfolio each month were no longer significant after costs. Frazzini, Israel and Moskowitz (2018) challenged the size of these estimates. Using a large manager's own trading records, they found costs far below what the academic estimates assumed. The same patterns therefore look profitable or unprofitable depending on whose costs are used.
+The question became pressing in the early 2000s, when researchers began to work out what it would cost to trade the best-known anomalies\index{anomaly}, the patterns in returns that standard risk models cannot explain (Chapter~\ref{ch:04}). Momentum, which trades often, was the natural first target. Lesmond, Schill and Zhou (2004) found that momentum\index{momentum} trades are concentrated in stocks that are expensive to trade, and concluded that most of its profits disappear after costs. Since a large fund also moves prices when it trades, Korajczyk and Sadka (2004) measured how much large orders move prices, and found that momentum profits shrink as the portfolio grows. To compare many strategies at once, Novy-Marx and Velikov (2016) then estimated trading costs for 23 well-known anomalies. Most strategies that replace more than half of their portfolio each month were no longer significant after costs. Because these estimates came from public data rather than an actual investor's trades, Frazzini, Israel and Moskowitz (2018) challenged their size. Using a large manager's own trading records, they found costs far below what the academic estimates assumed. The same patterns therefore look profitable or unprofitable depending on whose costs are used.
 
 This chapter opens Part VII, which returns to the classic findings with the tools of the last two decades. The answer matters for research and for practice. For research, it decides whether an anomaly is evidence against market efficiency, or only a pattern that no investor could exploit. For practice, it decides which published strategies are worth running, how much money each can manage, and whether a fund that offers them can deliver its backtest. The claim on trial\index{claims-on-trial method} is the assumption behind most published backtests\index{backtest}: \textbf{a strategy that is profitable in a backtest is profitable to trade.}
 
@@ -31,6 +44,10 @@ By the end of the chapter you will be able to:
   \item compute a strategy's turnover\index{turnover}, its net return and the break-even cost\index{transaction costs!break-even} it can bear, and explain how market impact limits the money it can manage;
   \item design strategies that trade less without giving up much of their signal.
 \end{itemize}
+
+\begin{callout}
+\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain the methods researchers use to estimate trading costs from public data, and you can skip them without losing the thread. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
+\end{callout}
 
 In the lab you will take three of the best-known long--short strategies, value, momentum\index{momentum} and short-term reversal\index{short-term reversal}, measure how much each trades, charge each for trading, and see how their ranking changes. A simulated market with known expected returns\index{return!expected} then shows how much cost-aware design can recover.
 
@@ -94,7 +111,7 @@ Most stocks trade on electronic exchanges that keep a \textbf{limit order book}\
       {Bids: buyers' limit orders};
   \end{tikzpicture}%
 }
-  \caption{A limit order book. Sellers' asks sit above the midpoint and buyers'
+  \caption{Every trader who wants to deal at once pays a little more to buy than she receives to sell. A limit order book. Sellers' asks sit above the midpoint and buyers'
     bids below it. A buyer who wants to trade at once pays the best ask,
     \$50.02; a seller receives the best bid, \$49.98. The gap of \$0.04,
     8 basis points of the \$50.00 midpoint, is the bid--ask spread.}
@@ -136,6 +153,8 @@ Academic factors such as HML\index{factor!HML (value)}, introduced in Section~\r
 \textbf{Turnover}\index{turnover|textbf} measures how much of a portfolio is traded in a period. A one-sided\index{hypothesis testing!one-sided and two-sided} monthly turnover of 10\% means that a tenth of the portfolio is sold, and replaced, each month. Turnover multiplies every cost of trading: a strategy that replaces its whole portfolio every month pays its trading costs twelve times a year on each side.
 
 \textbf{Worked example.} A stock is quoted at \$49.98 bid and \$50.02 ask. The midpoint is \$50.00 and the spread is \$0.04, or $0.04/50 = 0.0008$, 8 basis points. Buying with a market order and immediately selling would lose 8 basis points; the one-way cost\index{transaction costs!one-way and round-trip}, half the spread, is 4 basis points.
+
+\noindent\textbf{In plain terms.} Stocks are bought at a slightly higher price than they are sold for, and that gap, the bid--ask spread, is the most basic cost of trading. Selling short adds borrowing fees, and a strategy that replaces much of its portfolio each month pays these costs over and over.
 
 \section{Paper returns versus implementable returns}
 \label{sec:17-paper}
@@ -179,9 +198,11 @@ The unit used throughout this chapter is the \textbf{one-way cost}\index{transac
 
 \textbf{Costs have fallen, unevenly.} U.S. stock spreads narrowed sharply in 2001, when prices moved from fractions of a dollar to cents, a change called \textbf{decimalization}\index{decimalization|textbf}, and again as electronic trading spread. Large stocks now trade at spreads of a few basis points, but small, illiquid stocks still cost far more. This matters when reading long histories. A strategy tested from 1963 faced costs in its early decades several times higher than today's. Charging today's costs over the whole history therefore flatters the past, while charging the past's costs today understates what is now possible.
 
-\textbf{Short selling.}\index{short selling|textbf} A short seller borrows shares and pays the lender a fee. D'Avolio (2002) found that most U.S. stocks were cheap to borrow, but that a small group of ``special'' stocks carried high fees, and that these were often the very stocks with the strongest signals to sell short. The lender can also recall the shares at an awkward time, and regulators can ban short selling outright, as the U.S. Securities and Exchange Commission did for financial stocks in September 2008. Miller (1977) argued that when pessimists cannot sell short, prices reflect only the optimists' views, so overpricing can last. Stambaugh\index{Stambaugh bias}, Yu and Yuan (2012) found that many anomalies\index{anomaly} earn most of their profits on the short side, exactly where these obstacles bite. A long--short paper portfolio that ignores them overstates what an investor can achieve, sometimes by most of the premium.
+\textbf{Short selling.}\index{short selling|textbf} A short seller borrows shares and pays the lender a fee. Using records from a large lender of shares, D'Avolio (2002) found that most U.S. stocks were cheap to borrow, but that a small group of ``special'' stocks carried high fees, and that these were often the very stocks with the strongest signals to sell short. The lender can also recall the shares at an awkward time, and regulators can ban short selling outright, as the U.S. Securities and Exchange Commission did for financial stocks in September 2008. Miller (1977) argued that when pessimists cannot sell short, prices reflect only the optimists' views, so overpricing can last. If so, anomalies should earn their profits mainly from overpriced stocks, and Stambaugh\index{Stambaugh bias}, Yu and Yuan (2012) found that many anomalies\index{anomaly} earn most of their profits on the short side, exactly where these obstacles bite. A long--short paper portfolio that ignores them overstates what an investor can achieve, sometimes by most of the premium.
 
 The lab uses a single one-way cost and a single borrowing fee for transparency. Real costs vary across stocks and over time, and Section~\ref{sec:17-measuring} shows how they can be estimated.
+
+\noindent\textbf{In plain terms.} The cost of a trade includes the spread, the way a large order pushes the price, the price drifting while an order waits, and the expense of borrowing shares to sell short. Costs have fallen sharply since 2001, but small and hard-to-borrow stocks remain expensive, and they are often exactly where published strategies find their profits.
 
 \section{Measuring costs from public data}
 \label{sec:17-measuring}
@@ -197,7 +218,10 @@ The best measure of trading costs is a trader's own record. \textbf{Implementati
 
 Effective spreads are usually smaller than quoted ones, because many trades execute inside the quotes.
 
-\textbf{From daily data.} Several estimators infer spreads from daily prices alone, which makes them available back to the 1920s:
+Researchers without intraday data can still estimate spreads from daily prices, which reach back to the 1920s. The shaded box lists the standard methods.
+
+\begin{technote}
+\textbf{Technical note: estimating spreads from daily data.} Several estimators infer spreads from daily prices alone, which makes them available back to the 1920s:
 
 \begin{itemize}
   \item \textbf{Roll (1984)}\index{bid--ask spread!estimators|textbf} infers the spread from \textbf{bid--ask bounce}\index{bid--ask bounce|textbf}: because trades alternate randomly between the bid and the ask, successive price changes are negatively correlated, and the size of that correlation\index{correlation} reveals the spread.
@@ -208,6 +232,7 @@ Effective spreads are usually smaller than quoted ones, because many trades exec
 \end{itemize}
 
 These estimators are noisy for any one stock and month, but useful averaged across portfolios, which is how Novy-Marx and Velikov (2016) used them to estimate the costs of dozens of anomalies.
+\end{technote}
 
 \textbf{Estimates from practice.} Frazzini, Israel and Moskowitz (2018) studied \$1.7 trillion of actual trades by a large institutional manager, across 21 developed markets over 19 years. They found trading costs about ten times smaller than earlier academic estimates suggested. The result shows that costs depend on who is trading and how. A patient institution that supplies liquidity pays far less than the typical investor assumed by spread estimators. The evidence, however, comes from a single manager using its own trading methods.
 
@@ -305,7 +330,7 @@ The three strategies differ sharply in how much cost they can bear (Figure~\ref{
   \end{axis}
   \end{tikzpicture}%
 }
-  \caption{Net return against one-way trading cost, from the turnover and gross
+  \caption{The more a strategy trades, the faster its profit disappears as costs rise. Net return against one-way trading cost, from the turnover and gross
     returns in the table. Each line falls at a rate of four times the strategy's
     turnover; it crosses zero at the break-even cost. Value's line is nearly
     flat and crosses zero off the chart, at about 4\%.}
@@ -320,6 +345,8 @@ The three strategies differ sharply in how much cost they can bear (Figure~\ref{
 %\end{figure}
 
 A gross ranking by Sharpe ratio\index{Sharpe ratio} or t-statistic\index{t-statistic} therefore says little about which strategy an investor should prefer. The net ranking depends on turnover as much as on the gross premium.
+
+\noindent\textbf{In plain terms.} A strategy's break-even cost is the most it can pay per trade before its profit is gone. Value trades so rarely that it can afford almost any realistic cost, momentum survives only careful, cheap trading, and short-term reversal is profitable only on paper.
 
 \section{Market impact and capacity}
 \label{sec:17-capacity}
@@ -378,7 +405,7 @@ Here $Q$ is the order size, $V$ is daily volume, $\sigma_{daily}$ is daily volat
   \end{axis}
   \end{tikzpicture}%
 }
-  \caption{Square-root market impact for a stock with 2\% daily volatility,
+  \caption{Bigger orders cost more per dollar, though less than in proportion to their size. Square-root market impact for a stock with 2\% daily volatility,
     from Equation~\eqref{eq:17-impact} with $Y = 1$. Ten times the order size
     costs about three times as much per dollar, not ten times; but total
     impact cost, per dollar times dollars, still rises faster than the order.}
@@ -422,6 +449,8 @@ A paper portfolio is built as if trading were free, so it trades whenever the si
 Each rule trades a little signal for a lot less trading. The trade-off depends on how fast the signal decays: banding costs little for momentum, whose ranks change gradually, and cannot rescue short-term reversal, whose signal is gone within a month.
 
 \textbf{Saving costs is also a search.} Every design choice, such as the width of a band, how often to rebalance or which stocks to exclude, can be tuned to make a backtest look better, so the warnings about selection and overfitting\index{overfitting} in Section~\ref{sec:01-backtests} apply in full. Chen and Velikov (2023) studied 204 anomalies, allowing for effective spreads, the decline in returns after publication\index{anomaly!post-publication decay} and modern trading technology. They found that the average anomaly's expected return, net of these effects, was about 4 basis points a month. Strategies that looked impressive after costs in their own samples, once cost-saving rules were added, did not escape that conclusion. A cost-saving design should therefore be fixed in advance and judged out of sample, like any other part of a strategy.
+
+\noindent\textbf{In plain terms.} Every strategy has a capacity, a size beyond which its own trades push prices enough to eat its profit. Sensible design, such as trading only when a stock moves well past a cut-off, can save a great deal of cost, but these rules can also be tuned to flatter a backtest, so they must be chosen before the results are known.
 
 \begin{callout}
 \textbf{What Failed: buying last month's losers.} Jegadeesh (1990) and Lehmann (1990) showed that stocks with low returns over the past week or month tended to rebound, and stocks with high returns tended to fall back. On paper the pattern is strong and statistically robust, and the Fama--French\index{Fama--French factors} short-term reversal factor still has a positive average return. The trouble is trading. The strategy replaces almost its whole portfolio every month. It buys and sells stocks that have just moved sharply, often small and illiquid ones, where spreads are widest. Novy-Marx and Velikov (2016) estimated that its costs were larger than its gross return by more than a percentage point a month. Nagel (2012) argued that much of the reversal is a reward for supplying liquidity to impatient traders. That reward goes to market makers, who trade cheaply, not to investors who must pay the spread. For an ordinary investor, the claim that buying recent losers is profitable \textbf{fails} once costs are counted.
@@ -518,12 +547,13 @@ The broader lesson is that costs change the ranking of strategies, not just thei
   \item Explain why a value-weighted portfolio whose membership never changes has zero turnover, while an equal-weighted one with the same membership does not.
   \item Why does market impact give a strategy a capacity, while a fixed spread does not?
   \item A strategy earns most of its paper return on the short side. List three reasons its implementable return could be much lower than its paper return.
+  \item A friend trades several times a week on a ``commission-free'' app and believes her trading costs are zero. Without any calculation, explain what costs she is still paying and why they matter more for her than for someone who buys an index fund once a year.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
-  \setcounter{enumi}{4}
+  \setcounter{enumi}{5}
   \item Re-run the lab from May 2001, after the move to decimal prices, with a one-way cost of 10 basis points. Does short-term reversal survive in the low-cost era?
   \item Re-run Part C with a borrowing fee of 2\% a year. Which strategy is most exposed to shorting costs, and why?
   \item In Part D, halve and double the impact constant and the number of days over which trades are spread. Which assumption moves capacity most? What evidence would you want before trusting it?

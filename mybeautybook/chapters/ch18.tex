@@ -12,12 +12,25 @@
 }{}
 \makeatother
 
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
 \chapter{Claim: Most Published Anomalies Fail to Replicate}
 \label{ch:19}
 
-By the 2010s academic finance had published hundreds of variables said to predict which stocks would earn more than others. Harvey, Liu and Zhu (2016) counted more than 300. They argued that, because so many had been tried, a new factor should clear a $t$-statistic of about 3 rather than 2. The worry was not new. Chapter~\ref{ch:01} showed how searching produces records that luck alone can explain. What was new was that the worry now applied to a whole literature. McLean and Pontiff (2016) took a different approach. They followed 97 predictors after their original samples ended and after they were published. Average returns were about 26\% lower after the sample ended, and 58\% lower after publication.
+News stories regularly report a new study showing that some simple rule, such as buying cheap stocks or stocks with rising profits, has beaten the market. Other sciences, such as psychology and medicine, have discovered in recent years that many published findings could not be repeated when others tried. This chapter asks whether finance has the same problem, and how a reader can tell a lasting discovery from a lucky one.
 
-Two large replication studies sharpened the debate. Hou, Xue and Zhang (2020) rebuilt 452 anomalies. They weighted stocks by market value and set group cut-offs using NYSE stocks only, two choices that limit the influence of the tiniest stocks, called micro-caps. About two thirds of the anomalies then failed even the conventional test. Jensen, Kelly and Pedersen (2023) rebuilt 153 factors in 93 countries. They used a Bayesian method that pulls each factor's estimate toward what similar factors suggest, and concluded that most factors do replicate. Chen and Zimmermann (2022) published open code and data for more than 200 predictors, so that anyone could check. Respected researchers using largely the same data reached opposite conclusions, because they asked slightly different questions and applied different standards.
+By the 2010s academic finance had published hundreds of variables said to predict which stocks would earn more than others. Harvey, Liu and Zhu (2016) counted more than 300. They argued that, because so many had been tried, a new factor should clear a $t$-statistic of about 3 rather than 2. The worry was not new. Chapter~\ref{ch:01} showed how searching produces records that luck alone can explain. What was new was that the worry now applied to a whole literature. McLean and Pontiff (2016) took a different approach. Pure data mining predicts that returns vanish once the original sample ends, while mispricing predicts that they shrink after publication, as investors trade on them. They followed 97 predictors after their original samples ended and after they were published. Average returns were about 26\% lower after the sample ended, and 58\% lower after publication.
+
+Two large replication studies sharpened the debate. Hou, Xue and Zhang (2020) asked how many anomalies survive when tiny stocks count for little, and rebuilt 452 anomalies. They weighted stocks by market value and set group cut-offs using NYSE stocks only, two choices that limit the influence of the tiniest stocks, called micro-caps. About two thirds of the anomalies then failed even the conventional test. Jensen, Kelly and Pedersen (2023) asked whether a verdict that uses the evidence from all factors at once would be kinder, and rebuilt 153 factors in 93 countries. They used a Bayesian method that pulls each factor's estimate toward what similar factors suggest, and concluded that most factors do replicate. Because much of the disagreement lay in each study's code, Chen and Zimmermann (2022) published open code and data for more than 200 predictors, so that anyone could check. Respected researchers using largely the same data reached opposite conclusions, because they asked slightly different questions and applied different standards.
 
 At stake is the credibility of a whole field. If most anomalies are false, much of the factor-investing industry rests on noise. If most are real but fade after publication, investors are learning from research and trading the patterns away. The verdict depends less on the data than on the rules of evidence, so this chapter asks the reader to choose those rules and defend them. The claim on trial\index{claims-on-trial method} is: \textbf{most published cross-sectional return predictors do not replicate once micro-caps, multiple testing and publication are accounted for.}
 
@@ -31,6 +44,10 @@ By the end of the chapter you will be able to:
   \item set out the prosecution's and the defense's cases, and the design choices that lead them to opposite verdicts;
   \item separate post-publication\index{anomaly!post-publication decay} decay caused by selection from decay caused by investors' learning, and defend your own verdict.
 \end{itemize}
+
+\begin{callout}
+\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. This chapter is more about reasoning than about formulas, so it needs few technical details. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
+\end{callout}
 
 \section{Foundations: market efficiency, anomalies and replication}
 \label{sec:19-foundations}
@@ -70,6 +87,8 @@ Suppose many noisy estimates are made at once. Each one can be improved by pulli
 
 \textbf{Worked example.} One hundred honest researchers each test a different trading signal, and none of the signals has any real predictive power. By chance, about five will find t-statistics beyond $\pm 1.96$, and those five publish (Figure~\ref{fig:19-pubbias}). Every published paper reports a significant result, yet none of the results is real. A reader who saw only the journals would find a literature with a 100\% success rate.
 
+\noindent\textbf{In plain terms.} An anomaly is a pattern in returns that standard risk models cannot explain, and replicating it means checking whether the pattern holds up when someone else rebuilds it. Because journals favor striking results, published estimates are inflated even when every researcher is honest, and a sensible reader pulls the most extreme claims back toward the average.
+
 \begin{figure}[htbp]
 \centering
 \scalebox{0.8}{%
@@ -98,7 +117,7 @@ Suppose many noisy estimates are made at once. Each one can be improved by pulli
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Publication bias. One hundred signals with no true power produce t-statistics spread around zero. Only the few in the shaded tails, about 2.5 on each side, look significant and get published. The published record shows only the tails.}
+\caption{If only significant results are published, the journals show only the lucky draws. Publication bias. One hundred signals with no true power produce t-statistics spread around zero. Only the few in the shaded tails, about 2.5 on each side, look significant and get published. The published record shows only the tails.}
 \label{fig:19-pubbias}
 \end{figure}
 
@@ -107,7 +126,7 @@ Suppose many noisy estimates are made at once. Each one can be improved by pulli
 
 \textbf{The zoo.} For decades, finance explained why some stocks earn more than others with a single factor, the market, as in the CAPM. Later it used a handful, such as size, value and momentum\index{momentum}. By 2011 the literature had produced so many candidate predictors that John Cochrane, in his presidential address to the American Finance Association, called it a ``zoo of new factors'' (Cochrane 2011). He argued that the field needed to sort out which factors were truly independent, which were redundant, and which were simply noise. Harvey, Liu and Zhu (2016) counted 316 factors published in leading journals, and the count has kept growing.
 
-The problem is statistical as much as economic. Thousands of researchers test thousands of variables on the same U.S. stock data, so some variables will look significant by luck alone. At the usual cut-off of a t-statistic near 2, about one useless variable in twenty passes, and journals mostly publish the ones that pass (Section~\ref{sec:19-foundations}). The published zoo is therefore a mixture of real effects and false discoveries. Many of its members are also the same idea measured in slightly different ways, such as several versions of the finding that cheap stocks beat expensive ones. Since Harvey, Liu and Zhu's count, two open data projects have made it possible to rebuild most of the zoo:
+The problem is statistical as much as economic. Thousands of researchers test thousands of variables on the same U.S. stock data, so some variables will look significant by luck alone. At the usual cut-off of a t-statistic near 2, about one useless variable in twenty passes, and journals mostly publish the ones that pass (Section~\ref{sec:19-foundations}). The published zoo is therefore a mixture of real effects and false discoveries, much as a stack of winning lottery tickets says little about whether anyone has a winning system. Many of its members are also the same idea measured in slightly different ways, such as several versions of the finding that cheap stocks beat expensive ones. Since Harvey, Liu and Zhu's count, two open data projects have made it possible to rebuild most of the zoo:
 
 \begin{itemize}
   \item Chen and Zimmermann's \textbf{Open Source Asset Pricing}\index{Open Source Asset Pricing|textbf} (2022) replicates more than 200 cross-sectional predictors from the original papers' descriptions and publishes their portfolio returns and code.
@@ -172,6 +191,8 @@ Benchmark & Raw returns, CAPM alpha, or alpha against a multifactor model & A fa
 
 \textbf{Pure and scientific replication again.} A replication that copies the original method tests whether the paper's numbers can be reproduced. One that changes the universe, weighting or hurdle tests whether the finding is robust. Both are valuable, but they answer different questions, and the debate in this chapter turns partly on that difference.
 
+\noindent\textbf{In plain terms.} Researchers have published hundreds of stock-return predictors, many of them variations on a few big ideas such as value, momentum and profitability. Rebuilding them requires many reasonable choices, such as whether to count the tiniest stocks, and those choices can decide whether a predictor appears to work.
+
 \section{The claim}
 \label{sec:19-claim}
 
@@ -212,9 +233,11 @@ The prosecution's case rests on two premises: that the right hurdle is high beca
 
 Their approach treats each factor's alpha as a draw from a common distribution and shrinks noisy estimates toward the average of related factors, rather than judging each one in isolation against a fixed hurdle.
 
-\textbf{Chen and Zimmermann (2022)} found that almost all predictors whose original papers reported clear statistical evidence can be reproduced with the original methods. \textbf{Chen and Zimmermann (2020)} estimated publication bias directly across 156 published predictors. They concluded that returns adjusted for bias are only about 12\% smaller than in-sample returns. For predictors that survive journal review, they found that a t-statistic hurdle of about 1.8 is enough to control for multiple testing. \textbf{Chen (2021)} argued that published t-statistics are too large to be explained by \textbf{p-hacking}\index{p-hacking|textbf} alone, that is, by trying analyses until one crosses the significance line.
+\textbf{Chen and Zimmermann (2022)} asked whether published results can be reproduced at all, and found that almost all predictors whose original papers reported clear statistical evidence can be reproduced with the original methods. \textbf{Chen and Zimmermann (2020)} asked how much journals' preference for strong results inflates published returns, and estimated publication bias directly across 156 published predictors. They concluded that returns adjusted for bias are only about 12\% smaller than in-sample returns. For predictors that survive journal review, they found that a t-statistic hurdle of about 1.8 is enough to control for multiple testing. \textbf{Chen (2021)} asked whether \textbf{p-hacking}\index{p-hacking|textbf}, that is, trying analyses until one crosses the significance line, could explain the published evidence, and argued that published t-statistics are too large to be explained by p-hacking alone.
 
 The defense's case rests on two different premises. First, the question is whether the original findings are real, not whether they survive a method that plays down small stocks. Second, evidence should be pooled across related factors rather than judged one test at a time.
+
+\noindent\textbf{In plain terms.} The prosecution says that once the tiniest stocks are given little weight and the bar is raised for the many tests that have been run, most anomalies fail. The defense says that the original findings can almost all be reproduced and that related findings support one another. Both sides look at much the same data and apply different standards.
 
 \section{Post-publication decay}
 \label{sec:19-decay}
@@ -242,13 +265,15 @@ Whatever the replication standard, performance outside the original sample is a 
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Post-publication decay in McLean and Pontiff (2016). With in-sample returns set to 100, the average predictor earned 74 between the end of its original sample and publication, and 42 after publication.}
+\caption{Published patterns lost more than half of their returns after publication. Post-publication decay in McLean and Pontiff (2016). With in-sample returns set to 100, the average predictor earned 74 between the end of its original sample and publication, and 42 after publication.}
 \label{fig:19-decay}
 \end{figure}
 
 The two readings matter for the claim. If most of the decline happens when the sample ends, the original results were inflated by selection, which is a sign of data mining. If most happens after publication, the results were real but investors have traded them away. That is a sign of learning, and it suggests the original finding was true. McLean and Pontiff's numbers suggest that both forces matter, and that the publication effect is the larger one.
 
 This chapter's lab adds a check the original study could not make: a simulated literature in which the truth is known. If only significant results are published, returns appear to fall after the sample ends even when nothing changes. The size of that purely statistical decline is a benchmark for how much of the observed decay is selection.
+
+\noindent\textbf{In plain terms.} Published patterns earn much less after they are published, partly because the original results were lucky and partly because investors start trading on them. Either way, an investor should expect a published strategy to deliver well under half of its historical return.
 
 \section{Why the two sides disagree}
 \label{sec:19-why}
@@ -333,7 +358,7 @@ After costs, for an investor & \textbf{Yes} & Little expected return remains for
 
 Whether these findings make most anomalies ``false'' depends on whether the question is scientific or practical. The two sides agree on most facts and disagree on the four choices in Section~\ref{sec:19-why}, so a verdict on this claim is a choice of standard as much as a reading of the data.
 
-\textbf{What would change the picture.} A shared replication standard, such as pre-registered\index{pre-registration} hurdles or value-weighted, micro-cap-robust results reported alongside the original construction, would narrow the disagreement more than any new data set.
+\textbf{What would change the picture.} A shared replication standard, such as pre-registered\index{pre-registration} hurdles (standards fixed before the data are examined) or value-weighted, micro-cap-robust results reported alongside the original construction, would narrow the disagreement more than any new data set.
 
 \subsection{Open questions}
 \label{sec:19-open}
@@ -375,12 +400,13 @@ The evidence in Section~\ref{sec:19-verdict} suggests several practical lessons.
   \item Distinguish pure replication from scientific replication. Which does Hou, Xue and Zhang's study perform, and which does Chen and Zimmermann's?
   \item Explain why a literature that publishes only significant results will show declining returns out of sample even if every published effect were partly real.
   \item Why might pooling related factors strengthen the evidence for each? When could pooling mislead?
+  \item A magazine article describes a new academic study showing that stocks of companies with a certain feature beat the market by 5\% a year. Without any calculation, list the questions from this chapter you would ask before investing on the basis of the article.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
-  \setcounter{enumi}{4}
+  \setcounter{enumi}{5}
   \item Run Part C with the micro-caps-excluded construction. How many signals drop below $t = 1.96$?
   \item Restrict the sample to signals published after 2000. Is post-publication decay larger or smaller than for older signals?
   \item In Part E, raise the publication threshold from $t > 2$ to $t > 3$. How does the apparent decay from selection change?

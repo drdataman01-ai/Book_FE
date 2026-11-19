@@ -2,7 +2,14 @@
 % Requires: amsmath, amssymb, booktabs, array, tabularx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
 \makeatletter
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
 \@ifundefined{callout}{%
   \newtcolorbox{callout}{breakable, enhanced,
     colback=white, colframe=gray!70, boxrule=0.5pt, arc=1mm,
@@ -14,14 +21,14 @@
 \chapter{Claim: Simple Trading Rules Beat Buy-and-Hold}
 \label{ch:08}
 
-``The trend is your friend'' is one of the oldest sayings on Wall Street. It tells a trader to buy what has been rising, sell what has been falling, and stay with the move until it ends. To an efficient-markets economist the saying sounds like superstition: if past prices could predict future prices, traders would use them until the prediction disappeared (Section~\ref{sec:01-efficient-markets}). For decades academic studies agreed, finding that technical trading rules did not beat buy-and-hold once costs were counted. 
+``The trend is your friend'' is one of the oldest sayings on Wall Street. It tells a trader to buy what has been rising, sell what has been falling, and stay with the move until it ends. To an efficient-markets economist the saying sounds like superstition: if past prices could predict future prices, traders would use them until the prediction disappeared (Section~\ref{sec:01-efficient-markets}). For decades academic studies agreed, finding that technical trading rules, which are rules based only on past prices and trading volume and are often read from price charts, did not beat buy-and-hold once costs were counted. 
 
 Brock, Lakonishok and LeBaron (1992) reopened the question. They tested two families of simple rules on daily prices of the Dow Jones Industrial Average from 1897 to 1986, about 90 years of data. 
 \begin{itemize}
 \item \textbf{Moving-average rules}\index{moving-average rule} compare a short moving average of the price, over 1 to 5 days, with a long one, over 50 to 200 days. They buy when the short average rises above the long one and sell when it falls below, so they stay invested while the trend is up and step aside when it turns down (Figure~\ref{fig:06-ma-rule}). 
 \item \textbf{Breakout rules}\index{breakout rule} buy when the price rises above its highest level of the past few months, and sell when it falls below its lowest level (Figure~\ref{fig:06-breakout-rule}).
 \end{itemize}
-Across 26 versions of these rules, the days that followed a buy signal earned much more than the days that followed a sell signal, a gap that standard models of random prices could not reproduce.
+Across 26 versions of these rules, the days that followed a buy signal earned much more than the days that followed a sell signal, a gap that standard models of random prices could not reproduce. Many financial websites still draw the 50-day and 200-day moving averages on their stock charts, so the rules they tested are ones that ordinary investors see every day.
 
 \providecolor{fenavy}{HTML}{1B2A6B}
 \providecolor{feorange}{HTML}{B8481C}
@@ -43,7 +50,7 @@ Across 26 versions of these rules, the days that followed a buy signal earned mu
 \draw[fenavy, thin] (axis cs:406,117.48) -- (axis cs:431,103.5) node[anchor=north west, inner sep=1pt, font=\footnotesize] {buy: short crosses above long};
 \end{axis}
 \end{tikzpicture}
-\caption{The moving-average rule applied to a simulated price. The rule holds the asset (shaded) while a short average of the price (5 days) is above a long one (150 days). It rides the long rise and avoids most of the fall, but it acts only after each turn has begun.}
+\caption{A moving-average rule stays invested while the trend is up and steps aside when it turns down, but always a little late. The moving-average rule applied to a simulated price. The rule holds the asset (shaded) while a short average of the price (5 days) is above a long one (150 days). It rides the long rise and avoids most of the fall, but it acts only after each turn has begun.}
 \label{fig:06-ma-rule}
 \end{figure}
 
@@ -65,14 +72,14 @@ Across 26 versions of these rules, the days that followed a buy signal earned mu
 \draw[fenavy, thin] (axis cs:368,115.74) -- (axis cs:393,93.7) node[anchor=north west, inner sep=1pt, font=\footnotesize] {buy: breaks above 50-day high};
 \end{axis}
 \end{tikzpicture}
-\caption{The breakout rule applied to the same simulated price as in Figure~\ref{fig:06-ma-rule}. The rule buys when the price rises above its highest level of the previous 50 days and sells when it falls below its lowest level; shaded periods are the days it holds the asset. Like the moving-average rule, it acts only after each turn has begun, but in this example it reacts sooner.}
+\caption{A breakout rule buys new highs and sells new lows. The breakout rule applied to the same simulated price as in Figure~\ref{fig:06-ma-rule}. The rule buys when the price rises above its highest level of the previous 50 days and sells when it falls below its lowest level; shaded periods are the days it holds the asset. Like the moving-average rule, it acts only after each turn has begun, but in this example it reacts sooner.}
 \label{fig:06-breakout-rule}
 \end{figure}
 
 
-The finding mattered because it challenged the weak form of market efficiency with rules anyone could follow, and because a large industry already traded on such rules. It also raised a methodological problem that became central to empirical finance. Trend rules come in thousands of variants, and any of them can be tuned on the past. Sullivan, Timmermann and White (1999) applied White's Reality Check, a test that accounts for the whole universe of rules a researcher might have tried, and found that the best rule's success on the Dow did not carry into the following decade. Moskowitz, Ooi and Pedersen (2012) then documented \emph{time-series momentum} in 58 futures markets, and Huang, Li, Wang and Zhou (2020) questioned how strong that evidence is once each market is tested on its own.
+The finding mattered because it challenged the weak form of market efficiency (Section~\ref{sec:01-efficient-markets}), the idea that past prices cannot predict future returns, with rules anyone could follow, and because a large industry already traded on such rules. It also raised a methodological problem that became central to empirical finance. Trend rules come in thousands of variants, and any of them can be tuned on the past, so the rules of Brock, Lakonishok and LeBaron might simply be the best survivors of a long search. Sullivan, Timmermann and White (1999) applied White's Reality Check, a test that accounts for the whole universe of rules a researcher might have tried, and found that the best rule's success on the Dow did not carry into the following decade. Moskowitz, Ooi and Pedersen (2012) then asked whether trends exist across markets in general and documented \emph{time-series momentum} in 58 futures markets. Because that evidence came mainly from a pooled test, Huang, Li, Wang and Zhou (2020) questioned how strong it is once each market is tested on its own.
 
-The implications are practical. Managed-futures funds, often called commodity trading advisors, run large sums on trend rules and market them as protection in crises, so whether trends are real decides whether their investors are paid for anything. For research, the chapter shows how to judge a claim that was found by searching. The claim on trial\index{claims-on-trial method} is: \textbf{simple trend rules on an asset's own past prices earn returns that survive a full accounting for the number of rules tried.}
+The implications are practical. Managed-futures funds, often called commodity trading advisors, which are professional funds that trade futures contracts in many markets, run large sums on trend rules and market them as protection in crises, so whether trends are real decides whether their investors are paid for anything. For research, the chapter shows how to judge a claim that was found by searching. The claim on trial\index{claims-on-trial method} is: \textbf{simple trend rules on an asset's own past prices earn returns that survive a full accounting for the number of rules tried.}
 
 The lab in Section~\ref{sec:08-lab} replicates the 26 rules of Brock, Lakonishok and LeBaron (1992) on the free daily U.S. market series of the Kenneth R. French Data Library since 1926, applies the Reality Check of Sullivan, Timmermann and White (1999) to the full rule universe, and rebuilds the time-series momentum of Moskowitz, Ooi and Pedersen (2012) with AQR's free factor data and FRED series, in order to check whether trend signals still predict returns after data snooping, costs and publication.
 
@@ -86,6 +93,10 @@ By the end of the chapter you will be able to:
   \item explain why trend following resembles owning a straddle\index{straddle};
   \item test the claim after publication, after costs and asset by asset.
 \end{itemize}
+
+\begin{callout}
+\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain statistical details, and you can skip them without losing the thread. The Lab, the robustness checks and the lab extensions are written for readers who want to run the Python code themselves.
+\end{callout}
 
 \section{Foundations: technical rules and time-series momentum}
 \label{sec:08-foundations}
@@ -129,12 +140,16 @@ where $\sigma^s_t$ is the asset's annualized volatility estimated with data up t
 
 \subsection{Volatility targeting across assets}
 
-A trend-following portfolio may hold a Treasury bond, whose volatility is about 5\% a year, next to crude oil, whose volatility can exceed 40\%. If both received the same dollar amount, oil would dominate the portfolio's risk. \textbf{Volatility targeting}\index{volatility targeting|textbf} sizes each position so that each contributes about the same risk. Moskowitz, Ooi and Pedersen estimate each asset's variance with an exponentially weighted average of past squared daily returns,
+A trend-following portfolio may hold a Treasury bond, whose volatility is about 5\% a year, next to crude oil, whose volatility can exceed 40\%. If both received the same dollar amount, oil would dominate the portfolio's risk. \textbf{Volatility targeting}\index{volatility targeting|textbf} sizes each position so that each contributes about the same risk. In plain words, a calm market such as government bonds gets a large position and a wild one such as oil gets a small one, so that neither dominates. The shaded box shows how the risk of each market is estimated.
+
+\begin{technote}
+\textbf{Technical note: estimating each market's volatility.} Moskowitz, Ooi and Pedersen estimate each asset's variance with an exponentially weighted average of past squared daily returns,
 \begin{equation}
   \left(\sigma^s_t\right)^2 = 261 \sum_{i=0}^{\infty} (1-\delta)\,\delta^i \left(r^s_{t-1-i} - \bar r^s_t\right)^2,
   \label{eq:08-ewma}
 \end{equation}
 where 261 annualizes a daily variance and $\delta$ is chosen so that the average age of the data, $\delta/(1-\delta)$, is 60 days. This is the EWMA estimator that Chapter~\ref{ch:10} develops further. The position in Equation~\eqref{eq:08-tsmom} is then $40\%/\sigma^s_t$, which targets an annual volatility of 40\% for each asset. With dozens of assets that do not move together, the diversified portfolio's volatility is far lower, about 12\% a year in their sample.
+\end{technote}
 
 Two rules keep the test honest. The volatility estimate must use only data available before the position is taken, and the target must be fixed in advance, not chosen after seeing which value worked best.
 
@@ -142,9 +157,15 @@ Two rules keep the test honest. The volatility estimate must use only data avail
 
 A single rule tested once is one hypothesis. Technical analysis offers thousands: every pair of window lengths, every band, every holding period and every family of rules. Sullivan, Timmermann and White (1999) built a universe of 7,846 rules from five families: filter rules, moving averages, support and resistance, channel breakouts and on-balance volume. The best rule in such a universe will look good by chance alone, exactly as the best of 1,000 random strategies did in Lab~\ref{ch:01}.
 
-White's Reality Check (Section~\ref{sec:09-reality}) answers the right question: could the best rule have done this well if no rule had any real ability? It compares the best rule's performance with the distribution of the \emph{best} performance across all rules in bootstrap samples where the true performance of every rule is set to zero. The bootstrap must keep the dependence in daily returns, so it resamples blocks of days; Sullivan, Timmermann and White used the stationary bootstrap of Politis and Romano (1994), with blocks of random length averaging ten days.
+White's Reality Check (Section~\ref{sec:09-reality}) answers the right question: could the best rule have done this well if no rule had any real ability? The answer is reported as a $p$-value, the probability that luck alone would produce a best rule this good, so a small $p$-value is evidence of real ability. The shaded box explains how the test and its successor work.
+
+\begin{technote}
+\textbf{Technical note: the Reality Check and the SPA test.} The Reality Check compares the best rule's performance with the distribution of the \emph{best} performance across all rules in bootstrap samples where the true performance of every rule is set to zero. The bootstrap must keep the dependence in daily returns, so it resamples blocks of days; Sullivan, Timmermann and White used the stationary bootstrap of Politis and Romano (1994), with blocks of random length averaging ten days.
 
 The Reality Check has one weakness. Adding many hopeless rules to the universe makes it harder to declare the best rule significant, even though the hopeless rules are irrelevant. Hansen's (2005) \textbf{Superior Predictive Ability} (SPA) test\index{SPA test|textbf} fixes this. It divides each rule's average performance by its own standard error, and it largely ignores rules that clearly do worse than the benchmark when it builds the null distribution. The SPA test therefore has more power when a universe contains many poor rules, which is the usual case.
+\end{technote}
+
+\noindent\textbf{In plain terms.} Trend rules are simple: own an asset while its price has been rising and get out, or bet against it, when the price has been falling. Because there are thousands of ways to write such a rule, the best-looking rule in a backtest is bound to look good partly by luck, and special tests are needed to judge whether it is better than that.
 
 \section{How it works}
 \label{sec:08-how}
@@ -157,9 +178,11 @@ The Reality Check has one weakness. Adding many hopeless rules to the universe m
   \item \textbf{Investors who do not trade for profit.} Central banks smooth exchange rates and interest rates, and hedgers such as airlines and farmers trade to reduce risk rather than to earn a return. Their trades can slow the adjustment of prices. Moskowitz, Ooi and Pedersen found that speculators in futures markets tend to follow trends, and that they profit at the expense of hedgers.
 \end{itemize}
 
-\textbf{Why trend following likes extreme markets.} A trend rule is long after prices have risen and short after they have fallen. In a long, steady decline, such as 2008 or the bear markets of the 1970s, it turns short early and profits as the decline continues. In a long, steady rise it is long. It loses in markets that move back and forth, when every signal arrives just before the price turns. The payoff therefore looks like that of an option \textbf{straddle}\index{straddle|textbf}, a combination of a call and a put that profits from a large move in either direction. Fung and Hsieh (2001) first described trend followers' returns in these terms. Moskowitz, Ooi and Pedersen confirmed the pattern: regressing the strategy's quarterly return on the market's return and its square gave an insignificant linear term and a significant positive square term, a ``smile.''
+\textbf{Why trend following likes extreme markets.} A trend rule is long after prices have risen and short after they have fallen. In a long, steady decline, such as 2008 or the bear markets of the 1970s, it turns short early and profits as the decline continues. In a long, steady rise it is long. It loses in markets that move back and forth, when every signal arrives just before the price turns. The payoff therefore looks like that of an option \textbf{straddle}\index{straddle|textbf}, a combination of a call and a put that profits from a large move in either direction. A call option pays off when a price rises past a set level, and a put pays off when it falls past one, so owning both pays when prices move a lot in either direction. Fung and Hsieh (2001) first described trend followers' returns in these terms. Moskowitz, Ooi and Pedersen confirmed the pattern: regressing the strategy's quarterly return on the market's return and its square gave an insignificant linear term and a significant positive square term, a ``smile.''
 
 The straddle pattern explains the appeal of trend following as a \textbf{diversifier}\index{diversification}. It tends to do well when a stock portfolio does badly over several months. The pattern has a limit: a straddle profits from large moves that last long enough for the rule to react. A sudden one-day crash, such as October 1987, or a sharp turn, such as March 2009, can hurt a trend follower who was positioned the other way.
+
+\noindent\textbf{In plain terms.} Trend following tends to profit from long, steady moves in either direction, including long market declines, and to lose money when markets chop back and forth. That pattern is why many investors hold it as a form of insurance for a stock portfolio, while knowing it cannot protect against a sudden one-day crash.
 
 \section{The claim}
 \label{sec:08-claim}
@@ -188,7 +211,7 @@ Brock, Lakonishok and LeBaron\index{Brock, Lakonishok and LeBaron|textbf} tested
 
 The results were striking for their time. Returns after buy signals were consistently higher than returns after sell signals. For the fixed-length rules, the average ten-day return after a buy signal was about 0.53\%, the average after a sell signal was about $-0.40\%$, and the average ten-day return over the whole sample was 0.17\%. Returns after sell signals were also more volatile. A negative expected return after sell signals is hard to explain with any model in which investors are paid for risk.
 
-The authors used a bootstrap to check the results. They fitted four standard models of returns to the data, a random walk, an AR(1), a GARCH-in-mean and an exponential GARCH, simulated many artificial Dow histories from each, and applied the rules to the simulated data. None of the four models produced the buy--sell differences seen in the real data.
+The authors used a bootstrap to check the results. They fitted four standard models of returns to the data, a random walk, an AR(1), a GARCH-in-mean and an exponential GARCH, which range from purely random price changes to models in which volatility rises and falls over time, simulated many artificial Dow histories from each, and applied the rules to the simulated data. None of the four models produced the buy--sell differences seen in the real data.
 
 \subsection{Sullivan, Timmermann and White (1999)}
 
@@ -200,11 +223,11 @@ The ten years after the original sample told a different story. From 1987 to 199
 
 \subsection{Moskowitz, Ooi and Pedersen (2012) and Hurst, Ooi and Pedersen (2017)}
 
-Moskowitz, Ooi and Pedersen\index{Moskowitz, Ooi and Pedersen|textbf} moved the question from one stock index to many markets. They studied 58 liquid futures and forward contracts: 24 commodities, 12 currency pairs, 9 equity indices and 13 government bond futures. Their price data begin in 1965, and they evaluated the strategy from 1985 to 2009, when many more markets were available.
+Moskowitz, Ooi and Pedersen\index{Moskowitz, Ooi and Pedersen|textbf} moved the question from one stock index to many markets. They studied 58 liquid futures and forward contracts, meaning contracts that trade in large volumes and can be bought and sold cheaply: 24 commodities, 12 currency pairs, 9 equity indices and 13 government bond futures. Their price data begin in 1965, and they evaluated the strategy from 1985 to 2009, when many more markets were available.
 
 Three findings stand out. First, in a pooled regression of each asset's volatility-scaled monthly return on its own past returns, the coefficients were positive for the first twelve months of past returns and mostly negative beyond, so trends persisted for about a year and then partly reversed. Second, the twelve-month strategy of Equation~\eqref{eq:08-tsmom} had a positive average return in every one of the 58 contracts, and 52 were significant at the 5\% level. Third, the diversified portfolio had a Sharpe ratio above one and an alpha of about 1.6\% a month against a global stock index and the size, value and momentum factors. It performed best in extreme market quarters, up or down.
 
-Hurst, Ooi and Pedersen (2017) pushed the test back in time. They combined one-, three- and twelve-month signals in 67 markets, including commodities, equity indices, bond markets and currency pairs, and simulated the strategy from 1880 to 2016, with higher assumed trading costs in the early decades and after a 2\% management fee and a 20\% performance fee. The strategy earned positive returns in every decade, had low correlations with stocks and bonds, and made money in most of the ten largest drawdowns of a 60/40 stock--bond portfolio.
+Hurst, Ooi and Pedersen (2017) pushed the test back in time. They combined one-, three- and twelve-month signals in 67 markets, including commodities, equity indices, bond markets and currency pairs, and simulated the strategy from 1880 to 2016, with higher assumed trading costs in the early decades and after a 2\% management fee and a 20\% performance fee, the typical fees of a hedge fund, which take 2\% of the money each year plus a fifth of any profit. The strategy earned positive returns in every decade, had low correlations with stocks and bonds, and made money in most of the ten largest drawdowns of a 60/40 stock--bond portfolio, the classic mix of 60\% stocks and 40\% bonds, where a drawdown is a fall from a previous peak.
 
 \subsection{Huang, Li, Wang and Zhou (2020)}
 
@@ -217,6 +240,8 @@ Huang, Li, Wang and Zhou\index{time-series momentum!critique} challenged the sta
 \end{itemize}
 
 Their conclusion was that the strategy is profitable but that the profit need not come from trends. Defenders of trend following reply that the strategy's value lies in its behavior in crises, not only in its average return, and that a diversified portfolio of weak signals can be valuable even when each signal is hard to detect on its own (Section~\ref{sec:08-stress}).
+
+\noindent\textbf{In plain terms.} Simple trend rules on the Dow looked impressive for most of the twentieth century but stopped working once they were tested on the years after their discovery. Trend following across dozens of markets has a better record and has often made money in long market declines, but critics argue that part of its profit comes simply from holding assets that tend to rise over time.
 
 \section{Lab~\thechapter: Replicating Brock--Lakonishok--LeBaron and Moskowitz--Ooi--Pedersen}
 \label{sec:08-lab}
@@ -250,7 +275,7 @@ The full-sample results can hide weaknesses. The checks below test the claim und
 
 \textbf{3. Asset by asset or pooled.} A pooled test can find a significant result when no single asset is significant, and Huang and coauthors argue that this is what happened. The answer depends on what the investor holds. An investor who trades a single market needs that market to be predictable. An investor who holds a diversified portfolio of fifty markets benefits from many weak signals combined, in the same way that Chapter~\ref{ch:01} showed a higher Sharpe ratio requires fewer years to detect. The lab reports both views.
 
-\textbf{4. Is it trend or carry?} The time-series history strategy of Huang and coauthors earns its return by holding assets that have had positive average returns, mainly stocks and bonds. If trend following's return over a long sample is mostly that, then its value lies elsewhere: in its tendency to turn short during long declines. Part D tests that tendency directly.
+\textbf{4. Is it trend or carry?} Here \emph{carry} means the return an investor earns simply by holding an asset that tends to pay off on average, as stocks and bonds have. The time-series history strategy of Huang and coauthors earns its return by holding assets that have had positive average returns, mainly stocks and bonds. If trend following's return over a long sample is mostly that, then its value lies elsewhere: in its tendency to turn short during long declines. Part D tests that tendency directly.
 
 \textbf{5. Data snooping in the defense.} The one-, three- and twelve-month windows, the 40\% target and the 60-day volatility estimate are themselves choices. They were made by researchers who knew the history. The lab lets readers vary each choice and reports how sensitive the results are, in the spirit of the robustness grids in Chapter~\ref{ch:24}.
 
@@ -336,12 +361,13 @@ The evidence in Section~\ref{sec:08-verdict} suggests several practical lessons.
   \item Explain why the payoff of a trend-following strategy resembles an option straddle. When does the analogy break down?
   \item Why does adding many poor rules to a universe make White's Reality Check less powerful, and how does Hansen's SPA test address the problem?
   \item Huang and coauthors' time-series history strategy needs no predictability. Explain how it can still earn a positive return.
+  \item A newsletter claims that its moving-average signal ``would have avoided every major crash since 1950.'' Without any calculation, list the questions from this chapter you would ask before following its signals with your own savings.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
-  \setcounter{enumi}{5}
+  \setcounter{enumi}{6}
   \item In Part A, charge 0.1\% for every switch between long and short and trade at the next day's close. How many of the 26 rules still beat buy-and-hold after 1986?
   \item In Part B, double the size of the rule universe by adding filter rules. How do the Reality Check and SPA $p$-values of the best rule change?
   \item In Part C, split the post-2009 period into 2010--2021 and 2022 to the present. How much of the post-publication return comes from 2022?

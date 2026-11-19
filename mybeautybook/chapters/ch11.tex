@@ -13,12 +13,25 @@
 }{}
 \makeatother
 
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
 \chapter{Claim: High-Interest Currencies Depreciate Enough to Offset Their Yield}
 \label{ch:06}
 
-When the Bretton Woods system of fixed exchange rates ended in 1973, currencies began to float, and economists gained a new laboratory. Suppose investors care only about expected returns. Then a currency that pays a higher interest rate must be expected to fall by just enough to cancel its extra yield. Otherwise everyone would borrow in the low-rate currency and lend in the high-rate one until the opportunity disappeared. This idea is called \textbf{uncovered interest parity}\index{uncovered interest parity (UIP)|textbf}, and much of international macroeconomics rests on it. Fama (1984) tested it with the floating exchange rates of the 1970s. Instead of finding that high-interest currencies fell, as the theory predicts, he found that they tended to rise.
+Banks in some countries pay far more interest on savings than banks in others. A saver might reasonably ask why she should not simply keep her money wherever interest is highest. The catch is that the money must be converted into another currency and back again, and exchange rates move. This chapter asks whether the exchange rate quietly takes back the extra interest, as economic theory says it should.
 
-This result became known as the \textbf{forward premium puzzle}\index{forward premium puzzle}, one of the most persistent findings in finance. It has a practical counterpart in the \textbf{carry trade}\index{carry trade}: borrowing in a low-interest currency to invest in a high-interest one. In 2007 a Japanese household could borrow yen at less than 1\% and deposit Australian dollars at more than 6\%. Japanese retail investors, nicknamed ``Mrs.\ Watanabe,'' did so on a large scale, alongside hedge funds. Later research asked why the trade pays. Brunnermeier, Nagel and Pedersen (2008) showed that it suffers sudden crashes when the borrowed currency, such as the yen, jumps in value. Lustig, Roussanov and Verdelhan (2011) grouped currencies by their interest rates and found a common risk that explains much of the return.
+When the Bretton Woods system of fixed exchange rates, the postwar arrangement in which major currencies were pegged to the U.S. dollar, ended in 1973, currencies began to float, and economists gained a new laboratory. Suppose investors care only about expected returns. Then a currency that pays a higher interest rate must be expected to fall by just enough to cancel its extra yield. Otherwise everyone would borrow in the low-rate currency and lend in the high-rate one until the opportunity disappeared. This idea is called \textbf{uncovered interest parity}\index{uncovered interest parity (UIP)|textbf}, and much of international macroeconomics rests on it. Fama (1984) tested it with the floating exchange rates of the 1970s. Instead of finding that high-interest currencies fell, as the theory predicts, he found that they tended to rise.
+
+This result became known as the \textbf{forward premium puzzle}\index{forward premium puzzle}, one of the most persistent findings in finance. It has a practical counterpart in the \textbf{carry trade}\index{carry trade}: borrowing in a low-interest currency to invest in a high-interest one. In 2007 a Japanese household could borrow yen at less than 1\% and deposit Australian dollars at more than 6\%. Japanese retail investors, nicknamed ``Mrs.\ Watanabe,'' did so on a large scale, alongside hedge funds. Later research asked why the trade pays. Brunnermeier, Nagel and Pedersen (2008) showed that it suffers sudden crashes when the borrowed currency, such as the yen, jumps in value. To see whether high-interest currencies share a common risk, Lustig, Roussanov and Verdelhan (2011) grouped currencies by their interest rates and found a common risk that explains much of the return.
 
 
 
@@ -138,7 +151,7 @@ This result became known as the \textbf{forward premium puzzle}\index{forward pr
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{USD/JPY spot rate and implied one-year forward rate, 2016--2026. 
+\caption{When U.S. interest rates are higher than Japan's, the dollar's forward rate sits below its spot rate. USD/JPY spot rate and implied one-year forward rate, 2016--2026. 
 It quotes the exchange rate as yen per dollar, the usual market convention, which is the inverse of the $S$ used in this chapter. A rise in the plotted line therefore means that the dollar has appreciated and the yen has depreciated, so $S$ has fallen.
 The forward rate comes from covered interest parity. It lies below the spot rate because U.S. interest rates exceed Japanese rates, and the gap widened after the Federal Reserve began raising rates in 2022.}
 \label{fig:06-usdjpy}
@@ -157,6 +170,10 @@ By the end of the chapter you will be able to:
   \item compare the explanations for the puzzle and the evidence for each;
   \item judge what a currency carry fund is paid for and how it loses money.
 \end{itemize}
+
+\begin{callout}
+\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain algebraic derivations, and you can skip them without losing the thread. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
+\end{callout}
 
 \section{Foundations: exchange rates, forwards and interest parity}
 \label{sec:06-foundations}
@@ -197,12 +214,16 @@ Every rate on both routes is known today, so neither route carries any currency 
   \label{eq:06-cip}
 \end{equation}
 
-The condition is easier to read in logs. Let $f = \ln F$ and $s = \ln S$. Taking logs of both sides of Equation~\eqref{eq:06-cip} and using the approximation $\ln(1+x) \approx x$, which is accurate when $x$ is small, gives
+In words, covered interest parity says that the forward rate differs from today's rate by exactly the gap between the two countries' interest rates, so hedging a foreign deposit removes its extra interest. The shaded box shows the algebra.
+
+\begin{technote}
+\textbf{Technical note: covered interest parity in logs.} The condition is easier to read in logs. Let $f = \ln F$ and $s = \ln S$. Taking logs of both sides of Equation~\eqref{eq:06-cip} and using the approximation $\ln(1+x) \approx x$, which is accurate when $x$ is small, gives
 \begin{equation}
   f - s = \ln(1+i) - \ln(1+i^*) \approx i - i^*.
   \label{eq:06-cip-log}
 \end{equation}
 The left side is approximately the percentage gap between the forward rate and the spot rate, and the right side is the gap between the two interest rates. Covered interest parity therefore says that the forward rate differs from the spot rate by exactly the interest-rate differential. When the dollar rate is higher than the foreign rate, $F$ is above $S$, so the dollar buys less foreign currency in the forward market than in the spot market. This shortfall, called the \textbf{forward discount}\index{forward discount|textbf} on the dollar, takes back the extra interest that dollar deposits earn. The interest rates $i$ and $i^*$ must cover the same period as the forward contract, so a one-year forward rate is compared with one-year interest rates.
+\end{technote}
 
 
 Figure~\ref{fig:06-usdjpy} shows the parity at work. The ratio $159.80/155.28 \approx 1.029$ implies that the one-year dollar rate exceeded the yen rate by about 2.9 percentage points. An investor who holds dollars earns that extra interest, and the lower forward rate takes it back when the dollars are converted, so hedged dollars and hedged yen pay the same. The figure also shows how the gap follows interest rates. From 2016 to 2021, when interest rates in both countries were close to zero, the forward rate stayed close to the spot rate. After the Federal Reserve began raising rates in March 2022, while Japanese rates stayed far lower, the gap widened to several yen.
@@ -271,7 +292,7 @@ Figure~\ref{fig:06-uip} shows the difference with the numbers of the worked exam
   \draw[arr, gray] (audend.south) -- (audend.south |- uip.north);
 \end{tikzpicture}%
 }
-\caption{Uncovered interest parity, with the numbers of the worked example: one year, a spot rate of \$0.70 per Australian dollar, 1\% in U.S. dollars and 5\% in Australian dollars. The Australian route is not hedged, so its dollar payoff depends on next year's spot rate $S_1$. UIP says that investors expect the Australian dollar to fall to the forward rate of about \$0.673, so the two routes have the same expected payoff. Only the U.S. route is certain.}
+\caption{Uncovered interest parity says the risky foreign route and the safe home route should pay the same on average. Uncovered interest parity, with the numbers of the worked example: one year, a spot rate of \$0.70 per Australian dollar, 1\% in U.S. dollars and 5\% in Australian dollars. The Australian route is not hedged, so its dollar payoff depends on next year's spot rate $S_1$. UIP says that investors expect the Australian dollar to fall to the forward rate of about \$0.673, so the two routes have the same expected payoff. Only the U.S. route is certain.}
 \label{fig:06-uip}
 \end{figure}
 
@@ -298,6 +319,8 @@ Here $s$ is the log of the number of dollars per unit of foreign currency, so $\
     \item if the rate falls 10\% to \$0.63, the proceeds are \$945,000 and the loss is \$65,000.
   \end{itemize}
 \end{itemize}
+
+\noindent\textbf{In plain terms.} A forward contract locks in today the exchange rate for a future trade, and arbitrage forces it to cancel exactly the interest gap between two currencies. Uncovered interest parity makes the bolder claim that, even without a forward contract, a high-interest currency will on average fall by just enough to cancel its extra interest. The carry trade is a bet that it will not.
 
 \begin{figure}[htbp]
 \centering
@@ -328,7 +351,7 @@ Here $s$ is the log of the number of dollars per unit of foreign currency, so $\
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Profit on the worked example's carry trade against the spot rate a year later. The trade earns \$40,000 if the Australian dollar is unchanged, breaks even at the UIP forecast of \$0.673, and loses \$65,000 if the currency falls 10\%.}
+\caption{The carry trade profits if the high-interest currency holds its value and loses if it falls far enough. Profit on the worked example's carry trade against the spot rate a year later. The trade earns \$40,000 if the Australian dollar is unchanged, breaks even at the UIP forecast of \$0.673, and loses \$65,000 if the currency falls 10\%.}
 \label{fig:06-carry}
 \end{figure}
 
@@ -340,7 +363,10 @@ UIP can be tested in two ways: one currency at a time, or across many currencies
 
 \subsection{The Fama regression.} 
 
-Testing UIP runs into a measurement problem. UIP is a claim about the depreciation that investors expect:
+The test is a regression of how much each currency actually moved on how much its interest rate differed from the dollar's. If UIP holds, the slope of that regression should be 1. The shaded box explains why.
+
+\begin{technote}
+\textbf{Technical note: from expectations to a regression.} Testing UIP runs into a measurement problem. UIP is a claim about the depreciation that investors expect:
 \begin{equation}
   E_t[\Delta s_{t+1}] = i_t - i^*_t,
   \label{eq:06-uip-expected}
@@ -356,6 +382,7 @@ where the forecast error $e_{t+1}$ cannot be predicted from anything known at ti
   \label{eq:06-fama}
 \end{equation}
 should therefore find $a = 0$ and $b = 1$. The regression turns an untestable statement about expectations into a testable claim about data.
+\end{technote}
 
 Fama (1984) also had an important question in mind. Because $i_t - i^*_t \approx f_t - s_t$ by covered interest parity, the regression asks whether the forward rate is an unbiased forecast of the future spot rate, which was a central question about market efficiency. If the answer is no, the forward discount must contain something besides expected depreciation, namely a risk premium. Fama used the estimated $b$ to show that this premium must be large, must vary over time, and must move opposite to expected depreciation.
 
@@ -420,7 +447,7 @@ Under UIP, $a = 0$ and $b = 1$, so the interest-rate differential cannot predict
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Three readings of the Fama regression. The horizontal axis is $i^* - i$, the negative of the differential in Equation~\eqref{eq:06-fama}, so each line has slope $-b$. Under UIP ($b = 1$), a high-interest currency falls by its interest advantage. Under a random walk ($b = 0$), it does not move, and under the typical estimate ($b \approx -0.9$, Froot and Thaler 1990), it rises. The carry trade's expected return is the vertical distance above the UIP line. At an advantage of 3 points, it is zero under UIP, 3\% under a random walk, and 5.7\% under the typical estimate.}
+\caption{In practice, high-interest currencies have tended to rise rather than fall, the opposite of what the theory predicts. Three readings of the Fama regression. The horizontal axis is $i^* - i$, the negative of the differential in Equation~\eqref{eq:06-fama}, so each line has slope $-b$. Under UIP ($b = 1$), a high-interest currency falls by its interest advantage. Under a random walk ($b = 0$), it does not move, and under the typical estimate ($b \approx -0.9$, Froot and Thaler 1990), it rises. The carry trade's expected return is the vertical distance above the UIP line. At an advantage of 3 points, it is zero under UIP, 3\% under a random walk, and 5.7\% under the typical estimate.}
 \label{fig:06-fama}
 \end{figure}
 
@@ -435,6 +462,8 @@ Under UIP, $a = 0$ and $b = 1$, so the interest-rate differential cannot predict
 \end{itemize}
 
 The three explanations leave different fingerprints. A risk premium should show up as losses in bad times for the world economy. Crash risk should show up as negative skewness, with losses concentrated in a few episodes. Slow adjustment should show up as a premium that shrinks over time and does not depend on market conditions.
+
+\noindent\textbf{In plain terms.} Economists test the theory by checking whether currencies with high interest rates really do fall afterward. If they do not, the extra interest is either payment for a risk, compensation for occasional crashes, or a sign that markets adjust slowly, and each explanation predicts a different pattern of gains and losses.
 
 
 \section{The claim}
@@ -463,11 +492,13 @@ To test it, three points need to be settled:
 
 \textbf{Peso problems.}\index{peso problem|textbf} Another possible explanation is that the high returns pay for rare disasters that have not yet appeared in the data, a \textbf{peso problem}. Burnside, Eichenbaum, Kleshchelski and Rebelo (2011) tested this by buying currency options that protect carry positions against crashes. The protected trade still earned a substantial return. They concluded that rare disasters could explain the premium only if the market prices them far above their likely cost.
 
+\noindent\textbf{In plain terms.} Since the 1980s, study after study has found that high-interest currencies did not fall enough to cancel their extra interest, and often rose instead. The carry trade has therefore made money on average, but it loses heavily and suddenly in global panics, which is what most researchers think the extra return pays for.
+
 \section{Lab~\thechapter: Replicating Fama (1984) and Lustig, Roussanov and Verdelhan (2011)}
 \label{sec:06-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:06} at a glance.} \emph{Papers replicated:} the Fama (1984) regression; the carry portfolios of Lustig, Roussanov and Verdelhan (2011). \emph{Claim on trial\index{claims-on-trial method}:} high-interest currencies fall enough to cancel their extra yield. \emph{Data:} free monthly data from FRED\index{FRED}: the Federal Reserve's exchange rates for nine currencies (yen, pound, Swiss franc, Canadian, Australian and New Zealand dollars, Swedish krona and Norwegian krone, and the euro from 1999) and OECD three-month interbank rates for each country and the United States. The VIX and the Fama--French\index{Fama--French factors} market factor are optional. \emph{Code:} runs as a script (\texttt{python lab18.py}) or as a notebook with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:06} at a glance.} \emph{Papers replicated:} the Fama (1984) regression; the carry portfolios of Lustig, Roussanov and Verdelhan (2011). \emph{Claim on trial\index{claims-on-trial method}:} high-interest currencies fall enough to cancel their extra yield. \emph{Data:} free monthly data from FRED\index{FRED}: the Federal Reserve's exchange rates for nine currencies (yen, pound, Swiss franc, Canadian, Australian and New Zealand dollars, Swedish krona and Norwegian krone, and the euro from 1999) and OECD three-month interbank rates, the interest rates banks charge one another, for each country and the United States. The VIX and the Fama--French\index{Fama--French factors} market factor are optional. \emph{Code:} runs as a script (\texttt{python lab18.py}) or as a notebook with a prediction prompt before each step.
 \end{callout}
 
 \textbf{Part A, Fama regressions.} For each currency, the lab regresses the monthly change in the log exchange rate (dollars per unit of foreign currency) on last month's U.S.-minus-foreign interest gap, with Newey--West\index{standard error!Newey--West (HAC)} standard errors. It also estimates a single slope for all currencies together (Lab Figure~\ref{ch:06}.1).
@@ -563,7 +594,7 @@ The evidence in Section~\ref{sec:06-verdict} suggests several practical lessons.
 
 \textbf{What a currency carry fund earns.} A carry strategy collects the differences in interest rates between currencies, and keeps them as long as exchange rates do not move against it. In calm years it delivers modest, steady gains. Its risk is not spread evenly over time. Most of its losses come in a few months of global stress, when high-yielding currencies fall together and the borrowed currencies, above all the yen and the Swiss franc, rise.
 
-\textbf{How it loses money.} Carry crashes are fast. They begin when something forces carry traders who have borrowed heavily to cut their positions: a rise in volatility, a margin call\index{margin}, or a surprise from the central bank of a borrowed currency. Their selling pushes high-yielding\index{credit rating} currencies down further, which forces more selling. Spreading the trade across many currency pairs helps little, because the losses come from a common source.
+\textbf{How it loses money.} Carry crashes are fast. They begin when something forces carry traders who have borrowed heavily to cut their positions: a rise in volatility, a margin call\index{margin} (a lender's demand for more collateral), or a surprise from the central bank of a borrowed currency. Their selling pushes high-yielding\index{credit rating} currencies down further, which forces more selling. Spreading the trade across many currency pairs helps little, because the losses come from a common source.
 
 \textbf{Carry in a portfolio.} Because carry tends to lose money when stocks fall, it diversifies a stock portfolio less than its average correlation with stocks suggests. Investors should measure that correlation in bad months, not over the whole sample.
 
@@ -579,7 +610,7 @@ The evidence in Section~\ref{sec:06-verdict} suggests several practical lessons.
 \begin{callout}
 \textbf{What Failed: the yen carry trade, 2008.} In the years before 2008, borrowing yen at interest rates near zero and investing in Australian dollars, New Zealand dollars and other high-yielding currencies was one of the most popular trades in the world, among Japanese retail investors and hedge funds alike. When the financial crisis deepened in the autumn of 2008, carry traders rushed to repay their yen loans at the same time. Between July and late October 2008, the Australian and New Zealand dollars lost more than a third of their value against the yen, wiping out years of interest income in a few weeks.
 
-The episode matched the risk-premium explanation exactly. The trade paid steadily in good times and lost heavily in the worst global downturn in decades, when investors could least afford it. It happened again on a smaller scale in August 2024. After the Bank of Japan raised its policy rate to 0.25\% at the end of July, the yen rose sharply, carry positions were cut, and on August 5 the Nikkei 225 fell 12.4\%.
+The episode matched the risk-premium explanation exactly. The trade paid steadily in good times and lost heavily in the worst global downturn in decades, when investors could least afford it. It happened again on a smaller scale in August 2024. After the Bank of Japan raised its policy rate to 0.25\% at the end of July, the yen rose sharply, carry positions were cut, and on August 5 the Nikkei 225, Japan's main stock index, fell 12.4\%.
 \end{callout}
 
 \section*{Exercises}
@@ -591,12 +622,13 @@ The episode matched the risk-premium explanation exactly. The trade paid steadil
   \item The U.S. one-year rate is 4\% and the Japanese rate is 0.5\%. The spot rate is 150 yen per dollar. Compute the one-year forward rate. Under UIP, what spot rate is expected in a year?
   \item Using the numbers in Exercise 1, compute the return to a dollar-based investor who borrows yen, converts them to dollars and invests at 4\%, if the spot rate stays at 150, moves to the UIP forecast, or falls to 135.
   \item Explain why covered interest parity is enforced by arbitrage but uncovered interest parity is not.
+  \item A friend notices that a foreign bank pays 6\% on savings while her local bank pays 1\%, and plans to move her emergency fund abroad. Without any calculation, explain what risk she would be taking, and when this chapter suggests it would be most likely to hurt her.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
-  \setcounter{enumi}{3}
+  \setcounter{enumi}{4}
   \item Part A: how many currencies have Fama slopes significantly below 1? How many below 0? What is the slope for all currencies together?
   \item Part B: what share of the carry portfolio's interest income was lost to exchange-rate changes? Compare it with what UIP predicts.
   \item Part C: compare carry returns before and after 2008. What happened to the interest gaps?

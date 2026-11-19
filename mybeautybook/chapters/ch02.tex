@@ -10,14 +10,22 @@
     borderline west={2.5pt}{0pt}{gray!70},
     left=8pt, right=8pt, top=4pt, bottom=4pt}%
 }{}
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
 \makeatother
 
 \chapter{Claim: Historical Data Show What a Strategy Would Have Earned}
 \label{ch:02}
 
-Empirical finance became possible only when someone built the data. In the 1960s the Center for Research in Security Prices at the University of Chicago assembled the first comprehensive file of U.S. stock prices, and within a decade tests of market efficiency, the CAPM and investment performance rested on it. Every database, however, embodies choices: which companies are included, how a company that disappears is recorded, and when an accounting number is treated as known. In the 1980s and 1990s researchers discovered that these choices could create results by themselves.
+Many websites will tell you what you would have earned if you had bought a stock ten or twenty years ago, and investment newsletters fill their pages with charts of strategies that ``would have'' doubled your money. Such numbers feel like facts, because they are calculated from real historical prices. Yet a backtest, which is a test of a trading rule on historical data, is only as honest as the data behind it, and the most common mistakes leave no trace in the final chart. This chapter asks whether the free data that anyone can download are good enough to tell us what a strategy would really have earned.
 
-Three findings showed why this matters. Banz (1981) reported that small companies earned higher returns than the CAPM predicted, and the size effect became one of the first famous anomalies. Brown, Goetzmann, Ibbotson and Ross (1992) then showed that a sample containing only the funds that survive can create the appearance of persistent performance where none exists, and Shumway (1997) found that the main research database was missing the final returns of many companies delisted for poor performance, which made small stocks look better than they were. Horowitz, Loughran and Savin (2000) and Schwert (2003) found that the size effect weakened sharply after it was published. The same data that founded the field could also mislead it.
+Empirical finance became possible only when someone built the data. In the 1960s the Center for Research in Security Prices at the University of Chicago assembled the first comprehensive file of U.S. stock prices, and within a decade tests of market efficiency, the CAPM and investment performance rested on it. Chapter~\ref{ch:01} introduced both market efficiency and the CAPM, the model that links an investment's expected return to how strongly it moves with the market. Every database, however, embodies choices: which companies are included, how a company that disappears is recorded, and when an accounting number is treated as known. In the 1980s and 1990s researchers discovered that these choices could create results by themselves.
+
+Three findings showed why this matters. The CAPM says that beta alone determines expected returns, so a company's size should not matter, yet Banz (1981) found that small companies earned higher returns than the CAPM predicted. The size effect became one of the first famous anomalies, which are patterns in returns that the standard theory cannot explain, and it raised the question of whether such patterns were real or products of flawed data. Brown, Goetzmann, Ibbotson and Ross (1992) took up that question for funds, whose surviving records are the easiest to study, and showed that a sample containing only the funds that survive can create the appearance of persistent performance where none exists. Shumway (1997) found a similar problem in stocks: the main research database was missing the final returns of many companies delisted for poor performance, that is, removed from the stock exchange because they were failing, which made small stocks look better than they were. Finally, a genuine reward for risk should outlast its publication, yet Horowitz, Loughran and Savin (2000) and Schwert (2003) found that the size effect weakened sharply after it was published. The same data that founded the field could also mislead it. For an ordinary investor, the lesson is that a historical return can be wrong not because anyone lied, but because of quiet choices about which companies and which dates the data include.
 
 The problems are rarely dramatic. Each one looks like a small technical detail, yet each can add a percentage point or more a year to a strategy's measured return. The most common are the following:
 
@@ -45,6 +53,10 @@ By the end of the chapter you will be able to:
 \end{itemize}
 
 In the lab you will use nearly a century of real market data, together with one controlled simulation, to measure four of these problems. You will see how much each problem can inflate a strategy's apparent performance and how much of that inflation\index{inflation} each fix removes.
+
+\begin{callout}
+\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summary at the end of each major section; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain details that matter mainly to researchers, and you can skip them without losing the thread. The Lab and the lab extensions at the end are written for readers who want to run the Python code themselves.
+\end{callout}
 
 \section{Foundations: where financial data comes from}
 \label{sec:02-foundations}
@@ -116,6 +128,8 @@ A company is \textbf{delisted}\index{delisting|textbf} when its stock stops trad
 
 Companies report their accounting results for a \textbf{fiscal year}\index{fiscal year|textbf}, which is a twelve-month reporting period that does not always end in December. These results are published weeks or months after the year ends, so a company whose fiscal year ends on 31 December may not release its annual report until February or March. A study that treats the figures as known on the last day of the fiscal year, rather than on the day they were published, gives itself information that no investor actually had at the time. \textbf{Point-in-time}\index{data!point-in-time|textbf} data avoids this problem by recording what was known on each date, including the original values of any numbers that were later revised.
 
+\noindent\textbf{In plain terms.} A stock's quoted price is not the same as what its owners earned, because splits and dividends change the price without making anyone richer or poorer. How a portfolio weighs big and small companies decides which companies drive its results. Good data must also remember the companies that failed and must record each number on the date it actually became known.
+
 \section{Measuring returns: choosing the right measure}
 \label{sec:02-returns}
 
@@ -149,7 +163,7 @@ You should therefore use simple returns when you build portfolios and log return
 
 A simple example shows why the choice matters. Suppose an investment gains 50\% in one year and loses 50\% in the next. The arithmetic average is $(50 - 50)/2 = 0$\%, which sounds like breaking even. In fact, \$100 grows to \$150 in the first year and then falls to \$75 in the second, so the investor has lost a quarter of the money. The geometric average, $\sqrt{1.5 \times 0.5} - 1 \approx -13.4$\% a year, matches what actually happened.
 
-Whenever returns vary, the geometric average is lower than the arithmetic average, and the gap between them grows with volatility\index{volatility}. This gap is often called \textbf{volatility drag}\index{volatility drag|textbf}, and it can be estimated with a useful approximation:
+The everyday reason is that losses hurt more than equal gains help: after a 50\% loss, an investment must double just to get back to where it started. Whenever returns vary, the geometric average is lower than the arithmetic average, and the gap between them grows with volatility\index{volatility}. This gap is often called \textbf{volatility drag}\index{volatility drag|textbf}, and it can be estimated with a useful approximation:
 \begin{equation}
   G \approx A - \frac{\sigma^2}{2}
   \label{eq:02-drag}
@@ -201,7 +215,7 @@ where $\sigma$ is the volatility. For a stock index with 20\% annual volatility,
     \node[anchor=west, font=\footnotesize] at (axis cs:27,1.4) {Treasury bills: almost 0};
   \end{axis}
   \end{tikzpicture}
-  \caption{Volatility drag: the gap between the arithmetic and geometric average returns, from Equation~\eqref{eq:02-drag}. The gap is negligible for Treasury bills, about 2 percentage points a year for the stock market and about 6 for small stocks, and it rises with the square of volatility.}
+  \caption{The more an investment swings, the more its simple average return overstates what investors actually earned. Volatility drag: the gap between the arithmetic and geometric average returns, from Equation~\eqref{eq:02-drag}. The gap is negligible for Treasury bills, about 2 percentage points a year for the stock market and about 6 for small stocks, and it rises with the square of volatility.}
   \label{fig:02-drag}
 \end{figure}
 
@@ -211,6 +225,8 @@ where $\sigma$ is the volatility. For a stock index with 20\% annual volatility,
 \item If you quote the arithmetic average as a growth rate, you will overstate what the investor experienced, and the overstatement is largest for the volatile strategies that tend to look most attractive. 
 \item Whenever a source reports an average return, you should check which kind it is. Lab~\ref{ch:02} measures the gap on real portfolios.
 \end{enumerate}
+
+\noindent\textbf{In plain terms.} The same investment can be reported with very different returns, depending on whether dividends are counted, whether the return on safe Treasury bills is subtracted, and how the yearly returns are averaged. Before comparing two numbers, make sure they were measured the same way, and when you want to know how much money an investor actually made, look at the compound (geometric) average.
 
 \section{Research datasets and their free alternatives}
 \label{sec:02-datasets}
@@ -241,7 +257,9 @@ Yahoo Finance and similar & Daily prices for current stocks, ETFs and indexes & 
 \end{tabularx}
 \end{center}
 
-A \textbf{predictor}, also called a \textbf{signal}, is a variable that a study uses to forecast returns, such as a valuation ratio or a past return. The last row of the table deserves particular attention. Free stock-price sites are convenient, but they mostly cover companies that still exist today. A backtest that downloads today's stocks from such a site and runs them through the past therefore has survivorship bias built into it, which is the problem that Section~\ref{sec:02-survivorship} describes.
+A \textbf{predictor}, also called a \textbf{signal}, is a variable that a study uses to forecast returns, such as a valuation ratio or a past return. An ETF, or exchange-traded fund, is a fund whose shares trade on an exchange like a stock, and many ETFs simply track an index. The last row of the table deserves particular attention. Free stock-price sites are convenient, but they mostly cover companies that still exist today. A backtest that downloads today's stocks from such a site and runs them through the past therefore has survivorship bias built into it, which is the problem that Section~\ref{sec:02-survivorship} describes.
+
+\noindent\textbf{In plain terms.} The databases that professional researchers use are expensive, but several free sources are built from them and can be trusted for portfolio-level tests. The free sources to be careful with are the popular stock-price websites, because they mostly show the companies that are still around today.
 
 \section{Survivorship bias: the missing failures}
 \label{sec:02-survivorship}
@@ -250,17 +268,17 @@ Companies that fail, merge or are delisted disappear from many datasets, and the
 
 \subsection{Survivorship bias}
 
-\textbf{Survivorship bias}\index{survivorship bias|textbf} arises when a sample includes only the companies, funds or strategies that are still around at the end of the period. Those that failed, were acquired or were shut down drop out of the data, and their losses drop out with them. It is like judging how safe a sport is by interviewing only the players who are still playing.
+\textbf{Survivorship bias}\index{survivorship bias|textbf} arises when a sample includes only the companies, funds or strategies that are still around at the end of the period. Those that failed, were acquired or were shut down drop out of the data, and their losses drop out with them. It is like judging how safe a sport is by interviewing only the players who are still playing. Abraham Wald's bombers in Chapter~\ref{ch:01} teach the same lesson. A real example makes the cost concrete. Enron, once one of the largest companies in America, saw its shares fall from \$90.75 in August 2000 to 26 cents at the end of November 2001, and it filed for bankruptcy on 2 December 2001. A backtest built from the list of companies that exist today never owned Enron, so it never suffered that loss.
 
 The bias works through three channels.
 
 \begin{enumerate}
   \item \textbf{Survivors-only samples.} Testing a strategy on today's index members, or on the funds that exist today, removes every company or fund that failed along the way. The survivors are, by definition, the ones that did well enough to last.
-  \item \textbf{Missing delisting returns.} When a stock leaves the exchange because the company is failing, its final return is often large and negative, and it is often missing from the database. Shumway (1997) showed that CRSP frequently lacked returns for delistings caused by poor performance, and he estimated that these missing returns averaged about $-30$\% for stocks on the NYSE and AMEX. Shumway and Warther (1999) found even larger losses for Nasdaq stocks. A backtest that silently drops these months overstates returns, and the error is largest for small and distressed stocks.
+  \item \textbf{Missing delisting returns.} When a stock leaves the exchange because the company is failing, its final return is often large and negative, and it is often missing from the database. Shumway (1997) checked how large this gap was in CRSP, the foundation of most research on U.S. stocks, and showed that it frequently lacked returns for delistings caused by poor performance, and he estimated that these missing returns averaged about $-30$\% for stocks on the NYSE and AMEX, the New York and American stock exchanges. Shumway and Warther (1999) found even larger losses for Nasdaq stocks, which trade on an electronic market that lists many younger and smaller companies, where failures are more common. In plain words, the data were quietly skipping the worst month in the life of many failing companies. A backtest that silently drops these months overstates returns, and the error is largest for small and distressed stocks.
   \item \textbf{Backfill.}\index{backfill bias|textbf} Databases sometimes add a company or fund only after it has already succeeded, filling in its earlier history at the same time. This \textbf{backfill} brings in past returns only for those that did well. Kothari, Shanken and Sloan (1995) argued that this kind of selection in Compustat inflated the measured returns of high book-to-market\index{book-to-market ratio} stocks, which are companies whose accounting value is large relative to their market value.
 \end{enumerate}
 
-The bias is well documented for mutual funds. Elton, Gruber and Blake (1996) estimated that studying only the funds that survived overstated average performance by roughly 0.9 percentage points a year, which is large compared with the alphas\index{alpha} that researchers try to detect. Brown, Goetzmann, Ibbotson and Ross (1992) showed that survivorship can even make fund performance appear to persist from one period to the next when in fact it does not.
+The bias is well documented for mutual funds, because funds that perform badly are often closed or merged and then easily left out of a study. Elton, Gruber and Blake (1996) followed every fund, including those that vanished, and estimated that studying only the funds that survived overstated average performance by roughly 0.9 percentage points a year, which is large compared with the alphas\index{alpha} that researchers try to detect. An investor reading such a study would conclude that fund managers add value when part of that apparent value comes only from forgetting the funds that closed. Brown, Goetzmann, Ibbotson and Ross (1992) asked whether the persistence that other studies had found in fund performance might also come from the data, and showed that survivorship can even make fund performance appear to persist from one period to the next when in fact it does not.
 
 \subsection{The problem}
 
@@ -271,12 +289,18 @@ The bias is well documented for mutual funds. Elton, Gruber and Blake (1996) est
 \textbf{The fix} is to use a dataset that includes failed companies and their delisting returns, such as CRSP, together with portfolio rules that use only the firms that were listed on each date. 
 Most free sources in Section~\ref{sec:02-datasets} do not need this fix. The French library, Open Source Asset Pricing\index{Open Source Asset Pricing} and the Jensen--Kelly--Pedersen data are built from CRSP, so they include companies that later failed, and FRED\index{FRED} holds economic series rather than companies. The fix matters most for free stock-price sites such as Yahoo Finance, which list mainly today's survivors. Because those sites do not show which companies are missing, the Shumway correction cannot be applied, and the safer choice is to test the strategy on portfolio data that were built from a complete database.
 
-When delisting returns are missing, researchers follow Shumway and substitute an estimate, such as $-30$\%.
+Researchers who work with stock-level data have a standard repair for missing delisting returns, which the shaded box describes; most readers using free data will not need it.
+
+\begin{technote}
+\textbf{Technical note: the Shumway correction.} When delisting returns are missing, researchers follow Shumway and substitute an estimate, such as $-30$\%.
 Suppose a stock falls from \$10 to \$2 and is then delisted for poor performance, with no final return recorded.
 If the final return is left blank, the backtest counts only the fall to \$2.
 If the researcher follows Shumway, the backtest adds one more month with a $-30$\% return, as if the stock ended near \$1.40.
 The estimate won’t be exact for any single company, but on average it is much closer to the truth than assuming a zero loss.
 Do we need to do this fix? Probably not. Only researchers with stock-level data such as CRSP can apply it, because they can see which companies were delisted and which delisting returns are missing. Users of Yahoo Finance can’t, because the failed companies aren’t in the data at all.
+\end{technote}
+
+\noindent\textbf{In plain terms.} Companies that fail tend to vanish from the data, and their losses vanish with them. A test that uses only today's companies therefore looks better than reality, and it can even invent a profitable strategy out of companies that simply happened to survive. The safest choice for most readers is portfolio data built from a complete database that kept the failures.
 
 
 \section{Look-ahead bias: using only what was known}
@@ -284,7 +308,7 @@ Do we need to do this fix? Probably not. Only researchers with stock-level data 
 
 A backtest is honest only if every decision in it uses information that was available at the time. Accounting figures are published weeks or months after the period they describe, and economic data are often revised later. Using the final numbers as if they had been known in advance gives a strategy an advantage that no investor had, and the result can look excellent for no real reason.
 
-\textbf{Look-ahead bias}\index{look-ahead bias|textbf} arises when a backtest uses information that was not yet available when the decision would have been made. It is easy to introduce and hard to notice, because the code runs without error and the results simply look better than they should. Figure~\ref{fig:02-timeline} shows the most common case, in which accounting data are used before they were published.
+\textbf{Look-ahead bias}\index{look-ahead bias|textbf} arises when a backtest uses information that was not yet available when the decision would have been made. It is easy to introduce and hard to notice, because the code runs without error and the results simply look better than they should. It resembles a student who grades a practice exam with the answer key open: the score is real, but it says nothing about how the student would do on the day. Figure~\ref{fig:02-timeline} shows the most common case, in which accounting data are used before they were published.
 
 %\begin{figure}[htbp]
 %\centering
@@ -329,7 +353,7 @@ A backtest is honest only if every decision in it uses information that was avai
     \node[fegray, anchor=north, align=center] at (1,-2)
       {look-ahead backtest\\uses the data here};
   \end{tikzpicture}
-\caption{When accounting data becomes usable. A company's fiscal year ends in December, but its annual report appears only months later. A backtest that trades on the figures in January uses information that no investor had, which is why Fama and French wait until the following June.}
+\caption{A backtest must wait until accounting numbers were actually public before trading on them. When accounting data becomes usable. A company's fiscal year ends in December, but its annual report appears only months later. A backtest that trades on the figures in January uses information that no investor had, which is why Fama and French wait until the following June.}
 \label{fig:02-timeline}
 \end{figure}
 
@@ -353,18 +377,20 @@ The table below lists the common sources of look-ahead bias and the standard tre
 \end{center}
 
 
-Three terms in the table need explaining. To \textbf{lag} a signal is to use it only from a later period, so that it was already known before the trade. A \textbf{walk-forward}\index{walk-forward evaluation|textbf} test chooses its settings at each date using only the data available before that date, just as an investor in real time would have to. An \textbf{expanding} estimate uses all the data up to each date, whereas a \textbf{rolling} estimate uses a window of fixed length, such as the past five years.
+Three terms in the table need explaining. To \textbf{lag} a signal is to use it only from a later period, so that it was already known before the trade. A \textbf{walk-forward}\index{walk-forward evaluation|textbf} test chooses its settings at each date using only the data available before that date, just as an investor in real time would have to. An \textbf{expanding} estimate uses all the data up to each date, whereas a \textbf{rolling} estimate uses a window of fixed length, such as the past five years. GDP, or gross domestic product, is the total value of goods and services an economy produces, and its first estimate is often revised substantially in later years. To \textbf{standardize} a signal is to rescale it so that it has an average of zero and a typical swing of one, which requires knowing its average and volatility.
 
 The last two rows of the table describe the subtlest problems. In these cases no future price is used directly, yet the analyst's choices reflect knowledge of how the whole period turned out. For example, a trading rule whose window length was chosen because it worked best over 1926--2025 carries information from 2025 back into 1926.
 
 \textbf{Point-in-time data}\index{data!point-in-time|textbf} is the general remedy, because it ensures that each date uses only the values that could have been known then. Lab~\ref{ch:02} measures two forms of look-ahead bias on real data, namely trading on the same day's closing price and choosing a rule's parameter with hindsight.
+
+\noindent\textbf{In plain terms.} A fair test of a strategy may use only the information that an investor could have had on each date. Using numbers before they were published, or choosing a rule's settings because they worked best over the whole history, quietly lets the future leak into the past and makes the strategy look better than it could have been.
 
 \section{Micro-caps: results no investor could capture}
 \label{sec:02-microcaps}
 
 The smallest companies are costly or impossible to trade in large amounts, yet in an equal-weighted portfolio they carry the same weight as the largest companies. A result can therefore be driven almost entirely by stocks that no investor could realistically buy. Checking how a portfolio is weighted, and whether its result survives without the smallest stocks, is one of the quickest ways to test whether a finding is usable.
 
-The U.S. stock market is extremely unequal. A few hundred large companies account for most of its value, while thousands of tiny companies account for most of the names on the list. Fama and French (2008) classified stocks below the 20th percentile of NYSE market capitalization as \textbf{micro-caps}\index{micro-caps|textbf}, which means that each of them is smaller than four-fifths of the stocks listed on the New York Stock Exchange. They found that micro-caps made up about 60\% of all listed stocks but only about 3\% of total market value (Figure~\ref{fig:02-microcaps}).
+The U.S. stock market is extremely unequal. A few hundred large companies account for most of its value, while thousands of tiny companies account for most of the names on the list. Fama and French (2008) classified stocks below the 20th percentile of NYSE market capitalization, that is, smaller than 80\% of NYSE companies, as \textbf{micro-caps}\index{micro-caps|textbf}, which means that each of them is smaller than four-fifths of the stocks listed on the New York Stock Exchange. They found that micro-caps made up about 60\% of all listed stocks but only about 3\% of total market value (Figure~\ref{fig:02-microcaps}).
 
 %\begin{figure}[htbp]
 %\centering
@@ -425,26 +451,30 @@ This matters because of the way portfolios are weighted (Section~\ref{sec:02-fou
 
 Micro-caps are also expensive and difficult to trade. Their \textbf{bid--ask spreads}\index{bid--ask spread|textbf}, the gap between the price at which you can buy and the price at which you can sell, are wide. They have little \textbf{liquidity}\index{liquidity|textbf}, which means that buying or selling even a modest amount moves the price. They are also costly to \textbf{sell short}\index{short selling|textbf}, that is, to borrow and sell in the hope of buying them back later at a lower price. In addition, micro-caps have the most extreme returns and the most data problems, including the missing delisting returns described in Section~\ref{sec:02-survivorship}. A pattern that appears in equal-weighted portfolios but not in value-weighted ones may therefore exist only where no large investor can exploit it.
 
-The replication\index{replication} debate in Chapter~\ref{ch:19} turns partly on this point. An \textbf{anomaly}\index{anomaly|textbf} is a pattern in returns that standard risk models, such as the CAPM\index{capital asset pricing model (CAPM)}, cannot explain. Hou, Xue and Zhang\index{q-factor model} (2020) found that many anomalies disappear when micro-caps are given little weight, while their critics argue that this mainly shows that anomalies are concentrated among small stocks. Either way, the lesson for this chapter is simple: \textbf{always ask how a portfolio is weighted and whether the result survives without micro-caps.}
+The replication\index{replication} debate in Chapter~\ref{ch:19} turns partly on this point. An \textbf{anomaly}\index{anomaly|textbf} is a pattern in returns that standard risk models, such as the CAPM\index{capital asset pricing model (CAPM)}, cannot explain. Hou, Xue and Zhang\index{q-factor model} (2020) found that many anomalies disappear when micro-caps are given little weight, while their critics argue that this mainly shows that anomalies are concentrated among small stocks. For an investor, both readings lead to the same caution: a pattern that lives only in tiny stocks may be real, yet still impossible to profit from at any meaningful scale. Either way, the lesson for this chapter is simple: \textbf{always ask how a portfolio is weighted and whether the result survives without micro-caps.}
 
 \begin{callout}
-\textbf{What Failed: the size effect\index{size premium}.} Banz (1981) found that small companies had earned higher risk-adjusted returns than large ones, and ``small beats big'' became one of the best-known findings in finance. Later research, however, found that the effect became much weaker after it was published, that it was heavily concentrated among the very smallest stocks, and that in the early studies it was concentrated in January. Size remains a common factor in models of risk, but as a stand-alone source of extra return it has been far less reliable than its early evidence suggested. Lab~\ref{ch:02} tests how much of the size premium comes from micro-caps and how much comes from the years before 1981.
+\textbf{What Failed: the size effect\index{size premium}.} Banz (1981) found that small companies had earned higher risk-adjusted returns than large ones, meaning higher returns even after allowing for their extra risk, and ``small beats big'' became one of the best-known findings in finance. Later research, however, found that the effect became much weaker after it was published, that it was heavily concentrated among the very smallest stocks, and that in the early studies it was concentrated in January. Size remains a common factor in models of risk, but as a stand-alone source of extra return it has been far less reliable than its early evidence suggested. Lab~\ref{ch:02} tests how much of the size premium comes from micro-caps and how much comes from the years before 1981.
 \end{callout}
+
+\noindent\textbf{In plain terms.} Most listed companies are tiny, but together they hold only a sliver of the market's value, and they are costly to trade. A strategy that gives every stock the same weight can therefore owe its success to companies that no large investor could buy, so always check whether a result survives when the smallest stocks are left out.
 
 \section{Data snooping: when a whole field searches one dataset}
 \label{sec:02-snooping}
 
 Chapter~\ref{ch:01} described the problem of selection within one researcher's search. There is a wider version of the same problem, in which an entire field searches the same data. Most research on U.S. stocks uses CRSP, and much of it uses the same period after 1963. Thousands of researchers have tested thousands of ideas on these data, and the ideas that ``worked'' were the ones that got published. Each paper may report a single, honest test, yet together the field has run an enormous number of trials on one history. A finding can therefore be a false discovery even when its author did nothing wrong, which is why a result must be confirmed on data that played no part in finding it.
 
-Lo and MacKinlay (1990) called this \textbf{data-snooping bias}\index{data snooping|textbf}. When the choice of what to test is influenced by what earlier studies found in the same data, the usual significance levels\index{hypothesis testing!significance level} overstate the strength of the evidence. No single researcher can fix this bias, because no one knows how many ideas were tried and abandoned across the whole field.
+Lo and MacKinlay (1990) called this \textbf{data-snooping bias}\index{data snooping|textbf}. When the choice of what to test is influenced by what earlier studies found in the same data, the usual significance levels\index{hypothesis testing!significance level} overstate the strength of the evidence. No single researcher can fix this bias, because no one knows how many ideas were tried and abandoned across the whole field. A lottery offers a useful comparison. Someone wins almost every week, but the winner is not evidence that a winning system exists, because millions of tickets were bought and we hear only about the one that won.
 
 Three defenses work, and later chapters use all of them.
 
 \begin{enumerate}
   \item \textbf{New data.} Test the claim in periods or markets that played no part in its discovery, such as the years before the original sample, the years after publication, or other countries (Chapters~\ref{ch:05} and~\ref{ch:19}).
-  \item \textbf{Higher hurdles.} Require stronger evidence for claims that are tested on heavily used data, such as a t-statistic\index{t-statistic} above 3 (Harvey, Liu and Zhu 2016; Chapter~\ref{ch:19}).
-    \item \textbf{Economic reasoning stated in advance.} Before running a test, state why the pattern should exist. A story written after a pattern is found proves little, because a clever explanation can be invented for almost any result, including one produced by chance. A reason stated beforehand turns the test into a genuine check, because the data can prove it wrong. 
+  \item \textbf{Higher hurdles.} Require stronger evidence for claims that are tested on heavily used data, such as a t-statistic\index{t-statistic} above 3 (Harvey, Liu and Zhu 2016; Chapter~\ref{ch:19}). The t-statistic, introduced in Chapter~\ref{ch:01}, measures how far a result stands above the noise, and the usual bar is about 2.
+    \item \textbf{Economic reasoning stated in advance.} Before running a test, state why the pattern should exist. A story written after a pattern is found proves little, because a clever explanation can be invented for almost any result, including one produced by chance. A reason stated beforehand turns the test into a genuine check, because the data can prove it wrong.
 \end{enumerate}
+
+\noindent\textbf{In plain terms.} When thousands of researchers study the same stock market history, some of them will find patterns that are pure coincidence, even if each of them works honestly. A finding deserves trust only when it also holds in data that played no part in discovering it, such as later years or other countries.
 
 \section{Lab~\thechapter: Replicating the size effect and the survivorship and delisting biases}
 \label{sec:02-lab}
@@ -453,7 +483,7 @@ Three defenses work, and later chapters use all of them.
 \textbf{Lab~\ref{ch:02} at a glance.} \emph{Papers replicated:} the size effect of Banz (1981) before and after publication (Horowitz, Loughran and Savin 2000; Schwert 2003); the survivorship and delisting biases of Brown et al.\ (1992) and Shumway (1997), in a simulated market. \emph{Claim on trial:} free, public data can support a reliable backtest. \emph{Data:} monthly and daily U.S. market returns and size-sorted portfolios\index{portfolio sort} since 1926, from the Kenneth R. French Data Library\index{Kenneth French data library} (downloaded automatically), plus a simulated stock market. \emph{Tools:} Python with pandas, NumPy and matplotlib, plus the fintest module. \emph{Time:} about 90 minutes, including the guided notebook. \emph{Code:} repository folder \texttt{ch02-data-traps/}.
 \end{callout}
 
-The design of this lab draws on a line of well-known studies, each of which showed how one feature of the data can change a result. Brown, Goetzmann, Ibbotson and Ross (1992) used a simulation to show that dropping the funds that disappear can create patterns in performance that are not really there, and Shumway (1997) measured how large the missing delisting losses are. Brock, Lakonishok and LeBaron (1992) made moving-average trading rules famous, and Sullivan, Timmermann and White (1999) later showed how much of their apparent success came from searching across many rules. Banz (1981) discovered the size effect, and Horowitz, Loughran and Savin (2000) and Schwert (2003) found that it weakened after publication and depended heavily on the smallest stocks. Each part of the lab follows the logic of one of these studies, using free data, so that you can see the problem for yourself.
+The design of this lab draws on a line of well-known studies, each of which showed how one feature of the data can change a result. Brown, Goetzmann, Ibbotson and Ross (1992) suspected that reports of persistent fund performance came partly from funds missing from the samples, and used a simulation to show that dropping the funds that disappear can create patterns in performance that are not really there. Shumway (1997) measured how large the missing delisting losses are. Brock, Lakonishok and LeBaron (1992) tested trading rules that academics had long dismissed and made moving-average rules famous. Because those rules came from a long search by traders on the same data, Sullivan, Timmermann and White (1999) later showed how much of their apparent success came from searching across many rules. Banz (1981) discovered the size effect, and Horowitz, Loughran and Savin (2000) and Schwert (2003) asked whether it lasted once investors knew about it, finding that it weakened after publication and depended heavily on the smallest stocks. Each part of the lab follows the logic of one of these studies, using free data, so that you can see the problem for yourself.
 
 The lab measures each of the problems from Sections~\ref{sec:02-returns} to~\ref{sec:02-microcaps} in turn. Three of its parts use real data, while the part on survivorship uses a simulation. 
 The reason for the simulation is itself part of the lesson. To measure survivorship bias, we need to compare a backtest on all companies, including the ones that failed, with the same backtest on the survivors alone. Free stock-price sites list mainly the companies that still exist, so the failures are missing. The French library does include failed companies, but only inside its portfolio returns, so we cannot take them out to see how much difference they make. A simulation solves this problem, because it gives us the full history of every company, including the ones that disappear.
@@ -469,7 +499,7 @@ The lab computes both averages for Treasury bills, the stock market, and the lar
 
 \textbf{Predict first.} Before running this part, write down how much you expect survivorship bias to add to the market's average return each year.
 
-With real data we never know the true answer, so the lab builds a market in which we do. This approach follows Brown, Goetzmann, Ibbotson and Ross (1992), who simulated funds with no skill and showed that keeping only the survivors made their performance appear to persist. The lab simulates about 2,000 listed companies over 30 years, and every company has the \textbf{same expected return}, so no stock or strategy has a real advantage. Following Shumway (1997), a company whose price falls below 20\% of its listing price is delisted with a final return of $-30$\%. Other companies are acquired at a premium, and every company that leaves is replaced by a new listing.
+With real data we never know the true answer, so the lab builds a market in which we do. This approach follows Brown, Goetzmann, Ibbotson and Ross (1992), who simulated funds with no skill and showed that keeping only the survivors made their performance appear to persist. The lab simulates about 2,000 listed companies over 30 years, and every company has the \textbf{same expected return}, so no stock or strategy has a real advantage. Following Shumway (1997), a company whose price falls below 20\% of its listing price is delisted with a final return of $-30$\%. Other companies are acquired at a premium, meaning that a buyer pays shareholders more than the current share price, and every company that leaves is replaced by a new listing.
 
 From this single simulated history, the lab builds three datasets:
 
@@ -511,7 +541,7 @@ Read the table from top to bottom. In the full data, the volatile-minus-calm str
 
 \textbf{C1. Trading on the same day's close.} This part tests a classic timing rule, which holds stocks when the market closes above its 200-day \textbf{moving average}\index{moving average|textbf}, the average closing price over the past 200 trading days, and holds Treasury bills otherwise. Brock, Lakonishok and LeBaron (1992) studied rules of this kind on nearly a century of daily Dow Jones data and found that they appeared to predict returns. The lab runs the rule in two ways. The correct version makes its decision at yesterday's close and earns today's return, whereas the look-ahead version makes its decision at today's close but is still credited with today's return. The two versions differ by a single day, which is the kind of error that can hide in one misplaced line of code. Compare their returns and Sharpe ratios (Lab Figure~\ref{ch:02}.3).
 
-\textbf{C2. Choosing the window with hindsight.} Next, the lab tests moving-average windows from 20 to 300 days and chooses one of them in two ways. The hindsight version picks the window with the best Sharpe ratio over the whole evaluation period. The walk-forward version picks, each January, the window that had worked best up to that point, using only past data (Lab Figure~\ref{ch:02}.4). The gap between the two versions measures how much a result is inflated by choosing a rule's settings after seeing the results. Sullivan, Timmermann and White (1999) made the same point on a much larger scale. They expanded the rules of Brock, Lakonishok and LeBaron to a universe of several thousand and adjusted for the search with a bootstrap\index{bootstrap}. The best rule still looked strong in the original sample, but it did not continue to outperform in the decade that followed.
+\textbf{C2. Choosing the window with hindsight.} Next, the lab tests moving-average windows from 20 to 300 days and chooses one of them in two ways. The hindsight version picks the window with the best Sharpe ratio over the whole evaluation period. The walk-forward version picks, each January, the window that had worked best up to that point, using only past data (Lab Figure~\ref{ch:02}.4). The gap between the two versions measures how much a result is inflated by choosing a rule's settings after seeing the results. Sullivan, Timmermann and White (1999) made the same point on a much larger scale. They expanded the rules of Brock, Lakonishok and LeBaron to a universe of several thousand and adjusted for the search with a bootstrap\index{bootstrap}, a method that reshuffles the actual data many times to see how good the best rule would look by luck alone. The best rule still looked strong in the original sample, but it did not continue to outperform in the decade that followed.
 
 \subsection*{Part D: Micro-caps, weighting and the size premium}
 
@@ -600,12 +630,13 @@ The evidence in Section~\ref{sec:02-verdict} turns into a practical checklist. B
   \item A study uses annual accounting data for fiscal years ending in December and forms portfolios in January of the next year. What is the problem, and how do Fama and French avoid it?
   \item Explain why survivorship bias can create a premium for volatile stocks, rather than simply raising all returns by the same amount.
   \item A paper reports a strong anomaly in equal-weighted portfolios that disappears in value-weighted ones. What does this suggest about who could profit from it?
+  \item A website shows that \$10,000 invested in its ``top ten stocks'' twenty years ago would be worth \$200,000 today. Without doing any calculation, list the questions from this chapter you would ask before believing that the strategy would have worked for an investor at the time.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
-  \setcounter{enumi}{6}
+  \setcounter{enumi}{7}
   \item Re-run Part B with a delisting return of $-55$\%, which is closer to the estimates for Nasdaq stocks. How do the three datasets change?
   \item In Part C, try windows of 50 and 300 days. Is the look-ahead gain larger for fast rules or for slow ones? Explain why.
   \item In Part C, charge a trading cost of 0.1\% each time the rule switches. Does the correctly traded rule still beat buy-and-hold on a risk-adjusted basis?

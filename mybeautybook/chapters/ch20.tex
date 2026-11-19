@@ -12,10 +12,23 @@
 }{}
 \makeatother
 
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
 \chapter{Claim: Foundation Models Forecast Better Than Classical Methods}
 \label{ch:21}
 
-Large language models\index{large language models} learned to write by reading most of the internet. In 2024 the same recipe was applied to numbers. Ansari et al.\ (2024) introduced Chronos\index{foundation models!Chronos}, which turns a time series into tokens and trains a language-model architecture on them. Das et al.\ (2024) introduced TimesFM\index{foundation models!TimesFM}. These time-series foundation models\index{foundation models} are first trained on very large collections of series, from electricity demand and web traffic to weather and retail sales. They then forecast series they have never seen, with no further training. Their developers reported that, used this way, the models match or beat models fitted specifically to each dataset.
+Chatbots that write essays and answer questions have made artificial intelligence part of everyday life. The same technology is now being applied to numbers, with the promise that a single pretrained model can forecast almost any series, from sales and electricity demand to stock returns and inflation, without being built for the job. This chapter asks whether that promise holds for financial and economic data.
+
+Large language models\index{large language models} learned to write by reading most of the internet. In 2024 the same recipe was applied to numbers, in the hope that one model trained on many series could forecast new ones without a separate model for each. Ansari et al.\ (2024) introduced Chronos\index{foundation models!Chronos}, which turns a time series into tokens, small pieces that the model reads the way a chatbot reads words, and trains a language-model architecture on them. Das et al.\ (2024) introduced TimesFM\index{foundation models!TimesFM}. These time-series foundation models\index{foundation models} are first trained on very large collections of series, from electricity demand and web traffic to weather and retail sales. They then forecast series they have never seen, with no further training. Their developers reported that, used this way, the models match or beat models fitted specifically to each dataset.
 
 For finance and economics the promise is striking. One pretrained model, applied to returns, volatility\index{volatility} or inflation\index{inflation}, could replace the careful work of building and estimating a model for each series. But financial series are unlike most of the data these models learn from. Returns are close to unpredictable. Volatility has long memory and fat tails\index{fat tails}. Macroeconomic series are short and are often revised. Public financial data may also have been part of the training set\index{training, validation and test sets}, which can make a model look better on history than it is. Rahimikia, Ni and Wang (2025) tested foundation models on stock returns from many countries. Used off the shelf, the models did not beat simple benchmarks, although training them on financial data helped.
 
@@ -32,6 +45,10 @@ By the end of the chapter you will be able to:
   \item judge the evidence on returns, volatility, other financial series and macroeconomic series.
 \end{itemize}
 
+\begin{callout}
+\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain details of model design, and you can skip them without losing the thread. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
+\end{callout}
+
 \section{Foundations: benchmarks, foundation models and fair tests}
 \label{sec:21-foundations}
 
@@ -44,19 +61,23 @@ A forecasting method deserves attention only if it beats simple alternatives. Se
     y_{t+1} = c + \phi_1 y_t + \cdots + \phi_p y_{t-p+1} + \varepsilon_{t+1}
     \label{eq:21-ar}
   \end{equation}
-  The number of lags can be chosen by an information criterion such as BIC. \textbf{ARIMA}\index{ARIMA|textbf} models add differencing and moving-average terms.
+  The number of lags can be chosen by an information criterion such as BIC, a score that rewards a good fit but penalizes extra parameters. \textbf{ARIMA}\index{ARIMA|textbf} models add differencing and moving-average terms.
   \item For volatility, the GARCH and HAR models of Chapter~\ref{ch:10} (Sections~\ref{sec:10-garch} and~\ref{sec:10-rv}; Corsi 2009) capture volatility's long memory with few parameters.
 \end{itemize}
 
 \subsection{Foundation models}
 \label{sec:21-fm}
 
-A time-series foundation model is a large neural network\index{neural network}, usually a \textbf{transformer}\index{transformer|textbf}, pretrained on a broad collection of series and then used \textbf{zero-shot}\index{foundation models!zero-shot forecasting|textbf}, without any training on the target series. Two design families matter here:
+A time-series foundation model is a large neural network\index{neural network}, usually a \textbf{transformer}\index{transformer|textbf}, the network design behind modern chatbots, pretrained on a broad collection of series and then used \textbf{zero-shot}\index{foundation models!zero-shot forecasting|textbf}, without any training on the target series. In plain words, these models chop a series into pieces and learn to predict the next piece, much as a chatbot predicts the next word. The shaded box describes the two best-known designs.
+
+\begin{technote}
+\textbf{Technical note: two model designs.} Two design families matter here:
 
 \begin{itemize}
   \item \textbf{Chronos}\index{foundation models!Chronos|textbf} (Ansari et al.\ 2024) scales each series and quantizes its values into a fixed vocabulary of tokens. It then trains a T5 language-model architecture to predict the next token, which yields a full probability distribution for the forecast. Models range from 20 million to 710 million parameters. Chronos-Bolt is a faster successor.
   \item \textbf{TimesFM}\index{foundation models!TimesFM|textbf} (Das et al.\ 2024) is a decoder-only transformer of about 200 million parameters. It reads the series in patches of consecutive points and outputs longer patches. It was pretrained on about 100 billion time points, mostly Google Trends search interest and Wikipedia page views, plus synthetic series.
 \end{itemize}
+\end{technote}
 
 The pitch is breadth: a model that has seen trends, seasonality, mean reversion and regime shifts across many domains should recognize them in a new series.
 
@@ -67,7 +88,7 @@ A forecast evaluation is valid only if the model has not seen the test data. Cla
 
 \subsection{Evaluation}
 
-Forecasts are compared with the walk-forward\index{walk-forward evaluation} design of Section~\ref{sec:09-walkforward}, which forecasting papers call \textbf{rolling origins}\index{walk-forward evaluation!rolling origin|textbf}. At each month $t$, every model forecasts month $t+1$ using only data up to $t$ (Figure~\ref{fig:21-rolling}). The tools of Chapter~\ref{ch:09} then apply. The mean squared error of Section~\ref{sec:09-foundations} is reported as a ratio to the benchmark's, so a ratio below 1 means the model is better. The Diebold--Mariano test of Section~\ref{sec:09-accuracy} asks whether the difference is larger than chance. When a model forecasts a whole distribution, coverage checks its calibration\index{calibration}, and the \textbf{pinball loss}\index{loss function!pinball|textbf} scores each forecast quantile\index{quantile}. For volatility, the QLIKE loss of Section~\ref{sec:10-eval} is used, because it is robust to noise in the realized variance\index{variance} that stands in for true volatility (Patton 2011).
+Forecasts are compared with the walk-forward\index{walk-forward evaluation} design of Section~\ref{sec:09-walkforward}, which forecasting papers call \textbf{rolling origins}\index{walk-forward evaluation!rolling origin|textbf}. At each month $t$, every model forecasts month $t+1$ using only data up to $t$ (Figure~\ref{fig:21-rolling}). The tools of Chapter~\ref{ch:09} then apply. The mean squared error of Section~\ref{sec:09-foundations} is reported as a ratio to the benchmark's, so a ratio below 1 means the model is better. The Diebold--Mariano test of Section~\ref{sec:09-accuracy} asks whether the difference is larger than chance. When a model forecasts a whole distribution, coverage checks its calibration\index{calibration}, and the \textbf{pinball loss}\index{loss function!pinball|textbf} scores each forecast quantile\index{quantile}, that is, each point of a forecast range such as the level the outcome should stay below 90\% of the time. For volatility, the QLIKE loss of Section~\ref{sec:10-eval} is used, because it is robust to noise in the realized variance\index{variance} that stands in for true volatility (Patton 2011).
 
 \begin{figure}[htbp]
 \centering
@@ -88,7 +109,7 @@ Forecasts are compared with the walk-forward\index{walk-forward evaluation} desi
   \node[anchor=west] at (5.9,-6.05) {month being forecast};
 \end{tikzpicture}%
 }
-\caption{Rolling-origin evaluation. At each origin every model sees the same data up to that month and forecasts the next one; the origin then moves forward a month. No model ever sees the month it is forecasting.}
+\caption{A fair test lets every model see only the past. Rolling-origin evaluation. At each origin every model sees the same data up to that month and forecasts the next one; the origin then moves forward a month. No model ever sees the month it is forecasting.}
 \label{fig:21-rolling}
 \end{figure}
 
@@ -128,9 +149,11 @@ Forecasts are compared with the walk-forward\index{walk-forward evaluation} desi
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{The expected Diebold--Mariano statistic for the worked example's 5\% gain, as the evaluation sample grows. It reaches 1.96 only after about 384 months; a two-year post-cutoff window gives about 0.5.}
+\caption{A small forecasting gain takes decades of monthly data to prove. The expected Diebold--Mariano statistic for the worked example's 5\% gain, as the evaluation sample grows. It reaches 1.96 only after about 384 months; a two-year post-cutoff window gives about 0.5.}
 \label{fig:21-dm}
 \end{figure}
+
+\noindent\textbf{In plain terms.} A foundation model is pretrained once on a huge variety of series and then asked to forecast new ones without further training. A fair test compares it with the best simple method for each kind of series, uses only data that the model could not have seen during training, and runs long enough to tell a small gain from luck.
 
 \section{How it works}
 \label{sec:21-how}
@@ -155,6 +178,8 @@ It also has limits that bite hardest in finance:
 \end{itemize}
 
 Classical models are the opposite: narrow, but fitted to the target series and transparent about what they assume. The question is whether breadth beats fit.
+
+\noindent\textbf{In plain terms.} Foundation models are convenient because nothing needs to be built for each series, but most of what they learned comes from data with strong regular patterns, such as daily traffic or seasonal sales. Financial returns have little such pattern, and a model may also have seen the very data it is being tested on.
 
 \section{The claim}
 \label{sec:21-claim}
@@ -191,6 +216,8 @@ These benchmarks contain few financial series. The Chronos result also illustrat
 \textbf{Realized volatility (Brini 2026).}\index{volatility!realized|textbf} Brini compared nine zero-shot foundation models with eight econometric models, including versions of HAR and ARFIMA. The data were daily realized volatility for 40 U.S. stocks, five currency pairs and five futures contracts, at horizons of 1, 5 and 22 days. Losses pooled across assets favored the foundation models, but the advantage came from a few unusual assets. On the average loss per asset (QLIKE), only one model, Tiny Time Mixers, beat a log-HAR benchmark at every horizon, by about 1.3\% to 1.8\%. The other eight did not. An equal-weight average of that model and log-HAR was among the best forecasts for almost every asset.
 
 The pattern across studies is consistent. Zero-shot foundation models beat naive forecasts easily, sometimes match well-specified classical models, and rarely beat them by a meaningful margin. Where they do, combining them with a classical model helps more than replacing it.
+
+\noindent\textbf{In plain terms.} So far, general-purpose foundation models used straight out of the box have not beaten carefully chosen classical methods on financial data. Models trained on financial data do better, and averaging a foundation model's forecast with a classical one is often the best choice of all.
 
 \section{Lab~\thechapter: Replicating the zero-shot claim on six series}
 \label{sec:21-lab}
@@ -349,12 +376,13 @@ The evidence in Section~\ref{sec:21-verdict} suggests several practical lessons.
   \item A foundation model's MSE ratio against AR is 0.97 over 120 months. The monthly loss differences have a standard deviation 4 times their mean. Compute the Diebold--Mariano statistic, ignoring autocorrelation. How many months would be needed for the same gain to reach $t = 2$?
   \item Explain why the historical mean is a strong benchmark for monthly stock returns but a weak one for log realized variance.
   \item A foundation model was pretrained on a corpus that includes the S\&P 500 index up to 2023. Which of the lab's six series could be affected, and why?
+  \item A software vendor shows a chart in which its AI model ``predicted'' the stock market's path over the past ten years almost perfectly. Without any calculation, explain why the chart may prove little, and what test you would ask the vendor to run instead.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
-  \setcounter{enumi}{3}
+  \setcounter{enumi}{4}
   \item Install Chronos-Bolt and run the lab on real data. On which series does it beat AR, and is any difference significant?
   \item Compare Chronos-Bolt with HAR on log realized variance. Then average the two forecasts. Does the average beat both?
   \item Part C: set the cutoff to Chronos-Bolt's release date. How do its MSE ratios before and after compare with the memorizing model's pattern?

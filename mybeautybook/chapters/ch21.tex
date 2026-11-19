@@ -11,10 +11,23 @@
 }{}
 \makeatother
 
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
 \chapter{Claim: Transformers Price Stocks Better Than Factor Models}
 \label{ch:22}
 
-Asset pricing asks why different assets earn different average returns. Since the 1980s its general answer has been the \textbf{stochastic discount factor}\index{stochastic discount factor (SDF)}, a single random variable that prices every asset. The factor models of Chapter~\ref{ch:04} are one way to build it, from a handful of portfolios chosen by researchers. With hundreds of candidate characteristics, later work asked the data to build it instead. Kozak, Nagel and Santosh (2020) estimated a discount factor from many anomaly portfolios with shrinkage. Kelly, Pruitt and Su (2019) let each stock's exposures depend on its characteristics. Chen, Pelger and Zhu (2024) used deep neural networks. Each step priced returns more accurately than the last.
+Anyone who follows the stock market notices that companies do not move alone. When one bank reports trouble, other banks' shares often fall too, and a supplier's bad news can drag down its customers. The newest artificial-intelligence models are designed to learn such connections from data. This chapter asks whether letting a model learn how stocks relate to one another really explains their returns better than the factor models of earlier chapters.
+
+Asset pricing asks why different assets earn different average returns. Since the 1980s its general answer has been the \textbf{stochastic discount factor}\index{stochastic discount factor (SDF)}, a single random variable that prices every asset, which can be thought of as a gauge of how bad economic times are, used to weigh every payoff. The factor models of Chapter~\ref{ch:04} are one way to build it, from a handful of portfolios chosen by researchers. With hundreds of candidate characteristics, later work asked the data to build it instead. Kozak, Nagel and Santosh (2020) estimated a discount factor from many anomaly portfolios with shrinkage, which keeps so many portfolios from fitting noise. Kelly, Pruitt and Su (2019), noting that a stock's risk changes with its characteristics, let each stock's exposures depend on them. Chen, Pelger and Zhu (2024) used deep neural networks to allow more flexible relationships. Each step priced returns more accurately than the last.
 
 The newest step comes from the technology behind large language models. A \textbf{transformer}\index{transformer|textbf} uses a mechanism called \textbf{attention}\index{attention (neural networks)|textbf}, which lets each word in a sentence look at the other words to decide what it means. Kelly, Kuznetsov, Malamud and Xu (2025) placed a transformer inside an asset-pricing model, so that each stock could ``look at'' other stocks before the model decided how to price it. They reported that this artificial intelligence pricing model priced U.S. stocks with errors about 30\% smaller than the best earlier models. Its tangency portfolio, the portfolio with the highest Sharpe ratio, earned an out-of-sample Sharpe ratio of about four. That is far above anything an investor has earned for long, so the result calls for careful testing.
 
@@ -30,6 +43,10 @@ By the end of the chapter you will be able to:
   \item compute attention weights by hand, and explain how a transformer shares information across stocks;
   \item judge the claim by out-of-sample pricing errors, Sharpe ratios, results by size group, and costs.
 \end{itemize}
+
+\begin{callout}
+\textbf{How to read this chapter.} The chapter is written for two kinds of readers at once. If you are new to finance, you can follow the whole argument by reading the main text, the examples and the short \emph{In plain terms} summaries; the box ``For readers new to the stock market'' in Chapter~\ref{ch:01} explains the basic market terms used here. The shaded \emph{Technical note} boxes contain derivations and model formulas, and you can skip them without losing the thread. The Lab and the exercises marked for technical readers are written for readers who want to run the Python code themselves.
+\end{callout}
 
 \section{Foundations: the stochastic discount factor and its machine-learning estimators}
 \label{sec:22-foundations}
@@ -52,12 +69,16 @@ Here $R^e_{t+1}$ is the vector of excess returns, and $w_t$ is the vector of por
 
 \subsection{From an SDF to the tangency portfolio}
 
-When the weights are constant, Equation~\eqref{eq:22-pricing} has a familiar solution. Substituting Equation~\eqref{eq:22-sdf} and solving for $w$ gives
+In plain words, finding the discount factor turns out to be the same as finding the portfolio with the best possible Sharpe ratio, the tangency portfolio of Chapter~\ref{ch:12}. The shaded box shows why.
+
+\begin{technote}
+\textbf{Technical note: from the SDF to the tangency portfolio.} When the weights are constant, Equation~\eqref{eq:22-pricing} has a familiar solution. Substituting Equation~\eqref{eq:22-sdf} and solving for $w$ gives
 \begin{equation}
   w = \Sigma^{-1} \mu,
   \label{eq:22-tangency}
 \end{equation}
 Here $\mu$ is the vector of expected excess returns and $\Sigma$ is the covariance matrix. (Strictly, second moments replace covariances, a small difference for monthly returns.) These are the weights of the tangency portfolio\index{tangency portfolio} of Chapter~\ref{ch:12}. The SDF portfolio is the portfolio with the highest possible Sharpe ratio, and its squared Sharpe ratio is $\mu'\Sigma^{-1}\mu$.
+\end{technote}
 
 This link is why studies of machine-learning SDFs report Sharpe ratios. A model that prices all assets correctly must contain the maximum-Sharpe portfolio. A model that leaves pricing errors behind has missed some return that a better portfolio would capture. Small pricing errors and a high out-of-sample Sharpe ratio are therefore two views of the same success. Studies measure pricing errors in two ways. One is the alphas\index{alpha} of test assets against the SDF portfolio. The other is the \textbf{Hansen--Jagannathan distance}\index{Hansen--Jagannathan distance|textbf}, which summarizes how far the model's SDF is from pricing a set of test assets exactly.
 
@@ -89,7 +110,7 @@ Chen, Pelger and Zhu (2024) added a twist from machine learning called \textbf{a
 
 \subsection{Attention and the transformer for a panel of stocks}
 
-The models above treat each stock separately: stock $i$'s weight depends only on stock $i$'s own characteristics. Attention removes that restriction. Give each stock a vector of characteristics $x_i$. Attention computes three transformed versions of it: a \textbf{query} $q_i = W_Q x_i$, a \textbf{key} $k_i = W_K x_i$ and a \textbf{value} $v_i = W_V x_i$. Stock $i$ compares its query with every stock's key, which gives a score for each stock. The scores are turned into weights that sum to one, and stock $i$ takes the weighted average of the other stocks' values:
+The models above treat each stock separately: stock $i$'s weight depends only on stock $i$'s own characteristics. Attention removes that restriction. In plain words, each stock looks at every other stock, judges how similar they are, and borrows information from the most similar ones. Give each stock a vector of characteristics $x_i$. Attention computes three transformed versions of it: a \textbf{query} $q_i = W_Q x_i$, a \textbf{key} $k_i = W_K x_i$ and a \textbf{value} $v_i = W_V x_i$. Stock $i$ compares its query with every stock's key, which gives a score for each stock. The scores are turned into weights that sum to one, and stock $i$ takes the weighted average of the other stocks' values:
 \begin{equation}
   a_{ij} = \frac{\exp\left(q_i' k_j/\sqrt{d}\right)}{\sum_{l} \exp\left(q_i' k_l/\sqrt{d}\right)}, \qquad h_i = \sum_{j} a_{ij}\, v_j,
   \label{eq:22-attention}
@@ -98,12 +119,18 @@ where $d$ is the length of the query vector. The output $h_i$ is a new descripti
 
 \textbf{Worked example.} Three stocks have queries and keys of length one, $q = (1, 0, 2)$ and $k = (1, 0, 2)$, and values $v = (0.03, 0.00, -0.02)$. For stock 1, the scores $q_1 k_j$ are $1, 0, 2$. The attention weights are $e^1, e^0, e^2$ divided by their sum, about $0.24, 0.09, 0.67$. Stock 1's new value is $0.24 \times 0.03 + 0.09 \times 0 + 0.67 \times (-0.02) \approx -0.006$. Stock 1 pays most attention to stock 3, whose key is most aligned with its query.
 
-A \textbf{transformer}\index{transformer|textbf} stacks several such attention layers, each followed by a small feed-forward network, with shortcuts that add each layer's input to its output. A \textbf{linear transformer} drops the exponential and the normalization. In the asset-pricing model of Kelly and coauthors, the linear version gives portfolio weights
+A transformer stacks many such attention steps; the shaded box shows the simplest version used in asset pricing.
+
+\begin{technote}
+\textbf{Technical note: the linear transformer.} A \textbf{transformer}\index{transformer|textbf} stacks several such attention layers, each followed by a small feed-forward network, with shortcuts that add each layer's input to its output. A \textbf{linear transformer} drops the exponential and the normalization. In the asset-pricing model of Kelly and coauthors, the linear version gives portfolio weights
 \begin{equation}
   w_t = \left(X_t W X_t'\right) X_t \lambda,
   \label{eq:22-linear}
 \end{equation}
 where $X_t$ stacks all stocks' characteristics in rows, $W$ is a matrix of attention parameters and $\lambda$ a vector of pricing coefficients. The matrix $X_t W X_t'$ has one row and one column for every stock, and its entry $(i,j)$ says how much stock $i$ borrows from stock $j$.
+\end{technote}
+
+\noindent\textbf{In plain terms.} An asset-pricing model explains average returns by how much each asset pays off in bad times, and finding the best such model is the same as finding the portfolio with the highest possible Sharpe ratio. Researchers have moved from a few hand-picked factors to statistical shrinkage, to neural networks, and now to transformers that let each stock learn from others.
 
 \section{How it works}
 \label{sec:22-how}
@@ -113,6 +140,8 @@ where $X_t$ stacks all stocks' characteristics in rows, $W$ is a matrix of atten
 \textbf{What the linear surrogate reveals.} Equation~\eqref{eq:22-linear} looks complicated, but it can be rewritten as an ordinary linear model in a very large set of features: every product of three characteristics. With 132 characteristics there are about 2.3 million such products. The linear transformer is therefore a ridge regression of the kind used throughout Chapter~\ref{ch:20}, on an enormous number of interactions. Its weights can be read as signals for timing portfolios built on characteristics. This rewriting is what makes the model, and this chapter's lab, understandable.
 
 \textbf{More parameters than months.} The full transformer has around a million parameters, estimated in rolling windows of 60 months. Classical statistics would expect such a model to overfit. Chapter~\ref{ch:20} described the ``virtue of complexity'' argument, in which very large models with shrinkage can still forecast well. It also described Nagel's (2025) warning that such models may simply reproduce a simple strategy. Kelly, Kuznetsov, Malamud, Xu and Zhang (2024), in ``Large and Deep Factor Models,'' studied deep networks trained to build an SDF. They showed that such a network splits into two parts. One part discovers useful nonlinear characteristics. The other part prices them and behaves like a linear factor model with ridge shrinkage. Their analysis gives a theoretical reason why very large networks need not overfit, and a way to see what they have learned.
+
+\noindent\textbf{In plain terms.} Stocks are linked through suppliers, customers, competitors and shared shocks, and attention lets a model discover such links on its own. Most of what the transformer learned does not match familiar business links, and its huge number of parameters makes careful testing all the more important.
 
 \section{The claim}
 \label{sec:22-claim}
@@ -178,6 +207,8 @@ Three questions matter for judging the claim.
   \item \textbf{Small stocks.} The highest Sharpe ratios come from small and micro stocks, the segment in which Chapter~\ref{ch:19} found anomalies concentrated and Chapter~\ref{ch:20} found machine-learning gains concentrated.
   \item \textbf{Replication.} The paper is a working paper by a single team, and the result has not yet been reproduced independently. Every other model in Table~\ref{tab:22-aipm} also has a Sharpe ratio far above what investors have earned, which is a reminder that these are hypothetical, frictionless returns.
 \end{itemize}
+
+\noindent\textbf{In plain terms.} In the main study, the transformer priced stocks more accurately than every earlier model, and its advantage held after 2002 and within each size group. But its returns are hypothetical and before costs, its edge is much smaller among large stocks, and no independent team has yet repeated the result.
 
 \section{Lab~\thechapter: Replicating the linear-transformer SDF on anomaly portfolios}
 \label{sec:22-lab}
@@ -306,12 +337,13 @@ The evidence in Section~\ref{sec:22-verdict} suggests several practical lessons.
   \item In the shrinkage SDF of Equation~\eqref{eq:22-kns}, a principal component has variance 0.0001 and another has variance 0.01, and $\gamma = 0.001$. By what fraction is each component's weight shrunk? Why is this economically sensible?
   \item Repeat the attention worked example for stock 3. Which stock does stock 3 pay most attention to, and what is its new value?
   \item Explain why a Sharpe ratio of 4.57 in a research paper does not mean that an investor could have earned it.
+  \item A news headline says that ``AI now understands the stock market better than economists do.'' Without any calculation, use this chapter to explain what the evidence actually shows, and what has not yet been tested.
 \end{enumerate}
 
 \subsection*{Lab extensions (technical readers)}
 
 \begin{enumerate}
-  \setcounter{enumi}{5}
+  \setcounter{enumi}{6}
   \item In Part C, add the JKP theme cluster of each factor as extra characteristics. Does attention concentrate within clusters?
   \item Run the placebo of Robustness check 1 one hundred times. Where does the real model's alpha fall in the distribution of placebo alphas?
   \item In Part D, plot the out-of-sample Sharpe ratio against the number of transformer blocks for windows of 60 and 120 months. Does depth help in both?
