@@ -38,61 +38,124 @@ Large institutions pay to protect themselves against a volatile stock market. Pe
  & Reasons to buy & Reasons to sell \\
 \midrule
 Call &
-\textbf{Bet on a rise.} The buyer gains if the price rises above the strike, and her loss is limited to the premium.\par\smallskip
-\textbf{Leverage.} A call costs far less than the shares, so a small outlay gives exposure to a large position.\par\smallskip
-\textbf{Buy later at a known price.} An investor expecting cash in the future can lock in today's price.\par\smallskip
-\textbf{Cap the loss on a short sale.} A call limits the loss if a shorted stock rises.
+Bet on a sharp rise at a small, known cost.\par\smallskip
+Lock in a price for a purchase later.
 &
-\textbf{Earn income on stocks already owned.} The seller collects the premium every month, which is the covered call used by option-income funds.\par\smallskip
-\textbf{Sell at a target price.} An owner who would be happy to sell at the strike is paid while waiting.\par\smallskip
-\textbf{Expect a quiet market.} The seller keeps the full premium if the price stays below the strike. \\
+Earn income on stocks already owned (a covered call).\par\smallskip
+Expect the price to stay below the strike. \\
 \addlinespace
-\midrule
 Put &
-\textbf{Insure a portfolio.} The put pays out when the market falls below the strike, much like an insurance policy.\par\smallskip
-\textbf{Bet on a fall.} The buyer profits if the price drops, and her loss is limited to the premium.\par\smallskip
-\textbf{Protect a gain.} An investor who does not want to sell yet locks in a minimum selling price.\par\smallskip
-\textbf{Meet a guarantee.} Pension funds, insurers and asset managers hedge promises to limit their clients' losses.
+Insure a portfolio against a fall.\par\smallskip
+Hedge a promise to limit losses, as pension funds and insurers do.
 &
-\textbf{Collect an insurance premium.} The seller is paid up front for absorbing losses in a market fall, which is the put-writing strategy.\par\smallskip
-\textbf{Buy at a lower price.} An investor who would like to own the stock at the strike is paid while waiting, and buys only if the price falls.\par\smallskip
-\textbf{Expect stable or rising prices.} The seller keeps the full premium if the price stays above the strike. \\
+Collect an insurance premium (put-writing).\par\smallskip
+Buy the stock only if it falls to the strike. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 
-Let's take an ETF as an example. An \textbf{exchange-traded fund}\index{exchange-traded fund (ETF)|textbf} is a fund that holds a basket of assets, such as all the stocks in the S\&P 500.
-Investors like ETFs because a single share gives them a diversified portfolio at low cost, and they can buy or sell it at any moment during the trading day.
-Because ETF shares trade like stocks, investors can also buy and sell options on them. An \textbf{ETF option}\index{option!on an ETF|textbf} gives its buyer the right to buy or sell shares of an ETF at a fixed price within a fixed time. 
+A put option\index{option!put} is insurance against a market fall. Its seller collects a premium up front and pays out when the market drops. If the insurance is priced above the expected claims, the seller earns a steady profit, with an occasional very bad year. Carr and Wu (2009) measured the \textbf{variance risk premium}\index{variance risk premium}, the gap between the volatility priced into options and the volatility that follows, and found it large and persistent. Figure~\ref{fig:18-vrp} shows the same pattern from 1990 to 2025: in almost every year, the volatility priced into index options was higher than the volatility the market then delivered, but in 2008 and 2020 the market moved far more than option prices had allowed for.
 
-An \textbf{option-income ETF}\index{option income|textbf} is a fund that earns money by selling options rather than buying them. Call options are bought by investors who expect the market to rise sharply and want to profit from that rise for a small up-front cost, and an option-income fund takes the other side of that bet, giving up any large gains in exchange for a payment today. A typical fund holds a portfolio of stocks, sells call options on those stocks or on the index they track every month, collects the premiums, and pays them out to its investors as regular distributions.
+% Figure: implied versus realized volatility, approximate annual averages.
+% NOTE: the numbers below are APPROXIMATE annual averages (VIX, and realized
+% volatility of the S&P 500 over the same calendar year), entered by hand to show
+% the pattern. Replace them with the output of vrp_figure.py before publication.
+\pgfplotstableread[row sep=\\]{
+  year   vix   realized  gap \\
+  1990   23.1   14.5    8.6 \\
+  1991   18.4   14.3    4.1 \\
+  1992   15.5    9.6    5.9 \\
+  1993   12.7    8.6    4.1 \\
+  1994   13.9    9.8    4.1 \\
+  1995   12.4    7.8    4.6 \\
+  1996   16.4   11.8    4.6 \\
+  1997   22.4   18.0    4.4 \\
+  1998   25.6   20.2    5.4 \\
+  1999   24.4   18.0    6.4 \\
+  2000   23.3   22.1    1.2 \\
+  2001   25.8   21.6    4.2 \\
+  2002   27.3   25.9    1.4 \\
+  2003   22.0   17.0    5.0 \\
+  2004   15.5   11.1    4.4 \\
+  2005   12.8   10.3    2.5 \\
+  2006   12.8   10.0    2.8 \\
+  2007   17.5   16.0    1.5 \\
+  2008   32.7   41.0   -8.3 \\
+  2009   31.5   27.3    4.2 \\
+  2010   22.5   18.0    4.5 \\
+  2011   24.2   23.3    0.9 \\
+  2012   17.8   12.7    5.1 \\
+  2013   14.2   11.1    3.1 \\
+  2014   14.2   11.4    2.8 \\
+  2015   16.7   15.5    1.2 \\
+  2016   15.8   13.1    2.7 \\
+  2017   11.1    6.7    4.4 \\
+  2018   16.6   17.1   -0.5 \\
+  2019   15.4   12.5    2.9 \\
+  2020   29.3   34.4   -5.1 \\
+  2021   19.7   13.1    6.6 \\
+  2022   25.6   24.2    1.4 \\
+  2023   16.9   13.1    3.8 \\
+  2024   15.5   12.7    2.8 \\
+  2025   19.0   18.0    1.0 \\
+}\vrpdata
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=1 by 2, vertical sep=1.6cm, x descriptions at=edge bottom},
+  width=0.93\linewidth,
+  xmin=1989.3, xmax=2025.7,
+  xtick={1990,1995,...,2025},
+  x tick label style={/pgf/number format/1000 sep={}, font=\scriptsize},
+  y tick label style={font=\scriptsize},
+  axis lines=left, grid=major, grid style={gray!20},
+  title style={font=\small\bfseries, align=left},
+  legend style={draw=none, fill=none, font=\footnotesize, cells={anchor=west}},
+]
+% ---------------- Panel A: implied versus realized ----------------
+\nextgroupplot[height=5.6cm, ymin=0, ymax=52, ytick={0,10,20,30,40},
+  ylabel={Volatility (\%)}, ylabel style={font=\footnotesize},
+  title={A. Option prices usually expect more volatility than the market delivers},
+  legend columns=2, legend style={at={(0.5,0.99)}, anchor=north, /tikz/every even column/.append style={column sep=8pt}}]
+\addplot[fenavy, very thick, mark=*, mark size=1.1pt] table[x=year, y=vix] {\vrpdata};
+\addlegendentry{implied volatility (VIX), yearly average}
+\addplot[red!60!black, thick, mark=square*, mark size=1.0pt] table[x=year, y=realized] {\vrpdata};
+\addlegendentry{realized volatility of the S\&P 500}
+\node[font=\scriptsize, red!60!black, anchor=south] at (axis cs:2008,41.5) {2008};
+\node[font=\scriptsize, red!60!black, anchor=south] at (axis cs:2020,35) {2020};
+% ---------------- Panel B: the gap ----------------
+\nextgroupplot[height=4.6cm, ymin=-12, ymax=16, ytick={-10,-5,0,5,10},
+  ylabel={Implied $-$ realized (points)}, ylabel style={font=\footnotesize},
+  xlabel={Year}, xlabel style={font=\footnotesize},
+  title={B. A small gain in most years, a large loss in a few},
+  ybar, bar width=4.2pt, bar shift=0pt,
+  legend columns=3, legend style={at={(0.5,0.99)}, anchor=north, /tikz/every even column/.append style={column sep=8pt}}]
+\addplot[fill=fenavy, draw=none] table[x=year, y expr={max(\thisrow{gap},0)}] {\vrpdata};
+\addlegendentry{seller gains}
+\addplot[fill=red!60!black, draw=none] table[x=year, y expr={min(\thisrow{gap},0)}] {\vrpdata};
+\addlegendentry{seller loses}
+\draw[gray, thin] (axis cs:1989.3,0) -- (axis cs:2025.7,0);
+\addlegendimage{gray, dashed, line legend}
+\addlegendentry{average, about 3 points}
+\draw[gray, dashed] (axis cs:1989.3,3.0) -- (axis cs:2025.7,3.0);
+\node[font=\scriptsize, red!60!black, anchor=north] at (axis cs:2008,-8.6) {2008};
+\node[font=\scriptsize, red!60!black, anchor=north] at (axis cs:2020,-5.4) {2020};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Implied volatility is usually higher than the volatility that follows. Panel A compares the yearly average of the VIX, the volatility priced into one-month S\&P 500 options, with the realized volatility of the S\&P 500 in the same year. Panel B shows the difference. A seller of index options gains in years when it is positive and loses when it is negative. Implied volatility was higher in all but a few years since 1990, by about 3 percentage points on average, but in 2008 and 2020 the market moved far more than option prices had allowed for. Numbers are approximate yearly averages.}
+\label{fig:18-vrp}
+\end{figure}
 
 
-
-The premiums arrive whatever the market does, which is why the income looks steady. The price of that income is that the fund gives up part of its gains when the market rises sharply, because the buyers of its call options collect those gains instead. 
-
-Some funds sell put options instead, which means collecting an insurance premium and paying out when the market falls. The same strategy is not limited to ETFs. Investors can sell options on individual stocks, on stock indices, on bonds and interest rates, on currencies and on commodities.
+Option income can be a reliable reward for bearing a risk that others want to shed, or it can be small gains in most months paid for by large losses in a few, and the two can look alike in a backtest\index{backtest}. The evidence has to separate them, and the crashes of 2008, February 2018 and March 2020 show what the losses look like when they come. 
 
 
-To see where such income comes from, start with an ordinary investor who owns 100 shares of a stock trading at \$100. She can sell another investor the right to buy those shares from her at \$105 at any time over the next month. That right is called a call option\index{option!call}, and the buyer pays her for it up front, say \$2 a share, or \$200 in total. If the stock stays below \$105, the option expires unused, and she keeps both her shares and the \$200. If the stock rises above \$105, she must sell at \$105, so she keeps the \$200 but gives up any gain beyond that price. Owning a stock and selling call options on it in this way is called writing a \textbf{covered call}\index{option selling!covered call|textbf}, and an option-income fund does the same thing month after month across a whole portfolio of stocks. The \$200 a month feels like a dividend, but it is really a payment for giving up part of the stock's best months. Meanwhile, if the stock falls, the investor still bears the full loss, softened only by the premium she collected. Other funds sell put options\index{option!put}, which are insurance against a fall, and collect the insurance premium in the same way. In both cases the steady income is the price someone else pays to shift a risk onto the fund's investors.
-
-\textbf{Option income}\index{option income|textbf} is the cash an investor collects by selling options to other investors. An option is a contract that gives its buyer a right, such as the right to buy a stock at a fixed price within a fixed time, and the buyer pays for that right up front. The payment is called the option \textbf{premium}\index{option premium|textbf}, and the seller keeps it whatever happens next. An option-income fund sells such contracts every month on the stocks or indices it holds, collects the premiums, and passes them to its investors as regular payouts, which is why its income looks steady. To see how this works, take an investor who owns 100 shares of a stock trading at \$100. She sells another investor the right to buy those shares from her at \$105 at any time over the next month. That right is called a call option\index{option!call}, and the buyer pays her \$2 a share, or \$200 in total. If the stock stays below \$105, the option expires unused, and she keeps both her shares and the \$200. If the stock rises above \$105, she must sell at \$105, so she keeps the \$200 but gives up any gain beyond that price. Owning a stock and selling call options on it in this way is called writing a \textbf{covered call}\index{option selling!covered call|textbf}. The \$200 feels like a dividend, but it is really a payment for giving up the stock's best months, and if the stock falls, she still bears the full loss, softened only by the premium. Some funds sell put options\index{option!put} instead, which are insurance against a fall, and collect the insurance premium in the same way. In both cases, option income is the price that other investors pay to shift a risk onto the fund's investors.
+The claim on trial is: \textbf{put-writing (selling index puts) or writing covered calls earns more than the risk taken, because implied volatility is higher than the volatility that follows.}
 
 
-
-Among those funds are the ones that advertise ``option income''\index{option selling}. They promise investors steady monthly payouts, often well above what bonds or dividends pay, and the idea sounds like a clever way to earn extra money from a stock portfolio. This chapter asks where that income really comes from, and what the investor gives up to get it.
-
-Once the Black--Scholes model gave every option an implied volatility, a pattern became visible: the volatility implied by index option prices was usually higher than the volatility the market then delivered. An investor who sells stock-index options is in the same business as an insurance company. A put option is insurance against a market fall. Its seller collects a premium up front and pays out when the market drops. If the insurance is priced above the expected claims, the seller earns a steady profit, with an occasional very bad year. Coval and Shumway (2001) measured the returns option buyers actually earn and showed that the returns on index options are too low to be explained by their market risk. Using a measure that does not depend on any option model, Carr and Wu (2009) measured the \textbf{variance risk premium}\index{variance risk premium}, the gap between the volatility priced into options and the volatility that follows, and found it large and persistent.
-
-
-Funds that advertise ``option income'' promise investors steady monthly payouts, often well above what bonds or dividends pay. The idea sounds like a clever way to earn extra money from a stock portfolio. This chapter asks where that income really comes from, and what the investor gives up to get it.
-
-Once the Black--Scholes model gave every option an implied volatility, a pattern became visible: the volatility implied by index option prices was usually higher than the volatility the market then delivered. An investor who sells stock-index options is in the same business as an insurance company. A put option\index{option!put} is insurance against a market fall. Its seller collects a premium up front and pays out when the market drops. If the insurance is priced above the expected claims, the seller earns a steady profit, with an occasional very bad year. Coval and Shumway (2001) measured the returns option buyers actually earn and showed that the returns on index options are too low to be explained by their market risk. Using a measure that does not depend on any option model, Carr and Wu (2009) measured the \textbf{variance risk premium}\index{variance risk premium}, the gap between the volatility priced into options and the volatility that follows, and found it large and persistent.
-
-The question matters because a large industry rests on it. Whaley (2002) studied the covered-call\index{option selling!covered call} strategy, owning stocks and selling call options on them, and helped design the Cboe BuyWrite Index as a benchmark for such strategies. Option-income funds, covered-call ETFs and other strategies that sell volatility now manage large sums. The issue is what kind of premium they collect. A reliable premium for bearing a risk that others want to shed is one thing. A strategy that wins small in most months and loses big in a few, while carrying most of the stock market's risk, is another. Because a covered call also holds the stocks underneath, Israelov and Nielsen (2015) asked which part earns the return, and showed that much of the return on covered calls comes from their exposure to stocks, not from the volatility premium.
-
-This matters to anyone offered option income. The two kinds of premium can look alike in a backtest\index{backtest}, so the evidence has to separate them, and the crashes of 2008, February 2018 and March 2020 show what the losses look like when they come. The claim on trial\index{claims-on-trial method} is: \textbf{selling index puts or writing covered calls earns more than the risk taken, because implied volatility is higher than the volatility that follows.}
 
 The lab in Section~\ref{sec:16-lab} repeats Carr and Wu's (2009) measurement of the variance risk premium with the free VIX and daily U.S. market returns. It also rebuilds put-writing and covered-call strategies that can be compared with Cboe's published PUT and BXM indexes, to check whether selling options earns a reliable premium, and how much of that premium is simply stock-market risk.
 
@@ -110,73 +173,20 @@ By the end of the chapter you will be able to:
 \label{sec:16-foundations}
 
 Chapter~\ref{ch:17} introduced option payoffs, put--call parity, the Black--Scholes--Merton model, the Greeks and implied volatility (Sections~\ref{sec:14-bsm} to~\ref{sec:14-iv}). This chapter adds the VIX and the economics of selling options.
-
 \subsection{The VIX}
 
-The VIX, introduced in Section~\ref{sec:10-iv}, is computed from the prices of a range of out-of-the-money calls and puts on the S\&P 500. Its square is approximately the fair price of a 30-day \textbf{variance swap}\index{variance swap|textbf}, a contract that pays the difference between the variance that actually occurs and a fixed level agreed in advance. The variance risk premium of Section~\ref{sec:10-iv} is therefore the expected profit of the seller of such a swap: the expected gap between the variance priced into options (the risk-neutral\index{risk-neutral pricing} variance) and the variance that actually follows.
+The VIX,  plotted in Figure~\ref{fig:18-vrp}, measures the volatility priced into one-month S\&P 500 options. Its square is approximately the fair price of a 30-day \textbf{variance swap}\index{variance swap|textbf}, a contract that pays the gap between the variance that occurs and a level fixed in advance. The variance risk premium is the expected profit of the seller of such a swap.
 
-\textbf{Worked example.} The index is at 100, the risk-free rate\index{risk-free rate} is 4\%, and a one-month at-the-money put trades at an implied volatility of 20\%.
-
-\begin{itemize}
-  \item The Black--Scholes price of the put is $P = \$2.14$ per \$100 of index. The call is worth \$2.47. The difference, \$0.33, equals $100 - 100\,e^{-0.04/12}$, as put--call parity requires.
-  \item Suppose volatility over the month turns out to be 16\%. At that volatility, the put would have been worth \$1.68. The seller's expected gain is roughly $\$2.14 - \$1.68 = \$0.46$, or vega (\$0.115 per point of volatility) times the 4-point gap.
-  \item That is only an \emph{expected} gain. If the index falls 10\% during the month, the put pays \$10, and the seller loses $\$10 - \$2.14 = \$7.86$, about seventeen months of expected gains at \$0.46 a month (Figure~\ref{fig:16-put}).
-\end{itemize}
-
-\begin{figure}[htbp]
-\centering
-\scalebox{0.8}{%
-\begin{tikzpicture}[declare function={profit(\s) = 2.14 - max(100 - \s, 0);}]
-\begin{axis}[
-  width=0.64\linewidth, height=0.34\linewidth,
-  axis lines=left, axis line style={-stealth},
-  xmin=85, xmax=110, ymin=-13, ymax=5,
-  xtick={85,90,...,110}, ytick={-10,-5,0,5},
-  tick label style={font=\small},
-  xlabel={Index at expiry}, ylabel={Put seller's profit (\$)},
-  clip=false,
-]
-  \addplot[gray, thin, domain=85:110, samples=2] {0};
-  \addplot[fenavy, very thick] coordinates {(85,-12.86) (100,2.14) (110,2.14)};
-  \fill[fenavy] (axis cs:97.86,0)  circle (2.6pt);
-  \fill[fenavy] (axis cs:90,-7.86) circle (2.6pt);
-  \node[anchor=south east] at (axis cs:97.4,0.4) {break-even 97.86};
-  \node[anchor=south east] at (axis cs:110,2.4) {keep the \$2.14 premium};
-  \node[anchor=west, align=left] at (axis cs:92,-9.5)
-    {index $-10\%$: lose \$7.86,\\about 17 months of expected gains};
-\end{axis}
-\end{tikzpicture}%
-}
-\caption{A put seller collects a small premium and risks a much larger loss. The put seller's profit at expiry in the worked example. Above the strike of 100 the seller keeps the \$2.14 premium; below the break-even of 97.86 the loss grows one for one with the fall. A 10\% fall costs \$7.86, about seventeen months of expected gains.}
-\label{fig:16-put}
-\end{figure}
+\textbf{Worked example.} The index is at 100, the risk-free rate\index{risk-free rate} is 4\%, and a one-month at-the-money put trades at an implied volatility of 20\%, so its Black--Scholes price is \$2.14. Suppose volatility over the month turns out to be 16\%. At that volatility, the put would have been worth \$1.68, so the seller's expected gain is about $\$2.14 - \$1.68 = \$0.46$, roughly vega (\$0.115 per point of volatility) times the 4-point gap. That is only an \emph{expected} gain. If the index falls 10\% during the month, the put pays \$10, and the seller loses $\$10 - \$2.14 = \$7.86$, about seventeen months of expected gains. The shape of this bargain is the ``sell a put'' panel of Figure~\ref{fig:14-four-payoffs}.
 
 
-\section{How it works}
+\section{Why selling options pays, and how it is done}
 \label{sec:16-how}
 
-\textbf{Why insurance might be overpriced.} Many investors hold stock portfolios they cannot easily sell, and they want protection against crashes. Pension funds, insurers and issuers of structured products buy index puts. The market makers\index{market maker}, the dealers who stand ready to buy and sell options, who sell these puts must hold capital against the risk and cannot fully hedge it. Bollen and Whaley (2004) and G\^arleanu, Pedersen and Poteshman (2009) showed that this steady demand pushes option prices up, especially for out-of-the-money puts. Sellers are paid for bearing a risk that strikes at the worst times, when investors' wealth is low and losses hurt most. A premium for that risk is not a free lunch. It is compensation, and it should be large precisely because the losses come at bad times.
+\textbf{Why insurance might be overpriced.} Many investors hold stock portfolios they cannot easily sell, and they want protection against crashes. Pension funds, insurers and issuers of structured products buy index puts. The dealers who sell them must hold capital against the risk and cannot fully hedge it, so this steady demand pushes option prices up, especially for out-of-the-money puts. Sellers are paid for bearing a risk that strikes at the worst times, when investors' wealth is low and losses hurt most. A premium for that risk is not a free lunch. It is compensation, and it should be large precisely because the losses come at bad times (Bollen and Whaley 2004; G\^arleanu, Pedersen and Poteshman 2009).
 
-\textbf{Ways to sell volatility.} The strategies differ in how much stock-market risk they carry along with their bet against volatility.
 
-\begin{center}
-\small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
-\toprule
-Strategy & Position & Equity exposure & Main risk \\
-\midrule
-Covered call (buy-write) & Own the index, sell a call & High (beta about 0.5--0.8) & Market falls; gains capped in rallies \\
-Cash-secured put (put-write) & Hold bills, sell a put & High (same as covered call at the same strike) & Market falls \\
-Short straddle & Sell a call and a put & Low on average, changes with the market & Large moves either way \\
-Delta-hedged option & Sell an option, hedge its delta daily & Near zero & Realized volatility above implied \\
-Short variance swap & Receive fixed variance, pay realized & Near zero, but crashes raise realized variance & Volatility spikes \\
-\bottomrule
-\end{tabularx}
-\end{center}
-
-The first two are what most ``option income'' products, for individuals and institutions alike, actually do. The last two isolate the variance risk premium itself. Comparing them is the heart of this chapter. If a covered call's return mostly comes from the stock market's extra return, the equity premium\index{equity premium}, earned with a beta of 0.6, it is not evidence that selling options pays.
-
-\textbf{The shape of the payoff.} A covered call keeps the stock market's losses but caps its gains at the strike plus the premium (Figure~\ref{fig:16-cc}). In calm or gently rising months it beats the market. In strong rallies it lags. In crashes it loses almost as much as the market, softened only by the premium. Its returns are therefore \textbf{negatively skewed}\index{skewness|textbf}: most months bring small gains, and a few bring large losses.
+\textbf{The shape of the payoff.} Most ``option income'' products are covered calls or put-writing, and both keep much of the stock market's risk, with a beta of roughly 0.5 to 0.8, so their returns mix the reward for selling options with the stock market's own extra return, the equity premium\index{equity premium}. A covered call keeps the stock market's losses but caps its gains at the strike plus the premium (Figure~\ref{fig:16-cc}). In calm or gently rising months it beats the market. In strong rallies it lags. In crashes it loses almost as much as the market, softened only by the premium. Its returns are therefore \textbf{negatively skewed}\index{skewness|textbf}: most months bring small gains, and a few bring large losses.
 
 \begin{figure}[htbp]
 \centering
@@ -203,7 +213,7 @@ The first two are what most ``option income'' products, for individuals and inst
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{A covered call keeps almost all of the market's losses but caps its gains. A one-month at-the-money covered call against the index alone, using the worked example's prices. The call premium of \$2.47 caps the gain and cushions the loss by the same amount, so the covered call keeps almost all of the index's downside.}
+\caption{A covered call keeps almost all of the market's losses but caps its gains. A one-month at-the-money covered call against the index alone, with the index at 100, a 4\% interest rate and 20\% implied volatility, as in the worked example, at which the call is worth \$2.47. The premium caps the gain and cushions the loss by the same amount, so the covered call keeps almost all of the index's downside.}
 \label{fig:16-cc}
 \end{figure}
 
@@ -235,25 +245,24 @@ To test it, three points need to be settled:
 \section{The original evidence}
 \label{sec:16-evidence}
 
-\textbf{Option returns.} Coval and Shumway (2001) studied S\&P 500 index options. They found that buying at-the-money \textbf{straddles} (a call and a put with the same strike), arranged so that they did not depend on the market's direction, lost about 3\% a week on average. Because a straddle like this is a bet on volatility rather than on the market's direction, its losses point to a price for volatility itself. Bakshi and Kapadia (2003) found that hedged option positions lost money on average for buyers. They attributed the losses to investors paying to own volatility, because volatility rises when markets fall.
+\textbf{Option returns.} To see whether investors pay for volatility itself, Coval and Shumway (2001) bought S\&P 500 \textbf{straddles}, a call and a put with the same strike, arranged so that they did not depend on the market's direction. These positions lost about 3\% a week on average. Bakshi and Kapadia (2003) found the same for delta-hedged options: buyers lost money on average, because volatility rises when markets fall and investors pay to own it.
 
-\textbf{The variance risk premium.} Carr and Wu (2009) showed how to compute the fair price of a variance swap from a set of option prices, the method behind today's VIX, and used it to measure the premium directly for five stock indexes and 35 individual stocks. For the S\&P 500, implied variance was well above realized variance on average. Bollerslev, Tauchen and Zhou (2009) found that the size of the premium also predicts stock returns over the next quarter, better than the price--earnings ratio or the default spread (the gap between the yields on lower- and higher-rated corporate bonds) do, which fits the idea that it is a price for economic uncertainty.
+\textbf{The variance risk premium.} Carr and Wu (2009) computed the fair price of a variance swap from option prices, the method behind today's VIX, and found implied variance well above realized variance for the S\&P 500 and other indexes. Bollerslev, Tauchen and Zhou (2009) found that the size of this gap predicts stock returns over the next quarter, which suggests it is a price for economic uncertainty.
 
-\textbf{Covered calls and put-writing.} Cboe commissioned Robert Whaley to design the BuyWrite Index (BXM), which tracks an S\&P 500 portfolio that sells a one-month call near the current index level every month. Whaley (2002) found that it had earned returns close to the S\&P 500's with much lower volatility. A later study for Cboe (Callan Associates 2006) reported that from June 1988 to August 2006 the BXM returned 11.77\% a year against 11.67\% for the S\&P 500, with a standard deviation of 9.29\% against 13.89\%. Cboe later added a PutWrite Index (PUT), which sells one-month at-the-money puts backed by Treasury bills. These results drew large sums into option-income products.
+\textbf{Covered calls and put-writing.} Whaley (2002) designed Cboe's BuyWrite Index (BXM), which holds the S\&P 500 and sells a one-month call each month, and found that it earned returns close to the index's with much lower volatility. A later study for Cboe reported 11.8\% a year from 1988 to 2006 against 11.7\% for the S\&P 500, with a standard deviation of 9.3\% against 13.9\% (Callan Associates 2006). Results like these drew large sums into option-income products.
 
-\textbf{The skeptics.} Broadie, Chernov and Johannes (2009) argued that large average losses on index puts are not by themselves evidence that puts are overpriced. Under standard models with crashes and reasonable risk premiums, put returns should be very negative and very noisy, so short samples say little. Israelov and Nielsen (2015) split the returns of covered calls into three parts: exposure to the stock market, a bet against volatility, and an unintended bet that recent market moves will reverse. The stock-market exposure drove most of the risk and return. The bet against volatility had a Sharpe ratio near 1.0 but supplied less than 10\% of the risk, and the reversal bet added about a quarter of the risk with little return. A covered call, in other words, is mostly a stock-market position.
-
+\textbf{The skeptics.} Broadie, Chernov and Johannes (2009) argued that large average losses on index puts do not by themselves show that puts are overpriced, because standard models with crashes predict very negative and very noisy put returns. Israelov and Nielsen (2015) split covered-call returns into stock-market exposure, a bet against volatility and an unintended bet on reversals, and found that the stock-market exposure drove most of the risk and return. A covered call, in other words, is mostly a stock-market position.
 
 \section{Measuring option-strategy returns}
 \label{sec:16-measure}
 
 Option-selling strategies are the textbook case in which the usual performance measures mislead. Four corrections matter.
 
-\textbf{Adjust for beta.} A covered call with a beta of 0.6 should earn about 60\% of the stock market's extra return even without any volatility premium. The right comparison is a portfolio with the same beta, 60\% in the market and 40\% in Treasury bills, or equivalently the CAPM alpha (Chapter~\ref{ch:14}). A covered call that matches the market's return with two-thirds of its volatility may have earned no extra return at all.
+\textbf{Adjust for beta.} A covered call with a beta of 0.6 should earn about 60\% of the stock market's extra return even with no volatility premium. Compare it with a portfolio of 60\% in the market and 40\% in Treasury bills, or use its CAPM alpha (Chapter~\ref{ch:14}). Matching the market's return with less volatility may mean no extra return at all.
 
-\textbf{Look at both betas.} Selling options makes a portfolio's exposure to the market lopsided. The \textbf{down beta}, measured in months when the market falls, is close to 1, so the strategy takes most of the loss. The \textbf{up beta}, measured in months when the market rises, is much lower, because the call caps the gains. An investor who cares more about losses than about gains should pay most attention to the down beta.
+\textbf{Look at both betas.} Selling options makes market exposure lopsided. The \textbf{down beta}, measured in months when the market falls, is close to 1, so the strategy takes most of the loss. The \textbf{up beta}, measured in months when the market rises, is much lower, because the call caps the gains.
 
-\textbf{Count the skewness.} The Sharpe ratio ignores skewness, so a strategy can raise it simply by selling crash insurance. Goetzmann, Ingersoll, Spiegel and Welch (2007) showed that a manager with no skill can raise a portfolio's Sharpe ratio by selling out-of-the-money options. They proposed a \textbf{manipulation-proof performance measure (MPPM)}, which counts a large loss far more heavily than a large gain, so that selling crash insurance cannot raise the score. The shaded box gives the formula.
+\textbf{Count the skewness.} Goetzmann, Ingersoll, Spiegel and Welch (2007) showed that a manager with no skill can raise a portfolio's Sharpe ratio by selling out-of-the-money options, because the Sharpe ratio ignores skewness. They proposed a \textbf{manipulation-proof performance measure (MPPM)}, which counts a large loss far more heavily than a large gain, so selling crash insurance cannot raise the score.
 
 \begin{technote}
 \textbf{Technical note: the MPPM.} The measure is
@@ -261,61 +270,51 @@ Option-selling strategies are the textbook case in which the usual performance m
   \Theta = \frac{1}{(1 - \rho)\,\Delta t}\,\ln\!\left\{\frac{1}{T}\sum_{t=1}^{T}\left[\frac{1 + r_t}{1 + r_{f,t}}\right]^{1-\rho}\right\}
   \label{eq:16-mppm}
 \end{equation}
-Here $T$ is the number of periods, $\Delta t$ is the length of each period in years, and $r_t$ and $r_{f,t}$ are the returns of the strategy and of the risk-free asset. $\Theta$ is the safe extra return that an investor with risk aversion $\rho$ would accept in place of the strategy. With $\rho = 3$, a typical value, a large loss in one month counts far more than a large gain, so selling crash insurance cannot raise the score unless it really adds value.
+where $r_t$ and $r_{f,t}$ are the returns of the strategy and of the risk-free asset over $T$ periods of length $\Delta t$ years. $\Theta$ is the safe extra return that an investor with risk aversion $\rho$ would accept in place of the strategy. With $\rho = 3$, a typical value, one large loss outweighs many small gains.
 \end{technote}
 
-\textbf{Use a long enough sample.} A strategy that loses heavily once a decade needs several decades of data to estimate its average return (Section~\ref{sec:01-foundations}). Broadie, Chernov and Johannes (2009) showed how noisy put returns are even over twenty years. A backtest that starts after 2009 and ends before 2020, for example, would miss both of the big losses since 1990.
+\textbf{Use a long enough sample.} A strategy that loses heavily once a decade needs several decades of data (Section~\ref{sec:01-foundations}), and even twenty years of put returns are very noisy (Broadie, Chernov and Johannes 2009). A backtest from 2010 to 2019 would miss both of the big losses since 1990.
 
 
 \section{Lab~\thechapter: Replicating Carr and Wu (2009) and the Cboe put-write and buy-write indices}
 \label{sec:16-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:18} at a glance.} \emph{Papers replicated:} the variance risk premium of Carr and Wu (2009); the put-write and buy-write strategies studied by Whaley (2002). \emph{Claim on trial:} selling index options earns a reliable premium. \emph{Data:} daily market returns from the Kenneth French library and the VIX from FRED, which starts in 1990; both are free. Cboe's PUT and BXM index histories can be added for comparison. \emph{Code:} runs as a script (\texttt{python lab14.py}) or as a notebook with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:18} at a glance.} \emph{Papers replicated:} the variance risk premium of Carr and Wu (2009); the put-write and buy-write strategies studied by Whaley (2002). \emph{Claim on trial:} selling index options earns a reliable premium. \emph{Data:} daily market returns from the Kenneth French library and the VIX from FRED, which starts in 1990; both are free. Cboe's PUT and BXM index histories can be added for comparison. \emph{Code:} runs as a script (\texttt{python lab18.py}) or as a notebook with a prediction prompt before each step.
 \end{callout}
 
-\textbf{Part A, the variance risk premium.} At the end of each month, the lab compares the VIX with the market's realized volatility over the next 21 trading days. It reports the average gap in points of volatility with a Newey--West $t$-statistic, the share of months in which implied volatility was higher than realized, the median gap and the worst months (Lab Figures~\ref{ch:18}.1 and~\ref{ch:18}.2).
+\textbf{Part A, the variance risk premium.} At each month-end, the lab compares the VIX with the market's realized volatility over the next 21 trading days. It reports the average and median gap, a Newey--West $t$-statistic, the share of months with implied volatility above realized, and the worst months (Lab Figures~\ref{ch:18}.1 and~\ref{ch:18}.2).
 
-\textbf{Part B, strategies.} The lab rebuilds two strategies from the data. Each month it sells a one-month option, priced by Black--Scholes at the VIX, and holds it to the next month end:
+\textbf{Part B, strategies.} Each month the lab sells a one-month option, priced by Black--Scholes at the VIX, and holds it to the next month-end. It builds an \textbf{at-the-money put-write} backed by Treasury bills, like Cboe's PUT, and checks that it matches an at-the-money covered call, as put--call parity requires. It also builds a \textbf{covered call with a strike 2\% above the index}, which keeps more of the market's gains. Both are compared with the market on return, volatility, Sharpe ratio, skewness, worst month, drawdown, beta and alpha (Lab Figure~\ref{ch:18}.3).
 
-\begin{itemize}
-  \item an \textbf{at-the-money put-write}, backed by Treasury bills like Cboe's PUT. By put--call parity this is also an at-the-money covered call, and the lab checks that the two returns are identical;
-  \item a \textbf{covered call with a strike 2\% above the index}, which keeps more of the market's gains.
-\end{itemize}
+\textbf{Part C, robustness checks.} Returns in crises and in the market's five worst months, up and down betas, and the MPPM (Lab Figure~\ref{ch:18}.4).
 
-Each strategy is compared with the market on excess return, volatility, Sharpe ratio, skewness, worst month, drawdown, beta and CAPM alpha, both over its own history and over a common period (Lab Figure~\ref{ch:18}.3).
+\textbf{Part D, stocks versus volatility.} The lab splits each strategy's return into the part explained by beta and the alpha that remains, and compares it with the market scaled to the same beta and with a pure short variance swap (Lab Figure~\ref{ch:18}.5).
 
-\textbf{Part C, robustness checks.} Returns in crisis periods, the five worst months for the market, up and down betas, and the MPPM (Lab Figure~\ref{ch:18}.4).
+The rebuilt strategies are deliberately simple. Pricing at the VIX overstates the premium, because the VIX includes the extra price of out-of-the-money puts. The strategies also ignore bid--ask spreads\index{bid--ask spread} and trade at month-ends rather than on Cboe's third-Friday schedule. The \texttt{-{}-iv-shift} option prices the options a few points below the VIX, and comparing the results with Cboe's indexes shows how much these simplifications matter.
 
-\textbf{Part D, stocks versus volatility.} The lab splits each strategy's excess return into the part explained by beta and the alpha that remains. It compares the strategy with the market scaled to the same beta, and with a pure short variance swap priced at the square of the VIX and sized to 10\% annual volatility (Lab Figure~\ref{ch:18}.5).
-
-The rebuilt strategies are deliberately simple, and that matters for interpreting them. They price options at the VIX, which includes the extra premium on out-of-the-money puts and so is usually higher than the implied volatility of at-the-money options. That overstates the premium a seller actually collects. They also ignore bid--ask spreads\index{bid--ask spread}, and they trade at month ends instead of on Cboe's third-Friday schedule. The \texttt{-{}-iv-shift} option prices the options a few points below the VIX. Comparing the rebuilt series with Cboe's indexes, which use traded prices, shows how much these simplifications matter.
-
-\textbf{What the simulated run shows.} The simulation builds in a VIX 12\% above expected volatility. The lab finds the premium (implied volatility above realized in 83\% of months), a put-write with a beta of about 0.5, strongly negative skewness, and a down beta near 0.9 against an up beta near 0.15. The rebuilt put-write and covered call show positive alphas\index{alpha} when options are priced at the inflated VIX. The Cboe-like series, priced 2 points lower, show none. These results confirm that the code works. They say nothing about real markets. Run the lab on real data to reach your own verdict.
+\textbf{What the simulated run shows.} With a VIX built to be 12\% above expected volatility, the lab finds implied volatility above realized in 83\% of months, a put-write beta of about 0.5, strongly negative skewness, and a down beta near 0.9 against an up beta near 0.15. Priced at the inflated VIX, the strategies show positive alphas\index{alpha}; priced 2 points lower, like Cboe's series, they show none. These results confirm that the code works. They say nothing about real markets. Run the lab on real data to reach your own verdict.
 
 \subsection{Robustness checks}
 \label{sec:16-stress}
 
-Results over the full sample can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
+\textbf{Crashes.} A few months decide the outcome: October 1987, August 1998, September 2008 to February 2009, and February and March 2020. In each, realized volatility jumped far above the volatility priced a month earlier, and option sellers lost most of what the market lost, softened only by one month's premium of 1--3\% (Lab Figure~\ref{ch:18}.2).
 
-\textbf{Crashes.} The months that decide the outcome are few: October 1987, August 1998, September 2008 to February 2009, and February and March 2020. In each, the market fell sharply, realized volatility jumped far above the implied volatility priced a month earlier, and option sellers lost most of what the market lost. A put-write softens a crash only by one month's premium, typically 1--3\% of the strike. Lab Figure~\ref{ch:18}.2 shows the pattern for the variance premium: many small gains and a few large losses.
+\textbf{Skewness and beta.}\index{skewness|textbf} Put-writing and covered calls often beat the market on the Sharpe ratio\index{Sharpe ratio}, but the advantage should shrink under the MPPM with a risk aversion\index{risk aversion} of 3, and a beta of 0.6 alone can explain most of their return. A strategy whose edge disappears after these adjustments is being paid for crash risk\index{crash risk} and stock-market risk, not earning alpha.
 
-\textbf{Skewness.}\index{skewness|textbf} Judged by the Sharpe ratio\index{Sharpe ratio}, put-writing and covered calls often look better than the market, because they reduce volatility more than they reduce returns. Judged by the MPPM with a risk aversion\index{risk aversion} of 3, the advantage should shrink, because the measure counts the crash months heavily. A strategy whose edge disappears once skewness is counted is being paid for crash risk\index{crash risk}, not earning alpha.
+\textbf{The timing of the sample.} A backtest that starts just after a crisis, when implied volatility stays high while realized volatility falls, or ends just before one, will flatter the strategy. Splitting the sample at 2008 shows how much this matters.
 
-\textbf{Stock-market exposure.} Covered calls and put-writes have betas of roughly 0.5 to 0.7. Over a period when stocks did well, a beta of 0.6 alone earns most of their return. The lab's decomposition separates the two. If the alpha is small next to the part explained by beta, the strategy is mainly a stock investment with a different payoff shape.
-
-\textbf{The timing of the sample.} After a crisis, implied volatility can stay high while realized volatility falls, which makes the premium look rich. Before a crisis, the premium can look rich until the crash arrives. A backtest that starts just after a crisis, or ends just before one, will flatter the strategy. Splitting the lab's sample at 2008 shows how much this matters.
-
-\textbf{Implementation.} Real options have bid--ask spreads, and covered-call funds charge management fees. Israelov and Nielsen (2015) found that resetting the strike mechanically each month creates a bet on market reversals that adds risk without adding return. These frictions are small on each trade, but large compared with a premium of a few percent a year.
+\textbf{Implementation.} Bid--ask spreads, fund fees and the mechanical monthly reset of the strike, which Israelov and Nielsen (2015) found adds risk without adding return, are small on each trade but large compared with a premium of a few percent a year.
 
 \subsection*{Your verdict}
 
 Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:16-verdict}. If your verdict differs, explain which of your results led you there.
 
+
 \section{Where the evidence stands}
 \label{sec:16-verdict}
 
-The published studies cited in this chapter point to a clear pattern: \textbf{implied volatility has been higher than realized volatility on average, so the variance risk premium is real, but covered-call and put-writing strategies earn most of their return from stock-market exposure and lose most of what the market loses in crashes.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you check these findings with free data.
+The published studies point to a clear pattern: \textbf{implied volatility has been higher than realized volatility on average, so the variance risk premium is real, but covered-call and put-writing strategies earn most of their return from stock-market exposure and lose most of what the market loses in crashes.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.48\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -335,60 +334,43 @@ Situation & Holds? & Why & Evidence \\
 \endlastfoot
 Implied above realized variance & \textbf{Yes} & Implied variance has been well above realized variance on average for the S\&P 500 and other indexes. & Carr and Wu (2009) \\
 \addlinespace[3pt]
-Option buyers pay for volatility & \textbf{Yes} & Zero-beta straddles lost about 3\% a week, and delta-hedged option positions lost money on average. & Coval and Shumway (2001); Bakshi and Kapadia (2003) \\
+Option buyers pay for volatility & \textbf{Yes} & Zero-beta straddles lost about 3\% a week, and delta-hedged options lost money on average. & Coval and Shumway (2001); Bakshi and Kapadia (2003) \\
 \addlinespace[3pt]
-An economic reason for the premium & \textbf{Yes} & Demand for crash insurance raises option prices, and the size of the premium predicts market returns. & Bollen and Whaley (2004); G\^arleanu, Pedersen and Poteshman (2009); Bollerslev, Tauchen and Zhou (2009) \\
+An economic reason for the premium & \textbf{Yes} & Demand for crash insurance raises option prices, and the premium predicts market returns. & Bollen and Whaley (2004); G\^arleanu, Pedersen and Poteshman (2009); Bollerslev, Tauchen and Zhou (2009) \\
 \addlinespace[3pt]
 Covered calls against the index & \textbf{Partly} & The BuyWrite Index matched the S\&P 500's return with lower volatility from 1988 to 2006. & Whaley (2002); Callan Associates (2006) \\
 \addlinespace[3pt]
-Covered calls after adjusting for beta & \textbf{Weakly} & Equity exposure drove most of the risk and return; the short-volatility part was under 10\% of the risk. & Israelov and Nielsen (2015) \\
+Covered calls after adjusting for beta & \textbf{Weakly} & Stock-market exposure drove most of the risk and return; the volatility bet was under 10\% of the risk. & Israelov and Nielsen (2015) \\
 \addlinespace[3pt]
-Risk adjustment that prices skewness & \textbf{Weakly} & Selling options can raise a Sharpe ratio without skill; measures that price the tail show a smaller advantage. & Goetzmann, Ingersoll, Spiegel and Welch (2007) \\
+Risk adjustment that prices skewness & \textbf{Weakly} & Selling options can raise a Sharpe ratio without skill; measures that count crash losses show a smaller advantage. & Goetzmann, Ingersoll, Spiegel and Welch (2007) \\
 \addlinespace[3pt]
-Mispricing, judged from put returns & \textbf{No} & Very negative, noisy put returns are expected under standard models with jumps, so they are not by themselves evidence of mispricing. & Broadie, Chernov and Johannes (2009) \\
+Mispricing, judged from put returns & \textbf{No} & Very negative, noisy put returns are expected in models with crashes, so they do not by themselves show mispricing. & Broadie, Chernov and Johannes (2009) \\
 \end{longtable}
 }
 
-The two parts of the claim come apart. The premium for bearing volatility risk is real, but the strategies sold to collect it are mostly stock-market positions with larger losses in crashes.
-
-\textbf{What would change the picture.} The evidence for option-income strategies would strengthen if their alpha against a benchmark with the same beta stayed significant after counting skewness and costs over a full cycle of crises. It would weaken further if, after adjusting for beta, costs and fees consistently ate up the premium.
+\textbf{What would change the picture.} The case for option-income strategies would strengthen if their alpha against a benchmark with the same beta stayed significant after skewness and costs over a full cycle of crises. It would weaken if costs and fees consistently ate up the premium.
 
 \subsection{Open questions}
 \label{sec:16-open}
 
 \begin{itemize}
-  \item \textbf{Has the boom in very short-dated options changed the premium?} Options that expire on the day they are traded (zero days to expiry, or 0DTE) made up over 61\% of S\&P 500 index option volume in May 2025, according to Cboe (Cboe Global Markets 2025). Have they changed the price of one-month volatility, or the size of the variance premium?
-  \item \textbf{How large is the premium after costs for individual investors?} Covered-call ETFs on single stocks and on indexes have grown rapidly. What do they deliver after fees, spreads and taxes\index{taxes}, compared with an index position with the same beta?
-  \item \textbf{Is the premium compensation or mispricing\index{mispricing}?} Rational models with crash risk explain much of it (Broadie, Chernov and Johannes 2009). Does demand from hedgers push prices above that level?
-  \item \textbf{Can the premium be collected with less crash risk?} Hedged option positions\index{delta hedging}, variance swaps with a cap on losses, and strategies that cut exposure when volatility rises all aim to keep the premium and avoid the worst losses. Do they work out of sample\index{in-sample versus out-of-sample}?
+  \item \textbf{Have very short-dated options changed the premium?} Options that expire on the day they are traded made up over 61\% of S\&P 500 index option volume in May 2025 (Cboe Global Markets 2025). Have they changed the price of one-month volatility?
+  \item \textbf{What do individual investors keep?} What do covered-call ETFs deliver after fees, spreads and taxes\index{taxes}, compared with an index position with the same beta?
+  \item \textbf{Is the premium compensation or mispricing\index{mispricing}?} Models with crash risk explain much of it (Broadie, Chernov and Johannes 2009). Does hedging demand push prices higher still?
+  \item \textbf{Can the premium be collected with less crash risk?} Do hedged positions\index{delta hedging}, capped variance swaps or strategies that cut exposure when volatility rises work out of sample\index{in-sample versus out-of-sample}?
 \end{itemize}
 
 \section{What practitioners and investors can use}
 \label{sec:16-investors}
 
-The evidence in Section~\ref{sec:16-verdict} suggests several practical lessons.
-
-\textbf{What an option-income fund actually delivers.} Covered-call and put-writing funds advertise high payouts. Three facts help interpret them. Israelov and Nielsen (2014) discuss these and other common misunderstandings about covered calls.
+\textbf{What an option-income fund actually delivers.} Three facts help interpret the high payouts these funds advertise (Israelov and Nielsen 2014).
 
 \begin{itemize}
-  \item \textbf{Payouts are not yield.} The premium a fund collects and pays out comes with a cap on the fund's gains. In a strong market, the investor gives up gains in exchange for the income. The premium is not a dividend added on top of the market's return. Part of it is the market's return, turned into a different shape.
-  \item \textbf{The fund is mostly a stock fund.} With a beta of around 0.5 to 0.7 and a down beta near 1, it will fall nearly as much as the market in a crash and rise much less in a rally. Compare it with a mix of an index fund and Treasury bills that has the same beta, not with the index.
-  \item \textbf{Look at the worst months, not the Sharpe ratio.} A smooth history of returns can hide occasional large losses. Ask how the fund did in 2008 and in March 2020.
+  \item \textbf{Payouts are not yield.} The income comes with a cap on the fund's gains. It is not a dividend added to the market's return; part of it is the market's return, paid in a different shape.
+  \item \textbf{The fund is mostly a stock fund.} With a beta of 0.5 to 0.7 and a down beta near 1, it falls nearly as much as the market in a crash and rises much less in a rally. Compare it with an index-and-Treasury-bill mix with the same beta.
+  \item \textbf{Look at the worst months, not the Sharpe ratio.} Ask how the fund did in 2008 and in March 2020.
 \end{itemize}
 
-\textbf{Questions to ask a manager who sells volatility:}
+\textbf{Questions to ask a manager who sells volatility:} What are the strategy's beta and down beta, and what would the index with the same beta have returned? How far out of the money, and how close to expiry, are the options sold? What is the largest possible one-day loss, and how was it worked out? Does the strategy use borrowed money\index{leverage} or margin that could be called in a volatility spike?
 
-\begin{itemize}
-  \item What are the strategy's beta and down beta? What would a position in the index with the same beta have returned?
-  \item How far out of the money, and how close to expiry, are the options sold? How is the strike reset?
-  \item What is the largest loss the strategy could suffer in one day, and how was that figure worked out?
-  \item Does the strategy use borrowed money\index{leverage}, or margin that could be called in a volatility spike?
-\end{itemize}
 
-\begin{callout}
-\textbf{What Failed: selling volatility on margin, February 2018.} LJM Partners ran funds that used borrowed money to sell out-of-the-money puts and calls on S\&P 500 futures. For years the strategy produced steady returns. In February 2018, when volatility spiked, the funds managed by LJM lost more than 80\%, over \$1 billion, in two trading days. In the same week, the VelocityShares inverse VIX note described in Chapter~\ref{ch:07} lost 96\% in a day.
-
-In 2021 the SEC charged LJM and two of its portfolio managers with misleading investors about how the funds managed risk. According to the SEC, the firm had told investors that it tested its mutual fund against a worst-case daily loss of 20\%, but that figure had been derived from a historical one-day loss of about 9\%, doubled and rounded up.
-
-The episode shows this chapter's evidence in its sharpest form. The variance risk premium is real, and selling volatility earned it for years. But the premium is payment for exactly the kind of day that ended LJM. Borrowed money turned a strategy that should lose heavily in a spike into one that could not survive it.
-\end{callout}
