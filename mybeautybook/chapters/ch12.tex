@@ -24,11 +24,11 @@
 \makeatother
 
 \chapter{Claim: Forward Rates Predict Future Interest Rates}
-\label{ch:07}
+\label{ch:12}
 
 Anyone who has compared a one-year and a five-year savings certificate, or a variable and a fixed mortgage, has faced the question behind this chapter: is it better to lock in today's long-term rate or to wait and see what short-term rates do? News reports add a related question whenever long-term interest rates fall below short-term ones, an ``inverted yield curve'' that is often read as a warning of rate cuts and recession. Both questions turn on whether today's interest rates contain a reliable forecast of tomorrow's.
 
-Forward rates predict future interest rates. Chapter~\ref{ch:06} tested a version of this claim in the currency market, where uncovered interest parity says that the forward exchange rate is an unbiased forecast of the future spot rate. The Fama regression rejected it, because high-interest currencies tended to rise rather than fall. This chapter puts the same claim on trial in the \textbf{bond market.}
+Forward rates predict future interest rates. Chapter~\ref{ch:11} tested a version of this claim in the currency market, where uncovered interest parity says that the forward exchange rate is an unbiased forecast of the future spot rate. The Fama regression rejected it, because high-interest currencies tended to rise rather than fall. This chapter puts the same claim on trial in the \textbf{bond market.}
 
 The \textbf{yield curve}\index{yield curve|textbf} plots the interest rates on government bonds against their maturities, from a few months to thirty years. Today's curve also implies a \textbf{forward rate}\index{forward rate} for each future period, which is the interest rate that an investor can lock in today for borrowing or lending over that period. The \textbf{expectations hypothesis}\index{expectations hypothesis|textbf}, the oldest theory of interest rates, says that each forward rate equals the short-term rate that investors expect for that period. A long-term rate is then the average of the short-term rates expected over the bond's life. A curve that slopes upward forecasts rising rates, and an \textbf{inverted} curve, on which long rates are below short rates, forecasts falling ones. Figure~\ref{fig:07-long-short} shows that both shapes have occurred since 2000. Its top panel plots a long-term and a short-term interest rate, and its bottom panel plots the \textbf{term spread}\index{term spread|textbf}, the difference between them, which is positive when the curve slopes upward and negative when it is inverted. The hypothesis also implies that a long bond earns the same expected return\index{return!expected} as \textbf{rolling over} short bonds, which means buying a short bond and reinvesting the proceeds in a new one each time it matures.
 
@@ -435,7 +435,7 @@ The first two tests are mirror images. The forward spread equals the expected ch
 The tests are statistically delicate, for reasons the shaded box explains.
 
 \begin{technote}
-\textbf{Technical note: why the tests are hard.} Interest rates change slowly, and annual returns measured every month overlap by eleven months. Both problems make $t$-statistics\index{t-statistic} look larger than they should if they are not handled carefully (Chapter~\ref{ch:04}). The lab therefore uses Newey--West\index{standard error!Newey--West (HAC)} standard errors with 18 lags and adds out-of-sample tests (Chapter~\ref{ch:09}).
+\textbf{Technical note: why the tests are hard.} Interest rates change slowly, and annual returns measured every month overlap by eleven months. Both problems make $t$-statistics\index{t-statistic} look larger than they should if they are not handled carefully (Chapter~\ref{ch:03}). The lab therefore uses Newey--West\index{standard error!Newey--West (HAC)} standard errors with 18 lags and adds out-of-sample tests (Chapter~\ref{ch:06}).
 \end{technote}
 
 
@@ -470,16 +470,16 @@ To test it, three points need to be settled:
 \label{sec:07-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:07} at a glance.} \emph{Papers replicated:} Fama and Bliss (1987); Campbell and Shiller (1991); Cochrane and Piazzesi (2005). \emph{Claim on trial\index{claims-on-trial method}:} forward rates are unbiased forecasts of future short rates. \emph{Data:} the Federal Reserve's zero-coupon Treasury yield curve (G\"urkaynak, Sack and Wright 2007), month-end yields for maturities of one to ten years; free and updated regularly. \emph{Code:} runs as a script (\texttt{python lab16.py}) or as a notebook with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:12} at a glance.} \emph{Papers replicated:} Fama and Bliss (1987); Campbell and Shiller (1991); Cochrane and Piazzesi (2005). \emph{Claim on trial\index{claims-on-trial method}:} forward rates are unbiased forecasts of future short rates. \emph{Data:} the Federal Reserve's zero-coupon Treasury yield curve (G\"urkaynak, Sack and Wright 2007), month-end yields for maturities of one to ten years; free and updated regularly. \emph{Code:} runs as a script (\texttt{python lab16.py}) or as a notebook with a prediction prompt before each step.
 \end{callout}
 
-\textbf{Part A, the classic tests.} The lab runs Fama--Bliss regressions of one-year excess returns on forward spreads for maturities of 2 to 10 years, the companion regression of future changes in short rates on forward spreads, and Campbell--Shiller regressions for maturities of 2 to 10 years (Lab Figures~\ref{ch:07}.2 and~\ref{ch:07}.3). Standard errors\index{standard error} are Newey--West with 18 lags, to allow for the overlapping monthly observations.
+\textbf{Part A, the classic tests.} The lab runs Fama--Bliss regressions of one-year excess returns on forward spreads for maturities of 2 to 10 years, the companion regression of future changes in short rates on forward spreads, and Campbell--Shiller regressions for maturities of 2 to 10 years (Lab Figures~\ref{ch:12}.2 and~\ref{ch:12}.3). Standard errors\index{standard error} are Newey--West with 18 lags, to allow for the overlapping monthly observations.
 
-\textbf{Part B, Cochrane--Piazzesi.} The lab regresses the average excess return on 2- to 5-year bonds on the one-year yield and four forward rates, and reports how strongly each maturity responds to the resulting combination. It then makes out-of-sample forecasts from 1985, using all data available at each date\index{walk-forward evaluation!expanding window} and leaving an 11-month gap so that no training data overlap the forecast. Three sets of predictors are compared with the historical mean\index{historical-mean benchmark}: the full set of forward rates, a single forward spread, and the level of rates alone (Lab Figure~\ref{ch:07}.4).
+\textbf{Part B, Cochrane--Piazzesi.} The lab regresses the average excess return on 2- to 5-year bonds on the one-year yield and four forward rates, and reports how strongly each maturity responds to the resulting combination. It then makes out-of-sample forecasts from 1985, using all data available at each date\index{walk-forward evaluation!expanding window} and leaving an 11-month gap so that no training data overlap the forecast. Three sets of predictors are compared with the historical mean\index{historical-mean benchmark}: the full set of forward rates, a single forward spread, and the level of rates alone (Lab Figure~\ref{ch:12}.4).
 
 \textbf{Part C, subperiods.} The Fama--Bliss slope for 5-year bonds, the Campbell--Shiller slope at the longest maturity, and the Cochrane--Piazzesi $R^2$ in four periods: the start of the data to 1984, 1985--2007, 2008--2015 (when short rates were near zero), and 2016 onward.
 
-\textbf{Part D, the investor's view.} Average excess returns by maturity, and returns after steep and after flat curves, with ``steep'' defined using only past information (Lab Figure~\ref{ch:07}.5).
+\textbf{Part D, the investor's view.} Average excess returns by maturity, and returns after steep and after flat curves, with ``steep'' defined using only past information (Lab Figure~\ref{ch:12}.5).
 
 Two caveats apply. The Fed's curve is fitted to bond prices rather than made of traded bonds, and the classic studies used zero-coupon prices built from CRSP data, which are not free. Results will therefore be similar in spirit but not identical. Ten-year yields begin in 1971, so the longest maturities have a shorter sample.
 

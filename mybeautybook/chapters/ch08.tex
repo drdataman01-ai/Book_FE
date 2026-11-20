@@ -19,7 +19,7 @@
 \makeatother
 
 \chapter{Claim: Value-at-Risk Models Measure Risk Reliably}
-\label{ch:11}
+\label{ch:08}
 
 A weather forecast that gives a 1\% chance of a severe storm tomorrow makes a promise that can be checked: over many days, severe storms should arrive on about one day in a hundred. Banks make the same kind of promise about their losses every day, and regulators check it. This chapter asks whether those promises are kept, especially in the storms that matter most.
 
@@ -136,7 +136,7 @@ For a normal distribution\index{distribution!normal}, $\mathrm{ES} = \sigma\,\ph
 
 A bank cannot always sell a losing position in a day. Large or illiquid positions may take a week or two to unwind, so regulators set capital with a 10-day VaR rather than a one-day VaR. Ten-day losses are hard to estimate directly, because even 20 years of data contain only about 500 non-overlapping 10-day periods. In practice, banks therefore compute a one-day VaR and scale it up. If daily returns are independent with the same variance\index{variance}, the $h$-day VaR is $\sqrt{h}$ times the one-day VaR\index{Value at Risk (VaR)!square-root-of-time rule}, the same square-root rule used to annualize volatility (Section~\ref{sec:10-foundations}).
 
-The rule assumes that today's volatility will last for the whole horizon, but volatility mean-reverts (Chapter~\ref{ch:10}). After a shock, volatility is likely to fall, so the rule overstates the 10-day risk. After a calm period, volatility is likely to rise, so the rule understates it. The second error is the dangerous one. A 10-day VaR scaled from a quiet year looks lowest just before risk returns, as it did for many banks in early 2007.
+The rule assumes that today's volatility will last for the whole horizon, but volatility mean-reverts (Chapter~\ref{ch:07}). After a shock, volatility is likely to fall, so the rule overstates the 10-day risk. After a calm period, volatility is likely to rise, so the rule understates it. The second error is the dangerous one. A 10-day VaR scaled from a quiet year looks lowest just before risk returns, as it did for many banks in early 2007.
 
 \textbf{Worked example.} A \$10 million position in a stock index has a daily volatility of 1.2\%. Its normal 99\% one-day VaR is $2.326 \times 1.2\% \times \$10\text{m} \approx \$279{,}000$, and its 99\% ES is $2.665 \times 1.2\% \times \$10\text{m} \approx \$320{,}000$. Its 97.5\% ES is about \$281{,}000, almost the same as the 99\% VaR, which is why regulators chose 97.5\% when they moved from VaR to ES: the new measure kept capital at about the same level while capturing the size of tail losses. By the square-root rule, its 10-day 99\% VaR is $\sqrt{10} \times \$279{,}000 \approx \$883{,}000$.
 
@@ -205,7 +205,7 @@ Filtered historical simulation (FHS) & GJR-GARCH & Empirical quantile of past \e
 
 \textbf{Historical simulation}\index{Value at Risk (VaR)!historical simulation|textbf} ranks the returns of a past window from worst to best and reads off the VaR directly. With 500 days of history, for example, the 99\% VaR is the loss between the 5th and 6th worst days. It is the most popular method at banks (P\'erignon and Smith 2010), because it assumes no distribution and handles options by revaluing the portfolio under each past day's market moves. Its weakness is that it reacts slowly. A 250-day window gives a crash eleven months ago the same weight as yesterday's, so when volatility jumps, the VaR rises only as new large losses enter the window, and it drops abruptly when they leave.
 
-\textbf{EWMA and GARCH}\index{EWMA|textbf} react to volatility within days, which is Chapter~\ref{ch:10}'s central finding. With normal shocks, however, they understate the tail. Even after volatility clustering is removed, daily returns have fatter tails than the normal distribution, so a normal 99\% VaR built on a good volatility forecast\index{volatility!forecasting} is still breached too often.
+\textbf{EWMA and GARCH}\index{EWMA|textbf} react to volatility within days, which is Chapter~\ref{ch:07}'s central finding. With normal shocks, however, they understate the tail. Even after volatility clustering is removed, daily returns have fatter tails than the normal distribution, so a normal 99\% VaR built on a good volatility forecast\index{volatility!forecasting} is still breached too often.
 
 \textbf{Filtered historical simulation}\index{Value at Risk (VaR)!filtered historical simulation|textbf} (Barone-Adesi, Giannopoulos and Vosper 1999; Hull and White 1998) combines the strengths of both approaches. It first divides each past return by that day's volatility forecast, which puts calm and turbulent days on the same scale; these rescaled returns are called standardized returns. It then reads the VaR from the worst of these rescaled returns, as historical simulation does, which captures the fat tails\index{fat tails} without assuming a distribution. Finally, it multiplies by today's volatility forecast, so the VaR reacts quickly. The GJR\index{GARCH!GJR}-$t$ model follows the same idea but uses a Student-$t$ distribution, a bell-shaped curve with fatter tails than the normal, for the tail.
 
@@ -223,7 +223,7 @@ This is the claim implicit in every VaR number a bank reports and in the Basel r
 To test it we need to be precise on four points.
 
 \begin{itemize}
-  \item \textbf{Which models.} The claim is not that any VaR model works. It is that some models, built on the evidence of Chapter~\ref{ch:10}, can achieve conditional coverage. We test six, from the simplest to filtered historical simulation.
+  \item \textbf{Which models.} The claim is not that any VaR model works. It is that some models, built on the evidence of Chapter~\ref{ch:07}, can achieve conditional coverage. We test six, from the simplest to filtered historical simulation.
   \item \textbf{Which portfolio.} The lab uses the U.S. stock market, a single liquid position with daily data back to 1926. Bank portfolios are more complex, and their own backtests (Section~\ref{sec:11-evidence}) are the stronger test of practice.
   \item \textbf{Which confidence level.} The claim is stated at 99\%, the Basel level, but a model that is right at 99\% and badly wrong at 99.9\% is of limited use for the tail events that matter.
   \item \textbf{What would count against it.} The claim fails for a model if its breach rate differs significantly from 1\%, or if breaches are significantly clustered. It weakens if every model fails in crises, even those that pass over the full sample.
@@ -285,18 +285,18 @@ Even a correct model has bad luck sometimes. It lands in the yellow zone about o
 \label{sec:11-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:11} at a glance.} \emph{Papers replicated:} Kupiec (1995); Christoffersen (1998). \emph{Claim on trial\index{claims-on-trial method}:} losses exceed a 99\% VaR on about 1\% of trading days, in calm markets and in crises alike. \emph{Data:} daily U.S. market returns (Mkt-RF + RF from the Kenneth French\index{Kenneth French data library} library) from 1930 to the present, about 24,000 trading days; free. \emph{Code:} runs as a script (\texttt{python lab13.py}) or as a notebook with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:08} at a glance.} \emph{Papers replicated:} Kupiec (1995); Christoffersen (1998). \emph{Claim on trial\index{claims-on-trial method}:} losses exceed a 99\% VaR on about 1\% of trading days, in calm markets and in crises alike. \emph{Data:} daily U.S. market returns (Mkt-RF + RF from the Kenneth French\index{Kenneth French data library} library) from 1930 to the present, about 24,000 trading days; free. \emph{Code:} runs as a script (\texttt{python lab13.py}) or as a notebook with a prediction prompt before each step.
 \end{callout}
 
-Lab~\ref{ch:11} backtests the six models of Section~\ref{sec:11-how}. Every forecast uses only data available the day before, and the GARCH models are re-estimated once a year on the previous ten years.
+Lab~\ref{ch:08} backtests the six models of Section~\ref{sec:11-how}. Every forecast uses only data available the day before, and the GARCH models are re-estimated once a year on the previous ten years.
 
-\textbf{Part A, the number of breaches.} For each model, the lab counts breaches of the 99\% VaR and compares them with the roughly 240 expected over the full sample, using Kupiec's test. It also reports the average VaR, the worst loss as a multiple of the VaR, and the share of years that would have landed in the Basel yellow or red zone. Lab Figure~\ref{ch:11}.1 shows two models through 2007--2010, and Lab Figure~\ref{ch:11}.2 compares breach rates.
+\textbf{Part A, the number of breaches.} For each model, the lab counts breaches of the 99\% VaR and compares them with the roughly 240 expected over the full sample, using Kupiec's test. It also reports the average VaR, the worst loss as a multiple of the VaR, and the share of years that would have landed in the Basel yellow or red zone. Lab Figure~\ref{ch:08}.1 shows two models through 2007--2010, and Lab Figure~\ref{ch:08}.2 compares breach rates.
 
-\textbf{Part B, the timing of breaches.} For each model, the lab estimates the chance of a breach on the day after a breach and applies Christoffersen's test to check whether breaches bunch together (Lab Figure~\ref{ch:11}.3).
+\textbf{Part B, the timing of breaches.} For each model, the lab estimates the chance of a breach on the day after a breach and applies Christoffersen's test to check whether breaches bunch together (Lab Figure~\ref{ch:08}.3).
 
 \textbf{Part C, robustness checks.} The lab repeats the backtests under three harder conditions, described in Section~\ref{sec:11-stress} below.
 
-\textbf{Part D, expected shortfall.} At 97.5\%, the lab compares the average loss on breach days with the average ES forecast. A ratio of 1 means the ES was right on average. It then applies the McNeil--Frey test of Section~\ref{sec:11-backtest} (Lab Figure~\ref{ch:11}.5).
+\textbf{Part D, expected shortfall.} At 97.5\%, the lab compares the average loss on breach days with the average ES forecast. A ratio of 1 means the ES was right on average. It then applies the McNeil--Frey test of Section~\ref{sec:11-backtest} (Lab Figure~\ref{ch:08}.5).
 
 The lab tests the claim in its simplest setting: a single stock-market position in a liquid market with a long history. A bank's trading book adds options, credit and hard-to-value positions, and these make every model harder to build. If the models struggle here, they will not do better there.
 
@@ -309,14 +309,14 @@ A model can pass over the full sample and still fail when it matters. Part C che
 
 \textbf{In crises.} A full-sample breach rate can hide disastrous weeks. On October 19, 1987, the Dow Jones Industrial Average fell 22.6\%, its largest one-day percentage loss, and no model built on the calm months before could have put that inside a 99\% VaR. Part C counts breaches in 1930--32, October 1987, the autumn of 2008 and the spring of 2020. A correct 99\% model should average about 0.2 breaches in a 22-day month. Expect every model to exceed that in these windows. The question is how many breaches each produces and how quickly it catches up.
 
-\textbf{Deeper in the tail.} Fat tails hurt models more the further into the tail they reach. Under the normal distribution, a 99.9\% loss is only 1.33 times a 99\% loss ($3.09/2.33$), but in stock returns the ratio is larger. A normal model that is slightly off at 95\% can be several times off at 99.9\% (Lab Figure~\ref{ch:11}.4). The test is also weak at 99.9\%, because only about 24 breaches are expected in 95 years, so a single bad week moves the result noticeably.
+\textbf{Deeper in the tail.} Fat tails hurt models more the further into the tail they reach. Under the normal distribution, a 99.9\% loss is only 1.33 times a 99\% loss ($3.09/2.33$), but in stock returns the ratio is larger. A normal model that is slightly off at 95\% can be several times off at 99.9\% (Lab Figure~\ref{ch:08}.4). The test is also weak at 99.9\%, because only about 24 breaches are expected in 95 years, so a single bad week moves the result noticeably.
 
 \textbf{With different window lengths.} Part C reruns historical simulation with 250, 500 and 1,000 days of data. A short window reacts faster but estimates the worst 1\% of days from very few observations, only two or three with 250 days. A long window is more stable but slower to react after a calm period. The choice changes the breach rate but does not stop breaches from bunching together, because no equal-weighted\index{index weighting!equal-weighted} window reacts to volatility the way GARCH does.
 
 \section{Where the evidence stands}
 \label{sec:11-verdict}
 
-The studies and records cited in this chapter point to a clear pattern: \textbf{VaR can measure risk reliably, but only with the right model, and not during a crisis.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. Lab~\ref{ch:11} lets you verify these findings on real data.
+The studies and records cited in this chapter point to a clear pattern: \textbf{VaR can measure risk reliably, but only with the right model, and not during a crisis.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. Lab~\ref{ch:08} lets you verify these findings on real data.
 
 \begin{center}
 \small
@@ -328,7 +328,7 @@ The best models in normal times & \textbf{Yes} & GARCH-type models with fat tail
 Spotting bad models & \textbf{Yes} & Backtests catch models whose breaches are too many or bunched. & Kupiec (1995); Christoffersen (1998) \\
 The models most banks use & \textbf{No} & Historical simulation reacts slowly, so its breaches bunch together when losses matter most. & P\'erignon and Smith (2010); Berkowitz and O'Brien (2002) \\
 The first days of a crisis & \textbf{No} & No model built on past data foresees a crash, so breaches arrive in bunches. & Berkowitz and O'Brien (2002) on 1998; the UBS investigation on 2007--08; Federal Reserve (2021) on 2020 \\
-Deep in the tail (99.9\%) & \textbf{No} & Fat tails make normal models fail more the further out they go, and so few breaches are expected that tests can barely tell. & Fat tails (Chapter~\ref{ch:10}); Section~\ref{sec:11-stress} \\
+Deep in the tail (99.9\%) & \textbf{No} & Fat tails make normal models fail more the further out they go, and so few breaches are expected that tests can barely tell. & Fat tails (Chapter~\ref{ch:07}); Section~\ref{sec:11-stress} \\
 The size of the worst losses & \textbf{Not measured} & VaR\index{Value at Risk (VaR)!backtesting} shows where the bad days begin, not how bad they are. & Artzner et al.\ (1999); Basel's move to ES (2016) \\
 \bottomrule
 \end{tabularx}
@@ -374,7 +374,7 @@ In March 2020, regulators faced the opposite problem. Banks' breaches jumped as 
 \label{sec:11-open}
 
 \begin{itemize}
-  \item \textbf{Can intraday data catch the first day of a crisis?} Realized volatility\index{volatility!realized} from intraday returns (Chapter~\ref{ch:10}) reacts faster than daily GARCH. Does it reduce the bunching of breaches when a crisis begins?
+  \item \textbf{Can intraday data catch the first day of a crisis?} Realized volatility\index{volatility!realized} from intraday returns (Chapter~\ref{ch:07}) reacts faster than daily GARCH. Does it reduce the bunching of breaches when a crisis begins?
   \item \textbf{How should ES be tested?} ES cannot be checked by counting breaches, but it can be tested together with VaR. Which tests are reliable with the few years of data a bank actually has?
   \item \textbf{Can risk measures be accurate without deepening crises?} A fast-reacting VaR forces banks to sell in falling markets (Section~\ref{sec:11-investors}). How should regulators balance accuracy against stability?
   \item \textbf{What about portfolios VaR handles badly?} Options, credit and illiquid assets have prices that jump or are rarely updated. How much worse do VaR backtests look for them, and what should replace VaR there?

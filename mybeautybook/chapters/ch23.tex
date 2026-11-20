@@ -24,15 +24,15 @@
 \makeatother
 
 \chapter{Capstone: Replicating a Finance Claim}
-\label{ch:24}
+\label{ch:23}
 
 Most people have seen an impressive claim fall apart once someone else tried it: a diet that worked only for its inventor, a gadget that failed outside the advertisement, or a stock tip that stopped working the moment a friend acted on it. The surest way to know whether a claim holds is to check it yourself, carefully and in a way others can repeat. This final chapter shows how to do that for a claim in finance.
 
 This book has put twenty-three claims on trial\index{claims-on-trial method}. The capstone asks the reader to run a trial of their own: take a published finance result, reproduce it, extend it and deliver a dated verdict that others can check. Replication\index{replication} is how a field corrects itself, and finance has come to it late. In 2021 the \emph{Journal of Finance} retracted an article after Paul Guest, attempting a replication, found that key results could not be reproduced from the code and data the authors had posted. The editors noted that retractions are rare in finance and economics mainly because replications are rarely attempted, not because published work is free of errors (American Finance Association 2021).
 
-The reasons for the gap are well understood. Original studies often use paid databases, code is rarely published, and a replication that confirms a result is hard to publish. The tools of earlier chapters show why this matters: a result found by searching can be luck (Chapter~\ref{ch:01}), a result built on flawed data can be an artefact (Chapter~\ref{ch:02}), and a result that holds in sample can fail out of sample (Chapter~\ref{ch:09}). Pre-registration\index{pre-registration}, power analysis\index{statistical power} and open code, borrowed from medicine and psychology, are the field's response.
+The reasons for the gap are well understood. Original studies often use paid databases, code is rarely published, and a replication that confirms a result is hard to publish. The tools of earlier chapters show why this matters: a result found by searching can be luck (Chapter~\ref{ch:01}), a result built on flawed data can be an artefact (Chapter~\ref{ch:02}), and a result that holds in sample can fail out of sample (Chapter~\ref{ch:06}). Pre-registration\index{pre-registration}, power analysis\index{statistical power} and open code, borrowed from medicine and psychology, are the field's response.
 
-The capstone is also a portfolio piece. A well-documented replication, with code that runs in one command, shows employers and admissions committees exactly how its author works, and it can grow into a paper or a dissertation chapter. The chapter's first sections give the research-design tools a replication needs: testable hypotheses, benchmarks, power, pre-registration, robustness and critical reading. The remaining sections turn them into a project. Its lab, in Section~\ref{sec:24-lab}, provides a project template, and its worked example replicates Jegadeesh and Titman (1993), the momentum paper of Chapter~\ref{ch:05}, on its original 1965--1989 sample with free data, in order to show every step: reproducing the published numbers, explaining any differences, and extending the test to new data.
+The capstone is also a portfolio piece. A well-documented replication, with code that runs in one command, shows employers and admissions committees exactly how its author works, and it can grow into a paper or a dissertation chapter. The chapter's first sections give the research-design tools a replication needs: testable hypotheses, benchmarks, power, pre-registration, robustness and critical reading. The remaining sections turn them into a project. Its lab, in Section~\ref{sec:24-lab}, provides a project template, and its worked example replicates Jegadeesh and Titman (1993), the momentum paper of Chapter~\ref{ch:04}, on its original 1965--1989 sample with free data, in order to show every step: reproducing the published numbers, explaining any differences, and extending the test to new data.
 
 By the end of the capstone you will have:
 
@@ -45,7 +45,7 @@ By the end of the capstone you will have:
   \item refereed a classmate's replication and answered referee\index{peer review} comments on your own.
 \end{itemize}
 
-Lab~\ref{ch:24} provides a ready-made project template that builds all of this in, and a worked example that shows a finished project.
+Lab~\ref{ch:23} provides a ready-made project template that builds all of this in, and a worked example that shows a finished project.
 
 
 \section{Turning a claim into testable hypotheses}
@@ -80,15 +80,15 @@ The decision rule matters as much as the test. ``Support'' should require more t
 \textbf{Benchmarks.} A claim that a method is ``better'' needs a strong benchmark, not a straw man:
 
 \begin{itemize}
-  \item the historical mean\index{historical-mean benchmark} for return forecasts (Chapter~\ref{ch:05});
-  \item 1/N\index{equal weighting (1/N)} for portfolios (Chapter~\ref{ch:12});
-  \item AR and HAR\index{HAR model} models for forecasting series (Chapters~\ref{ch:10} and~\ref{ch:21});
-  \item a linear model with the same inputs for machine learning\index{machine learning} (Chapter~\ref{ch:20});
+  \item the historical mean\index{historical-mean benchmark} for return forecasts (Chapter~\ref{ch:04});
+  \item 1/N\index{equal weighting (1/N)} for portfolios (Chapter~\ref{ch:09});
+  \item AR and HAR\index{HAR model} models for forecasting series (Chapters~\ref{ch:07} and~\ref{ch:20});
+  \item a linear model with the same inputs for machine learning\index{machine learning} (Chapter~\ref{ch:19});
 \end{itemize}
 
 \textbf{Controls.} For return claims, control for known factors (market, size, value, momentum, profitability, investment) and report alphas. For causal claims, choose controls that block confounding paths without introducing new bias; Angrist and Pischke warn against ``bad controls'' that are themselves outcomes of the treatment.
 
-\textbf{Out of sample.}\index{in-sample versus out-of-sample|textbf} Reserve data that will be used only once, for the final test. Chapter~\ref{ch:09} covers walk-forward\index{walk-forward evaluation} designs, purging\index{purging and embargoing} and embargoes.
+\textbf{Out of sample.}\index{in-sample versus out-of-sample|textbf} Reserve data that will be used only once, for the final test. Chapter~\ref{ch:06} covers walk-forward\index{walk-forward evaluation} designs, purging\index{purging and embargoing} and embargoes.
 
 \section{Power: how much data is enough}
 \label{sec:24-power}
@@ -111,7 +111,7 @@ True Sharpe ratio & Years for 80\% power at $t = 1.96$ & Years for 80\% power at
 \end{tabularx}
 \end{center}
 
-The table, computed in Lab~\ref{ch:24}, makes three points:
+The table, computed in Lab~\ref{ch:23}, makes three points:
 
 \begin{itemize}
   \item \textbf{Many claims cannot be settled with the data available.} A factor with a true Sharpe ratio of 0.3, typical of published anomalies after publication, needs almost 90 years of data for a reliable test at $t = 1.96$, and more than 160 at $t = 3$.
@@ -119,7 +119,7 @@ The table, computed in Lab~\ref{ch:24}, makes three points:
   \item \textbf{Absence of evidence is weak evidence of absence.} A non-significant result from an underpowered study says little. Report the power alongside the result, or report a confidence interval\index{confidence interval}, which shows the range of effects the data cannot rule out.
 \end{itemize}
 
-The formulas assume normal, independent returns. Lab~\ref{ch:24} checks them by simulation with fat tails\index{fat tails} and autocorrelation\index{autocorrelation}, which change the rejection rates of naive t-tests. That is one more reason to use robust standard errors\index{standard error!robust (White)} (Chapter~\ref{ch:04}).
+The formulas assume normal, independent returns. Lab~\ref{ch:23} checks them by simulation with fat tails\index{fat tails} and autocorrelation\index{autocorrelation}, which change the rejection rates of naive t-tests. That is one more reason to use robust standard errors\index{standard error!robust (White)} (Chapter~\ref{ch:03}).
 
 The same reasoning applies to forecasting regressions, as the shaded box shows.
 
@@ -147,7 +147,7 @@ A pre-registration for a finance study covers:
   \item \textbf{Deviations}: a commitment to list and justify any departure from the plan.
 \end{enumerate}
 
-The plan must be fixed in a way others can verify. A commit to a public repository, a post on the Open Science Framework or a hash of the document published somewhere time-stamped all work. Lab~\ref{ch:24} writes the document and appends its \textbf{SHA-256 hash}\index{SHA-256 hash|textbf}, a fingerprint that changes if a single character changes, so that any later edit is detectable.
+The plan must be fixed in a way others can verify. A commit to a public repository, a post on the Open Science Framework or a hash of the document published somewhere time-stamped all work. Lab~\ref{ch:23} writes the document and appends its \textbf{SHA-256 hash}\index{SHA-256 hash|textbf}, a fingerprint that changes if a single character changes, so that any later edit is detectable.
 
 \textbf{The problem of old data.} Pre-registration is cleanest when the data do not yet exist. In finance, most data are historical and may already have been seen. Three partial remedies help:
 
@@ -164,17 +164,17 @@ The plan must be fixed in a way others can verify. A commit to a public reposito
 
 Every empirical study involves choices that are individually reasonable: the sample start, the breakpoints, the weighting, the treatment of outliers, the holding period. Gelman and Loken (2014) called the result a ``garden of forking paths'': even a researcher who runs only one analysis may have chosen it after seeing the data, and the reported p-value no longer means what it says.
 
-Lab~\ref{ch:24} makes the problem concrete. A signal that is pure noise is tested in 36 reasonable ways (three sample starts, three portfolio cuts, two weightings, two treatments of January), 300 times over. The pre-chosen specification is significant in about 4\% of studies, close to the nominal 5\%. At least one of the 36 specifications is significant in about 39\%. A researcher who reports the best of 36 has close to a two-in-five chance of a false discovery.
+Lab~\ref{ch:23} makes the problem concrete. A signal that is pure noise is tested in 36 reasonable ways (three sample starts, three portfolio cuts, two weightings, two treatments of January), 300 times over. The pre-chosen specification is significant in about 4\% of studies, close to the nominal 5\%. At least one of the 36 specifications is significant in about 39\%. A researcher who reports the best of 36 has close to a two-in-five chance of a false discovery.
 
 The remedy is to report the whole grid, not only the preferred specification:
 
 \begin{itemize}
-  \item A \textbf{specification curve}\index{specification curve|textbf} (Simonsohn, Simmons and Nelson 2020) plots the estimate for every reasonable specification, sorted by size, with the choices shown underneath. Lab~\ref{ch:24} draws one for the size effect\index{size premium} across 36 specifications.
+  \item A \textbf{specification curve}\index{specification curve|textbf} (Simonsohn, Simmons and Nelson 2020) plots the estimate for every reasonable specification, sorted by size, with the choices shown underneath. Lab~\ref{ch:23} draws one for the size effect\index{size premium} across 36 specifications.
   \item Report the share of specifications that are significant and the range of estimates, and say which specification was pre-registered as primary.
   \item If results depend on one choice, say so and explain why that choice is right.
 \end{itemize}
 
-\textbf{Null results.} A well-designed test that finds no effect is a result. It should be reported with its power and confidence interval, so readers can see which effect sizes it rules out. \textbf{Publication bias}\index{publication bias|textbf}, the tendency for significant results to be published and null results to be filed away, distorts the literature (Chapter~\ref{ch:19}). Harvey (2017) noted how few published t-statistics fall below 2. Replication-friendly outlets, discussed in Section~\ref{sec:24-publish}, publish well-designed null results.
+\textbf{Null results.} A well-designed test that finds no effect is a result. It should be reported with its power and confidence interval, so readers can see which effect sizes it rules out. \textbf{Publication bias}\index{publication bias|textbf}, the tendency for significant results to be published and null results to be filed away, distorts the literature (Chapter~\ref{ch:15}). Harvey (2017) noted how few published t-statistics fall below 2. Replication-friendly outlets, discussed in Section~\ref{sec:24-publish}, publish well-designed null results.
 
 \section{Reading finance papers critically}
 \label{sec:24-reading}
@@ -251,7 +251,7 @@ A one-page proposal should state the claim, the paper, the data, the primary tes
 
 Write the definitions in your own words and note any ambiguity. Ambiguities are common and are often the source of later differences.
 
-\textbf{Decide what ``reproduced'' means.} Set tolerances before running anything. A mean return within 15\% of the original, with the same sign and significance, is a reasonable default. State what happens if the sign or significance differs. Figure~\ref{fig:24-status} shows the classification the Lab~\ref{ch:24} template applies to each statistic.
+\textbf{Decide what ``reproduced'' means.} Set tolerances before running anything. A mean return within 15\% of the original, with the same sign and significance, is a reasonable default. State what happens if the sign or significance differs. Figure~\ref{fig:24-status} shows the classification the Lab~\ref{ch:23} template applies to each statistic.
 
 \begin{figure}[htbp]
 \centering
@@ -296,7 +296,7 @@ Decide which extension is the primary test of whether the claim survives. Usuall
 
 \textbf{Write and freeze the pre-registration.} Use the template of Section~\ref{sec:24-prereg}, with the power analysis filled in. Commit it to a public repository, or post its hash, before running the replication. The command \texttt{run.py freeze} writes the document with a SHA-256\index{SHA-256 hash} hash and refuses to overwrite it later without an explicit override, which must then be reported as a deviation.
 
-{\sloppy \textbf{Set up the project structure.} Lab~\ref{ch:24} creates it in one command. Fill in \texttt{original.json} with the statistics from the paper and \texttt{config.json} with samples and tolerances before writing any analysis code.\par}
+{\sloppy \textbf{Set up the project structure.} Lab~\ref{ch:23} creates it in one command. Fill in \texttt{original.json} with the statistics from the paper and \texttt{config.json} with samples and tolerances before writing any analysis code.\par}
 
 \section{Running, logging and analyzing}
 \label{sec:24-running}
@@ -377,7 +377,7 @@ The report follows the structure of a claim chapter in this book, so readers kno
   \item \textbf{Code and data.} Where they are and how to run them.
 \end{enumerate}
 
-Lab~\ref{ch:24} builds a draft of this report automatically, filling in the replication and extension tables and leaving marked sections for the author's writing.
+Lab~\ref{ch:23} builds a draft of this report automatically, filling in the replication and extension tables and leaving marked sections for the author's writing.
 
 Write for a reader who has not read the original paper. Report effect sizes in economic units (percent a year, basis points\index{basis point}), not only t-statistics\index{t-statistic}. A replication that fails is not a failure of the replicator; the report should be as clear and complete for a null result as for a confirmation. The tone should be neutral: describe what was found and why, not who was wrong.
 
@@ -415,7 +415,7 @@ Use the checklist of Section~\ref{sec:24-reading} as a guide. Run the code: a re
 
 \textbf{Answering referees.} Reproduce each comment, then respond to it directly: what was changed and where, or, if nothing was changed, why. Thank the referee for comments that improved the work, and disagree politely where the evidence supports it. A response that addresses every point, with exact references to the revised report, makes the referee's second reading quick.
 
-Lab~\ref{ch:24}'s project template includes both templates, in the \texttt{review/} folder.
+Lab~\ref{ch:23}'s project template includes both templates, in the \texttt{review/} folder.
 
 \section{Where to publish}
 \label{sec:24-publish}
@@ -436,7 +436,7 @@ Before submitting, check each outlet's policy on replications and on code and da
 \label{sec:24-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:24} at a glance.} \emph{Purpose:} a project template that builds pre-registration, logging, comparison with the original and a report draft into every replication. \emph{Data:} for the worked example, 10 Portfolios Formed on Prior (12-2) Return from the Kenneth R. French Data Library; for your own project, whatever your claim needs. \emph{Code:} \texttt{python lab24.py new} creates a project; \texttt{python lab24.py demo} builds and runs the worked example.
+\textbf{Lab~\ref{ch:23} at a glance.} \emph{Purpose:} a project template that builds pre-registration, logging, comparison with the original and a report draft into every replication. \emph{Data:} for the worked example, 10 Portfolios Formed on Prior (12-2) Return from the Kenneth R. French Data Library; for your own project, whatever your claim needs. \emph{Code:} \texttt{python lab24.py new} creates a project; \texttt{python lab24.py demo} builds and runs the worked example.
 \end{callout}
 
 \subsection*{Planning tools: power and pre-registration}
@@ -449,10 +449,10 @@ Before submitting, check each outlet's policy on replications and on code and da
 The lab has five parts:
 
 \begin{itemize}
-  \item \textbf{Part A, power for returns.} It computes the years of data needed to detect Sharpe ratios from 0.2 to 1.0 at $t = 1.96$ and $t = 3.0$, and checks the formula by simulation, first with normal returns and then with fat tails (Student-$t$ with 4 degrees of freedom) and autocorrelation of 0.15 (Lab Figure~\ref{ch:24}.1).
-  \item \textbf{Part B, predictability and multiple testing\index{multiple testing}.} It computes the months needed to detect an $R^2$ from 0.2\% to 10\%, and the Bonferroni t-threshold as the number of tests grows from 1 to 1,000 (Lab Figure~\ref{ch:24}.2).
-  \item \textbf{Part C, forking paths.} It draws a specification curve for the size effect, smallest minus largest size portfolio, across 36 combinations of research choices (Lab Figure~\ref{ch:24}.3). It also tests a pure-noise signal in the same 36 ways, 300 times (Lab Figure~\ref{ch:24}.4).
-  \item \textbf{Part D, Bayesianized p-values.} It tabulates the lowest probability that the null is true for t-statistics from 1.96 to 4 and prior odds from 1:1 to 99:1 against (Lab Figure~\ref{ch:24}.5).
+  \item \textbf{Part A, power for returns.} It computes the years of data needed to detect Sharpe ratios from 0.2 to 1.0 at $t = 1.96$ and $t = 3.0$, and checks the formula by simulation, first with normal returns and then with fat tails (Student-$t$ with 4 degrees of freedom) and autocorrelation of 0.15 (Lab Figure~\ref{ch:23}.1).
+  \item \textbf{Part B, predictability and multiple testing\index{multiple testing}.} It computes the months needed to detect an $R^2$ from 0.2\% to 10\%, and the Bonferroni t-threshold as the number of tests grows from 1 to 1,000 (Lab Figure~\ref{ch:23}.2).
+  \item \textbf{Part C, forking paths.} It draws a specification curve for the size effect, smallest minus largest size portfolio, across 36 combinations of research choices (Lab Figure~\ref{ch:23}.3). It also tests a pure-noise signal in the same 36 ways, 300 times (Lab Figure~\ref{ch:23}.4).
+  \item \textbf{Part D, Bayesianized p-values.} It tabulates the lowest probability that the null is true for t-statistics from 1.96 to 4 and prior odds from 1:1 to 99:1 against (Lab Figure~\ref{ch:23}.5).
   \item \textbf{Part E, pre-registration.} It writes \texttt{preregistration.md} for the size effect as an example, or for the reader's own claim supplied as a JSON file, with the power analysis filled in and a SHA-256 hash appended.
 \end{itemize}
 

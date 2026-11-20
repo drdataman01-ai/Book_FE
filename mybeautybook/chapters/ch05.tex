@@ -19,7 +19,7 @@
 \makeatother
 
 \chapter{Claim: Simple Trading Rules Beat Buy-and-Hold}
-\label{ch:08}
+\label{ch:05}
 
 ``The trend is your friend'' is one of the oldest sayings on Wall Street. It tells a trader to buy what has been rising, sell what has been falling, and stay with the move until it ends. To an efficient-markets economist the saying sounds like superstition: if past prices could predict future prices, traders would use them until the prediction disappeared (Section~\ref{sec:01-efficient-markets}). For decades academic studies agreed, finding that technical trading rules, which are rules based only on past prices and trading volume and are often read from price charts, did not beat buy-and-hold once costs were counted. 
 
@@ -87,7 +87,7 @@ By the end of the chapter you will be able to:
 
 \begin{itemize}
   \item define the moving-average and breakout rules and compute their signals;
-  \item contrast time-series momentum\index{momentum!time-series} with the cross-sectional momentum of Chapter~\ref{ch:05};
+  \item contrast time-series momentum\index{momentum!time-series} with the cross-sectional momentum of Chapter~\ref{ch:04};
   \item size positions to a volatility target\index{volatility targeting} using only past data;
   \item test the best of many rules with White's Reality Check\index{Reality Check} and Hansen's SPA test\index{SPA test};
   \item explain why trend following resembles owning a straddle\index{straddle};
@@ -126,7 +126,7 @@ A \textbf{trading-range breakout rule}\index{technical trading rule!trading-rang
 
 \subsection{Time-series versus cross-sectional momentum}
 
-Chapter~\ref{ch:05} studied \textbf{cross-sectional momentum}: it ranks stocks against each other and buys the relative winners. \textbf{Time-series momentum}\index{momentum!time-series|textbf} looks at each asset on its own. It asks only whether the asset's own excess return over the look-back period was positive or negative, and holds it long or short accordingly. In a year when every market rises, cross-sectional momentum is still long half the assets and short the other half, while time-series momentum is long all of them.
+Chapter~\ref{ch:04} studied \textbf{cross-sectional momentum}: it ranks stocks against each other and buys the relative winners. \textbf{Time-series momentum}\index{momentum!time-series|textbf} looks at each asset on its own. It asks only whether the asset's own excess return over the look-back period was positive or negative, and holds it long or short accordingly. In a year when every market rises, cross-sectional momentum is still long half the assets and short the other half, while time-series momentum is long all of them.
 
 Moskowitz, Ooi and Pedersen define the strategy for asset $s$ as follows. At the end of month $t$, look at the asset's excess return over the past twelve months, $r^s_{t-12,t}$. If it is positive, go long for one month; if it is negative, go short. The position is scaled by the asset's volatility, as described in the next subsection. The monthly return is
 \begin{equation}
@@ -145,7 +145,7 @@ A trend-following portfolio may hold a Treasury bond, whose volatility is about 
   \left(\sigma^s_t\right)^2 = 261 \sum_{i=0}^{\infty} (1-\delta)\,\delta^i \left(r^s_{t-1-i} - \bar r^s_t\right)^2,
   \label{eq:08-ewma}
 \end{equation}
-where 261 annualizes a daily variance and $\delta$ is chosen so that the average age of the data, $\delta/(1-\delta)$, is 60 days. This is the EWMA estimator that Chapter~\ref{ch:10} develops further. The position in Equation~\eqref{eq:08-tsmom} is then $40\%/\sigma^s_t$, which targets an annual volatility of 40\% for each asset. With dozens of assets that do not move together, the diversified portfolio's volatility is far lower, about 12\% a year in their sample.
+where 261 annualizes a daily variance and $\delta$ is chosen so that the average age of the data, $\delta/(1-\delta)$, is 60 days. This is the EWMA estimator that Chapter~\ref{ch:07} develops further. The position in Equation~\eqref{eq:08-tsmom} is then $40\%/\sigma^s_t$, which targets an annual volatility of 40\% for each asset. With dozens of assets that do not move together, the diversified portfolio's volatility is far lower, about 12\% a year in their sample.
 \end{technote}
 
 Two rules keep the test honest. The volatility estimate must use only data available before the position is taken, and the target must be fixed in advance, not chosen after seeing which value worked best.
@@ -169,7 +169,7 @@ The Reality Check has one weakness. Adding many hopeless rules to the universe m
 \textbf{Why trends might exist.} Several explanations have been proposed, and they are not mutually exclusive.
 
 \begin{itemize}
-  \item \textbf{Slow reaction to news.} Investors anchor on old prices and update their views gradually, so prices react to news too little at first and keep moving as the news sinks in. This is the underreaction\index{underreaction} story of Chapter~\ref{ch:05}.
+  \item \textbf{Slow reaction to news.} Investors anchor on old prices and update their views gradually, so prices react to news too little at first and keep moving as the news sinks in. This is the underreaction\index{underreaction} story of Chapter~\ref{ch:04}.
   \item \textbf{Herding and feedback.} Once a move is under way, other investors chase it, and the move overshoots. This explains why trends eventually partly reverse, as Moskowitz, Ooi and Pedersen found after about a year.
   \item \textbf{Investors who do not trade for profit.} Central banks smooth exchange rates and interest rates, and hedgers such as airlines and farmers trade to reduce risk rather than to earn a return. Their trades can slow the adjustment of prices. Moskowitz, Ooi and Pedersen found that speculators in futures markets tend to follow trends, and that they profit at the expense of hedgers.
 \end{itemize}
@@ -241,7 +241,7 @@ Their conclusion was that the strategy is profitable but that the profit need no
 \label{sec:08-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:08} at a glance.} \emph{Papers replicated:} Brock, Lakonishok and LeBaron (1992); Sullivan, Timmermann and White (1999); Moskowitz, Ooi and Pedersen (2012). \emph{Claim on trial\index{claims-on-trial method}:} simple trend rules beat buy-and-hold after correcting for the number of rules tried. \emph{Data:} the daily U.S. market index built from the Kenneth R. French Data Library\index{Kenneth French data library}, from July 1926, and optionally the daily Dow Jones Industrial Average from a free source such as Stooq; AQR's free \emph{Time Series Momentum: Factors, Monthly} data set; and, for a small multi-asset test, the 10-year Treasury yield (GS10), the H.10 exchange rates, three-month interbank rates and the WTI oil price from FRED\index{FRED}, which earlier labs already use. \emph{Code:} runs as a script or as a notebook, with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:05} at a glance.} \emph{Papers replicated:} Brock, Lakonishok and LeBaron (1992); Sullivan, Timmermann and White (1999); Moskowitz, Ooi and Pedersen (2012). \emph{Claim on trial\index{claims-on-trial method}:} simple trend rules beat buy-and-hold after correcting for the number of rules tried. \emph{Data:} the daily U.S. market index built from the Kenneth R. French Data Library\index{Kenneth French data library}, from July 1926, and optionally the daily Dow Jones Industrial Average from a free source such as Stooq; AQR's free \emph{Time Series Momentum: Factors, Monthly} data set; and, for a small multi-asset test, the 10-year Treasury yield (GS10), the H.10 exchange rates, three-month interbank rates and the WTI oil price from FRED\index{FRED}, which earlier labs already use. \emph{Code:} runs as a script or as a notebook, with a prediction prompt before each step.
 \end{callout}
 
 The lab has five parts. Each signal uses only prices up to the day, or month, before the position is taken.
@@ -251,10 +251,10 @@ The lab has five parts. Each signal uses only prices up to the day, or month, be
   \item \textbf{Part B, the search correction.} The lab builds a universe of a few thousand moving-average and breakout rules by varying the windows, bands and holding periods. It computes each rule's excess return over buy-and-hold and applies White's Reality Check and Hansen's SPA test, using the stationary bootstrap with an average block length of ten days and 1,000 bootstrap samples. Again the two periods are reported separately.
   \item \textbf{Part C, time-series momentum across asset classes.} The lab reads AQR's monthly time-series momentum factors for equity indices, bonds, currencies and commodities, and for the diversified portfolio. It reports the average return, Sharpe ratio and alpha against the market, before and after the original sample ended in 2009.
   \item \textbf{Part D, the smile.} Using the AQR diversified factor and the U.S. market return, the lab regresses quarterly trend returns on the market's return and its square, as in Moskowitz, Ooi and Pedersen, and lists the strategy's return in the ten worst quarters for U.S. stocks.
-  \item \textbf{Part E, asset by asset.} With free data the lab builds a small universe of about a dozen assets: U.S. stocks, a 10-year Treasury bond built from yields as in Lab~\ref{ch:13}, nine currencies against the dollar with their interest differentials as in Lab~\ref{ch:06}, and spot crude oil. It runs Huang and coauthors' tests on this universe: separate predictive regressions for each asset, the pooled regression with a bootstrap $p$-value, and a comparison of time-series momentum with the time-series history strategy.
+  \item \textbf{Part E, asset by asset.} With free data the lab builds a small universe of about a dozen assets: U.S. stocks, a 10-year Treasury bond built from yields as in Lab~\ref{ch:10}, nine currencies against the dollar with their interest differentials as in Lab~\ref{ch:11}, and spot crude oil. It runs Huang and coauthors' tests on this universe: separate predictive regressions for each asset, the pooled regression with a bootstrap $p$-value, and a comparison of time-series momentum with the time-series history strategy.
 \end{itemize}
 
-\textbf{What readers will find.} Lab Figure~\ref{ch:08}.1 compares the buy--sell differences of the 26 rules before and after 1987. Lab Figure~\ref{ch:08}.2 shows the Reality Check and SPA $p$-values for the best rule in a rolling ten-year window. Lab Figure~\ref{ch:08}.3 plots quarterly trend returns against market returns, with the fitted smile. The test of the claim is whether the best rule survives the search correction after 1986, and whether the diversified strategy's return holds up after 2009 and asset by asset.
+\textbf{What readers will find.} Lab Figure~\ref{ch:05}.1 compares the buy--sell differences of the 26 rules before and after 1987. Lab Figure~\ref{ch:05}.2 shows the Reality Check and SPA $p$-values for the best rule in a rolling ten-year window. Lab Figure~\ref{ch:05}.3 plots quarterly trend returns against market returns, with the fitted smile. The test of the claim is whether the best rule survives the search correction after 1986, and whether the diversified strategy's return holds up after 2009 and asset by asset.
 
 \emph{[Draft note: the figures and numbers are generated by running the lab on data at the time of publication. The book prints the results; the text above does not anticipate them.]}
 

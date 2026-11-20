@@ -25,7 +25,7 @@
 \makeatother
 
 \chapter{Claim: High-Interest Currencies Depreciate Enough to Offset Their Yield}
-\label{ch:06}
+\label{ch:11}
 
 Banks in some countries pay far more interest on savings than banks in others. A saver might reasonably ask why she should not simply keep her money wherever interest is highest. The catch is that the money must be converted into another currency and back again, and exchange rates move. This chapter asks whether the exchange rate quietly takes back the extra interest, as economic theory says it should.
 
@@ -492,16 +492,16 @@ To test it, three points need to be settled:
 \label{sec:06-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:06} at a glance.} \emph{Papers replicated:} the Fama (1984) regression; the carry portfolios of Lustig, Roussanov and Verdelhan (2011). \emph{Claim on trial\index{claims-on-trial method}:} high-interest currencies fall enough to cancel their extra yield. \emph{Data:} free monthly data from FRED\index{FRED}: the Federal Reserve's exchange rates for nine currencies (yen, pound, Swiss franc, Canadian, Australian and New Zealand dollars, Swedish krona and Norwegian krone, and the euro from 1999) and OECD three-month interbank rates, the interest rates banks charge one another, for each country and the United States. The VIX and the Fama--French\index{Fama--French factors} market factor are optional. \emph{Code:} runs as a script (\texttt{python lab18.py}) or as a notebook with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:11} at a glance.} \emph{Papers replicated:} the Fama (1984) regression; the carry portfolios of Lustig, Roussanov and Verdelhan (2011). \emph{Claim on trial\index{claims-on-trial method}:} high-interest currencies fall enough to cancel their extra yield. \emph{Data:} free monthly data from FRED\index{FRED}: the Federal Reserve's exchange rates for nine currencies (yen, pound, Swiss franc, Canadian, Australian and New Zealand dollars, Swedish krona and Norwegian krone, and the euro from 1999) and OECD three-month interbank rates, the interest rates banks charge one another, for each country and the United States. The VIX and the Fama--French\index{Fama--French factors} market factor are optional. \emph{Code:} runs as a script (\texttt{python lab18.py}) or as a notebook with a prediction prompt before each step.
 \end{callout}
 
-\textbf{Part A, Fama regressions.} For each currency, the lab regresses the monthly change in the log exchange rate (dollars per unit of foreign currency) on last month's U.S.-minus-foreign interest gap, with Newey--West\index{standard error!Newey--West (HAC)} standard errors. It also estimates a single slope for all currencies together (Lab Figure~\ref{ch:06}.1).
+\textbf{Part A, Fama regressions.} For each currency, the lab regresses the monthly change in the log exchange rate (dollars per unit of foreign currency) on last month's U.S.-minus-foreign interest gap, with Newey--West\index{standard error!Newey--West (HAC)} standard errors. It also estimates a single slope for all currencies together (Lab Figure~\ref{ch:11}.1).
 
-\textbf{Part B, the carry portfolio.} Each month, the lab buys the three currencies with the highest interest rates and sells the three with the lowest, in equal amounts, using rates known at the end of the previous month. It splits the portfolio's return into the interest earned and the change in exchange rates (Lab Figure~\ref{ch:06}.2), and compares the distribution of returns with a normal distribution\index{distribution!normal} (Lab Figure~\ref{ch:06}.3).
+\textbf{Part B, the carry portfolio.} Each month, the lab buys the three currencies with the highest interest rates and sells the three with the lowest, in equal amounts, using rates known at the end of the previous month. It splits the portfolio's return into the interest earned and the change in exchange rates (Lab Figure~\ref{ch:11}.2), and compares the distribution of returns with a normal distribution\index{distribution!normal} (Lab Figure~\ref{ch:11}.3).
 
 \textbf{Part C, robustness checks.} Three subperiods (up to 1998, 1999--2007, and 2008 onward), trading costs\index{transaction costs} of 0 to 20 basis points\index{basis point} per unit traded, exposure to stock returns and to changes in the VIX, and the ten worst months.
 
-\textbf{Part D, the investor's view.} Drawdowns\index{drawdown}, recovery times, the share of losses that came from the worst months, and carry returns plotted against changes in the VIX (Lab Figures~\ref{ch:06}.4 and~\ref{ch:06}.5).
+\textbf{Part D, the investor's view.} Drawdowns\index{drawdown}, recovery times, the share of losses that came from the worst months, and carry returns plotted against changes in the VIX (Lab Figures~\ref{ch:11}.4 and~\ref{ch:11}.5).
 
 Three choices about the data matter:
 

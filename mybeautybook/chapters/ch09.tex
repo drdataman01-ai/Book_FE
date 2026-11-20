@@ -10,7 +10,7 @@
 \makeatother
 
 \chapter{Claim: Optimized Portfolios Beat an Equal Split Across Assets}
-\label{ch:12}
+\label{ch:09}
 
 ``Don't put all your eggs in one basket'' is advice almost everyone has heard, and many savers follow it in the simplest possible way, by splitting their money evenly across the funds on offer. Finance has a far more sophisticated answer to the question of how to divide money among investments, and it won a Nobel Prize. This chapter asks whether the sophisticated answer actually beats the simple one.
 
@@ -454,7 +454,7 @@ Equal weight (1/N) & Lags when a few large firms lead & Similar to the market & 
 }
 \subsection{Mean-variance portfolios built from historical returns}
 
-The optimizer puts the most money into the assets with the highest estimated returns. When those estimates are historical averages, the assets that look best are usually the ones that have recently done well. A mean-variance portfolio built from past data therefore tends to chase recent winners. This works while a trend lasts, as in a long bull market led by the same industries. When leadership changes, the portfolio is left holding yesterday's winners and takes the full loss. Its weights also change sharply each time the estimates are updated, so it trades heavily and pays the costs described in Chapter~\ref{ch:17}.
+The optimizer puts the most money into the assets with the highest estimated returns. When those estimates are historical averages, the assets that look best are usually the ones that have recently done well. A mean-variance portfolio built from past data therefore tends to chase recent winners. This works while a trend lasts, as in a long bull market led by the same industries. When leadership changes, the portfolio is left holding yesterday's winners and takes the full loss. Its weights also change sharply each time the estimates are updated, so it trades heavily and pays the costs described in Chapter~\ref{ch:13}.
 
 \subsection{Minimum-variance portfolios}
 
@@ -534,10 +534,10 @@ The literature therefore agrees on the strong form: sample mean--variance loses 
 \label{sec:12-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:12} at a glance.} \emph{Paper replicated:} DeMiguel, Garlappi and Uppal (2009). \emph{Claim on trial\index{claims-on-trial method}:} optimized portfolio strategies beat equal weighting ($1/N$) out of sample. \emph{Data:} 10 and 30 industry portfolios and 25 portfolios sorted on size and book-to-market\index{book-to-market ratio}, from the Kenneth R. French Data Library\index{Kenneth French data library}, with the risk-free rate\index{risk-free rate}; all free. \emph{Code:} runs as a script (\texttt{python lab06.py}) or as a notebook (\texttt{lab06\_walkthrough.ipynb}) with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:09} at a glance.} \emph{Paper replicated:} DeMiguel, Garlappi and Uppal (2009). \emph{Claim on trial\index{claims-on-trial method}:} optimized portfolio strategies beat equal weighting ($1/N$) out of sample. \emph{Data:} 10 and 30 industry portfolios and 25 portfolios sorted on size and book-to-market\index{book-to-market ratio}, from the Kenneth R. French Data Library\index{Kenneth French data library}, with the risk-free rate\index{risk-free rate}; all free. \emph{Code:} runs as a script (\texttt{python lab06.py}) or as a notebook (\texttt{lab06\_walkthrough.ipynb}) with a prediction prompt before each step.
 \end{callout}
 
-The lab repeats DGU's test with nine allocation rules, using the walk-forward design of Chapter~\ref{ch:09}. Each month, every rule estimates what it needs from the previous 120 months of value-weighted\index{index weighting!value-weighted} excess returns, holds the resulting portfolio for one month, and records its return. Turnover is measured against the weights the portfolio has drifted to by the end of the month.
+The lab repeats DGU's test with nine allocation rules, using the walk-forward design of Chapter~\ref{ch:06}. Each month, every rule estimates what it needs from the previous 120 months of value-weighted\index{index weighting!value-weighted} excess returns, holds the resulting portfolio for one month, and records its return. Turnover is measured against the weights the portfolio has drifted to by the end of the month.
 
 \begin{center}
 \small
@@ -572,10 +572,10 @@ The \textbf{Jobson--Korkie test}\index{Jobson--Korkie test|textbf} (Jobson and K
 The lab has four parts:
 
 \begin{itemize}
-  \item \textbf{Part A} runs all nine rules on the 10 industry portfolios. It reports each rule's Sharpe ratio, certainty equivalent with $\gamma = 1$, turnover, most extreme weights and maximum drawdown\index{maximum drawdown}, and tests each rule against 1/N (Lab Figures~\ref{ch:12}.1 and~\ref{ch:12}.2).
-  \item \textbf{Part B} repeats the comparison on the 30 industries and the 25 size and book-to-market portfolios, after charging 25 basis points\index{basis point} for each unit of turnover (Lab Figure~\ref{ch:12}.3).
-  \item \textbf{Part C} changes one design choice at a time: the estimation window (60, 120 or 240 months), trading costs (0, 25 or 50 basis points) and how often the portfolio is rebalanced (every 1, 3 or 12 months). It also reports each rule's returns in three crises (Lab Figure~\ref{ch:12}.4).
-  \item \textbf{Part D} measures how unstable each rule's weights are: the total size of its long and short positions, its largest weight, its share of short positions and how much its weights change from month to month (Lab Figure~\ref{ch:12}.5).
+  \item \textbf{Part A} runs all nine rules on the 10 industry portfolios. It reports each rule's Sharpe ratio, certainty equivalent with $\gamma = 1$, turnover, most extreme weights and maximum drawdown\index{maximum drawdown}, and tests each rule against 1/N (Lab Figures~\ref{ch:09}.1 and~\ref{ch:09}.2).
+  \item \textbf{Part B} repeats the comparison on the 30 industries and the 25 size and book-to-market portfolios, after charging 25 basis points\index{basis point} for each unit of turnover (Lab Figure~\ref{ch:09}.3).
+  \item \textbf{Part C} changes one design choice at a time: the estimation window (60, 120 or 240 months), trading costs (0, 25 or 50 basis points) and how often the portfolio is rebalanced (every 1, 3 or 12 months). It also reports each rule's returns in three crises (Lab Figure~\ref{ch:09}.4).
+  \item \textbf{Part D} measures how unstable each rule's weights are: the total size of its long and short positions, its largest weight, its share of short positions and how much its weights change from month to month (Lab Figure~\ref{ch:09}.5).
 \end{itemize}
 
 {\sloppy The option \texttt{-{}-fast} skips the three slowest constrained rules, and \texttt{python lab06.py -{}-source sim} tests the code on simulated data.\par}
@@ -599,7 +599,7 @@ Results over the full sample can hide weaknesses. The checks below test the clai
 
 \textbf{Estimation window.} DGU estimated that sample mean--variance needs about 3,000 months of data to beat 1/N with 25 assets, far more than any real sample. A longer window reduces estimation errors but relies on older data, which may no longer describe today's markets. Part C shows how the ranking of the rules changes as the window grows from five to twenty years.
 
-\textbf{Trading costs.}\index{transaction costs|textbf} Optimized rules trade far more than 1/N. In the simulated run, sample mean--variance replaced 74\% of its portfolio each month, against 3\% for 1/N. At 25 basis points per unit of turnover, that difference alone costs about 2\% a year. Any gain from optimization should be judged after the costs the investor would actually pay (Chapter~\ref{ch:17}).
+\textbf{Trading costs.}\index{transaction costs|textbf} Optimized rules trade far more than 1/N. In the simulated run, sample mean--variance replaced 74\% of its portfolio each month, against 3\% for 1/N. At 25 basis points per unit of turnover, that difference alone costs about 2\% a year. Any gain from optimization should be judged after the costs the investor would actually pay (Chapter~\ref{ch:13}).
 
 \textbf{Rebalancing frequency.}\index{rebalancing|textbf} Rebalancing every quarter or every year cuts turnover, but the portfolio then holds weights based on older information. Part C shows whether this trade-off helps the optimized rules more than it helps 1/N.
 
@@ -657,9 +657,9 @@ The strongest evidence for the weak form, Kirby and Ostdiek's timing rules, come
 
 \begin{itemize}
   \item \textbf{Many assets.} With hundreds of stocks, the sample covariance matrix can no longer be inverted. Do newer shrinkage methods and factor models make optimization over many stocks competitive with 1/N?
-  \item \textbf{Machine-learning allocations.} Do methods that learn portfolio weights directly from data avoid estimation error, or do they merely hide it in more parameters? Chapter~\ref{ch:20} took up the general question.
+  \item \textbf{Machine-learning allocations.} Do methods that learn portfolio weights directly from data avoid estimation error, or do they merely hide it in more parameters? Chapter~\ref{ch:19} took up the general question.
   \item \textbf{Optimizing with costs in mind.} An optimizer that penalizes turnover chooses different weights and trades less. How much of DGU's result survives when costs are part of the optimization?
-  \item \textbf{Diversification in a crisis.}\index{diversification|textbf} Risk-based portfolios assume that correlations stay stable. Chapter~\ref{ch:13} asks what happens when they do not.
+  \item \textbf{Diversification in a crisis.}\index{diversification|textbf} Risk-based portfolios assume that correlations stay stable. Chapter~\ref{ch:10} asks what happens when they do not.
 \end{itemize}
 
 \section{What practitioners and investors can use}

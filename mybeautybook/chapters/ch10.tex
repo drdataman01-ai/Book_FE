@@ -24,7 +24,7 @@
 \makeatother
 
 \chapter{Claim: Diversification Fails When You Need It Most}
-\label{ch:13}
+\label{ch:10}
 
 Investors are told to spread their savings across many kinds of investments so that a loss in one is cushioned by the others. Yet many people who lived through a market crash remember the opposite: on the worst days, everything seemed to fall at once. This chapter asks which memory is closer to the truth.
 
@@ -225,7 +225,7 @@ The evidence supports the statistical part of the claim for stocks, with caveats
 \label{sec:13-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:13} at a glance.} \emph{Papers replicated:} Longin and Solnik (2001); Forbes and Rigobon (2002); the stock--bond correlation of Campbell, Sunderam and Viceira (2017). \emph{Claim on trial\index{claims-on-trial method}:} diversification fails when it is needed most. \emph{Data:} U.S. market excess returns\index{return!excess} from 1926, international developed-market returns from 1990 and 10 industry portfolios, all from the Kenneth R. French Data Library\index{Kenneth French data library}; the 10-year Treasury yield (GS10, from 1953), consumer prices (CPIAUCSL) and the spot oil price (WTISPLC) from FRED\index{FRED}. All are free. \emph{Code:} runs as a script (\texttt{python lab19.py}) or as a notebook (\texttt{lab19\_walkthrough.ipynb}) with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:10} at a glance.} \emph{Papers replicated:} Longin and Solnik (2001); Forbes and Rigobon (2002); the stock--bond correlation of Campbell, Sunderam and Viceira (2017). \emph{Claim on trial\index{claims-on-trial method}:} diversification fails when it is needed most. \emph{Data:} U.S. market excess returns\index{return!excess} from 1926, international developed-market returns from 1990 and 10 industry portfolios, all from the Kenneth R. French Data Library\index{Kenneth French data library}; the 10-year Treasury yield (GS10, from 1953), consumer prices (CPIAUCSL) and the spot oil price (WTISPLC) from FRED\index{FRED}. All are free. \emph{Code:} runs as a script (\texttt{python lab19.py}) or as a notebook (\texttt{lab19\_walkthrough.ipynb}) with a prediction prompt before each step.
 \end{callout}
 
 Bond returns are built from yields: each month the lab buys a 10-year bond priced at par and sells it a month later at the new yield.
@@ -233,10 +233,10 @@ Bond returns are built from yields: each month the lab buys a 10-year bond price
 The lab has four parts:
 
 \begin{itemize}
-  \item \textbf{Part A} measures the correlation of U.S. stocks with international stocks, bonds and oil, and the average correlation among the ten industries. It reports each one in calm months, in high-volatility months (the fifth of months with the highest U.S. volatility over the previous year), after the Forbes--Rigobon correction, and in the worst 10\% of U.S. months. It also compares exceedance correlations with a normal benchmark (Lab Figures~\ref{ch:13}.1 and~\ref{ch:13}.2).
+  \item \textbf{Part A} measures the correlation of U.S. stocks with international stocks, bonds and oil, and the average correlation among the ten industries. It reports each one in calm months, in high-volatility months (the fifth of months with the highest U.S. volatility over the previous year), after the Forbes--Rigobon correction, and in the worst 10\% of U.S. months. It also compares exceedance correlations with a normal benchmark (Lab Figures~\ref{ch:10}.1 and~\ref{ch:10}.2).
   \item \textbf{Part B} measures tail dependence in the worst 5\%, 10\% and 20\% of months, and compares it with a normal distribution that has the same correlation.
-  \item \textbf{Part C} tracks the stock--bond correlation over rolling 36-month windows and relates it to inflation. It reports the correlation by decade, by inflation regime and for 2022 (Lab Figure~\ref{ch:13}.3).
-  \item \textbf{Part D} compares three portfolios: 100\% stocks, 60\% stocks and 40\% bonds, and an equal mix of U.S. stocks, international stocks, bonds and oil. It reports their average returns in the worst and best 5\% of months for stocks, their drawdowns\index{drawdown}, their returns in five crises and their diversification ratios (Lab Figures~\ref{ch:13}.4 and~\ref{ch:13}.5).
+  \item \textbf{Part C} tracks the stock--bond correlation over rolling 36-month windows and relates it to inflation. It reports the correlation by decade, by inflation regime and for 2022 (Lab Figure~\ref{ch:10}.3).
+  \item \textbf{Part D} compares three portfolios: 100\% stocks, 60\% stocks and 40\% bonds, and an equal mix of U.S. stocks, international stocks, bonds and oil. It reports their average returns in the worst and best 5\% of months for stocks, their drawdowns\index{drawdown}, their returns in five crises and their diversification ratios (Lab Figures~\ref{ch:10}.4 and~\ref{ch:10}.5).
 \end{itemize}
 
 The command \texttt{python lab19.py -{}-source sim} tests the code on simulated data.
@@ -320,7 +320,7 @@ The claim is therefore true for the kind of diversification that investors rely 
   \item \textbf{Which regime are we in?} Can the stock--bond correlation be forecast from inflation, uncertainty about inflation or trust in the central bank, early enough to adjust a portfolio in time?
   \item \textbf{Better models of crisis correlations.} Do models that switch between regimes, copulas, or models of correlations that change over time forecast how assets move together in a crisis out of sample\index{in-sample versus out-of-sample}, or do they only describe it after the fact?
   \item \textbf{Private assets.} Private equity and real estate are valued infrequently, which smooths their reported returns and makes them look like good diversifiers. How closely do they really move with public stocks in a crisis?
-  \item \textbf{New sources of protection.} Have trend-following\index{trend following}, long-volatility or tail-hedging strategies protected investors in crises at an acceptable cost? Chapter~\ref{ch:16}'s evidence on selling options looks at the same question from the other side.
+  \item \textbf{New sources of protection.} Have trend-following\index{trend following}, long-volatility or tail-hedging strategies protected investors in crises at an acceptable cost? Chapter~\ref{ch:18}'s evidence on selling options looks at the same question from the other side.
 \end{itemize}
 
 \section{What practitioners and investors can use}

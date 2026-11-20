@@ -26,17 +26,17 @@
 \makeatother
 
 \chapter{Claim: Machine Learning Predicts Returns Better Than Linear Models}
-\label{ch:20}
+\label{ch:19}
 
 The same kind of software that recognizes faces in photographs, translates languages and recommends films is now marketed as a way to pick stocks, and several exchange-traded funds advertise that they are run by artificial intelligence. It is natural to wonder whether tools that work so well elsewhere can see patterns in the stock market that human researchers have missed. This chapter asks what the evidence shows.
 
-For half a century the standard tool for predicting stock returns was linear regression, and Chapter~\ref{ch:09} showed how modest its results were. By the late 2010s two things had changed. First, the factor zoo had produced nearly a hundred characteristics that might predict returns, far more than a regression can combine reliably. Second, machine-learning methods that handle many inputs and curved relationships had matured in other fields. Gu, Kelly and Xiu (2020) brought the two together. They used about 30,000 U.S. stocks from 1957 to 2016 and 94 characteristics. Neural networks\index{neural network} and regression trees\index{regression tree} roughly doubled the performance of the best regression-based strategies. Most of the gain came from capturing interactions between familiar signals.
+For half a century the standard tool for predicting stock returns was linear regression, and Chapter~\ref{ch:06} showed how modest its results were. By the late 2010s two things had changed. First, the factor zoo had produced nearly a hundred characteristics that might predict returns, far more than a regression can combine reliably. Second, machine-learning methods that handle many inputs and curved relationships had matured in other fields. Gu, Kelly and Xiu (2020) brought the two together. They used about 30,000 U.S. stocks from 1957 to 2016 and 94 characteristics. Neural networks\index{neural network} and regression trees\index{regression tree} roughly doubled the performance of the best regression-based strategies. Most of the gain came from capturing interactions between familiar signals.
 
 The study changed both research and practice. Machine learning became a standard tool of empirical asset pricing, and funds and exchange-traded funds branded with artificial intelligence followed. The study also started a debate about what the gains mean. Kelly, Malamud and Zhou (2024), puzzled that predictions improved as models grew, argued that very large models can predict better than small ones, which they called a ``virtue of complexity''. Avramov, Cheng and Metzker (2023) asked whether the predictability can be traded, and found that much of it comes from small, hard-to-trade stocks and fades after costs. Nagel (2025) questioned whether an investor could have captured the reported gains in real time.
 
 The stakes are practical. If machine learning finds predictability that linear models miss, it belongs in every quantitative toolkit. If its gains vanish in tradable stocks after costs, the label promises more than it delivers. The claim on trial\index{claims-on-trial method} is: \textbf{machine-learning models find return predictability\index{return predictability} that traditional linear models miss, and it can be turned into profitable portfolios.}
 
-This chapter explains the essentials of regularized regression, random forests, gradient boosting and neural networks. Readers who want a fuller, step-by-step introduction to these methods, with code, can consult the chapters on supervised learning and regularization in Kuo (2024a). The lab in Section~\ref{sec:20-lab} repeats the horse race of Gu, Kelly and Xiu (2020) on 149 free portfolios from the Kenneth R. French Data Library, with the Goyal--Welch predictors of Chapter~\ref{ch:09}. It checks whether machine learning beats linear models out of sample, and whether the gain survives trading costs.
+This chapter explains the essentials of regularized regression, random forests, gradient boosting and neural networks. Readers who want a fuller, step-by-step introduction to these methods, with code, can consult the chapters on supervised learning and regularization in Kuo (2024a). The lab in Section~\ref{sec:20-lab} repeats the horse race of Gu, Kelly and Xiu (2020) on 149 free portfolios from the Kenneth R. French Data Library, with the Goyal--Welch predictors of Chapter~\ref{ch:06}. It checks whether machine learning beats linear models out of sample, and whether the gain survives trading costs.
 
 By the end of the chapter you will be able to:
 
@@ -60,7 +60,7 @@ This section begins by distinguishing the two kinds of question a return forecas
 
 Return data have two dimensions, time and assets, and a forecasting model can work along either one. The two directions answer different questions.
 
-A \textbf{time-series}\index{regression!time-series|textbf} question follows one asset, or the market as a whole, over many periods. Its question is \emph{when}: will the market do better next month than usual? The factor model of Equation~\eqref{eq:04-ff3}, which tracks one asset's return against the factors month by month, is a time-series regression, and so is the predictive regression of the market's return on the dividend yield in Chapter~\ref{ch:09}.
+A \textbf{time-series}\index{regression!time-series|textbf} question follows one asset, or the market as a whole, over many periods. Its question is \emph{when}: will the market do better next month than usual? The factor model of Equation~\eqref{eq:04-ff3}, which tracks one asset's return against the factors month by month, is a time-series regression, and so is the predictive regression of the market's return on the dividend yield in Chapter~\ref{ch:06}.
 
 A \textbf{cross-sectional}\index{regression!cross-sectional|textbf} question looks across many assets at the same time. Its question is \emph{which}: which stocks will do better than others next month? The simplest tool is a cross-sectional regression. In month $t$, it regresses each stock's next-month excess return on characteristics $\mathbf{z}_{i,t}$ known at the end of the month, such as size, book-to-market or momentum:
 \begin{equation}
@@ -71,7 +71,7 @@ The slope $\mathbf{c}_t$ measures how much return each characteristic was associ
 
 The most common cross-sectional tool, however, is not a regression but a \textbf{portfolio sort}\index{portfolio sort|textbf}. Each month, stocks are ranked on a characteristic and divided into groups, often ten groups called \emph{deciles}. The average return of each group is recorded over the following month. If the characteristic predicts returns, average returns rise or fall steadily from the bottom decile to the top. A \textbf{long--short portfolio}\index{long--short portfolio} that buys the top decile and sells the bottom one then earns the difference. The SMB and HML factors of Equation~\eqref{eq:04-ff3} are built in exactly this way. Sorts are easy to understand and do not assume a straight-line relationship. But they handle only one or two characteristics at a time, whereas regressions and the machine-learning models of this chapter can handle many at once.
 
-The two kinds of question differ sharply in how much data they offer. A century of monthly data gives about 1,200 observations for the market's time series. A single month of U.S. stocks gives several thousand observations for the cross-section, and every month adds a new set. This is why most of the machine-learning evidence concerns cross-sectional questions. It is also why this chapter, unlike Chapter~\ref{ch:09}, is mainly about the cross-section. Gu, Kelly and Xiu\index{Gu, Kelly and Xiu (2020)} (2020), the study at the center of the chapter, asked which stocks would do better than others. They judged their models by long--short portfolios built from decile sorts on the models' forecasts.
+The two kinds of question differ sharply in how much data they offer. A century of monthly data gives about 1,200 observations for the market's time series. A single month of U.S. stocks gives several thousand observations for the cross-section, and every month adds a new set. This is why most of the machine-learning evidence concerns cross-sectional questions. It is also why this chapter, unlike Chapter~\ref{ch:06}, is mainly about the cross-section. Gu, Kelly and Xiu\index{Gu, Kelly and Xiu (2020)} (2020), the study at the center of the chapter, asked which stocks would do better than others. They judged their models by long--short portfolios built from decile sorts on the models' forecasts.
 
 \subsection{Starting from a simple factor model}
 \label{sec:20-simple}
@@ -103,7 +103,7 @@ Gu, Kelly and Xiu used 94 firm characteristics, their interactions with eight ma
 
 Adding predictors always looks good on the data used to fit the model. An OLS regression with an extra predictor can never fit the training data worse than one without it. A regression that uses every available predictor, the \textbf{kitchen-sink regression}\index{regression!kitchen-sink|textbf}, therefore can fit the training data best.
 
-Out of sample, the result is the opposite. In Gu, Kelly and Xiu's test period, OLS-3 had a small positive out-of-sample $R^2$. OLS with all 920 inputs had an out-of-sample $R^2$ of $-3.46\%$, far worse than forecasting zero (Figure~\ref{fig:20-gkx}). In Chapter~\ref{ch:09}, the kitchen sink of fourteen market predictors also forecast worse than the historical mean. The reason is the same in both cases. Each coefficient is estimated with error. When the true signal is weak, many predictors fit the training sample well by chance. OLS cannot tell a predictor that carries information from one that happened to fit, so it gives both large coefficients. The model has learned the noise in the training sample along with the signal. This is \textbf{overfitting}\index{overfitting|textbf}. Its opposite, a model too simple to capture real effects, is \textbf{underfitting}\index{underfitting|textbf}.
+Out of sample, the result is the opposite. In Gu, Kelly and Xiu's test period, OLS-3 had a small positive out-of-sample $R^2$. OLS with all 920 inputs had an out-of-sample $R^2$ of $-3.46\%$, far worse than forecasting zero (Figure~\ref{fig:20-gkx}). In Chapter~\ref{ch:06}, the kitchen sink of fourteen market predictors also forecast worse than the historical mean. The reason is the same in both cases. Each coefficient is estimated with error. When the true signal is weak, many predictors fit the training sample well by chance. OLS cannot tell a predictor that carries information from one that happened to fit, so it gives both large coefficients. The model has learned the noise in the training sample along with the signal. This is \textbf{overfitting}\index{overfitting|textbf}. Its opposite, a model too simple to capture real effects, is \textbf{underfitting}\index{underfitting|textbf}.
 
 An overfit model looks best on the very data it was fitted to, so the training error cannot reveal the problem. Only data the model has not seen can. The question is therefore not whether to use more predictors, but how much complexity the data can support. The next subsection gives a way to think about that question.
 
@@ -251,7 +251,7 @@ The two extreme values of $\lambda$ show what it controls.
   \item When $\lambda$ is very large, every slope is pushed to zero. The intercept is not penalized, so the forecast becomes the average return of the training window, which is the historical-mean\index{historical-mean benchmark} benchmark of Section~\ref{sec:09-benchmarks}: high bias, low variance.
 \end{itemize}
 
-A regularized regression therefore lies between the kitchen sink and the historical mean, and $\lambda$ decides where. In the terms of Figure~\ref{fig:09-biasvar}, $\lambda$ moves the model along the horizontal axis. The goal is to choose the value that lands near the low point of the curve. This also explains a finding of Chapter~\ref{ch:09}. The Campbell--Thompson restrictions\index{Campbell--Thompson restrictions} and the equal-weight combination\index{combination forecast} forecast both pull forecasts toward the mean. Their success out of sample is evidence that this kind of shrinkage\index{shrinkage} works.
+A regularized regression therefore lies between the kitchen sink and the historical mean, and $\lambda$ decides where. In the terms of Figure~\ref{fig:09-biasvar}, $\lambda$ moves the model along the horizontal axis. The goal is to choose the value that lands near the low point of the curve. This also explains a finding of Chapter~\ref{ch:06}. The Campbell--Thompson restrictions\index{Campbell--Thompson restrictions} and the equal-weight combination\index{combination forecast} forecast both pull forecasts toward the mean. Their success out of sample is evidence that this kind of shrinkage\index{shrinkage} works.
 
 \subsection{Ridge, lasso and elastic net}
 
@@ -626,7 +626,7 @@ Training works as follows. The weights start at small random values. The slope o
 
 \subsection{Measuring success}
 
-The statistical test is the out-of-sample $R^2$\index{out-of-sample R-squared@out-of-sample $R^2$}. The version used for individual stocks differs from the one used for the market in Chapter~\ref{ch:09}. Both compare the model's squared forecast errors with those of a simple benchmark, and they differ only in the benchmark. The shaded box gives the two formulas.
+The statistical test is the out-of-sample $R^2$\index{out-of-sample R-squared@out-of-sample $R^2$}. The version used for individual stocks differs from the one used for the market in Chapter~\ref{ch:06}. Both compare the model's squared forecast errors with those of a simple benchmark, and they differ only in the benchmark. The shaded box gives the two formulas.
 
 \begin{technote}
 \textbf{Technical note: two versions of the out-of-sample $R^2$.} For the market, Campbell and Thompson (2008) use the historical mean $\bar{R}^{e}_t$, as in Equation~\eqref{eq:09-r2os}:
@@ -703,12 +703,12 @@ Application & Target & Typical methods and where the book treats it \\
 \midrule
 Cross-section of stock returns & next month's return relative to other stocks & penalized regression, boosted trees, neural networks; this chapter \\
 Asset pricing models & factors and stocks' exposures to them & principal components, IPCA, autoencoders; this section \\
-Bond and currency premia & excess returns on bonds or currencies & penalized regression and neural networks on yields and macroeconomic data; Chapters~\ref{ch:07} and~\ref{ch:06} \\
-Volatility and risk & next period's realized volatility or tail loss & tree ensembles and networks against HAR and GARCH; Chapters~\ref{ch:10} and~\ref{ch:11} \\
+Bond and currency premia & excess returns on bonds or currencies & penalized regression and neural networks on yields and macroeconomic data; Chapters~\ref{ch:12} and~\ref{ch:11} \\
+Volatility and risk & next period's realized volatility or tail loss & tree ensembles and networks against HAR and GARCH; Chapters~\ref{ch:07} and~\ref{ch:08} \\
 Credit risk & whether a borrower defaults & gradient boosting, random forests \\
 Fraud and anomaly detection & whether a transaction or trade is unusual & isolation forests, autoencoders (often unsupervised); Kuo (2024a) \\
 Text and news & sentiment, or the return after a news item & dictionaries, embeddings, language models \\
-Portfolio construction & portfolio weights directly & shrinkage, hierarchical clustering; Chapter~\ref{ch:12} \\
+Portfolio construction & portfolio weights directly & shrinkage, hierarchical clustering; Chapter~\ref{ch:09} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -857,13 +857,13 @@ Nagel (2025) took a second look at what these models were doing. He showed that 
 
 The exchange offers two lessons for testing any complex model. First, compare it with the simple strategies it might be reproducing, here volatility-timed momentum. A sophisticated method that only reproduces a simple rule should be judged against that rule. Second, test it on simulated data with a known truth, as in Section~\ref{sec:09-insample}, to check that it finds only the structure that is really there.
 
-The broader lesson confirms Chapter~\ref{ch:09}. In-sample fit is a poor guide to forecasting: the unpenalized regression on 920 inputs fit the training data best and forecast worst. The methods that worked build shrinkage and validation into the estimator. Their gains are largest in the cross-section and in corners of the market that are hard to trade. They are smallest, and most disputed, for the market as a whole.
+The broader lesson confirms Chapter~\ref{ch:06}. In-sample fit is a poor guide to forecasting: the unpenalized regression on 920 inputs fit the training data best and forecast worst. The methods that worked build shrinkage and validation into the estimator. Their gains are largest in the cross-section and in corners of the market that are hard to trade. They are smallest, and most disputed, for the market as a whole.
 
 \section{Lab~\thechapter: Replicating Gu, Kelly and Xiu (2020) on a portfolio panel}
 \label{sec:20-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:20} at a glance.} \emph{Papers replicated:} Gu, Kelly and Xiu (2020), on portfolios rather than individual stocks. \emph{Claim on trial:} machine learning finds return predictability that linear models miss, and it survives costs. \emph{Data:} 149 value-weighted portfolios from the Kenneth R. French Data Library\index{Kenneth French data library} (100 sorted on size and book-to-market, and 49 industries), the Fama--French\index{Fama--French factors} factors, and the Goyal--Welch predictors from Lab~\ref{ch:09}. All are free. \emph{Code:} \texttt{python lab05.py} (add \texttt{-{}-fast} for a quick run, or \texttt{-{}-source sim} for simulated data), or the notebook \texttt{lab05\_walkthrough.ipynb}.
+\textbf{Lab~\ref{ch:19} at a glance.} \emph{Papers replicated:} Gu, Kelly and Xiu (2020), on portfolios rather than individual stocks. \emph{Claim on trial:} machine learning finds return predictability that linear models miss, and it survives costs. \emph{Data:} 149 value-weighted portfolios from the Kenneth R. French Data Library\index{Kenneth French data library} (100 sorted on size and book-to-market, and 49 industries), the Fama--French\index{Fama--French factors} factors, and the Goyal--Welch predictors from Lab~\ref{ch:06}. All are free. \emph{Code:} \texttt{python lab05.py} (add \texttt{-{}-fast} for a quick run, or \texttt{-{}-source sim} for simulated data), or the notebook \texttt{lab05\_walkthrough.ipynb}.
 \end{callout}
 
 \textbf{Design.} The lab uses portfolios rather than individual stocks, because CRSP is not free. Portfolios average away much of the noise in single stocks and leave out microcaps. The test is therefore closer to what a large investor can trade, but it is not the same test as Gu, Kelly and Xiu's. Each month, the lab computes ten characteristics for every portfolio, covering size, value, past returns and risk, and converts them to ranks. Two market variables let the models change their view with market conditions. The target is each portfolio's next-month return relative to the average portfolio, so the models compete on ranking, not on timing the market. Five models compete: OLS-3, OLS on all twelve inputs, an elastic net, gradient-boosted trees, and a three-layer neural network averaged over three random seeds. They are retrained every five years, tuned on the preceding ten years, and tested from 1975 onward.
@@ -891,8 +891,8 @@ Five checks determine whether a machine-learning result is robust\index{robustne
 
 \begin{itemize}
   \item \textbf{The universe.} Which assets are included matters more than anything else. Gu, Kelly and Xiu's equal-weighted Sharpe ratio was almost twice the value-weighted one, and removing microcaps and distressed firms considerably weakened profits (Avramov, Cheng and Metzker 2023).
-  \item \textbf{Trading costs.}\index{transaction costs|textbf} Flexible models tend to trade more, because small changes in inputs can flip a forecast. In the simulated lab run, the best model before costs fell behind a linear model at 25 basis points. Turnover should be reported alongside every Sharpe ratio (Chapter~\ref{ch:17}).
-  \item \textbf{Time.} The 1987--2016 test period includes years before many anomalies were published and traded away (Chapter~\ref{ch:19}), so results should be split, as the lab does at 2000.
+  \item \textbf{Trading costs.}\index{transaction costs|textbf} Flexible models tend to trade more, because small changes in inputs can flip a forecast. In the simulated lab run, the best model before costs fell behind a linear model at 25 basis points. Turnover should be reported alongside every Sharpe ratio (Chapter~\ref{ch:13}).
+  \item \textbf{Time.} The 1987--2016 test period includes years before many anomalies were published and traded away (Chapter~\ref{ch:15}), so results should be split, as the lab does at 2000.
   \item \textbf{Tuning and seeds.} A network result that holds for one seed or configuration but not others is closer to luck than to skill. Averaging over seeds helps, and single-seed results show the spread.
   \item \textbf{Researcher degrees of freedom.}\index{researcher degrees of freedom|textbf} Every published model survived a search among many designs. Validation controls overfitting within one design, but not the choice among designs (Section~\ref{sec:01-backtests}).
 \end{itemize}
@@ -949,7 +949,7 @@ Machine learning is a better tool for an old job, not a source of hidden alpha.
   \item \textbf{Does the edge survive among large stocks?} The strongest machine-learning results come from broad samples dominated by small stocks. How much remains in the largest 500 or 1,000?
   \item \textbf{Hidden or known?} Do flexible models find genuinely new interactions, or mostly better ways to combine momentum, volatility and liquidity?
   \item \textbf{Complexity or momentum?} Is the virtue of complexity in market timing a general result or, as Nagel argues, a disguised volatility-timed momentum strategy?
-  \item \textbf{New models and new data.} Chapters~\ref{ch:21} to~\ref{ch:23} ask the parallel question for transformers and time-series foundation models\index{foundation models}.
+  \item \textbf{New models and new data.} Chapters~\ref{ch:20} to~\ref{ch:22} ask the parallel question for transformers and time-series foundation models\index{foundation models}.
 \end{itemize}
 
 \section{What practitioners and investors can use}
@@ -962,7 +962,7 @@ The evidence in Section~\ref{sec:20-verdict} leads to five practical lessons for
   \item \textbf{Ask where the returns come from.} Some strategies earn most of their profit from microcaps, from the stocks they sell short, or from months of market stress. Such profits may disappear once the strategy is run at scale or after trading costs.
   \item \textbf{Insist on the realistic number.} Ask for performance with stocks weighted by their market value and after trading costs. Backtests\index{backtest} that weight all stocks equally and ignore costs flatter flexible models the most, because those models trade often and lean on small stocks.
   \item \textbf{Treat interpretability\index{interpretability} as a risk control.} If a manager cannot say which signals drive the forecasts, there is no way to judge whether those signals will keep working.
-  \item \textbf{Expect decay.} Signals published in the academic literature lose part of their power after publication (Chapter~\ref{ch:19}), and a model trained on them inherits that decay.
+  \item \textbf{Expect decay.} Signals published in the academic literature lose part of their power after publication (Chapter~\ref{ch:15}), and a model trained on them inherits that decay.
 \end{itemize}
 
 The six questions of Section~\ref{sec:09-investors} apply to any machine-learning model an investor is shown. For a machine-learning strategy, three further questions matter most. How much of the return comes from the 20\% smallest stocks, and from the short side? What is the monthly turnover, and what trading costs are assumed? And how much do the results change with the random seed or with small changes to the training window?

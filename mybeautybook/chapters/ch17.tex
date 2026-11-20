@@ -1,4 +1,4 @@
-% Chapter 18 -- Claim: Low-Risk Stocks Beat High-Risk Stocks
+% Chapter 14 -- Claim: Delta Hedging Removes Option Risk
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -23,253 +23,615 @@
 }{}
 \makeatother
 
-\chapter{Claim: Low-Risk Stocks Beat High-Risk Stocks}
-\label{ch:18}
+\chapter{Claim: Delta Hedging Removes Option Risk}
+\label{ch:17}
 
-Common sense says that riskier investments must pay more on average, or no one would hold them. Yet investors who bought the dull, steady stocks of the market, such as utilities and grocery chains, have historically done about as well as those who bought the most exciting ones, with far smaller swings along the way. This chapter asks whether that pattern is real, why it might exist, and whether an investor can profit from it.
+Assume a fund manager will receive \$1 million in three months, and she plans to invest it in a stock that now trades at \$100. She worries that the stock will rise before her money arrives. She could wait and hope, but she would rather pay a small amount today for protection. She buys a \textbf{call option}\index{option!call|textbf}, a contract that gives her the right, but not the obligation, to buy the stock in three months at a fixed price of \$100, called the \textbf{strike price}\index{option!strike price|textbf}. The option costs about \$4.50 per share, a price called the \textbf{premium}\index{option!premium|textbf}. If the stock rises to \$120, she uses her right, buys at \$100 and saves \$20 per share. If the stock falls to \$90, she simply lets the option expire and buys in the market at \$90, and her only cost is the premium. The option works like insurance against a rising price. A \textbf{put option}\index{option!put|textbf}, the right to \emph{sell} at a fixed price, works the same way for an investor who fears a falling price.
 
-The capital asset pricing model\index{capital asset pricing model (CAPM)} makes one central prediction: assets that move more with the market should earn more. If a stock's beta\index{beta} doubles, its expected excess return\index{return!excess} should double too. This was among the first predictions in finance to be tested, and Chapter~\ref{ch:04} showed that it failed early. Black, Jensen and Scholes (1972) and Fama and MacBeth (1973), who estimated the link between returns and beta month by month and averaged the results, found that average returns did rise with beta, but far less steeply than the theory implied. Black (1972) offered an explanation based on limits to borrowing. Some investors want more risk but cannot borrow freely. Instead of borrowing, they buy high-beta stocks, which pushes up their prices and lowers their later returns.
-
-For two decades the flat security market line was treated as a curiosity. It became a claim about profits when later research made the effect larger and easier to trade. Ang, Hodrick, Xing and Zhang (2006) tested the theory that only market risk is priced, and found that stocks with high idiosyncratic volatility\index{volatility}, the part of volatility not explained by the market, earned strikingly low returns. Asking why professionals did not trade such mispricing away, Baker, Bradley and Wurgler (2011) argued that fund managers judged against a benchmark have little reason to correct the mispricing. To show that the pattern reflects limits on borrowing everywhere, not a quirk of U.S. stocks, Frazzini and Pedersen (2014) built a leveraged ``betting-against-beta'' factor that earned high risk-adjusted returns in many countries and asset classes. The pattern is now called the \textbf{low-risk anomaly}\index{low-risk anomaly|textbf}. Novy-Marx and Velikov (2022) later argued that much of the betting-against-beta performance comes from the way the factor is built, not from low risk itself.
-
-The question matters in practice. Low-volatility funds grew rapidly after 2010, and companies still use beta to set the return a new project must earn. The anomaly is also hard to exploit, because exploiting it needs leverage, which is exactly what the explanation says investors avoid. The claim on trial\index{claims-on-trial method} is: \textbf{low-beta and low-volatility stocks earn higher risk-adjusted returns than high-risk stocks, and a leveraged long--short portfolio captures the difference.}
-
-The lab in Section~\ref{sec:18-lab} repeats two classic tests on the free beta- and variance-sorted portfolios of the Kenneth R. French Data Library: the security market line of Black, Jensen and Scholes (1972) and the cross-sectional regressions of Fama and MacBeth (1973). It then rebuilds the betting-against-beta factor of Frazzini and Pedersen (2014) and compares it with AQR's free published series. The goal is to check whether low-risk stocks still earn more than the CAPM predicts once costs and construction choices are taken into account.
-
-By the end of the chapter you will be able to:
-
-\begin{itemize}
-  \item estimate a beta, split total risk\index{risk!total} into systematic and idiosyncratic parts, and compute a CAPM alpha\index{alpha};
-  \item draw the security market line\index{security market line}, and explain how limits on leverage\index{leverage} flatten it;
-  \item build a beta-neutral\index{market-neutral} betting-against-beta\index{betting against beta (BAB)} portfolio, and compare the explanations for the anomaly, such as leverage limits and lottery preferences\index{lottery preference};
-  \item judge whether a minimum-volatility or BAB fund can deliver what its backtest\index{backtest} promises.
-\end{itemize}
-
-
-\section{Foundations: beta, the CAPM and the security market line}
-\label{sec:18-foundations}
-
-\subsection{Beta, the CAPM and the security market line}
-
-Chapter~\ref{ch:04} introduced beta, the CAPM and the security market line (Section~\ref{sec:04-capm}). Beta is the slope of a regression of an asset's excess return on the market's excess return (Equation~\eqref{eq:04-capm}). The market itself has a beta of 1. The CAPM says that expected excess returns rise in a straight line with beta. Two consequences of the model matter for this chapter.
-
-First, the security market line passes through the risk-free rate\index{risk-free rate} at $\beta = 0$ and through the market at $\beta = 1$, so its slope equals the market premium.
-
-Second, an asset's \textbf{total risk}\index{risk!total|textbf}, the variance\index{variance} of its return, splits into two parts. The systematic part is $\beta_i^2\,\mathrm{Var}(R_m)$. The idiosyncratic part is the variance of the regression residual\index{regression!residuals}. Only the systematic part earns a reward, because investors can diversify\index{diversification} the idiosyncratic part away at no cost. Two stocks with the same volatility can therefore have very different betas, and the CAPM says they should have very different expected returns\index{return!expected}.
-
-\subsection{Alpha}
-
-An asset's alpha, often called Jensen's alpha, is the intercept of the same regression: the average return beyond what beta explains (Section~\ref{sec:04-capm}). Under the CAPM every alpha is zero. A multifactor alpha adds other factors to the regression, such as size, value and momentum\index{momentum} (Chapter~\ref{ch:04}). The low-risk anomaly is a claim about how alpha varies with beta: low-beta stocks have had positive alphas and high-beta stocks negative ones.
-
-The CAPM assumes that investors can borrow and lend freely at the risk-free rate. An investor who wants more risk than the market can then borrow and buy more of the market. Many investors cannot do this. Mutual funds and pension plans face limits on \textbf{leverage}\index{leverage|textbf}, which means borrowing to hold more than their capital. Individuals face \textbf{margin} requirements and pay more than the risk-free rate to borrow. Black (1972) showed that without riskless borrowing the SML is still a straight line, but a flatter one. It starts at the return on a \textbf{zero-beta portfolio}\index{zero-beta portfolio|textbf}, a portfolio uncorrelated with the market, whose return lies above the risk-free rate.
-
-\textbf{Worked example.} The risk-free rate is 3\% and the market premium is 6\% (Figure~\ref{fig:18-sml}).
-
-\begin{itemize}
-  \item Stock A has a beta of 0.6 and has averaged 9\%. The CAPM predicts $3\% + 0.6 \times 6\% = 6.6\%$, so A's alpha is $+2.4\%$.
-  \item Stock B has a beta of 1.5 and has averaged 10\%. The CAPM predicts $3\% + 1.5 \times 6\% = 12\%$, so B's alpha is $-2\%$.
-  \item An investor who can borrow at 3\% can lever A to a beta of 1. She holds $1/0.6 = 1.67$ dollars of A for each dollar of capital and borrows the remaining 0.67 dollars. Her expected return is $3\% + 1.67 \times (9\% - 3\%) = 13\%$, compared with 9\% for the market at the same beta. Even at a borrowing rate of 5\%, she earns $1.67 \times 9\% - 0.67 \times 5\% \approx 11.7\%$.
-  \item An investor who cannot borrow and wants a beta above 1 must buy B instead. If many investors are in that position, they bid up high-beta stocks such as B and push down their future returns. That is the core of the leverage-constraint explanation in Section~\ref{sec:18-explanations}.
-\end{itemize}
+The bank that sold the fund manager the option now has the opposite problem. If the stock rises to \$120, the bank must deliver shares worth \$120 for only \$100 and lose \$20 per share, far more than the \$4.50 it received. The bank does not want to bet on the stock, so it hedges. On the day it sells the option, it buys about 0.56 shares for every option it has sold. This number is the option's \textbf{delta}\index{Greeks!delta|textbf}, which measures how much the option's value changes when the stock price moves by \$1. If the stock rises by \$1, the option the bank owes becomes about 56 cents more costly, but the 0.56 shares it holds gain about 56 cents, so the two changes cancel.
 
 \begin{figure}[htbp]
 \centering
 \scalebox{0.8}{%
 \begin{tikzpicture}[
-  % CAPM: r = 3 + 6 * beta. A = (0.6, 9), B = (1.5, 10); the line through A and B
-  declare function={capm(\b) = 3 + 6*\b;  flat(\b) = 9 + (\b - 0.6)/0.9;}
+  party/.style={draw=fenavy, fill=fenavy, text=white, rounded corners=2pt,
+                align=center, font=\small\bfseries, minimum width=3.2cm,
+                minimum height=0.9cm},
+  box/.style={draw=gray!70, fill=feshade, rounded corners=2pt,
+              align=left, font=\footnotesize, inner sep=5pt,
+              text width=6.9cm},
+  hedge/.style={draw=fenavy, thick, fill=white, rounded corners=2pt,
+                align=left, font=\footnotesize, inner sep=5pt,
+                text width=14.6cm},
+  deal/.style={-stealth, thick}]
+
+  % Row 1: the deal today
+  \node[party] (fm)   at (0,0)    {Fund manager};
+  \node[party] (bank) at (11.8,0) {Bank};
+  \draw[deal] ([yshift=0.2cm]fm.east) -- node[above, font=\footnotesize]
+    {pays a premium of \$4.50 per share today} ([yshift=0.2cm]bank.west);
+  \draw[deal] ([yshift=-0.2cm]bank.west) -- node[below, font=\footnotesize]
+    {gives the right to buy the stock at \$100 in three months} ([yshift=-0.2cm]fm.east);
+
+  % Row 2: the two outcomes in three months
+  \node[box, anchor=north west] (up) at (-1.6,-1.1)
+    {\textbf{In three months, if the stock rises to \$120}\\[2pt]
+     Fund manager: uses the option and buys at \$100, saving \$20 per share, or \$15.50 after the premium.\\[2pt]
+     Bank, without a hedge: sells a \$120 share for \$100 and loses \$15.50 per share after the premium.};
+  \node[box, anchor=north east] (down) at (13.4,-1.1)
+    {\textbf{In three months, if the stock falls to \$90}\\[2pt]
+     Fund manager: lets the option expire and buys at \$90. Her only cost is the \$4.50 premium.\\[2pt]
+     Bank: owes nothing and keeps the \$4.50 premium.};
+
+  % Row 3: the bank's hedge
+  \node[hedge, anchor=north west] at ([yshift=-0.3cm]up.south west)
+    {\textbf{The bank's hedge.} To avoid betting on the stock, the bank buys \textbf{delta} $= 0.56$ shares for each option it sold. If the stock rises by \$1, the option it owes gains about 56 cents and its 0.56 shares gain about 56 cents, so the two changes cancel.};
+\end{tikzpicture}%
+}
+\caption{The call option in the story. The fund manager pays the bank \$4.50 per share today for the right to buy the stock at \$100 in three months. If the stock rises, the option protects her, and without a hedge the bank bears the loss. If the stock falls, she loses only the premium, which the bank keeps. The bank hedges by holding delta, 0.56 shares per option, so that small moves in the stock change its shares and the option it owes by the same amount.}
+\label{fig:14-story}
+\end{figure}
+
+\textbf{How does the bank determine the 0.56 shares?} The bank uses an option pricing model, which gives the option's value for any stock price. To find delta, it asks the model a simple question: how much would the option be worth if the stock were \$1 higher or \$1 lower? Table~\ref{tab:14-delta} shows the answer.
+
+\begin{table}[htbp]
+\centering
+\caption{The value of the call option at three stock prices.}
+\label{tab:14-delta}
+\begin{tabular}{@{}cc@{}}
+\toprule
+Stock price & Option value \\
+\midrule
+\$99  & \$3.95 \\
+\$100 & \$4.49 \\
+\$101 & \$5.06 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+When the stock moves from \$99 to \$101, the option's value rises by about \$1.12, or about 56 cents for each \$1 move in the stock. That rate of change is the option's delta. A share always moves dollar for dollar with the stock, so 0.56 shares move by exactly as much as the option, and holding them cancels the bank's risk from small moves. The same number, 0.56, can be derived directly from the Black--Scholes formula, which is introduced later in this chapter.
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.85}{%
+\begin{tikzpicture}[x=4.2cm, y=1.3cm,
+  state/.style={draw=gray!70, fill=feshade, rounded corners=2pt,
+                align=center, font=\footnotesize, inner sep=4pt,
+                text width=2.9cm},
+  move/.style={-stealth, thick, fenavy}]
+
+  \node[state] (t0) at (0,0)
+    {\textbf{Stock \$100}\\delta 0.56:\\hold 0.56 shares};
+  \node[state] (up1) at (1,1.3)
+    {\textbf{Stock \$110}\\delta rises:\\buy more shares};
+  \node[state] (dn1) at (1,-1.3)
+    {\textbf{Stock \$90}\\delta falls:\\sell some shares};
+  \node[state] (up2) at (2,1.3)
+    {\textbf{Stock \$120}\\delta 1: hold 1 share,\\deliver it for \$100};
+  \node[state] (dn2) at (2,-1.3)
+    {\textbf{Stock \$90}\\delta 0: hold no shares,\\option expires};
+
+  \draw[move] (t0) -- node[above left, font=\footnotesize] {rises} (up1);
+  \draw[move] (t0) -- node[below left, font=\footnotesize] {falls} (dn1);
+  \draw[move] (up1) -- (up2);
+  \draw[move] (dn1) -- (dn2);
+
+  \draw[-stealth, gray] (-0.4,-2.75) -- (2.5,-2.75);
+  \foreach \x/\lab in {0/Today, 1/1 month, 2/3 months (expiry)} {
+    \draw[gray] (\x,-2.67) -- (\x,-2.83);
+    \node[anchor=north, font=\footnotesize] at (\x,-2.85) {\lab};
+  }
+\end{tikzpicture}%
+}
+\caption{How the bank follows delta along two possible paths of the stock. The bank starts with 0.56 shares for each option it has sold. When the stock rises, the option becomes more likely to be used and its delta rises, so the bank buys more shares. When the stock falls, the delta falls, so the bank sells some. At expiry, the bank holds one share if the option will be used and none if it will not.}
+\label{fig:14-hedge}
+\end{figure}
+
+The delta does not stay fixed, so the bank must keep adjusting its holding. When the stock rises, the option becomes more likely to be used, so the bank buys more shares. When the stock falls, the option becomes less likely to be used, so the bank sells some. By the expiry date, the bank holds one full share per option if the stock is above \$100 and none if it is below, which is exactly what it needs to keep its promise to the fund manager. This strategy is called \textbf{delta hedging}\index{delta hedging|textbf}. If it works perfectly, the net cost of all the buying and selling along the way equals the premium the bank received. The bank has then reproduced the option with shares alone and carries no risk.
+
+
+In 1973 Fischer Black and Myron Scholes, together with a closely related paper by Robert Merton, turned this idea into a striking claim: an option can be replicated\index{replication|textbf}, meaning that its payoff can be reproduced exactly by trading the stock and borrowing or lending cash. The trader only has to hold the right number of shares and adjust that number continuously, whatever the market does. If that is true, an option's price is not a matter of opinion about where the market is going. It is simply the cost of replicating the option. The Chicago Board Options Exchange opened the same year, and within a few years traders were pricing options with the formula on handheld calculators. The work earned Scholes and Merton the 1997 Nobel Prize in economics. Black had died in 1995 and was not eligible, because the prize is not awarded after death.
+
+
+The argument rests on assumptions that no real market meets: continuous trading, constant volatility and no trading costs. Researchers soon asked how much these assumptions matter. Leland (1985) asked what trading costs do to the hedge, and showed that with trading costs, a hedger who adjusts the hedge often pays a great deal, while one who adjusts it rarely is left with risk (Figure~\ref{fig:14-freq}), so perfect replication is impossible. After the crash of 1987, option prices showed a lasting \emph{volatility smile}\index{volatility smile}, a sign that the market does not believe the model's assumptions (Section~\ref{sec:14-iv}). To estimate what hedged option sellers are paid for bearing the risk the model leaves, Bakshi and Kapadia (2003) measured the gains on hedged option positions and found them consistently negative for option buyers, a sign that hedged option sellers are paid for bearing volatility risk (Section~\ref{sec:14-verdict}). Because volatility tends to rise when the market falls, Hull and White (2017) proposed a better hedge that allows for the way volatility tends to move with the market (Section~\ref{sec:14-stress}).
+
+
+
+The answer matters well beyond option traders. The replication argument underlies the pricing of almost every derivative, and it is why banks can sell structured products, investments that package a bond with options, such as a note that pays part of the stock market's gain while guaranteeing the original investment, and hedge them instead of betting on them. 
+
+The claim on trial\index{claims-on-trial method} is: \textbf{a trader who sells an option and delta-hedges it as Black--Scholes prescribes is left with little risk.}
+
+The lab in Section~\ref{sec:14-lab} repeats the Black--Scholes hedge, in the spirit of Bakshi and Kapadia (2003), on simulated price paths where the model holds exactly and on real index paths since 1990. It uses free daily U.S. market returns and the VIX as the implied volatility, to measure how much risk is left after hedging, where it comes from, and how large the losses are in the worst months.
+
+By the end of the chapter you will be able to:
+
+\begin{itemize}
+  \item explain how Black--Scholes prices an option by replicating it\index{replication}, and which assumptions this needs;
+  \item break a delta-hedged\index{delta hedging} option's daily profit and loss into gamma\index{Greeks!gamma} and theta\index{Greeks!theta}, and estimate the error from hedging only at intervals;
+  \item explain why the volatility smile\index{volatility smile} is evidence against the model's assumptions;
+  \item judge what risks a ``fully hedged'' option seller or structured-product issuer still carries.
+\end{itemize}
+
+
+\section{Foundations: options and Black--Scholes}
+\label{sec:14-foundations}
+
+\subsection{Payoffs}
+
+A call\index{option!call} gives its owner the right to buy an asset at a fixed strike price\index{option!strike price} $K$ on the expiry date $T$. At expiry it pays
+\begin{equation}
+  \max(S_T - K,\, 0),
+  \label{eq:14-call-payoff}
+\end{equation}
+where $S_T$ is the asset's price then. A put\index{option!put} gives the right to sell, and pays $\max(K - S_T, 0)$. The buyer pays the premium\index{option!premium}. The seller, or \textbf{writer}, receives the premium and takes on the obligation. An option is \textbf{at the money}\index{option!moneyness|textbf} when its strike equals the current price, \textbf{in the money} when exercising it now would pay something, and \textbf{out of the money} when exercising it now would pay nothing.
+
+
+\textbf{Worked example.} Return to the fund manager at the start of the chapter. She buys a three-month call on a stock trading at \$100, with a strike of $K = \$100$, and pays a premium of about \$4.50. Because the stock price equals the strike when she buys it, the call is at the money. Table~\ref{tab:14-payoff} shows what happens at expiry.
+
+\begin{table}[htbp]
+\centering
+\caption{Payoffs at expiry for the call in the story, with a strike of \$100 and a premium of \$4.50. Profits are after the premium. The last column shows what a put with the same strike would pay.}
+\label{tab:14-payoff}
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+Stock price & Call payoff & Fund manager's & Bank's & Put payoff \\
+at expiry, $S_T$ & $\max(S_T - 100, 0)$ & profit & profit & $\max(100 - S_T, 0)$ \\
+\midrule
+\$90     & \$0     & $-\$4.50$  & $+\$4.50$  & \$10 \\
+\$100    & \$0     & $-\$4.50$  & $+\$4.50$  & \$0 \\
+\$104.50 & \$4.50  & \$0        & \$0        & \$0 \\
+\$120    & \$20    & $+\$15.50$ & $-\$15.50$ & \$0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The fund manager's loss is limited to the premium, while her gain grows with the stock price. The bank's position is the mirror image: its gain is limited to the premium, and its loss has no limit, which is why it hedges. She breaks even at \$104.50, where the payoff just repays the premium. A put works the other way, paying off when the stock ends below the strike.
+
+\subsection{Put--call parity}
+
+Consider European options, which can be exercised only at expiry (the name refers to the type of contract, not where it trades), on an asset that pays no dividends. A call and a put with the same strike and expiry satisfy
+\begin{equation}
+  C - P = S - K e^{-rT}
+  \label{eq:14-parity}
+\end{equation}
+Here $Ke^{-rT}$ is the present value of the strike, the amount that, invested at the interest rate today, grows to $K$ by expiry. Rearranged, owning the stock and selling a call gives the same result as holding cash of $Ke^{-rT}$ and selling a put. A \textbf{covered call}\index{option selling!covered call|textbf} (own the stock and sell a call) and a \textbf{cash-secured put}\index{option selling!cash-secured put|textbf} (hold the strike in Treasury bills and sell a put) with the same strike are therefore the same position.
+
+\textbf{Worked example.} Return to the call in the story: the stock trades at \$100, the strike is $K = \$100$, the option expires in three months ($T = 0.25$), and the interest rate is 4\%. The call's Black--Scholes price is \$4.49. The present value of the strike is $K e^{-rT} = 100\,e^{-0.04 \times 0.25} \approx \$99.00$, so Equation~\eqref{eq:14-parity} gives the price of a put with the same strike and expiry:
+\begin{equation}
+  P = C - S + K e^{-rT} = 4.49 - 100 + 99.00 = \$3.49.
+  \label{eq:14-parity-example}
+\end{equation}
+The call costs \$1.00 more than the put, which is exactly the gap between the stock price and the present value of the strike.
+
+Table~\ref{tab:14-parity} compares the two positions that parity says are the same. An investor can own the stock and sell the call, receiving \$4.49, for a net cost of \$95.51. Or she can put \$99.00 in Treasury bills and sell the put, receiving \$3.49, for the same net cost of \$95.51. At expiry, the Treasury bills have grown to \$100, and the two positions are worth the same whatever the stock does.
+
+\begin{table}[htbp]
+\centering
+\caption{A covered call and a cash-secured put with a strike of \$100 are the same position. Both cost \$95.51 today and are worth the same at expiry.}
+\label{tab:14-parity}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+ & Covered call & Cash-secured put \\
+ & (own stock, sell call) & (hold bills, sell put) \\
+\midrule
+Cost today & $\$100 - \$4.49 = \$95.51$ & $\$99.00 - \$3.49 = \$95.51$ \\
+\addlinespace[2pt]
+Value at expiry if the stock ends at \$120 & $\$120 - \$20 = \$100$ & $\$100 - \$0 = \$100$ \\
+Value at expiry if the stock ends at \$90 & $\$90 - \$0 = \$90$ & $\$100 - \$10 = \$90$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+In both positions, the investor gives up any gain above \$100 in exchange for the premium, and she bears the loss if the stock falls below \$100. They differ only in how they are assembled.
+
+\subsection{Black--Scholes--Merton}
+\label{sec:14-bsm}
+
+Before 1973, economists who tried to price options ran into a problem. An option's value seemed to depend on how much the stock was expected to rise and on how much investors disliked risk, and neither can be observed. Two analysts who disagreed about the stock's prospects would disagree about the option's value, and there was no way to settle who was right.
+
+Black, Scholes and Merton removed the problem with the hedging argument of the story. The bank that sold the call holds delta shares, and over a short period the gain on the shares offsets the change in the option's value, so the combined position carries no risk. A position without risk must earn the risk-free rate, or traders could profit from the difference. That one condition is enough to pin down the option's price. Because the hedge removes the risk, the stock's expected return and investors' attitudes toward risk drop out, and the price depends only on quantities that can be observed or estimated: the stock price, the strike, the time to expiry, the interest rate and the volatility.
+
+In plain words, the resulting formula prices an option as the cost of the shares the hedger must hold, minus the money it borrows to buy them. The shaded box gives the formula and explains how to read it.
+
+\begin{technote}
+\textbf{Technical note: the Black--Scholes formula.} To make the argument precise, they assumed that the stock price follows a \textbf{geometric Brownian motion}\index{geometric Brownian motion|textbf}, meaning that it changes by small random percentages, with returns over any period normally distributed in logs and with a constant volatility $\sigma$. Under this assumption, an option can be replicated by trading the stock and a bond, which gives its price (Black and Scholes 1973; Merton 1973):
+\begin{equation}
+  C = S\,N(d_1) - K e^{-rT} N(d_2), \qquad P = K e^{-rT} N(-d_2) - S\,N(-d_1)
+  \label{eq:14-bs}
+\end{equation}
+\begin{equation}
+  d_1 = \frac{\ln(S/K) + (r + \sigma^2/2)\,T}{\sigma\sqrt{T}}, \qquad d_2 = d_1 - \sigma\sqrt{T}
+  \label{eq:14-d}
+\end{equation}
+where $N$ is the cumulative standard normal distribution\index{distribution!normal}.
+
+The call formula reads as a recipe. The first term, $S\,N(d_1)$, is the value of the shares the bank holds, because $N(d_1)$ is the option's delta. The second term, $K e^{-rT} N(d_2)$, is the amount the bank borrows to help pay for them, and $N(d_2)$ is the probability, in a world where investors do not demand a premium for bearing risk, that the call ends in the money. The option's price is the difference: the cost of the shares minus the borrowing.
+\end{technote}
+
+\textbf{Worked example.} For the call in the story, with $S = K = \$100$, $T = 0.25$, $r = 4\%$ and $\sigma = 20\%$, Equation~\eqref{eq:14-d} gives $d_1 = 0.15$ and $d_2 = 0.05$, so $N(d_1) = 0.56$ and $N(d_2) = 0.52$. Then
+\begin{equation}
+  C = 100 \times 0.56 - 99.00 \times 0.52 = 55.96 - 51.47 = \$4.49.
+  \label{eq:14-bs-example}
+\end{equation}
+The bank that sold the call buys 0.56 shares for \$55.96, borrows \$51.47, and pays the remaining \$4.49 out of the premium it received. This is the same 0.56 shares as in the story, now derived from the formula, and the premium is exactly the cost of setting up the hedge. This chapter tests whether the hedge, once set up, really delivers the option's payoff, which is the replication\index{replication} argument behind these formulas.
+
+Because the option can be copied, its price must equal the cost of the copy. If the option sold for \$5, a trader could sell it, build the copy for \$4.49 and keep \$0.51 with no risk, because the copy covers whatever the option owes at expiry. Such a riskless profit is called an \textbf{arbitrage}\index{arbitrage|textbf}, and traders competing for it would push the price back to \$4.49.
+
+% Black--Scholes call values: strike 100, rate 4%.
+% call     = 20% volatility, three months to expiry (the story's option)
+% vol30    = 30% volatility, three months to expiry (for vega)
+% onemonth = 20% volatility, one month to expiry   (for theta)
+\pgfplotstableread[row sep=\\]{
+  S      call    vol30   onemonth  payoff \\
+  75.0    0.01    0.16    0.00    0.00 \\
+  77.5    0.02    0.28    0.00    0.00 \\
+  80.0    0.05    0.47    0.00    0.00 \\
+  82.5    0.12    0.73    0.00    0.00 \\
+  85.0    0.25    1.11    0.00    0.00 \\
+  87.5    0.49    1.61    0.02    0.00 \\
+  90.0    0.86    2.25    0.08    0.00 \\
+  92.5    1.41    3.05    0.26    0.00 \\
+  95.0    2.19    4.01    0.64    0.00 \\
+  97.5    3.21    5.15    1.35    0.00 \\
+  100.0   4.49    6.46    2.47    0.00 \\
+  102.5   6.00    7.93    4.01    2.50 \\
+  105.0   7.75    9.56    5.92    5.00 \\
+  107.5   9.68   11.33    8.10    7.50 \\
+  110.0  11.78   13.22   10.44   10.00 \\
+  112.5  14.00   15.23   12.87   12.50 \\
+  115.0  16.31   17.33   15.35   15.00 \\
+  117.5  18.69   19.51   17.84   17.50 \\
+  120.0  21.11   21.77   20.33   20.00 \\
+  122.5  23.56   24.07   22.83   22.50 \\
+  125.0  26.03   26.43   25.33   25.00 \\
+}\bsdata
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\linewidth, height=0.62\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=80, xmax=122, ymin=0, ymax=24,
+  xtick={80,85,...,120}, ytick={0,5,...,20},
+  xlabel={Stock price (\$)},
+  ylabel={Call value (\$)},
+  clip=false,
+  restrict x to domain=80:122,
+  legend style={at={(0.01,0.99)}, anchor=north west, draw=none,
+                font=\footnotesize, cells={anchor=west}},
+]
+  \addplot[fenavy, thick, densely dotted, smooth, mark=none] table[x=S, y=vol30] {\bsdata};
+  \addlegendentry{volatility 30\%, three months}
+  \addplot[fenavy, very thick, smooth, mark=none] table[x=S, y=call] {\bsdata};
+  \addlegendentry{the story's option: volatility 20\%, three months}
+  \addplot[gray, very thick, smooth, mark=none] table[x=S, y=onemonth] {\bsdata};
+  \addlegendentry{volatility 20\%, one month left}
+  \addplot[gray, thick, dashed, mark=none] table[x=S, y=payoff] {\bsdata};
+  \addlegendentry{payoff at expiry, $\max(S_T - 100, 0)$}
+
+  % Delta: tangent slopes on the story's curve at $90, $100 and $110
+  \addplot[black, thin, domain=86:94,  samples=2, forget plot] {0.858 + 0.183*(x-90)};
+  \addplot[black, thin, domain=94:106, samples=2, forget plot] {4.485 + 0.560*(x-100)};
+  \addplot[black, thin, domain=105:115, samples=2, forget plot] {11.779 + 0.865*(x-110)};
+  \fill (axis cs:90,0.858)   circle (2pt);
+  \fill (axis cs:100,4.485)  circle (2pt);
+  \fill (axis cs:110,11.779) circle (2pt);
+  \node[anchor=north west, align=left, font=\footnotesize]
+    at (axis cs:101,16) {\textbf{delta}: the slope of the curve,\\0.56 at \$100, so the price is \$4.49\\and rises 56 cents per \$1};
+  \draw[thin] (axis cs:102,12.4) -- (axis cs:100.2,4.9);
+
+  % Gamma: the curve bends, so the slope rises with the stock
+  \node[anchor=south west, align=left, font=\footnotesize]
+    at (axis cs:112.3,4.2) {\textbf{gamma}: the curve bends,\\so delta rises from 0.18\\at \$90 to 0.87 at \$110};
+
+  % Vega: higher volatility lifts the curve
+  \draw[-stealth, thick, fenavy] (axis cs:99.6,4.485) -- (axis cs:99.6,6.36);
+  \node[anchor=north west, align=left, font=\footnotesize, fenavy]
+    at (axis cs:81,14.5) {\textbf{vega}: volatility from 20\% to 30\%\\raises the price from \$4.49 to \$6.46};
+  \draw[thin, fenavy] (axis cs:91,12.1) -- (axis cs:99.4,6.6);
+
+  % Theta: time passing lowers the curve
+  \draw[-stealth, thick, gray] (axis cs:100.4,4.485) -- (axis cs:100.4,2.57);
+  \node[anchor=south west, align=left, font=\footnotesize]
+    at (axis cs:105.5,0.3) {\textbf{theta}: two months passing lowers\\the price from \$4.49 to \$2.47};
+  \draw[thin] (axis cs:105.5,1.4) -- (axis cs:100.7,3.2);
+\end{axis}
+\end{tikzpicture}
+\caption{An option's value curve bends, which is why its hedge must keep changing. The Greeks of the call in the story, with a strike of \$100 and a 4\% interest rate. The solid navy curve is the option's Black--Scholes value with 20\% volatility and three months to expiry. Delta is its slope, 0.56 at a stock price of \$100, and gamma is how fast that slope changes: the curve bends, so delta rises from 0.18 at \$90 to 0.87 at \$110. Vega is how much the curve rises when volatility rises: at 30\% volatility, the dotted curve, the price at \$100 is \$1.97 higher. Theta is how much the curve falls as time passes: with one month left, the gray curve, the price at \$100 is \$2.02 lower. As expiry approaches, the curve falls toward the payoff at expiry.}
+\label{fig:14-bs}
+\end{figure}
+
+\subsection{The Greeks}
+\label{sec:14-greeks}
+
+The Black--Scholes formula, Equation~\eqref{eq:14-bs}, turns five inputs into a price: the stock price $S$, the strike $K$, the time to expiry $T$, the interest rate $r$ and the volatility $\sigma$. \textbf{The Greeks}\index{Greeks|textbf} measure how the price changes when one of these inputs changes, holding the others fixed. Each Greek is a derivative of the formula, and each has its own Black--Scholes expression. In the expressions below, $n$ is the standard normal density, the slope of $N$.
+
+\begin{itemize}
+  \item \textbf{Delta}\index{Greeks!delta}, $\Delta = \partial V/\partial S$, is the change in the option's value when the stock price moves by \$1. For a call it is $N(d_1)$, and for a put it is $N(d_1) - 1$. It is also the number of shares needed to hedge the option.
+  \item \textbf{Gamma}\index{Greeks!gamma|textbf}, $\Gamma = \partial^2 V/\partial S^2$, is how fast delta changes as the stock price moves. It measures the curvature of the curve in Figure~\ref{fig:14-bs}, and it equals $n(d_1)/(S\sigma\sqrt{T})$ for both calls and puts.
+  \item \textbf{Vega}\index{Greeks!vega|textbf}, $\partial V/\partial \sigma$, is the change in the option's value when volatility changes. It equals $S\,n(d_1)\sqrt{T}$ for both calls and puts.
+  \item \textbf{Theta}\index{Greeks!theta|textbf}, $\Theta = \partial V/\partial t$, is the change in the option's value as one day passes with nothing else changing. For a call it equals $-S\,n(d_1)\sigma/(2\sqrt{T}) - rKe^{-rT}N(d_2)$ per year. Dividing by 365 gives the change per calendar day, the convention used in this chapter.
+\end{itemize}
+
+Table~\ref{tab:14-greeks} gives the Greeks of the call in the story.
+
+\begin{table}[htbp]
+\centering
+\caption{The Greeks of the call in the story, with $S = K = \$100$, three months to expiry, 20\% volatility and a 4\% interest rate. Theta is per calendar day.}
+\label{tab:14-greeks}
+\begin{tabular}{@{}lcl@{}}
+\toprule
+Greek & Value & Meaning \\
+\midrule
+Delta & 0.56   & A \$1 rise in the stock raises the call's value by 56 cents. \\
+Gamma & 0.039  & A \$1 rise in the stock raises delta by 0.039, from 0.56 to about 0.60. \\
+Vega  & 0.20   & A rise in volatility from 20\% to 21\% raises the call's value by 20 cents. \\
+Theta & $-0.027$ & One day passing lowers the call's value by about 2.7 cents. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The seller of an option holds the opposite of each Greek. The bank in the story loses when the stock makes large moves in either direction, because its option has positive gamma and the bank is \textbf{short gamma}: the hedge, which is adjusted only after the stock moves, always lags behind. It loses when volatility rises, because it is \textbf{short vega}. And it gains as time passes, because the option it owes loses value each day. Time works for the seller, and large moves work against it.
+
+\subsection{Implied volatility}
+\label{sec:14-iv}
+
+Section~\ref{sec:10-iv} introduced implied volatility as the volatility that makes an option's model price equal its market price. With Equation~\eqref{eq:14-bs} in hand, the definition becomes precise: implied volatility is the $\sigma$ at which the Black--Scholes price equals the market price. It is the market's price of volatility, not a statistical forecast. \textbf{Realized volatility}\index{volatility!realized|textbf} is the volatility, or standard deviation\index{standard deviation}, of the returns that actually occur over the option's life. Implied volatility also differs across strikes. For stock indexes, out-of-the-money puts trade at higher implied volatilities than at-the-money options, a pattern called the \textbf{skew}\index{volatility smile}.
+
+\subsection{Delta hedging}
+
+Delta hedging\index{delta hedging} is the replication recipe of Section~\ref{sec:14-bsm} run in reverse. A dealer who sells an option buys $\Delta$ shares to offset it. Over a short period, the option's value changes by about
+\begin{equation}
+  dV \approx \Delta\,dS + \tfrac{1}{2}\Gamma\,dS^2 + \Theta\,dt
+  \label{eq:14-taylor}
+\end{equation}
+where $\Delta$, $\Gamma$ and $\Theta$ are the delta\index{Greeks!delta}, gamma and theta of Section~\ref{sec:14-greeks}. The shares offset the first term. They cannot offset the second, which comes from gamma, the curvature of the option's value ($\partial^2 V/\partial S^2$). The third term, theta, is the time decay that the seller earns.
+
+\textbf{Worked example.} Return to the bank in the story, which sold the call and holds 0.56 shares. The call's delta is 0.56, its gamma is 0.039, and its theta is $-\$0.027$ a day. Table~\ref{tab:14-taylor} applies Equation~\eqref{eq:14-taylor} to three possible days.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{One day of the bank's delta hedge, by Equation~\eqref{eq:14-taylor}. The bank owes the option and holds 0.56 shares, so its net result is the change in its shares minus the change in the option.}
+\label{tab:14-taylor}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+ & \multicolumn{4}{c}{Change in the option's value} & & \\
+\cmidrule(lr){2-5}
+Stock move & Delta & Gamma & Theta & Total & Shares & Bank's net \\
+\midrule
+None      & \$0.00     & \$0.00    & $-\$0.03$ & $-\$0.03$ & \$0.00     & $+\$0.03$ \\
+Up \$3    & $+\$1.68$  & $+\$0.18$ & $-\$0.03$ & $+\$1.83$ & $+\$1.68$  & $-\$0.15$ \\
+Down \$3  & $-\$1.68$  & $+\$0.18$ & $-\$0.03$ & $-\$1.53$ & $-\$1.68$  & $-\$0.15$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The shares cancel the delta term in both directions, but the gamma term, \$0.18, is the same whichever way the stock moves, because it depends on the \emph{square} of the move. A large move in either direction therefore costs the hedged seller money, and time decay is what pays for it.
+
+
+\subsection{The hedging P\&L}
+
+For a seller who prices and hedges at the implied volatility\index{volatility!implied} $\sigma$, the profit over one day is about
+\begin{equation}
+  \text{P\&L} \approx \tfrac{1}{2}\,\Gamma S^2 \left(\sigma^2 \Delta t - R^2\right)
+  \label{eq:14-pnl}
+\end{equation}
+where $R$ is that day's return on the stock and $\Delta t$ is one day as a fraction of a year. This version counts the interest that the seller pays on the money borrowed to buy the shares, so it is a little smaller than the theta in the worked example above. The seller gains on quiet days and loses on days when the stock moves more than the implied volatility allows for. Added up over the option's life, the hedged profit and loss is a bet that realized variance\index{volatility!realized} will be lower than implied variance\index{variance}, weighted by gamma. If Black--Scholes is right, realized variance equals $\sigma^2$ on average, so the bet is fair, and with continuous hedging it carries no risk.
+
+\textbf{Worked example.} For the bank in the story, $\tfrac{1}{2}\Gamma S^2 = \tfrac{1}{2} \times 0.039 \times 100^2 \approx 197$. With $\sigma = 20\%$ and $\Delta t = 1/365$, the implied variance for one day is $\sigma^2 \Delta t \approx 0.00011$, which corresponds to a daily standard deviation of about 1.05\%, or \$1.05 on a \$100 stock. Table~\ref{tab:14-pnl} applies Equation~\eqref{eq:14-pnl} to four possible days.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{The bank's hedged profit or loss over one day, by Equation~\eqref{eq:14-pnl}, with $\tfrac{1}{2}\Gamma S^2 \approx 197$ and $\sigma^2 \Delta t \approx 0.00011$.}
+\label{tab:14-pnl}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Stock move & Return $R$ & $R^2$ & $\sigma^2 \Delta t - R^2$ & Bank's P\&L \\
+\midrule
+None              & 0\%     & 0.00000 & $+0.00011$ & $+\$0.022$ \\
+\$1               & 1\%     & 0.00010 & $+0.00001$ & $+\$0.002$ \\
+\$1.05 (break-even) & 1.05\% & 0.00011 & $\phantom{+}0.00000$ & \$0.000 \\
+\$3               & 3\%     & 0.00090 & $-0.00079$ & $-\$0.156$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+On a quiet day the bank earns \$0.022, the time decay of the previous example less about half a cent of interest on its \$51.47 loan. It breaks even on a move of about \$1.05, exactly the daily standard deviation that 20\% volatility implies, and loses on larger moves. Hedging pays off if the stock's daily moves are smaller than the implied volatility predicts, and loses if they are larger. Figure~\ref{fig:14-pnl} plots the bank's profit or loss for every daily move.
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.8}{%
+\begin{tikzpicture}[
+  % One-day hedged P&L of the bank in the story, Equation (14-pnl):
+  % 197 x (0.0001096 - (move/100)^2) = 0.0216 - 0.0197 x move^2,
+  % with break-even at a move of about $1.05
+  declare function={pnl(\d) = 0.0216 - 0.0197*\d*\d;}
 ]
 \begin{axis}[
-  width=0.6\linewidth, height=0.34\linewidth,
+  width=0.61\linewidth, height=0.34\linewidth,
   axis lines=left, axis line style={-stealth},
-  xmin=0, xmax=2, ymin=0, ymax=15.5,
-  xtick={0,0.5,...,2}, ytick={0,5,10,15},
-  xticklabel style={/pgf/number format/fixed},
-  xlabel={Beta}, ylabel={Average return (\%)},
-  clip=false,
+  xmin=-4, xmax=4, ymin=-0.34, ymax=0.08,
+  xtick={-4,...,4}, ytick={-0.3,-0.2,-0.1,0},
+  yticklabel style={/pgf/number format/fixed},
+  xlabel={Stock move over one day (\$)},
+  ylabel={Bank's hedged P\&L (\$)},
+  samples=150, domain=-4:4, clip=false,
 ]
-  \addplot[fegray, thick, dashed, domain=0:2, samples=2] {flat(x)};
-  \addplot[fenavy, very thick, domain=0:2, samples=2] {capm(x)};
-  \fill (axis cs:0.6,9)  circle (2.6pt);
-  \fill (axis cs:1,9)    circle (2.6pt);
-  \fill (axis cs:1.5,10) circle (2.6pt);
-  \node[anchor=south] at (axis cs:0.6,9.5) {A: $\alpha = +2.4\%$};
-  \node[anchor=north west] at (axis cs:0.98,8.4) {market};
-  \node[anchor=north west] at (axis cs:1.47,9.1) {B: $\alpha = -2\%$};
-  \node[anchor=north west] at (axis cs:0.02,2.7) {$r_f = 3\%$};
-  \node[fenavy, anchor=west] at (axis cs:2.02,15) {CAPM line};
-  \node[fegray, anchor=west, align=left] at (axis cs:2.02,{flat(2)})
-    {line through\\A and B};
+  \addplot[gray, thin, samples=2] {0};
+  \addplot[fenavy, very thick] {pnl(x)};
+  \foreach \wfX in {-1.05,0,1.05,3} {
+    \edef\wfTmp{\noexpand\fill[fenavy] (axis cs:\wfX,{pnl(\wfX)}) circle (2.6pt);}
+    \wfTmp
+  }
+  \node[anchor=south] at (axis cs:0,0.03) {quiet day: $+\$0.022$};
+  \node[anchor=south west] at (axis cs:1.3,0.004) {break-even $\pm\$1.05$};
+  \node[anchor=west] at (axis cs:3.12,{pnl(3)}) {\$3 move: $-\$0.156$};
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Low-beta stocks have done better, and high-beta stocks worse, than the CAPM predicts. The security market line in the worked example. The CAPM line runs from the risk-free rate of 3\% through the market at a beta of 1. Stock A lies above it (positive alpha) and stock B below it (negative alpha), so the line through A and B is flatter than the CAPM predicts.}
-\label{fig:18-sml}
+\caption{A hedged option seller earns a little on quiet days and loses on big moves in either direction. The bank's delta-hedged profit or loss over one day, by Equation~\eqref{eq:14-pnl}, for the call in the story. The bank earns \$0.022 if the stock is unchanged, breaks even on a move of about \$1.05 either way, and loses \$0.156 on a \$3 move. The loss grows with the square of the move.}
+\label{fig:14-pnl}
 \end{figure}
 
-\section{How it works}
-\label{sec:18-how}
 
-There are three ways to sort stocks on risk, and the literature uses all three.
 
-\begin{itemize}
-  \item \textbf{Beta.}\index{beta|textbf} Estimate each stock's beta from past returns, typically 36 to 60 months of monthly data or a year of daily data. Sort into portfolios. This tests the CAPM directly.
-  \item \textbf{Total volatility.} Sort on the standard deviation\index{standard deviation} of past daily returns, often over one to three months. This needs no market model, and it is how most low-volatility funds work.
-  \item \textbf{Idiosyncratic volatility.}\index{idiosyncratic volatility|textbf} Sort on the volatility of residuals from a factor model\index{factor model}, usually the Fama--French\index{Fama--French factors} three-factor model. Under the CAPM this risk should not be priced at all, so a negative relation is especially puzzling.
-\end{itemize}
+\subsection{Discrete hedging}
 
-The three measures are strongly correlated. High-beta stocks tend to be volatile, and volatile stocks tend to have high idiosyncratic risk\index{risk!idiosyncratic}. Separating them is one of the open problems in this chapter.
-
-A flat SML shows up in two ways. The first is in \emph{alphas}: low-risk portfolios have positive CAPM alphas, and high-risk portfolios negative ones. The second is in a \emph{long-short portfolio\index{long--short portfolio}}. The simple version buys low-risk stocks and sells high-risk stocks short. It has a strongly negative beta, so it loses money in rising markets even when the SML is flat. Its average return can be negative while its alpha is positive. \textbf{Betting against beta (BAB)}\index{betting against beta (BAB)|textbf} fixes this. It levers the low-beta leg up to a beta of 1 and scales the high-beta leg down to a beta of 1. The portfolio is then \textbf{beta-neutral}\index{market-neutral|textbf}, with no net exposure to the market (Figure~\ref{fig:18-bab}). The shaded box gives the formula.
+Real hedgers adjust their hedges at intervals, not continuously. Even when Black--Scholes is right, this leaves an error, whose standard deviation\index{standard deviation} falls with the square root of the number of adjustments. For a one-month option hedged once a day, the error is roughly a fifth of the premium, as the shaded box shows.
 
 \begin{technote}
-\textbf{Technical note: the BAB return.} In symbols, the portfolio's excess return is
+\textbf{Technical note: the size of the hedging error.} Kamal and Derman (1999) showed that for an at-the-money\index{option!moneyness} option hedged $N$ times, it is about
 \begin{equation}
-  r_{\mathrm{BAB}} = \frac{r_L - r_f}{\beta_L} - \frac{r_H - r_f}{\beta_H}
-  \label{eq:18-bab}
+  \mathrm{sd}(\text{hedging error}) \approx \sqrt{\frac{\pi}{4}}\;\frac{\sigma \times \text{vega}}{\sqrt{N}}
+  \label{eq:14-kd}
 \end{equation}
-If the SML is flat, this portfolio earns a positive return with no market exposure. The betas must be \textbf{ex ante}, estimated from data available when the portfolio is formed. Otherwise the construction looks ahead (Section~\ref{sec:02-lookahead}).
+where vega\index{Greeks!vega} is measured per unit of $\sigma$. For a one-month option hedged daily, the error is about a fifth of the premium. Hedging four times as often halves it (Figure~\ref{fig:14-freq}).
 \end{technote}
 
 \begin{figure}[htbp]
 \centering
 \scalebox{0.8}{%
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.6\linewidth, height=0.34\linewidth,
-  ybar, bar width=0.6cm,
-  axis lines=left, axis line style={-stealth},
-  ymin=-2, ymax=2.2, ytick={-2,-1,0,1,2},
-  ylabel={Dollars per \$1 of capital},
-  symbolic x coords={L,H}, xtick=data,
-  xticklabels={{Low-beta leg\\($\beta_L = 0.6$)}, {High-beta leg\\($\beta_H = 1.5$)}},
-  xticklabel style={align=center},
-  enlarge x limits=0.45,
-  nodes near coords,
-  nodes near coords style={font=\small},
-  extra y ticks={0}, extra y tick labels={},
-  extra y tick style={grid=major, major grid style={gray, thin}},
-  legend style={draw=none, at={(0.5,1.03)}, anchor=south, legend columns=2,
-                /tikz/every even column/.append style={column sep=1em}},
+\begin{tikzpicture}[
+  % Kamal--Derman: hedging error ~ 0.82 / sqrt(N) of the premium
+  declare function={err(\n) = 82/sqrt(\n);}
 ]
-  \addplot[fill=fenavy, draw=none] coordinates {(L,1.67) (H,-0.67)};
-  \addplot[fill=gray!40, draw=none] coordinates {(L,1) (H,-1)};
-  \legend{position size, resulting beta exposure}
+\begin{axis}[
+  width=0.64\linewidth, height=0.34\linewidth,
+  xmode=log,
+  axis lines=left, axis line style={-stealth},
+  xmin=1, xmax=200, ymin=0, ymax=95,
+  xtick={1,4,21,84},
+  xticklabels={1, 4\\(weekly), 21\\(daily), 84\\(4 a day)},
+  xticklabel style={align=center},
+  ytick={0,20,...,80},
+  xlabel={Rebalances over a one-month option's life, $N$},
+  ylabel={Hedging error (\% of premium)},
+  samples=100, domain=1:200, clip=false,
+]
+  \addplot[fenavy, very thick] {err(x)};
+  \fill[fenavy] (axis cs:4,41)  circle (2.6pt);
+  \fill[fenavy] (axis cs:21,{err(21)}) circle (2.6pt);
+  \fill[fenavy] (axis cs:84,{err(84)}) circle (2.6pt);
+  \node[anchor=south west] at (axis cs:4.4,41)  {41\%};
+  \node[anchor=south west] at (axis cs:23,{err(21)}) {18\%};
+  \node[anchor=south west] at (axis cs:92,{err(84)}) {9\%};
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Betting against beta borrows to scale up low-beta stocks and scales down high-beta ones until the market's moves cancel. Building a BAB portfolio from the worked example. Per dollar of capital, it holds \$1.67 of the low-beta stock ($\beta_L = 0.6$) and shorts \$0.67 of the high-beta stock ($\beta_H = 1.5$). Each leg then carries a beta exposure of 1, in opposite directions, so the portfolio's beta is zero.}
-\label{fig:18-bab}
+\caption{Hedging more often shrinks the error, but only slowly. Hedging error in the Black--Scholes world, by the Kamal--Derman approximation, for a one-month at-the-money option at 20\% volatility. Hedging weekly leaves an error of about 41\% of the premium, daily about 18\%, and four times a day about 9\%. Each quadrupling of the frequency halves the error.}
+\label{fig:14-freq}
 \end{figure}
 
-The explanations fall into two groups. One treats the anomaly\index{anomaly} as \textbf{mispricing}\index{mispricing|textbf}. The other treats it as \textbf{compensation for a risk the CAPM misses}. Section~\ref{sec:18-explanations} sets them out. The difference matters because the two groups predict different things: when the anomaly should be strongest, and whether it should survive once it becomes popular.
+\subsection{The volatility smile}
 
-\section{The claim}
-\label{sec:18-claim}
+If Black--Scholes were right, every option on the same asset would have the same implied volatility. Section~\ref{sec:14-iv} described the skew: low-strike index puts have higher implied volatilities. When options at both high and low strikes have higher implied volatilities, the pattern is called a \textbf{smile}\index{volatility smile|textbf}. For this chapter, the skew matters because it is the market's admission that returns do not follow the model's assumptions, the very assumptions that delta hedging relies on.
 
-\begin{callout}
-\textbf{Claim.} Low-beta and low-volatility stocks earn higher risk-adjusted returns than the CAPM predicts. The security market line is flatter than the market premium, and a beta-neutral portfolio that is long low-risk stocks and short high-risk stocks earns a positive alpha.
-\end{callout}
 
-To test it we need to specify four things.
+\section{Where the hedge breaks down}
+\label{sec:14-how}
 
-\begin{itemize}
-  \item \textbf{The strong form.}\index{efficient market hypothesis!strong form|textbf} The SML is not just flat but \emph{inverted\index{yield curve!inverted}}: low-risk stocks earn higher raw returns, not just higher risk-adjusted returns. Some studies of volatility sorts find this. Most studies of beta sorts find a flat or weakly positive relation instead.
-  \item \textbf{The weak form.}\index{efficient market hypothesis!weak form|textbf} The SML is positive but flatter than the CAPM predicts, so low-beta stocks have positive alphas. This is what Black, Jensen and Scholes found, and it is the claim tested here.
-  \item \textbf{Risk adjustment.} A CAPM alpha is the natural first test. The claim is more interesting if the alpha survives the size, value and momentum factors, and more interesting still if it survives profitability and interest-rate exposure.
-  \item \textbf{What would count against it.} The claim weakens if the alpha is concentrated in micro-caps\index{micro-caps}, if it disappears after controlling for other known factors, or if it has faded since the strategy became popular. It fails if a beta-neutral, tradable version earns nothing after costs.
-\end{itemize}
-
-\section{The original evidence}
-\label{sec:18-evidence}
-
-\textbf{A flat line from the start.} Because individual betas are measured with large errors, Black, Jensen and Scholes (1972) sorted NYSE stocks from 1931 to 1965 into ten portfolios by past beta. Grouping stocks this way averages out the errors in individual betas\index{estimation error}. Average returns rose with beta, but much less than the CAPM predicted. Low-beta portfolios had positive alphas, and high-beta portfolios negative ones. Fama and MacBeth (1973) confirmed a positive but modest slope. Haugen and Heins (1975) asked directly whether riskier portfolios had rewarded their owners, and reported that low-volatility portfolios had matched or beaten high-volatility ones. Because size and beta are closely related, Fama and French (1992) included size in the test and found almost no relation between beta and average return from 1963 to 1990, once size was taken into account.
-
-\textbf{Idiosyncratic volatility.}\index{idiosyncratic volatility|textbf} Ang, Hodrick, Xing and Zhang (2006) sorted U.S. stocks on idiosyncratic volatility over the previous month. The fifth of stocks with the highest volatility earned 1.06\% a month less than the fifth with the lowest. Its Fama--French alpha was 1.31\% a month lower. This is a strong form of the anomaly, because riskier stocks earned lower raw returns, not just lower risk-adjusted ones. Their 2009 paper found the same pattern in 23 developed markets.
-
-\textbf{From anomaly to strategy.} Baker, Bradley and Wurgler (2011) presented the low-risk anomaly to investors, and argued that benchmarking stops institutions from exploiting it. Frazzini and Pedersen (2014) built the BAB factor described in Section~\ref{sec:18-how} from individual stocks, using rank weights and betas pulled toward 1. In U.S. stocks from 1926 to 2012 it had a Sharpe ratio\index{Sharpe ratio} of 0.78. Its alphas stayed significant after controls for size, value, momentum and liquidity\index{liquidity}. It also worked in 19 international stock markets and in Treasury bonds, corporate bonds and futures. BAB returns were lower when borrowing was hard to obtain, as their leverage theory predicts.
-
-By 2014 the low-risk anomaly looked like one of the best-documented patterns in finance. Low-volatility index funds launched in the United States around 2011 and grew quickly.
-
-\section{Explanations}
-\label{sec:18-explanations}
-
-\textbf{Leverage constraints.}\index{leverage|textbf} Black (1972) and Frazzini and Pedersen (2014) argue as follows. Some investors want high expected returns but cannot borrow, so they buy high-beta stocks instead of a levered market portfolio. This bids up high-beta stocks and flattens the SML. The theory predicts that constrained investors, such as mutual funds and individuals, hold high-beta portfolios, and that BAB does worse when borrowing becomes harder. Both predictions have empirical support.
-
-\textbf{Lottery preferences.}\index{lottery preference|textbf} Some investors like stocks with a small chance of a very large gain, as with a lottery ticket, and they overpay for them. Barberis and Huang (2008) derive this from prospect theory\index{prospect theory}, a theory of how people actually make choices under risk, in which people give too much weight to unlikely outcomes. Bali, Cakici and Whitelaw (2011) found that stocks with the largest one-day returns over the past month go on to underperform. This effect explains much of the idiosyncratic volatility effect. Lottery demand fits volatility sorts more naturally than beta sorts.
-
-\textbf{Benchmarking.} Most institutional managers are judged against an index weighted by market value. For them, a low-beta stock with a positive alpha is not attractive. It adds \textbf{tracking error}\index{tracking error|textbf}, the volatility of the gap between the fund's return and the benchmark's, and it lags in rising markets. Baker, Bradley and Wurgler (2011) argue that this keeps institutions from correcting the mispricing. Part D of the lab measures how large that tracking error is.
-
-\textbf{Overpricing that is hard to short.} Liu, Stambaugh\index{Stambaugh bias} and Yuan (2018) found that the beta anomaly comes from beta's correlation\index{correlation} with idiosyncratic volatility, and that it is concentrated among overpriced stocks, where short-selling\index{short selling} is costly.
-
-\textbf{Missing risk factors.} Other explanations treat the alpha as compensation for risks the CAPM omits.
-
-\begin{itemize}
-  \item \emph{Profitability and investment.} Low-risk stocks tend to be large, profitable and conservative in investment. Fama and French (2016) found that their five-factor model, which adds profitability and investment factors, explains much of the low-beta and low-volatility alphas.
-  \item \emph{Interest rates.} Low-volatility stocks, such as utilities and consumer staples, behave partly like bonds. Driessen, Kuiper, Nazliben and Beilo (2019) found that low-volatility portfolios lose value when rates rise and that an interest-rate premium explains part, but not all, of the anomaly. Over 1981--2020 bond yields fell almost continuously, which would have flattered any bond-like equity strategy.
-  \item \emph{Conditional betas.} Cederburg and O'Doherty (2016) found that betas vary over time in ways that bias unconditional alphas, and that modelling time-varying betas\index{beta!time-varying} largely eliminates the alpha gap between low- and high-beta stocks.
-\end{itemize}
-
-The explanations can all be partly true at once. Asness, Frazzini, Gormsen and Pedersen (2020) split BAB into two bets. One is a bet against correlation, which they link to leverage constraints. The other is a bet against volatility, which they link to lottery demand. They report that both bets earn returns.
-
-\section{Lab~\thechapter: Replicating Black, Jensen and Scholes (1972) and Frazzini and Pedersen (2014)}
-\label{sec:18-lab}
-
-\begin{callout}
-\textbf{Lab~\ref{ch:18} at a glance.} \emph{Papers replicated:} Black, Jensen and Scholes (1972); Fama and MacBeth (1973); Frazzini and Pedersen (2014). \emph{Claim on trial\index{claims-on-trial method}:} low-risk stocks earn more than the CAPM predicts. \emph{Data:} ten portfolios formed on market beta, on total variance and on residual variance, each value- and equal-weighted\index{index weighting!equal-weighted}, from July 1963, from the Kenneth French\index{Kenneth French data library} library; the Fama--French and momentum factors; the 10-year Treasury yield from FRED\index{FRED}; optionally, AQR's published BAB factor for comparison. All are free. \emph{Code:} runs as a script (\texttt{python lab12.py}) or as a notebook with a prediction prompt before each step.
-\end{callout}
-
-\textbf{Part A, the SML.} For each set of decile portfolios, the lab estimates average excess return, realized beta, CAPM alpha and four-factor alpha, and the slope of average return on beta across the deciles. Lab Figure~\ref{ch:18}.1 plots the deciles against the CAPM line, which runs from the origin through the market.
-
-\textbf{Part B, long-short portfolios.} Two constructions for each sort:
+The replication argument can break down in four ways, and each leaves a different mark on the hedging profit and loss\index{hedging P\&L}.
 
 \begin{center}
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.17\linewidth}@{}}
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
 \toprule
-Construction & Long & Short & Beta \\
+Assumption & What happens in practice & Effect on a hedged option seller \\
 \midrule
-Low minus high & Three lowest-risk deciles & Three highest-risk deciles & Strongly negative \\
-BAB-style & Low leg $\times\, 1/\beta_L$ & High leg $\times\, 1/\beta_H$ & About zero \\
+Continuous trading & Hedgers rebalance daily or less often & Random errors that shrink with hedging frequency; present even when the model is right \\
+Constant, known volatility & Volatility changes and clusters (Chapter~\ref{ch:07}) & P\&L tracks realized minus implied variance; losses when volatility rises \\
+Continuous price paths & Prices jump, as in October 1987 or March 2020 & Large losses on jump days that no rebalancing frequency can prevent \\
+No trading costs & Every rebalance pays a spread & A steady drag that grows with hedging frequency \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-The betas are estimated from the previous 60 months of each leg's returns, so the portfolio uses only information available at the time. Lab Figure~\ref{ch:18}.2 plots cumulative returns.
+The first breakdown comes from the model itself: it would happen even if Black--Scholes were exactly right. The other three come from assumptions that fail in real markets. A test of the claim must separate the two. The cleanest way is to run the same hedging strategy twice, once on real market paths and once on simulated paths that obey the model exactly. The difference between the two results is the cost of the model's being wrong.
 
-This is a simpler construction than Frazzini and Pedersen's. They use individual stocks with rank weights. The lab uses published portfolios, which anyone can reproduce in minutes. Expect it to show the same pattern with smaller numbers, partly because it does not tilt toward small stocks. Comparing it with AQR's factor (optional) shows how much the construction matters.
+\textbf{Jumps are the hardest problem.} On a day when the market falls 20\%, the option's value changes far more than the hedge does. The gamma term $\tfrac{1}{2}\Gamma\,dS^2$ is huge, and hedging more often does not help, because the jump happens between adjustments. An option seller loses from large moves in either direction, so any jump is a loss.
 
-\textbf{Part C, robustness checks.} Equal versus value weights, three subperiods (1963--1990, 1991--2009, 2010 onward), interest-rate exposure, calendar-year returns in 2008, 2020 and 2022, and rolling ten-year alphas (Lab Figures~\ref{ch:18}.3 and~\ref{ch:18}.4).
+\textbf{Changes in volatility}\index{volatility|textbf} cause a related problem. If realized volatility over the month is twice the implied volatility used to price and hedge the option, the seller loses roughly vega times the gap, however often the hedge is adjusted.
 
-\textbf{Part D, the investor's view.} The lowest-volatility and lowest-beta quintiles against the market: Sharpe ratio, alpha, drawdown\index{drawdown}, tracking error and the share of years in which they trailed the market (Lab Figure~\ref{ch:18}.5).
+\textbf{The smile is the market's response.} After October 1987, dealers began to charge more for the risks that delta hedging cannot remove: crashes and spikes in volatility. They did so by raising the implied volatility of out-of-the-money puts, the options that pay off in crashes. The smile is therefore both evidence against the Black--Scholes assumptions and the price of the risk that delta hedging leaves behind\index{regression!residuals}.
 
-\textbf{What the simulated run shows.} On simulated data built with a flat SML, the lab recovers what it should. The slope across beta deciles is far below the market premium. The BAB-style portfolios have betas near zero and positive alphas. The low-minus-high portfolio sorted on beta loses money on average despite its positive alpha, which illustrates why the construction matters. These results confirm that the code works. They say nothing about real markets. Run the lab on the real data to reach your own verdict.
+
+\section{The claim}
+\label{sec:14-claim}
+
+\begin{callout}
+\textbf{Claim.} An option seller who delta-hedges as Black--Scholes prescribes is left with little risk. Hedging removes most of the variance of the unhedged position, and what remains is small, symmetric, and shrinks as hedging becomes more frequent.
+\end{callout}
+
+This claim is what justifies treating an option's Black--Scholes price as its cost of production. To test it, four points need to be settled:
+
+\begin{itemize}
+  \item \textbf{Little risk compared with what.} The benchmark is the unhedged short option. A hedge that removes 90\% of its variance and leaves errors of about a fifth of the premium, as daily hedging does when the model holds, meets the claim. A hedge that sometimes leaves losses of several times the premium does not.
+  \item \textbf{Which volatility.} The seller must price and hedge at some volatility. The test uses the VIX\index{VIX}, the market's implied volatility, so it asks whether hedging at the market's price leaves little risk.
+  \item \textbf{Which measure.} The standard deviation of the hedging error captures everyday risk. The worst 1\% of outcomes\index{quantile} and the worst month capture the risk of extreme losses. The claim requires both to be small.
+  \item \textbf{What would count against it.} The claim fails if hedging on real paths leaves much more risk than on simulated Black--Scholes paths, if the remaining errors include occasional very large losses\index{fat tails}, or if hedging more often fails to reduce them.
+\end{itemize}
+
+\section{The original evidence}
+\label{sec:14-evidence}
+
+\textbf{The model.} Black and Scholes (1973) derived the option price from a hedging argument, and Merton (1973) generalized it and set out the conditions under which it holds. Early tests, including the authors' own (Black and Scholes 1972), found the model a useful approximation, with systematic differences from market prices. Within a few years, Black--Scholes prices and deltas were standard on trading floors.
+
+\textbf{Trading costs.}\index{transaction costs|textbf} Leland (1985) showed that with trading costs proportional to the amount traded, perfect replication is impossible, because hedging continuously would cost an infinite amount. He proposed hedging at intervals and pricing the option at a higher volatility, so that a seller is paid for the expected costs. The adjustment grows as the hedge is adjusted more often. Even in theory, then, the seller must trade off hedging error against trading costs.
+
+\textbf{The smile after 1987.}\index{volatility smile} Rubinstein (1994) showed that before October 1987, S\&P 500 index options at different strikes had roughly the same implied volatility, as Black--Scholes requires. After the crash, a strong skew appeared, with low-strike puts priced at much higher implied volatilities, and it has lasted ever since. He developed implied binomial trees, a method for pricing options that lets prices move up or down step by step in a way that fits the skew. The smile is direct evidence that the market does not price options as if Black--Scholes held.
+
+\textbf{Better models.} Bakshi, Cao and Chen (1997) tested models of S\&P 500 options that allow volatility and interest rates to change at random and allow prices to jump. Adding changing volatility and jumps improved pricing. For hedging, allowing volatility to change gave the best results, while adding jumps helped pricing but not hedging, because a jump cannot be hedged with the underlying asset at all.
+
+\textbf{Portfolio insurance.} The most important test of dynamic replication was not an academic study. In the 1980s, portfolio insurance programs traded index futures to copy a protective put on large stock portfolios. The Brady Commission (Presidential Task Force on Market Mechanisms 1988) estimated that \$60 to \$90 billion of stock portfolios were covered by portfolio insurance when the market crashed in October 1987. The What Failed box in Section~\ref{sec:14-investors} tells what happened.
+
+
+\section{Lab~\thechapter: Replicating the Black--Scholes hedge along real and simulated paths}
+\label{sec:14-lab}
+
+\begin{callout}
+\textbf{Lab~\ref{ch:17} at a glance.} \emph{Papers replicated:} the Black--Scholes (1973) hedge; the gains on delta-hedged options, in the spirit of Bakshi and Kapadia (2003). \emph{Claim on trial\index{claims-on-trial method}:} an option seller who delta-hedges as Black--Scholes prescribes is left with little risk. \emph{Data:} daily market returns from the Kenneth French\index{Kenneth French data library} library and the VIX from FRED\index{FRED}, from 1990; both are free. \emph{Code:} runs as a script (\texttt{python lab14.py}) or as a notebook with a prediction prompt before each step.
+\end{callout}
+
+At the end of each month, the lab sells a one-month at-the-money call on the market at its Black--Scholes price, using the VIX as the implied volatility. It buys $\Delta$ units of the index with borrowed money at the risk-free rate, adjusts the hedge on a schedule, and pays the option's payoff at expiry. What is left at the end is the \textbf{hedging P\&L}\index{hedging P\&L|textbf}, expressed as a share of the premium. The lab then runs the same strategy on 20 simulated price paths a month, generated with that month's implied volatility, on which the Black--Scholes assumptions hold exactly.
+
+\textbf{Part A, the risk that remains.} The mean, standard deviation, skewness\index{skewness}, worst 1\% of outcomes and worst month of the hedged profit and loss, for hedging daily, every two days, weekly, every two weeks and not at all, on real and simulated paths. The lab also reports the share of the unhedged risk that hedging removes (Lab Figure~\ref{ch:17}.1).
+
+\textbf{Part B, where it comes from.} A regression of the actual profit and loss on the gamma--theta approximation of Equation~\eqref{eq:14-pnl}, added up over the month (Lab Figure~\ref{ch:17}.3), and on the gap between implied and realized variance.
+
+\textbf{Part C, frictions.} The effect of hedging frequency (Lab Figure~\ref{ch:17}.4) and of trading costs of 0 to 10 basis points\index{basis point} per unit of index traded (Lab Figure~\ref{ch:17}.5).
+
+\textbf{Part D, the worst months.} For the worst months, the market's move, implied and realized volatility and the largest daily move, together with the share of all losses that came from the worst 5\% of months (Lab Figure~\ref{ch:17}.2).
+
+Two design choices matter for interpreting the results. First, pricing at the VIX overstates the implied volatility of at-the-money options, as Chapter~\ref{ch:18} explains, so the \emph{average} hedged profit includes the variance risk premium\index{risk premium} plus some overstatement. The \emph{spread} of the profit and loss, which is what the claim is about, is little affected. Second, a delta-hedged call and a delta-hedged put with the same strike are the same position, so the lab uses calls only.
+
+\textbf{What the simulated run shows.} On the simulated Black--Scholes paths, daily hedging leaves an average profit near zero and a standard deviation of about 17\% of the premium, in line with the Kamal--Derman formula, and the error falls steadily as hedging becomes more frequent. On simulated GARCH\index{GARCH} paths with occasional very large moves, which stand in for real paths in the test run, daily hedging still removes most of the unhedged risk. But what remains is larger, tilted toward losses and concentrated: the worst 5\% of months produced most of the losses. The gamma--theta approximation explains most of the profit and loss, and the largest departures from it come in months with big daily moves. These results confirm that the code works. They say nothing about real markets. Run the lab on real data to reach your own verdict.
 
 \subsection{Robustness checks}
-\label{sec:18-stress}
+\label{sec:14-stress}
 
-The full-sample results can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
+Results over the full sample can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
 
-\textbf{Micro-caps and weighting.}\index{micro-caps|textbf} Novy-Marx and Velikov (2022) examined AQR's BAB factor. Because of its rank weighting and leverage, it puts on average about \$1.05 of each dollar into the smallest 1\% of stocks by market capitalization\index{market capitalization}. Those stocks are expensive to trade (Chapter~\ref{ch:17}). After costs BAB still earned positive returns, but the authors attribute part of them to exposure to profitability and investment. The lab's comparison of equal and value weights\index{index weighting!value-weighted} is a rough version of this test. If the effect is much stronger with equal weights, small stocks are doing much of the work (Section~\ref{sec:02-microcaps}).
+\textbf{Hedging frequency.} When Black--Scholes holds, hedging four times as often halves the error (Figure~\ref{fig:14-freq}). On real paths, the part of the error that comes from hedging at intervals\index{delta hedging!discrete rebalancing} falls in the same way, but the parts that come from jumps and changes in volatility do not. If moving from weekly to daily hedging reduces risk much less on real paths than on simulated ones, the remaining risk is dominated by risks that more frequent hedging cannot remove.
 
-\textbf{Other factors.} Fama and French (2016) found that profitability and investment factors absorb much of the low-risk alphas. The lab uses four factors, so its alphas probably overstate what remains.
+\textbf{Trading costs.}\index{transaction costs} Every adjustment of the hedge pays a spread. With costs of a few basis points per unit of index traded, daily hedging can eat up a large share of the seller's profit. That is why dealers hedge less often than the model prescribes, and why Leland's higher-volatility pricing exists. The lab's cost experiment shows how quickly the trade-off bites.
 
-\textbf{Interest rates.} If low-risk stocks are partly bonds, their alpha includes a bond premium earned during four decades of falling yields. The lab regresses the long-short returns and the low-risk leg on the market and on monthly changes in the 10-year yield. A negative coefficient means the strategy loses when yields rise. 2022 is the natural out-of-sample\index{in-sample versus out-of-sample} test: yields rose sharply, and stocks and bonds fell together.
+\textbf{Crash months.} The months that matter are those with jumps: October 1987 (before the lab's sample), August 1998, October 2008, August 2011, August 2015, February 2018 and March 2020. In each, a one-month option sold at the start of the month faced daily moves far larger than its implied volatility allowed for. Expect the hedged seller's worst months to be these, with losses of several times the premium even with daily hedging.
 
-\textbf{Crowding.}\index{crowding|textbf} Low-volatility funds grew rapidly after 2011. If the anomaly reflected mispricing, the inflows should have raised the prices of low-risk stocks, boosting returns at first and lowering them afterward. The lab's 2010-onward subperiod and the rolling alphas in Lab Figure~\ref{ch:18}.3 show whether the premium has shrunk.
+\textbf{Realized against implied volatility.} The gamma--theta approximation says that the hedged profit and loss is a bet that realized variance will be below implied variance. When implied volatility is above realized volatility, as it is in most months (Chapter~\ref{ch:18}), the hedged seller makes a profit. That profit is not evidence that hedging removed risk. It is the variance risk premium, earned by bearing the risk that remains. A hedge that leaves a positive average profit and occasional large losses has turned an option position into a bet against volatility, not into a riskless position.
 
-\textbf{Drawdowns.}\index{drawdown|textbf} Low-risk portfolios are meant to protect in crashes. Check 2008 and March 2020. A beta-neutral BAB portfolio is a different matter. It is long levered low-beta stocks and short high-beta stocks, and it can lose heavily when high-beta stocks rebound sharply, as in 2009 and in the 2020 recovery.
-
-\textbf{Estimation error in beta.}\index{estimation error|textbf} Past betas are measured with error. A portfolio sorted on low past betas therefore contains stocks whose true betas are higher than estimated, and the high-beta portfolio the reverse. This makes the SML look flatter even if the CAPM holds. Black, Jensen and Scholes used portfolios to reduce the problem, and the French portfolios do the same. Novy-Marx and Velikov (2022) also showed that Frazzini and Pedersen's beta estimator introduces its own biases, because it combines correlations and volatilities measured over different windows.
+\textbf{The hedge ratio.} Black--Scholes deltas assume that volatility does not change when the price moves. For stock indexes, volatility tends to rise when prices fall (Chapter~\ref{ch:07}). Hull and White (2017) showed that a delta adjusted for this relationship, a \textbf{minimum-variance delta}\index{delta hedging!minimum-variance delta|textbf}, reduces hedging errors for index options. The size of the improvement measures how far off the Black--Scholes hedge ratio is.
 
 \subsection*{Your verdict}
 
-Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:18-verdict}. If your verdict differs, explain which of your results led you there.
+Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:14-verdict}. If your verdict differs, explain which of your results led you there.
 
 \section{Where the evidence stands}
-\label{sec:18-verdict}
+\label{sec:14-verdict}
 
-The published studies cited in this chapter point to a clear pattern: \textbf{the security market line is flatter than the CAPM predicts, which is one of the most robust findings in empirical finance. Whether low risk earns a separate premium that a beta-neutral portfolio can collect depends on how the portfolio is built, on small stocks and on overlap with other factors.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+The published studies cited in this chapter point to a clear pattern: \textbf{delta hedging removes most of the everyday risk of an option position, but what remains is a bet on realized against implied volatility, with large losses in jumps and volatility spikes that more frequent hedging cannot remove.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you check these findings with free data.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.48\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -287,62 +649,58 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-A flat security market line & \textbf{Yes} & Average returns rise with beta far less than the market premium implies, in the United States and abroad. & Black, Jensen and Scholes (1972); Fama and MacBeth (1973); Fama and French (1992) \\
+Hedging when the model holds & \textbf{Yes} & With continuous, costless trading and constant volatility, replication is exact; hedging daily leaves an error of about a fifth of the premium. & Black and Scholes (1973); Merton (1973); Kamal and Derman (1999) \\
 \addlinespace[3pt]
-Idiosyncratic volatility & \textbf{Yes} & The highest-volatility stocks earned about 1\% a month less than the lowest, in 23 developed markets; demand for lottery-like stocks absorbs much of the effect. & Ang, Hodrick, Xing and Zhang (2006); Bali, Cakici and Whitelaw (2011) \\
+Hedging with trading costs & \textbf{No} & Perfect replication is impossible: hedging often costs a great deal, and hedging rarely leaves risk. & Leland (1985) \\
 \addlinespace[3pt]
-The beta-neutral BAB factor & \textbf{Partly} & It earned high risk-adjusted returns across countries and asset classes, but much of its capital sits in the smallest stocks. & Frazzini and Pedersen (2014); Novy-Marx and Velikov (2022) \\
+Market prices consistent with the model & \textbf{No} & Since 1987 index options have shown a persistent skew, the market's price for the risks the hedge leaves. & Rubinstein (1994) \\
 \addlinespace[3pt]
-After profitability and investment factors & \textbf{Weakly} & The five-factor model explains much of the low-beta and low-volatility alphas. & Fama and French (2016) \\
+Hedged option positions earn zero & \textbf{No} & Delta-hedged option positions have lost money on average for buyers, a premium for bearing volatility risk. & Bakshi and Kapadia (2003) \\
 \addlinespace[3pt]
-With betas that vary over time & \textbf{Weakly} & Modelling time-varying betas largely removes the alpha gap between low- and high-beta stocks. & Cederburg and O'Doherty (2016) \\
+Better hedges & \textbf{Partly} & Modeling stochastic volatility improves hedging, jumps help pricing but not hedging, and minimum-variance deltas reduce errors for index options. & Bakshi, Cao and Chen (1997); Hull and White (2017) \\
 \addlinespace[3pt]
-Interest-rate exposure & \textbf{Partly} & Low-volatility portfolios lose when rates rise, and an interest-rate premium explains part, but not all, of the anomaly. & Driessen, Kuiper, Nazliben and Beilo (2019) \\
-\addlinespace[3pt]
-Why the line is flat & \textbf{Disputed} & Leverage constraints, lottery preferences, benchmarking and costly short selling all have support. & Frazzini and Pedersen (2014); Baker, Bradley and Wurgler (2011); Liu, Stambaugh and Yuan (2018) \\
+Dynamic replication in a crash & \textbf{No} & Portfolio insurers could not trade at the prices their models assumed in October 1987. & Presidential Task Force on Market Mechanisms (1988) \\
 \end{longtable}
 }
 
-Low-volatility portfolios have delivered returns close to the market's with less volatility, so their Sharpe ratios have been higher, which is useful to an unconstrained investor. Inflows into low-volatility funds after 2011 are likely to have raised the prices of low-risk stocks, which would make past returns a poor guide to future ones.
+The hedging profit and loss is well understood: the gamma--theta approximation explains most of it, and a trader knows what bet the hedged position contains. That is why delta hedging remains the industry's first step, and why dealers also hedge vega and gamma with other options instead of relying on delta alone.
 
-\textbf{What would change the picture.} The evidence would move toward the strong form if a beta-neutral, value-weighted version continued to earn a significant alpha against the five-factor model and interest-rate exposure out of sample. It would move against it if the post-2010 alphas proved to be inflow effects that reversed.
+\textbf{What would change the picture.} The evidence would move toward the claim if a simple extension, such as a minimum-variance delta or a small position in other options to hedge vega and gamma, removed most of the large losses on real paths.
 
 \subsection{Open questions}
-\label{sec:18-open}
+\label{sec:14-open}
 
 \begin{itemize}
-  \item \textbf{How much is interest-rate exposure?} Low-risk stocks lose when yields rise. Is the remaining alpha, after controlling for rates, large enough to matter, and how did the strategy hold up in the rising-rate environment after 2021?
-  \item \textbf{Which risk measure is priced?} Beta, total volatility and idiosyncratic volatility are highly correlated. Leverage-constraint theories favor beta; lottery theories favor volatility. Which survives when the others are controlled for?
-  \item \textbf{Has crowding ended the premium?} Inflows into low-volatility funds should have produced a temporary windfall followed by lower returns. Is the post-2010 evidence consistent with that?
-  \item \textbf{Does it hold for large stocks after costs?} A value-weighted, beta-neutral portfolio of liquid stocks is the version that matters for most investors. How large is its alpha against the five-factor model?
+  \item \textbf{How much of the hedged seller's profit is payment for jump risk?} If option sellers earn a positive average profit after hedging, is it just enough to pay for the jumps, or more?
+  \item \textbf{How much better do practical hedges do?} Minimum-variance deltas, hedging vega with other options, and models in which volatility changes all reduce hedging errors. How much of the large losses do they remove on real paths?
+  \item \textbf{Do very short-dated options change the picture?} Options that expire within a day have very large gamma near expiry. Does dealers' hedging of them make intraday moves larger?
+  \item \textbf{Can machine-learning hedges beat Black--Scholes?} ``Deep hedging'' learns hedging rules directly from data, allowing for costs and constraints. Do its gains hold up out of sample\index{in-sample versus out-of-sample} and in crashes?
 \end{itemize}
 
 \section{What practitioners and investors can use}
-\label{sec:18-investors}
+\label{sec:14-investors}
 
-The evidence in Section~\ref{sec:18-verdict} suggests several practical lessons.
+The evidence in Section~\ref{sec:14-verdict} suggests several practical lessons.
 
-\textbf{Minimum-volatility funds}\index{minimum-volatility funds|textbf} are the most common way investors access the low-risk anomaly. They hold a portfolio of stocks chosen or optimized for low volatility, usually long-only and without leverage. Three things are worth knowing before buying one.
+\textbf{The risks left inside structured products.} A bank that sells a structured note with a capped stock-market return or a principal guarantee has sold options, and it hedges them dynamically. The hedge removes most of the market risk, but the bank keeps the risks identified in this chapter: jumps, changes in volatility and the cost of adjusting the hedge. It charges for them, which is part of why such products are expensive. An investor who buys one pays a fee that includes the price of risks the bank cannot hedge away.
 
-\begin{itemize}
-  \item \textbf{They are low-beta, not market-neutral.} With a beta around 0.7 to 0.8, a minimum-volatility fund will usually trail the market in strong bull markets and beat it in crashes. The case for holding one rests on a better ratio of return to risk, not higher returns.
-  \item \textbf{Tracking error is large.}\index{tracking error|textbf} For an investor measured against the market, the fund can lag for years at a time. Part D of the lab shows how often. Investors who cannot tolerate that, including most institutions, are the reason Baker, Bradley and Wurgler think the anomaly persists. Investors who abandon the strategy after a few bad years lose most of its benefit.
-  \item \textbf{Hidden exposures.} These funds tend to overweight utilities, consumer staples and real estate, which are sensitive to interest rates. Their valuations can rise with the strategy's popularity. An investor should check the sector weights, the valuation relative to the market, and how the fund behaved when yields rose.
-\end{itemize}
+\textbf{Option-based funds.} A fund that sells options and delta-hedges them is not market-neutral\index{market-neutral} in the sense that matters. It is betting against volatility: it earns steady returns in calm markets and loses heavily in jumps. Its track record will look smooth until a crash.
 
-\textbf{BAB-style funds}\index{betting against beta (BAB)|textbf}, long levered low-beta stocks and short high-beta stocks, are a different product. They are market-neutral, carry the micro-cap and leverage issues discussed above, and can suffer sharp losses when high-beta stocks rebound.
+\textbf{Why the smile exists.} The higher implied volatility of out-of-the-money index puts is not a quirk. It is the price of crash risk\index{crash risk}, which delta hedging cannot remove. An investor who buys downside protection pays this price, and an investor who sells protection is paid it for bearing the jumps.
 
-\textbf{Questions to ask a manager offering a low-volatility or defensive equity strategy:}
+\textbf{Questions to ask a manager or a structured-product issuer:}
 
 \begin{itemize}
-  \item Is the portfolio sorted on beta, on volatility or on an optimizer's estimate of risk? How much tracking error should I expect against the market?
-  \item What are the strategy's sector weights and interest-rate sensitivity? How did it perform in 2022?
-  \item Does the backtest include micro-caps? What is its alpha against the five-factor model?
-  \item How have valuations of low-volatility stocks changed since the strategy became popular?
+  \item How are the option positions hedged: with delta only, or also against vega and gamma with other options?
+  \item What happens to the hedge if the market moves 10\% or 20\% in a day?
+  \item How often is the hedge adjusted, and what does that cost?
+  \item What was the strategy's worst month, and did it come in a crash?
 \end{itemize}
 
 \begin{callout}
-\textbf{What Failed: the CAPM as a hurdle rate.} The CAPM's empirical problems have been known since the early 1970s. Yet it remains the standard way to set the cost of equity. In a survey of 392 U.S. chief financial officers, Graham and Harvey (2001) found that 73.5\% always or almost always used it. A flat SML means that the CAPM overstates the cost of capital for high-beta projects and understates it for low-beta ones. Firms that rely on it may therefore reject good low-beta projects and accept poor high-beta ones.
+\textbf{What Failed: portfolio insurance, October 1987.} Portfolio insurance, developed by Hayne Leland and Mark Rubinstein, copied a protective put on a stock portfolio by trading: selling stock-index futures, contracts that track the value of the whole stock market, as the market fell and buying them back as it rose, exactly as delta hedging prescribes. By October 1987, according to the Brady Commission, \$60 to \$90 billion of stock portfolios were covered by portfolio insurance.
 
-The lesson is not that the CAPM is useless. Beta is a good measure of exposure to the market, and that is what risk management needs. The failure is treating a model of \emph{risk} as a reliable model of \emph{expected return} when the evidence has long said otherwise.
+On October 19, 1987, the market fell more than 20\% in a single day. The strategy required insurers to sell at every step down. According to the Brady Commission, portfolio insurers sold the equivalent of about \$4 billion of stock in index futures, more than 40\% of futures volume excluding trades by floor traders, and just under \$2 billion of stock directly on the New York Stock Exchange. Prices moved faster than the trades could be made, so the hedge was always behind. Insurers could not trade at the prices their models assumed, so the protection they delivered fell short of the puts they were copying. The Brady Commission concluded that their mechanical selling added to the pressure on prices.
+
+What failed was the replication assumption itself: continuous trading at prices that move smoothly. A real put would have paid off however the market got there. A copied put depended on trading through the fall, and the market did not allow it. The volatility skew that appeared after the crash has been the market's price for that lesson ever since.
 \end{callout}

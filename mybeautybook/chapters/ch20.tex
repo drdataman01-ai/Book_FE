@@ -24,7 +24,7 @@
 \makeatother
 
 \chapter{Claim: Foundation Models Forecast Better Than Classical Methods}
-\label{ch:21}
+\label{ch:20}
 
 Chatbots that write essays and answer questions have made artificial intelligence part of everyday life. The same technology is now being applied to numbers, with the promise that a single pretrained model can forecast almost any series, from sales and electricity demand to stock returns and inflation, without being built for the job. This chapter asks whether that promise holds for financial and economic data.
 
@@ -32,7 +32,7 @@ Large language models\index{large language models} learned to write by reading m
 
 For finance and economics the promise is striking. One pretrained model, applied to returns, volatility\index{volatility} or inflation\index{inflation}, could replace the careful work of building and estimating a model for each series. But financial series are unlike most of the data these models learn from. Returns are close to unpredictable. Volatility has long memory and fat tails\index{fat tails}. Macroeconomic series are short and are often revised. Public financial data may also have been part of the training set\index{training, validation and test sets}, which can make a model look better on history than it is. Rahimikia, Ni and Wang (2025) tested foundation models on stock returns from many countries. Used off the shelf, the models did not beat simple benchmarks, although training them on financial data helped.
 
-The stakes are high for forecasting practice in finance. If a pretrained model forecasts as well as a carefully built one, much of the craft of time-series econometrics becomes unnecessary. If not, the benchmarks of Chapters~\ref{ch:09} and~\ref{ch:10} remain the standard. The claim on trial\index{claims-on-trial method} is: \textbf{general-purpose time-series foundation models, used zero-shot, forecast financial and economic series more accurately than classical models.}
+The stakes are high for forecasting practice in finance. If a pretrained model forecasts as well as a carefully built one, much of the craft of time-series econometrics becomes unnecessary. If not, the benchmarks of Chapters~\ref{ch:06} and~\ref{ch:07} remain the standard. The claim on trial\index{claims-on-trial method} is: \textbf{general-purpose time-series foundation models, used zero-shot, forecast financial and economic series more accurately than classical models.}
 
 The lab in Section~\ref{sec:21-lab} repeats the zero-shot comparison of these papers on six free series from the Kenneth R. French Data Library and FRED, using the open model weights of Chronos and TimesFM. It checks whether foundation models, used out of the box, forecast better than classical methods.
 
@@ -51,7 +51,7 @@ By the end of the chapter you will be able to:
 
 \subsection{Classical benchmarks}
 
-A forecasting method deserves attention only if it beats simple alternatives. Section~\ref{sec:09-benchmarks} described the standard ones. The historical mean is hard to beat for stock returns (Chapter~\ref{ch:09}). The random walk\index{random walk} is hard to beat for exchange rates\index{exchange rate} and interest-rate levels. This chapter adds richer classical models:
+A forecasting method deserves attention only if it beats simple alternatives. Section~\ref{sec:09-benchmarks} described the standard ones. The historical mean is hard to beat for stock returns (Chapter~\ref{ch:06}). The random walk\index{random walk} is hard to beat for exchange rates\index{exchange rate} and interest-rate levels. This chapter adds richer classical models:
 \begin{itemize}
   \item An autoregression, the AR(1)\index{autoregressive model} model extended to $p$ lags, regresses the series on its own past $p$ values:
   \begin{equation}
@@ -59,7 +59,7 @@ A forecasting method deserves attention only if it beats simple alternatives. Se
     \label{eq:21-ar}
   \end{equation}
   The number of lags can be chosen by an information criterion such as BIC, a score that rewards a good fit but penalizes extra parameters. \textbf{ARIMA}\index{ARIMA|textbf} models add differencing and moving-average terms.
-  \item For volatility, the GARCH and HAR models of Chapter~\ref{ch:10} (Sections~\ref{sec:10-garch} and~\ref{sec:10-rv}; Corsi 2009) capture volatility's long memory with few parameters.
+  \item For volatility, the GARCH and HAR models of Chapter~\ref{ch:07} (Sections~\ref{sec:10-garch} and~\ref{sec:10-rv}; Corsi 2009) capture volatility's long memory with few parameters.
 \end{itemize}
 
 \subsection{Foundation models}
@@ -85,7 +85,7 @@ A forecast evaluation is valid only if the model has not seen the test data. Cla
 
 \subsection{Evaluation}
 
-Forecasts are compared with the walk-forward\index{walk-forward evaluation} design of Section~\ref{sec:09-walkforward}, which forecasting papers call \textbf{rolling origins}\index{walk-forward evaluation!rolling origin|textbf}. At each month $t$, every model forecasts month $t+1$ using only data up to $t$ (Figure~\ref{fig:21-rolling}). The tools of Chapter~\ref{ch:09} then apply. The mean squared error of Section~\ref{sec:09-foundations} is reported as a ratio to the benchmark's, so a ratio below 1 means the model is better. The Diebold--Mariano test of Section~\ref{sec:09-accuracy} asks whether the difference is larger than chance. When a model forecasts a whole distribution, coverage checks its calibration\index{calibration}, and the \textbf{pinball loss}\index{loss function!pinball|textbf} scores each forecast quantile\index{quantile}, that is, each point of a forecast range such as the level the outcome should stay below 90\% of the time. For volatility, the QLIKE loss of Section~\ref{sec:10-eval} is used, because it is robust to noise in the realized variance\index{variance} that stands in for true volatility (Patton 2011).
+Forecasts are compared with the walk-forward\index{walk-forward evaluation} design of Section~\ref{sec:09-walkforward}, which forecasting papers call \textbf{rolling origins}\index{walk-forward evaluation!rolling origin|textbf}. At each month $t$, every model forecasts month $t+1$ using only data up to $t$ (Figure~\ref{fig:21-rolling}). The tools of Chapter~\ref{ch:06} then apply. The mean squared error of Section~\ref{sec:09-foundations} is reported as a ratio to the benchmark's, so a ratio below 1 means the model is better. The Diebold--Mariano test of Section~\ref{sec:09-accuracy} asks whether the difference is larger than chance. When a model forecasts a whole distribution, coverage checks its calibration\index{calibration}, and the \textbf{pinball loss}\index{loss function!pinball|textbf} scores each forecast quantile\index{quantile}, that is, each point of a forecast range such as the level the outcome should stay below 90\% of the time. For volatility, the QLIKE loss of Section~\ref{sec:10-eval} is used, because it is robust to noise in the realized variance\index{variance} that stands in for true volatility (Patton 2011).
 
 \begin{figure}[htbp]
 \centering
@@ -214,10 +214,10 @@ The pattern across studies is consistent. Zero-shot foundation models beat naive
 \label{sec:21-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:21} at a glance.} \emph{Papers replicated:} the zero-shot evaluations of Ansari et al.\ (2024) and Das et al.\ (2024), and the finance re-test of Rahimikia, Ni and Wang (2025). \emph{Claim on trial\index{claims-on-trial method}:} foundation models, used zero-shot, beat classical forecasts. \emph{Data:} the U.S. market's excess return and its log realized variance built from daily returns (Kenneth R. French Data Library\index{Kenneth French data library}); inflation, industrial production growth, and the changes in the unemployment rate and in the 10-year Treasury yield (FRED\index{FRED}). All are free. \emph{Code:} runs as a script (\texttt{python lab20.py -{}-models chronos-bolt-small timesfm}) or as a notebook (\texttt{lab20\_walkthrough.ipynb}) with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:20} at a glance.} \emph{Papers replicated:} the zero-shot evaluations of Ansari et al.\ (2024) and Das et al.\ (2024), and the finance re-test of Rahimikia, Ni and Wang (2025). \emph{Claim on trial\index{claims-on-trial method}:} foundation models, used zero-shot, beat classical forecasts. \emph{Data:} the U.S. market's excess return and its log realized variance built from daily returns (Kenneth R. French Data Library\index{Kenneth French data library}); inflation, industrial production growth, and the changes in the unemployment rate and in the 10-year Treasury yield (FRED\index{FRED}). All are free. \emph{Code:} runs as a script (\texttt{python lab20.py -{}-models chronos-bolt-small timesfm}) or as a notebook (\texttt{lab20\_walkthrough.ipynb}) with a prediction prompt before each step.
 \end{callout}
 
-Lab~\ref{ch:21} forecasts the six series one month ahead, from every month since January 2000. At each month, every model sees only data up to that month.
+Lab~\ref{ch:20} forecasts the six series one month ahead, from every month since January 2000. At each month, every model sees only data up to that month.
 
 \begin{center}
 \small
@@ -241,10 +241,10 @@ The foundation models are optional, because they need PyTorch and large model do
 The lab has four parts:
 
 \begin{itemize}
-  \item \textbf{Part A} reports each model's MSE relative to AR, and its $R^2$ against the historical mean (Lab Figures~\ref{ch:21}.1 and~\ref{ch:21}.5).
-  \item \textbf{Part B} adds Diebold--Mariano tests, the share of months each model beats AR and the cumulative squared-error\index{cumulative squared-error plot} difference over time (Lab Figure~\ref{ch:21}.2).
-  \item \textbf{Part C} splits the evaluation at a cutoff date, by default January 2024, to be set to each model's training cutoff. A deliberately contaminated ``memorizing'' model, which is shown the answer before the cutoff, displays the signature of contamination (Lab Figure~\ref{ch:21}.3).
-  \item \textbf{Part D} checks whether each model's 80\% forecast intervals contain the outcome 80\% of the time (Lab Figure~\ref{ch:21}.4).
+  \item \textbf{Part A} reports each model's MSE relative to AR, and its $R^2$ against the historical mean (Lab Figures~\ref{ch:20}.1 and~\ref{ch:20}.5).
+  \item \textbf{Part B} adds Diebold--Mariano tests, the share of months each model beats AR and the cumulative squared-error\index{cumulative squared-error plot} difference over time (Lab Figure~\ref{ch:20}.2).
+  \item \textbf{Part C} splits the evaluation at a cutoff date, by default January 2024, to be set to each model's training cutoff. A deliberately contaminated ``memorizing'' model, which is shown the answer before the cutoff, displays the signature of contamination (Lab Figure~\ref{ch:20}.3).
+  \item \textbf{Part D} checks whether each model's 80\% forecast intervals contain the outcome 80\% of the time (Lab Figure~\ref{ch:20}.4).
 \end{itemize}
 
 The command \texttt{python lab20.py -{}-source sim -{}-models standin} tests the code.

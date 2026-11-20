@@ -1,4 +1,4 @@
-% Chapter 16 -- Claim: Selling Options Earns a Reliable Premium
+% Chapter 19 -- Claim: Most Published Anomalies Fail to Replicate
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -23,239 +23,297 @@
 }{}
 \makeatother
 
-\chapter{Claim: Selling Options Earns a Reliable Premium}
-\label{ch:16}
+\chapter{Claim: Most Published Anomalies Fail to Replicate}
+\label{ch:15}
 
-Funds that advertise ``option income'' promise investors steady monthly payouts, often well above what bonds or dividends pay. The idea sounds like a clever way to earn extra money from a stock portfolio. This chapter asks where that income really comes from, and what the investor gives up to get it.
+News stories regularly report a new study showing that some simple rule, such as buying cheap stocks or stocks with rising profits, has beaten the market. Other sciences, such as psychology and medicine, have discovered in recent years that many published findings could not be repeated when others tried. This chapter asks whether finance has the same problem, and how a reader can tell a lasting discovery from a lucky one.
 
-Once the Black--Scholes model gave every option an implied volatility, a pattern became visible: the volatility implied by index option prices was usually higher than the volatility the market then delivered. An investor who sells stock-index options is in the same business as an insurance company. A put option\index{option!put} is insurance against a market fall. Its seller collects a premium up front and pays out when the market drops. If the insurance is priced above the expected claims, the seller earns a steady profit, with an occasional very bad year. Coval and Shumway (2001) measured the returns option buyers actually earn and showed that the returns on index options are too low to be explained by their market risk. Using a measure that does not depend on any option model, Carr and Wu (2009) measured the \textbf{variance risk premium}\index{variance risk premium}, the gap between the volatility priced into options and the volatility that follows, and found it large and persistent.
+By the 2010s academic finance had published hundreds of variables said to predict which stocks would earn more than others. Harvey, Liu and Zhu (2016) counted more than 300. They argued that, because so many had been tried, a new factor should clear a $t$-statistic of about 3 rather than 2. The worry was not new. Chapter~\ref{ch:01} showed how searching produces records that luck alone can explain. What was new was that the worry now applied to a whole literature. McLean and Pontiff (2016) took a different approach. Pure data mining predicts that returns vanish once the original sample ends, while mispricing predicts that they shrink after publication, as investors trade on them. They followed 97 predictors after their original samples ended and after they were published. Average returns were about 26\% lower after the sample ended, and 58\% lower after publication.
 
-The question matters because a large industry rests on it. Whaley (2002) studied the covered-call\index{option selling!covered call} strategy, owning stocks and selling call options on them, and helped design the Cboe BuyWrite Index as a benchmark for such strategies. Option-income funds, covered-call ETFs and other strategies that sell volatility now manage large sums. The issue is what kind of premium they collect. A reliable premium for bearing a risk that others want to shed is one thing. A strategy that wins small in most months and loses big in a few, while carrying most of the stock market's risk, is another. Because a covered call also holds the stocks underneath, Israelov and Nielsen (2015) asked which part earns the return, and showed that much of the return on covered calls comes from their exposure to stocks, not from the volatility premium.
+Two large replication studies sharpened the debate. Hou, Xue and Zhang (2020) asked how many anomalies survive when tiny stocks count for little, and rebuilt 452 anomalies. They weighted stocks by market value and set group cut-offs using NYSE stocks only, two choices that limit the influence of the tiniest stocks, called micro-caps. About two thirds of the anomalies then failed even the conventional test. Jensen, Kelly and Pedersen (2023) asked whether a verdict that uses the evidence from all factors at once would be kinder, and rebuilt 153 factors in 93 countries. They used a Bayesian method that pulls each factor's estimate toward what similar factors suggest, and concluded that most factors do replicate. Because much of the disagreement lay in each study's code, Chen and Zimmermann (2022) published open code and data for more than 200 predictors, so that anyone could check. Respected researchers using largely the same data reached opposite conclusions, because they asked slightly different questions and applied different standards.
 
-This matters to anyone offered option income. The two kinds of premium can look alike in a backtest\index{backtest}, so the evidence has to separate them, and the crashes of 2008, February 2018 and March 2020 show what the losses look like when they come. The claim on trial\index{claims-on-trial method} is: \textbf{selling index puts or writing covered calls earns more than the risk taken, because implied volatility is higher than the volatility that follows.}
+At stake is the credibility of a whole field. If most anomalies are false, much of the factor-investing industry rests on noise. If most are real but fade after publication, investors are learning from research and trading the patterns away. The verdict depends less on the data than on the rules of evidence, so this chapter asks the reader to choose those rules and defend them. The claim on trial\index{claims-on-trial method} is: \textbf{most published cross-sectional return predictors do not replicate once micro-caps, multiple testing and publication are accounted for.}
 
-The lab in Section~\ref{sec:16-lab} repeats Carr and Wu's (2009) measurement of the variance risk premium with the free VIX and daily U.S. market returns. It also rebuilds put-writing and covered-call strategies that can be compared with Cboe's published PUT and BXM indexes, to check whether selling options earns a reliable premium, and how much of that premium is simply stock-market risk.
+The lab in Section~\ref{sec:19-lab} uses the free Open Source Asset Pricing data of Chen and Zimmermann. It applies the standards of Hou, Xue and Zhang (2020) and of Jensen, Kelly and Pedersen (2023) to the same predictors, and it measures the decay found by McLean and Pontiff (2016). The goal is to see why careful researchers reached opposite conclusions, and which choices drive the difference.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item use put--call parity\index{put--call parity} to show that a covered call and a cash-secured put\index{option selling!cash-secured put} are the same position;
-  \item define the VIX\index{VIX} and the variance risk premium\index{variance}\index{risk premium}, and estimate an option seller's expected gain\index{volatility!implied}\index{volatility!realized};
-  \item judge an option strategy against a benchmark with the same market exposure, using up and down betas\index{beta}\index{beta!up and down} and a measure that cannot be gamed by selling crash insurance\index{manipulation-proof performance measure (MPPM)};
-  \item judge what an option-income fund is likely to deliver, and what can go wrong\index{Black--Scholes--Merton model}\index{Greeks}.
+  \item explain market efficiency\index{efficient market hypothesis}, the joint-hypothesis problem\index{joint-hypothesis problem}, and the kinds of replication, from reproduction\index{reproduction} to pure, scientific and out-of-sample replication\index{replication!pure, scientific and out-of-sample};
+  \item explain how publication bias\index{publication bias} inflates published results, and how empirical Bayes\index{empirical Bayes} shrinkage\index{shrinkage} corrects noisy estimates;
+  \item set out the prosecution's and the defense's cases, and the design choices that lead them to opposite verdicts;
+  \item separate post-publication\index{anomaly!post-publication decay} decay caused by selection from decay caused by investors' learning, and defend your own verdict.
 \end{itemize}
 
 
-\section{Foundations: the VIX and the option seller's payoff}
-\label{sec:16-foundations}
+\section{Foundations: market efficiency, anomalies and replication}
+\label{sec:19-foundations}
 
-Chapter~\ref{ch:14} introduced option payoffs, put--call parity, the Black--Scholes--Merton model, the Greeks and implied volatility (Sections~\ref{sec:14-bsm} to~\ref{sec:14-iv}). This chapter adds the VIX and the economics of selling options.
+\subsection{The efficient market hypothesis}
 
-\subsection{The VIX}
+Section~\ref{sec:01-efficient-markets} introduced the efficient market hypothesis and Fama's (1970) three forms, weak, semi-strong and strong. The debate in this chapter concerns the semi-strong form\index{efficient market hypothesis!semi-strong form}: whether publicly available characteristics of firms, such as their valuation ratios or past returns, predict returns beyond what risk justifies.
 
-The VIX, introduced in Section~\ref{sec:10-iv}, is computed from the prices of a range of out-of-the-money calls and puts on the S\&P 500. Its square is approximately the fair price of a 30-day \textbf{variance swap}\index{variance swap|textbf}, a contract that pays the difference between the variance that actually occurs and a fixed level agreed in advance. The variance risk premium of Section~\ref{sec:10-iv} is therefore the expected profit of the seller of such a swap: the expected gap between the variance priced into options (the risk-neutral\index{risk-neutral pricing} variance) and the variance that actually follows.
+\subsection{The joint-hypothesis problem}
 
-\textbf{Worked example.} The index is at 100, the risk-free rate\index{risk-free rate} is 4\%, and a one-month at-the-money put trades at an implied volatility of 20\%.
+Section~\ref{sec:01-efficient-markets} also introduced the joint-hypothesis problem. A strategy that beats a model such as the CAPM\index{capital asset pricing model (CAPM)} shows either that the market is inefficient or that the model is wrong, and the two cannot be separated (Fama 1970). For anomalies this has a direct consequence. One researcher can read the same evidence as mispricing\index{mispricing}, and another as a reward for a risk the model leaves out.
+
+\subsection{Anomalies}
+
+An \textbf{anomaly}\index{anomaly|textbf} is a pattern in returns that a benchmark asset pricing model cannot explain. It is a characteristic, such as a valuation ratio or a past return, that predicts future returns after adjusting for the model's risk factors. Anomalies are usually found with portfolio sorts\index{portfolio sort} and long--short returns (Section~\ref{sec:05-foundations}). They are judged by the t-statistic\index{t-statistic} of the average return or of the alpha\index{alpha}.
+
+\subsection{Replication, reproduction and robustness}
+
+Terms are used loosely, but a useful distinction is:
 
 \begin{itemize}
-  \item The Black--Scholes price of the put is $P = \$2.14$ per \$100 of index. The call is worth \$2.47. The difference, \$0.33, equals $100 - 100\,e^{-0.04/12}$, as put--call parity requires.
-  \item Suppose volatility over the month turns out to be 16\%. At that volatility, the put would have been worth \$1.68. The seller's expected gain is roughly $\$2.14 - \$1.68 = \$0.46$, or vega (\$0.115 per point of volatility) times the 4-point gap.
-  \item That is only an \emph{expected} gain. If the index falls 10\% during the month, the put pays \$10, and the seller loses $\$10 - \$2.14 = \$7.86$, about seventeen months of expected gains at \$0.46 a month (Figure~\ref{fig:16-put}).
+  \item \textbf{Reproduction}\index{reproduction|textbf}: the same data and code give the same numbers. It checks for errors.
+  \item \textbf{Pure replication}\index{replication!pure, scientific and out-of-sample|textbf}: the same method on the same kind of data, perhaps rebuilt independently, gives the same result. It checks that the finding is not an artifact of one implementation.
+  \item \textbf{Scientific replication} or \textbf{robustness}\index{robustness|textbf}: different but reasonable choices of method, sample or market give a similar result. It checks that the finding is about the world, not about the choices.
+  \item \textbf{Out-of-sample replication}: the result holds in data not used to find it, such as later years or other countries.
 \end{itemize}
+
+The two sides of this chapter's debate differ largely in which of these they demand.
+
+\subsection{Publication bias}
+
+Journals are more likely to publish significant results. If only strong in-sample\index{in-sample versus out-of-sample} results are published, the published estimates are too high on average, even if every study was done honestly. The reason is that the published set has been selected for luck as well as for truth. Part E of this chapter's lab measures how large this effect can be.
+
+\subsection{Shrinkage}
+
+Suppose many noisy estimates are made at once. Each one can be improved by pulling it toward the average of all of them. Noisy estimates are pulled more, and precise ones less. A very high estimate is more likely to be partly luck than a moderate one, so pulling it back makes it more accurate on average. This idea comes from \textbf{empirical Bayes}\index{empirical Bayes|textbf} statistics (Efron and Morris 1975). It is called ``empirical'' because the data themselves supply the average toward which the estimates are pulled. It is the basis of the defense's method.
+
+\textbf{Worked example.} One hundred honest researchers each test a different trading signal, and none of the signals has any real predictive power. By chance, about five will find t-statistics beyond $\pm 1.96$, and those five publish (Figure~\ref{fig:19-pubbias}). Every published paper reports a significant result, yet none of the results is real. A reader who saw only the journals would find a literature with a 100\% success rate.
 
 \begin{figure}[htbp]
 \centering
 \scalebox{0.8}{%
-\begin{tikzpicture}[declare function={profit(\s) = 2.14 - max(100 - \s, 0);}]
+\begin{tikzpicture}[declare function={npdf(\x) = exp(-\x*\x/2)/sqrt(2*pi);}]
 \begin{axis}[
-  width=0.64\linewidth, height=0.34\linewidth,
+  width=0.68\linewidth, height=0.34\linewidth,
   axis lines=left, axis line style={-stealth},
-  xmin=85, xmax=110, ymin=-13, ymax=5,
-  xtick={85,90,...,110}, ytick={-10,-5,0,5},
-  tick label style={font=\small},
-  xlabel={Index at expiry}, ylabel={Put seller's profit (\$)},
-  clip=false,
+  xmin=-4, xmax=4.1, ymin=0, ymax=0.66,
+  xtick={-1.96,0,1.96}, xticklabels={$-1.96$,$0$,$1.96$},
+  ytick=\empty,
+  xlabel={t-statistic of a signal with no true power},
+  ylabel={Share of signals},
+  samples=200, domain=-4:4, clip=false,
 ]
-  \addplot[gray, thin, domain=85:110, samples=2] {0};
-  \addplot[fenavy, very thick] coordinates {(85,-12.86) (100,2.14) (110,2.14)};
-  \fill[fenavy] (axis cs:97.86,0)  circle (2.6pt);
-  \fill[fenavy] (axis cs:90,-7.86) circle (2.6pt);
-  \node[anchor=south east] at (axis cs:97.4,0.4) {break-even 97.86};
-  \node[anchor=south east] at (axis cs:110,2.4) {keep the \$2.14 premium};
-  \node[anchor=west, align=left] at (axis cs:92,-9.5)
-    {index $-10\%$: lose \$7.86,\\about 17 months of expected gains};
+  \addplot[name path=curve, draw=none] {npdf(x)};
+  \path[name path=base] (axis cs:-4,0) -- (axis cs:4,0);
+  \addplot[fenavy] fill between[of=curve and base, soft clip={domain=-4:-1.96}];
+  \addplot[fenavy] fill between[of=curve and base, soft clip={domain=1.96:4}];
+  \addplot[fegray, thick] {npdf(x)};
+
+  \node[align=center] at (axis cs:0,0.56) {about 95 signals: not significant,\\never published};
+  \node[fenavy, align=center, font=\footnotesize, anchor=south] (L) at (axis cs:-2.75,0.13) {about 2.5 signals:\\``significant,''\\published};
+  \node[fenavy, align=center, font=\footnotesize, anchor=south] (R) at (axis cs:2.75,0.13) {about 2.5 signals:\\``significant,''\\published};
+  \draw[-stealth, fenavy] (axis cs:-2.7,0.12) -- (axis cs:-2.3,0.03);
+  \draw[-stealth, fenavy] (axis cs:2.7,0.12) -- (axis cs:2.3,0.03);
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{A put seller collects a small premium and risks a much larger loss. The put seller's profit at expiry in the worked example. Above the strike of 100 the seller keeps the \$2.14 premium; below the break-even of 97.86 the loss grows one for one with the fall. A 10\% fall costs \$7.86, about seventeen months of expected gains.}
-\label{fig:16-put}
+\caption{If only significant results are published, the journals show only the lucky draws. Publication bias. One hundred signals with no true power produce t-statistics spread around zero. Only the few in the shaded tails, about 2.5 on each side, look significant and get published. The published record shows only the tails.}
+\label{fig:19-pubbias}
 \end{figure}
 
+\section{How it works: the factor zoo and how replications are designed}
+\label{sec:19-how}
 
-\section{How it works}
-\label{sec:16-how}
+\textbf{The zoo.} For decades, finance explained why some stocks earn more than others with a single factor, the market, as in the CAPM. Later it used a handful, such as size, value and momentum\index{momentum}. By 2011 the literature had produced so many candidate predictors that John Cochrane, in his presidential address to the American Finance Association, called it a ``zoo of new factors'' (Cochrane 2011). He argued that the field needed to sort out which factors were truly independent, which were redundant, and which were simply noise. Harvey, Liu and Zhu (2016) counted 316 factors published in leading journals, and the count has kept growing.
 
-\textbf{Why insurance might be overpriced.} Many investors hold stock portfolios they cannot easily sell, and they want protection against crashes. Pension funds, insurers and issuers of structured products buy index puts. The market makers\index{market maker}, the dealers who stand ready to buy and sell options, who sell these puts must hold capital against the risk and cannot fully hedge it. Bollen and Whaley (2004) and G\^arleanu, Pedersen and Poteshman (2009) showed that this steady demand pushes option prices up, especially for out-of-the-money puts. Sellers are paid for bearing a risk that strikes at the worst times, when investors' wealth is low and losses hurt most. A premium for that risk is not a free lunch. It is compensation, and it should be large precisely because the losses come at bad times.
+The problem is statistical as much as economic. Thousands of researchers test thousands of variables on the same U.S. stock data, so some variables will look significant by luck alone. At the usual cut-off of a t-statistic near 2, about one useless variable in twenty passes, and journals mostly publish the ones that pass (Section~\ref{sec:19-foundations}). The published zoo is therefore a mixture of real effects and false discoveries, much as a stack of winning lottery tickets says little about whether anyone has a winning system. Many of its members are also the same idea measured in slightly different ways, such as several versions of the finding that cheap stocks beat expensive ones. Since Harvey, Liu and Zhu's count, two open data projects have made it possible to rebuild most of the zoo:
 
-\textbf{Ways to sell volatility.} The strategies differ in how much stock-market risk they carry along with their bet against volatility.
+\begin{itemize}
+  \item Chen and Zimmermann's \textbf{Open Source Asset Pricing}\index{Open Source Asset Pricing|textbf} (2022) replicates more than 200 cross-sectional predictors from the original papers' descriptions and publishes their portfolio returns and code.
+  \item Jensen, Kelly and Pedersen (2023) built a \textbf{global factor database} of 153 factors across 93 countries, with harmonized definitions, meaning each factor is built the same way in every country.
+\end{itemize}
+
+No table can list hundreds of predictors, but none needs to, because most of them are variations on a few ideas. Hou, Xue and Zhang\index{q-factor model} (2020) sort their 452 anomalies into six categories. Table~\ref{tab:19-zoo} shows two or three well-known predictors from each. The sign shows whether stocks with a high value of the predictor earned higher (+) or lower ($-$) average returns in the original study. The Open Source Asset Pricing and JKP documentation give the full lists, with definitions and code for every predictor. Jensen, Kelly and Pedersen (2023) group their 153 factors into 13 similar themes.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{A map of the factor zoo: representative predictors in the six categories of Hou, Xue and Zhang (2020).}
+\label{tab:19-zoo}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.21\linewidth}c@{}}
+\toprule
+Category & Predictor & What it measures & Original study & Sign \\
+\midrule
+Momentum & Price momentum & Return over the past 12 months, skipping the most recent month & Jegadeesh and Titman (1993) & $+$ \\
+ & Earnings surprise & Change in quarterly earnings from a year earlier, scaled by its volatility & Bernard and Thomas (1989) & $+$ \\
+ & Short-term reversal & Return over the past month & Jegadeesh (1990) & $-$ \\
+\addlinespace
+Value versus growth & Book-to-market & Book value of equity divided by market value & Rosenberg, Reid and Lanstein (1985); Fama and French (1992) & $+$ \\
+ & Earnings-to-price & Earnings divided by market value & Basu (1977) & $+$ \\
+\addlinespace
+Investment & Asset growth & Annual percentage growth in total assets & Cooper, Gulen and Schill (2008) & $-$ \\
+ & Net share issuance & Annual change in shares outstanding & Pontiff and Woodgate (2008) & $-$ \\
+ & Accruals & Earnings minus operating cash flow, scaled by assets & Sloan (1996) & $-$ \\
+\addlinespace
+Profitability & Gross profitability & Revenue minus cost of goods sold, divided by assets & Novy-Marx (2013) & $+$ \\
+ & F-score & Sum of nine accounting signals of financial strength & Piotroski (2000) & $+$ \\
+\addlinespace
+Intangibles & R\&D intensity & Research and development spending divided by market value & Chan, Lakonishok and Sougiannis (2001) & $+$ \\
+\addlinespace
+Trading frictions & Size & Market value of equity & Banz (1981) & $-$ \\
+ & Idiosyncratic volatility & Volatility of returns not explained by the Fama--French factors & Ang, Hodrick, Xing and Zhang (2006) & $-$ \\
+ & Illiquidity & Average absolute daily return per dollar of trading volume & Amihud (2002) & $+$ \\
+ & Maximum daily return & Largest daily return in the past month & Bali, Cakici and Whitelaw (2011) & $-$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{Design choices in a replication\index{replication}.} A replication of an anomaly must make many choices, each defensible, that can change the result:
 
 \begin{center}
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.34\linewidth}@{}}
 \toprule
-Strategy & Position & Equity exposure & Main risk \\
+Choice & Options & Why it matters \\
 \midrule
-Covered call (buy-write) & Own the index, sell a call & High (beta about 0.5--0.8) & Market falls; gains capped in rallies \\
-Cash-secured put (put-write) & Hold bills, sell a put & High (same as covered call at the same strike) & Market falls \\
-Short straddle & Sell a call and a put & Low on average, changes with the market & Large moves either way \\
-Delta-hedged option & Sell an option, hedge its delta daily & Near zero & Realized volatility above implied \\
-Short variance swap & Receive fixed variance, pay realized & Near zero, but crashes raise realized variance & Volatility spikes \\
+Universe & All stocks, or excluding micro-caps (for example below the NYSE 20th size percentile) & Many anomalies are concentrated in tiny stocks that are costly to trade and hold little value \\
+Weighting & Equal-weighted or value-weighted portfolios & Equal weighting gives micro-caps large influence \\
+Breakpoints & Deciles, quintiles or terciles; NYSE or all-stock breakpoints & Extreme portfolios magnify signals and noise \\
+Sample & The original paper's sample, or the longest available & Later years are out of sample \\
+Significance hurdle & $t > 1.96$, $t > 3$, a false-discovery-rate rule, or a Bayesian posterior & Determines what counts as a success \\
+Benchmark & Raw returns, CAPM alpha, or alpha against a multifactor model & A factor explained by others may be real but redundant \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-The first two are what most ``option income'' products, for individuals and institutions alike, actually do. The last two isolate the variance risk premium itself. Comparing them is the heart of this chapter. If a covered call's return mostly comes from the stock market's extra return, the equity premium\index{equity premium}, earned with a beta of 0.6, it is not evidence that selling options pays.
+\textbf{NYSE breakpoints}\index{NYSE breakpoints|textbf} set the cut-offs between groups using only stocks listed on the New York Stock Exchange. These stocks are larger on average, so the many tiny Nasdaq stocks do not crowd the extreme portfolios. A \textbf{Bayesian posterior}\index{Bayesian posterior|textbf} is the probability of a hypothesis after a prior belief has been combined with the data.
 
-\textbf{The shape of the payoff.} A covered call keeps the stock market's losses but caps its gains at the strike plus the premium (Figure~\ref{fig:16-cc}). In calm or gently rising months it beats the market. In strong rallies it lags. In crashes it loses almost as much as the market, softened only by the premium. Its returns are therefore \textbf{negatively skewed}\index{skewness|textbf}: most months bring small gains, and a few bring large losses.
+\textbf{Pure and scientific replication again.} A replication that copies the original method tests whether the paper's numbers can be reproduced. One that changes the universe, weighting or hurdle tests whether the finding is robust. Both are valuable, but they answer different questions, and the debate in this chapter turns partly on that difference.
+
+\section{The claim}
+\label{sec:19-claim}
+
+Stated so that it can fail:
+
+\begin{callout}
+\textbf{Most published cross-sectional return predictors do not reflect a real, persistent relationship: they fail to replicate under reasonable standards, or their returns disappear outside the sample in which they were found.}
+\end{callout}
+
+``Reasonable standards'' is where the debate lies. The claim can be tested in three ways:
+
+\begin{itemize}
+  \item \textbf{Replication within the original sample.} Do the predictors' long--short returns clear a significance hurdle when rebuilt independently? Which hurdle, and with which portfolio construction?
+  \item \textbf{Out of sample.}\index{in-sample versus out-of-sample|textbf} Do returns persist after the original sample ends and after publication?
+  \item \textbf{Statistically corrected.} After accounting for the number of predictors tested and for publication bias, what share have a high probability of a positive true return?
+\end{itemize}
+
+\section{The prosecution}
+\label{sec:19-prosecution}
+
+\textbf{Harvey, Liu and Zhu (2016)} argued from statistics. Hundreds of factors have been tested, and many more were tested but never published. The usual hurdle of $t > 2$ therefore lets through too many false discoveries. After adjusting for the number of tests, they proposed that a new factor should clear a t-statistic of about 3. They concluded that many published factors were likely false.
+
+\textbf{Hou, Xue and Zhang (2020)}\index{q-factor model|textbf} argued from replication. They rebuilt 452 anomalies with one common method, designed to limit the influence of micro-caps\index{micro-caps}: NYSE breakpoints and value-weighted\index{index weighting!value-weighted} returns. With that method, 65\% of the anomalies failed the single-test hurdle of an absolute t-statistic of 1.96. Raising the hurdle to 2.78, to allow for multiple testing, raised the failure rate to 82\%. Anomalies based on \textbf{trading frictions}\index{trading frictions|textbf}, the costs and obstacles of trading, failed most often: 96\% of them failed. This group includes illiquidity\index{illiquidity} and measures of idiosyncratic risk. \textbf{Idiosyncratic risk}\index{risk!idiosyncratic|textbf} is the part of a stock's volatility\index{volatility} that the market and other factors do not explain. Their conclusion was that most anomalies are either false or confined to micro-caps, which are too small and costly to matter.
+
+The prosecution's case rests on two premises: that the right hurdle is high because many tests have been run, and that the right portfolio construction gives little weight to the smallest stocks.
+
+\section{The defense}
+\label{sec:19-defense}
+
+\textbf{Jensen, Kelly and Pedersen (2023)} argued that the replication crisis was overstated. Using a Bayesian model of factor replication, they found that:
+
+\begin{itemize}
+  \item most factors can be replicated;
+  \item they cluster into 13 themes, most of which are significant parts of the optimal portfolio;
+  \item they work out of sample in a large new data set covering 93 countries;
+  \item the evidence is strengthened rather than weakened by the large number of factors, because related factors corroborate one another.
+\end{itemize}
+
+Their approach treats each factor's alpha as a draw from a common distribution and shrinks noisy estimates toward the average of related factors, rather than judging each one in isolation against a fixed hurdle.
+
+\textbf{Chen and Zimmermann (2022)} asked whether published results can be reproduced at all, and found that almost all predictors whose original papers reported clear statistical evidence can be reproduced with the original methods. \textbf{Chen and Zimmermann (2020)} asked how much journals' preference for strong results inflates published returns, and estimated publication bias directly across 156 published predictors. They concluded that returns adjusted for bias are only about 12\% smaller than in-sample returns. For predictors that survive journal review, they found that a t-statistic hurdle of about 1.8 is enough to control for multiple testing. \textbf{Chen (2021)} asked whether \textbf{p-hacking}\index{p-hacking|textbf}, that is, trying analyses until one crosses the significance line, could explain the published evidence, and argued that published t-statistics are too large to be explained by p-hacking alone.
+
+The defense's case rests on two different premises. First, the question is whether the original findings are real, not whether they survive a method that plays down small stocks. Second, evidence should be pooled across related factors rather than judged one test at a time.
+
+\section{Post-publication decay}
+\label{sec:19-decay}
+
+Whatever the replication standard, performance outside the original sample is a separate question. \textbf{McLean and Pontiff (2016)}\index{anomaly!post-publication decay|textbf} followed 97 predictors after their original samples ended and after publication. Portfolio returns were 26\% lower after the sample ended and 58\% lower after publication (Figure~\ref{fig:19-decay}). They read the first figure as an upper bound on the effect of data mining\index{data mining}. Nothing in the world changed when a sample ended, except that researchers stopped looking. They put the further decline after publication down to investors trading on the published results.
 
 \begin{figure}[htbp]
 \centering
 \scalebox{0.8}{%
 \begin{tikzpicture}
 \begin{axis}[
-  width=0.61\linewidth, height=0.38\linewidth,
+  width=0.8\linewidth, height=0.34\linewidth,
+  ybar, bar width=0.68cm,
   axis lines=left, axis line style={-stealth},
-  xmin=80, xmax=120, ymin=-20, ymax=21,
-  xtick={80,85,...,120}, ytick={-20,-10,0,10,20},
-  xlabel={Index at expiry}, ylabel={Profit per \$100 of index (\$)},
-  clip=false,
+  ymin=0, ymax=118, ytick={0,50,100},
+  ylabel={Return (in sample $= 100$)},
+  symbolic x coords={A,B,C},
+  xtick=data,
+  xticklabels={In sample, {After sample,\\before\\publication}, {After\\publication}},
+  xticklabel style={align=center, text width=2.3cm, font=\small},
+  enlarge x limits=0.25,
+  nodes near coords,
 ]
-  \addplot[gray, thin, domain=80:120, samples=2] {0};
-  % Index alone
-  \addplot[fegray, thick, dashed, domain=80:120, samples=2] {x - 100};
-  % Covered call: index plus the $2.47 premium, capped at the strike
-  \addplot[fenavy, very thick] coordinates {(80,-17.53) (100,2.47) (120,2.47)};
-  \node[fegray, anchor=north west] at (axis cs:112,10) {index alone};
-  \node[fenavy, anchor=north east, align=right] at (axis cs:120,1.5)
-    {covered call:\\gain capped at \$2.47};
-  \node[fenavy, anchor=north west, align=left] at (axis cs:81,20)
-    {losses nearly as large\\as the index's};
+  \addplot[fill=fenavy, draw=none] coordinates {(A,100) (B,74) (C,42)};
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{A covered call keeps almost all of the market's losses but caps its gains. A one-month at-the-money covered call against the index alone, using the worked example's prices. The call premium of \$2.47 caps the gain and cushions the loss by the same amount, so the covered call keeps almost all of the index's downside.}
-\label{fig:16-cc}
+\caption{Published patterns lost more than half of their returns after publication. Post-publication decay in McLean and Pontiff (2016). With in-sample returns set to 100, the average predictor earned 74 between the end of its original sample and publication, and 42 after publication.}
+\label{fig:19-decay}
 \end{figure}
 
-That shape creates a measurement problem. The Sharpe ratio uses only the average return and the standard deviation, so it cannot see skewness. Selling out-of-the-money options can raise a portfolio's Sharpe ratio while making its worst losses much larger. Section~\ref{sec:16-measure} sets out measures that are harder to game.
+The two readings matter for the claim. If most of the decline happens when the sample ends, the original results were inflated by selection, which is a sign of data mining. If most happens after publication, the results were real but investors have traded them away. That is a sign of learning, and it suggests the original finding was true. McLean and Pontiff's numbers suggest that both forces matter, and that the publication effect is the larger one.
 
+This chapter's lab adds a check the original study could not make: a simulated literature in which the truth is known. If only significant results are published, returns appear to fall after the sample ends even when nothing changes. The size of that purely statistical decline is a benchmark for how much of the observed decay is selection.
 
-\section{The claim}
-\label{sec:16-claim}
+\section{Why the two sides disagree}
+\label{sec:19-why}
 
-\begin{callout}
-\textbf{Claim.} Implied volatility is higher than the volatility that follows, on average, so option sellers earn a reliable premium. Strategies that sell index options, such as covered calls and put-writing, deliver better risk-adjusted returns than holding the index.
-\end{callout}
+The prosecution and the defense agree on most facts. They disagree on four choices.
 
-The claim has two parts, and each can succeed or fail on its own:
+\begin{center}
+\small
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\toprule
+Choice & Prosecution (Hou, Xue and Zhang; Harvey, Liu and Zhu) & Defense (Jensen, Kelly and Pedersen; Chen and Zimmermann) \\
+\midrule
+Which stocks count & De-emphasize micro-caps: NYSE breakpoints, value weights & Replicate the original construction; micro-caps are part of the market \\
+Hurdle & High: $t$ of about 3 or 2.78, for multiple testing & Lower, or a Bayesian posterior; multiple-testing corrections for published factors need not be severe \\
+Unit of evidence & Each factor judged on its own & Related factors pooled; corroboration strengthens the evidence \\
+Kind of replication & Scientific: does it survive reasonable alternative choices? & Pure: are the original findings reproducible and real? \\
+\bottomrule
+\end{tabularx}
+\end{center}
 
-\begin{itemize}
-  \item \textbf{The variance risk premium.} Implied variance is, on average, higher than the variance that follows. This is a statement about prices, and it can be tested directly by comparing the VIX with the volatility that follows.
-  \item \textbf{The strategy premium.} Covered calls and put-writing earn more than their risk justifies. For this to hold, the variance premium must survive trading costs and practical details such as the timing of trades, and the strategies must be judged against an honest measure of their risk.
-\end{itemize}
+Neither side is wrong on its own terms. A factor that appears only among micro-caps may be real, yet irrelevant to an investor who cannot trade micro-caps. A factor that fails a $t > 3$ hurdle may be real but measured with a lot of noise. A Bayesian estimate that pools related factors is more accurate if its assumptions are right. It is misleading if a whole theme was mined together.
 
-To test it, three points need to be settled:
+The practical lesson is that ``does this anomaly replicate?'' is not a well-posed question until the purpose is stated. For understanding how markets price risk, pure replication and pooled evidence are appropriate. For deciding what to invest in, value-weighted, liquid-universe, out-of-sample, after-cost evidence is what matters.
 
-\begin{itemize}
-  \item \textbf{What counts as risk.} A strategy with a beta of 0.5 should be compared with a portfolio holding half the market and half Treasury bills, not with the whole market. Its negative skewness should be counted, not ignored.
-  \item \textbf{What counts as reliable.} A premium that is positive in most months but wiped out in a few is reliable in one sense and not in another. The tests report both the share of months with a gain and the size of the worst losses.
-  \item \textbf{What would count against it.} The variance risk premium fails if implied volatility is not significantly above realized volatility on average. The strategy claim fails if covered calls and put-writing earn no extra return after adjusting for beta, or if their advantage disappears once skewness is taken into account.
-\end{itemize}
-
-\section{The original evidence}
-\label{sec:16-evidence}
-
-\textbf{Option returns.} Coval and Shumway (2001) studied S\&P 500 index options. They found that buying at-the-money \textbf{straddles} (a call and a put with the same strike), arranged so that they did not depend on the market's direction, lost about 3\% a week on average. Because a straddle like this is a bet on volatility rather than on the market's direction, its losses point to a price for volatility itself. Bakshi and Kapadia (2003) found that hedged option positions lost money on average for buyers. They attributed the losses to investors paying to own volatility, because volatility rises when markets fall.
-
-\textbf{The variance risk premium.} Carr and Wu (2009) showed how to compute the fair price of a variance swap from a set of option prices, the method behind today's VIX, and used it to measure the premium directly for five stock indexes and 35 individual stocks. For the S\&P 500, implied variance was well above realized variance on average. Bollerslev, Tauchen and Zhou (2009) found that the size of the premium also predicts stock returns over the next quarter, better than the price--earnings ratio or the default spread (the gap between the yields on lower- and higher-rated corporate bonds) do, which fits the idea that it is a price for economic uncertainty.
-
-\textbf{Covered calls and put-writing.} Cboe commissioned Robert Whaley to design the BuyWrite Index (BXM), which tracks an S\&P 500 portfolio that sells a one-month call near the current index level every month. Whaley (2002) found that it had earned returns close to the S\&P 500's with much lower volatility. A later study for Cboe (Callan Associates 2006) reported that from June 1988 to August 2006 the BXM returned 11.77\% a year against 11.67\% for the S\&P 500, with a standard deviation of 9.29\% against 13.89\%. Cboe later added a PutWrite Index (PUT), which sells one-month at-the-money puts backed by Treasury bills. These results drew large sums into option-income products.
-
-\textbf{The skeptics.} Broadie, Chernov and Johannes (2009) argued that large average losses on index puts are not by themselves evidence that puts are overpriced. Under standard models with crashes and reasonable risk premiums, put returns should be very negative and very noisy, so short samples say little. Israelov and Nielsen (2015) split the returns of covered calls into three parts: exposure to the stock market, a bet against volatility, and an unintended bet that recent market moves will reverse. The stock-market exposure drove most of the risk and return. The bet against volatility had a Sharpe ratio near 1.0 but supplied less than 10\% of the risk, and the reversal bet added about a quarter of the risk with little return. A covered call, in other words, is mostly a stock-market position.
-
-
-\section{Measuring option-strategy returns}
-\label{sec:16-measure}
-
-Option-selling strategies are the textbook case in which the usual performance measures mislead. Four corrections matter.
-
-\textbf{Adjust for beta.} A covered call with a beta of 0.6 should earn about 60\% of the stock market's extra return even without any volatility premium. The right comparison is a portfolio with the same beta, 60\% in the market and 40\% in Treasury bills, or equivalently the CAPM alpha (Chapter~\ref{ch:18}). A covered call that matches the market's return with two-thirds of its volatility may have earned no extra return at all.
-
-\textbf{Look at both betas.} Selling options makes a portfolio's exposure to the market lopsided. The \textbf{down beta}, measured in months when the market falls, is close to 1, so the strategy takes most of the loss. The \textbf{up beta}, measured in months when the market rises, is much lower, because the call caps the gains. An investor who cares more about losses than about gains should pay most attention to the down beta.
-
-\textbf{Count the skewness.} The Sharpe ratio ignores skewness, so a strategy can raise it simply by selling crash insurance. Goetzmann, Ingersoll, Spiegel and Welch (2007) showed that a manager with no skill can raise a portfolio's Sharpe ratio by selling out-of-the-money options. They proposed a \textbf{manipulation-proof performance measure (MPPM)}, which counts a large loss far more heavily than a large gain, so that selling crash insurance cannot raise the score. The shaded box gives the formula.
-
-\begin{technote}
-\textbf{Technical note: the MPPM.} The measure is
-\begin{equation}
-  \Theta = \frac{1}{(1 - \rho)\,\Delta t}\,\ln\!\left\{\frac{1}{T}\sum_{t=1}^{T}\left[\frac{1 + r_t}{1 + r_{f,t}}\right]^{1-\rho}\right\}
-  \label{eq:16-mppm}
-\end{equation}
-Here $T$ is the number of periods, $\Delta t$ is the length of each period in years, and $r_t$ and $r_{f,t}$ are the returns of the strategy and of the risk-free asset. $\Theta$ is the safe extra return that an investor with risk aversion $\rho$ would accept in place of the strategy. With $\rho = 3$, a typical value, a large loss in one month counts far more than a large gain, so selling crash insurance cannot raise the score unless it really adds value.
-\end{technote}
-
-\textbf{Use a long enough sample.} A strategy that loses heavily once a decade needs several decades of data to estimate its average return (Section~\ref{sec:01-foundations}). Broadie, Chernov and Johannes (2009) showed how noisy put returns are even over twenty years. A backtest that starts after 2009 and ends before 2020, for example, would miss both of the big losses since 1990.
-
-
-\section{Lab~\thechapter: Replicating Carr and Wu (2009) and the Cboe put-write and buy-write indices}
-\label{sec:16-lab}
+\section{Lab~\thechapter: Replicating both sides of the anomaly debate}
+\label{sec:19-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:16} at a glance.} \emph{Papers replicated:} the variance risk premium of Carr and Wu (2009); the put-write and buy-write strategies studied by Whaley (2002). \emph{Claim on trial:} selling index options earns a reliable premium. \emph{Data:} daily market returns from the Kenneth French library and the VIX from FRED, which starts in 1990; both are free. Cboe's PUT and BXM index histories can be added for comparison. \emph{Code:} runs as a script (\texttt{python lab14.py}) or as a notebook with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:15} at a glance.} \emph{Papers replicated:} Hou, Xue and Zhang (2020); Jensen, Kelly and Pedersen (2023); McLean and Pontiff (2016). All data are free. \emph{The question:} applying each side's standards to the same data, what share of published predictors survive, and how much of their return remains after their samples end and after publication? \emph{Data:} Open Source Asset Pricing: monthly long--short returns for more than 200 predictors as constructed in the original papers, and the signal documentation giving each paper's sample period and publication year. Optionally, a second construction of the same signals, value-weighted or excluding micro-caps, for the methodology comparison. \emph{Code:} repository folder \texttt{ch10-anomalies/}, with a guided notebook.
 \end{callout}
 
-\textbf{Part A, the variance risk premium.} At the end of each month, the lab compares the VIX with the market's realized volatility over the next 21 trading days. It reports the average gap in points of volatility with a Newey--West $t$-statistic, the share of months in which implied volatility was higher than realized, the median gap and the worst months (Lab Figures~\ref{ch:16}.1 and~\ref{ch:16}.2).
-
-\textbf{Part B, strategies.} The lab rebuilds two strategies from the data. Each month it sells a one-month option, priced by Black--Scholes at the VIX, and holds it to the next month end:
+\textbf{The setup.}
 
 \begin{itemize}
-  \item an \textbf{at-the-money put-write}, backed by Treasury bills like Cboe's PUT. By put--call parity this is also an at-the-money covered call, and the lab checks that the two returns are identical;
-  \item a \textbf{covered call with a strike 2\% above the index}, which keeps more of the market's gains.
+  \item \textbf{Part A, replication.} Each predictor's t-statistic over its own original sample. The share clearing $t > 1.96$, $t > 3$\index{t-statistic!$t>3$ hurdle}, and a Benjamini--Hochberg test, which limits the expected share of false discoveries among the predictors it declares significant.
+  \item \textbf{Part B, decay.} Average returns in-sample, after the sample ended but before publication, and after publication. A \textbf{pooled regression}\index{regression!pooled|textbf}, which combines all predictors into one regression in the style of McLean and Pontiff, measures the proportional decline in each period with errors clustered by\index{standard error!clustered} month.
+  \item \textbf{Part C, methodology.} The same statistics for an alternative construction, if supplied. This is the core of the disagreement between Hou, Xue and Zhang and the defense.
+  \item \textbf{Part D, shrinkage.} An empirical Bayes estimate of each predictor's true mean, pulled toward the average in proportion to its noise; the share with more than 95\% probability of a positive true mean; and whether shrunk estimates predict post-publication returns better than raw ones.
+  \item \textbf{Part E, known truth.} A simulated literature in which only signals with in-sample $t > 2$ are published, run with no true decay and with a 30\% decay after publication.
 \end{itemize}
 
-Each strategy is compared with the market on excess return, volatility, Sharpe ratio, skewness, worst month, drawdown, beta and CAPM alpha, both over its own history and over a common period (Lab Figure~\ref{ch:16}.3).
-
-\textbf{Part C, robustness checks.} Returns in crisis periods, the five worst months for the market, up and down betas, and the MPPM (Lab Figure~\ref{ch:16}.4).
-
-\textbf{Part D, stocks versus volatility.} The lab splits each strategy's excess return into the part explained by beta and the alpha that remains. It compares the strategy with the market scaled to the same beta, and with a pure short variance swap priced at the square of the VIX and sized to 10\% annual volatility (Lab Figure~\ref{ch:16}.5).
-
-The rebuilt strategies are deliberately simple, and that matters for interpreting them. They price options at the VIX, which includes the extra premium on out-of-the-money puts and so is usually higher than the implied volatility of at-the-money options. That overstates the premium a seller actually collects. They also ignore bid--ask spreads\index{bid--ask spread}, and they trade at month ends instead of on Cboe's third-Friday schedule. The \texttt{-{}-iv-shift} option prices the options a few points below the VIX. Comparing the rebuilt series with Cboe's indexes, which use traded prices, shows how much these simplifications matter.
-
-\textbf{What the simulated run shows.} The simulation builds in a VIX 12\% above expected volatility. The lab finds the premium (implied volatility above realized in 83\% of months), a put-write with a beta of about 0.5, strongly negative skewness, and a down beta near 0.9 against an up beta near 0.15. The rebuilt put-write and covered call show positive alphas\index{alpha} when options are priced at the inflated VIX. The Cboe-like series, priced 2 points lower, show none. These results confirm that the code works. They say nothing about real markets. Run the lab on real data to reach your own verdict.
-
-\subsection{Robustness checks}
-\label{sec:16-stress}
-
-Results over the full sample can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
-
-\textbf{Crashes.} The months that decide the outcome are few: October 1987, August 1998, September 2008 to February 2009, and February and March 2020. In each, the market fell sharply, realized volatility jumped far above the implied volatility priced a month earlier, and option sellers lost most of what the market lost. A put-write softens a crash only by one month's premium, typically 1--3\% of the strike. Lab Figure~\ref{ch:16}.2 shows the pattern for the variance premium: many small gains and a few large losses.
-
-\textbf{Skewness.}\index{skewness|textbf} Judged by the Sharpe ratio\index{Sharpe ratio}, put-writing and covered calls often look better than the market, because they reduce volatility more than they reduce returns. Judged by the MPPM with a risk aversion\index{risk aversion} of 3, the advantage should shrink, because the measure counts the crash months heavily. A strategy whose edge disappears once skewness is counted is being paid for crash risk\index{crash risk}, not earning alpha.
-
-\textbf{Stock-market exposure.} Covered calls and put-writes have betas of roughly 0.5 to 0.7. Over a period when stocks did well, a beta of 0.6 alone earns most of their return. The lab's decomposition separates the two. If the alpha is small next to the part explained by beta, the strategy is mainly a stock investment with a different payoff shape.
-
-\textbf{The timing of the sample.} After a crisis, implied volatility can stay high while realized volatility falls, which makes the premium look rich. Before a crisis, the premium can look rich until the crash arrives. A backtest that starts just after a crisis, or ends just before one, will flatter the strategy. Splitting the lab's sample at 2008 shows how much this matters.
-
-\textbf{Implementation.} Real options have bid--ask spreads, and covered-call funds charge management fees. Israelov and Nielsen (2015) found that resetting the strike mechanically each month creates a bet on market reversals that adds risk without adding return. These frictions are small on each trade, but large compared with a premium of a few percent a year.
+\textbf{What readers will find.} The simulation alone delivers one of the chapter's central lessons. The lab first ran a simulated literature with \textbf{no} true change after publication. The pooled regression still measured returns about 45\% lower after the samples ended and about 54\% lower after publication. This decline came purely from publication selecting lucky in-sample results. When a true 30\% post-publication decay was added, the measured post-publication decline rose to about 68\%. Readers who run the lab on real data can compare McLean and Pontiff's figures, and their own, with this benchmark.
 
 \subsection*{Your verdict}
 
-Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:16-verdict}. If your verdict differs, explain which of your results led you there.
+Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:19-verdict}. If your verdict differs, explain which of your results led you there. State the standard of evidence you apply and why, and date your verdict with the sample you tested.
 
 \section{Where the evidence stands}
-\label{sec:16-verdict}
+\label{sec:19-verdict}
 
-The published studies cited in this chapter point to a clear pattern: \textbf{implied volatility has been higher than realized volatility on average, so the variance risk premium is real, but covered-call and put-writing strategies earn most of their return from stock-market exposure and lose most of what the market loses in crashes.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you check these findings with free data.
+The published studies cited in this chapter point to a split picture: \textbf{most published anomalies are not pure statistical flukes. But most are smaller than reported, concentrated in small stocks, partly traded away, and not profitable to trade after costs.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.48\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -273,62 +331,50 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Implied above realized variance & \textbf{Yes} & Implied variance has been well above realized variance on average for the S\&P 500 and other indexes. & Carr and Wu (2009) \\
+Original construction, conventional hurdle & \textbf{No} & Predictors whose original papers reported clear evidence almost all reproduce with the original methods. & Chen and Zimmermann (2022) \\
 \addlinespace[3pt]
-Option buyers pay for volatility & \textbf{Yes} & Zero-beta straddles lost about 3\% a week, and delta-hedged option positions lost money on average. & Coval and Shumway (2001); Bakshi and Kapadia (2003) \\
+Micro-caps de-emphasized, value-weighted & \textbf{Yes} & 65\% of 452 anomalies fail to clear $t = 1.96$, and 82\% fail a hurdle of 2.78; 96\% of the trading-frictions anomalies fail. & Hou, Xue and Zhang (2020) \\
 \addlinespace[3pt]
-An economic reason for the premium & \textbf{Yes} & Demand for crash insurance raises option prices, and the size of the premium predicts market returns. & Bollen and Whaley (2004); G\^arleanu, Pedersen and Poteshman (2009); Bollerslev, Tauchen and Zhou (2009) \\
+The right hurdle for multiple testing & \textbf{Disputed} & One side asks for a $t$ of about 3; the other estimates that about 1.8 is enough for published predictors. & Harvey, Liu and Zhu (2016); Chen and Zimmermann (2020) \\
 \addlinespace[3pt]
-Covered calls against the index & \textbf{Partly} & The BuyWrite Index matched the S\&P 500's return with lower volatility from 1988 to 2006. & Whaley (2002); Callan Associates (2006) \\
+Bayesian pooling across factors and countries & \textbf{No} & Most factors replicate, cluster into 13 themes and work out of sample in 93 countries. & Jensen, Kelly and Pedersen (2023) \\
 \addlinespace[3pt]
-Covered calls after adjusting for beta & \textbf{Weakly} & Equity exposure drove most of the risk and return; the short-volatility part was under 10\% of the risk. & Israelov and Nielsen (2015) \\
+Out of sample, after publication & \textbf{Partly} & Returns were 26\% lower after the original samples and 58\% lower after publication, and part of the decline is selection. & McLean and Pontiff (2016); Part E of the lab \\
 \addlinespace[3pt]
-Risk adjustment that prices skewness & \textbf{Weakly} & Selling options can raise a Sharpe ratio without skill; measures that price the tail show a smaller advantage. & Goetzmann, Ingersoll, Spiegel and Welch (2007) \\
-\addlinespace[3pt]
-Mispricing, judged from put returns & \textbf{No} & Very negative, noisy put returns are expected under standard models with jumps, so they are not by themselves evidence of mispricing. & Broadie, Chernov and Johannes (2009) \\
+After costs, for an investor & \textbf{Yes} & Little expected return remains for the average anomaly. & Chen and Velikov (2023); Chapter~\ref{ch:13} \\
 \end{longtable}
 }
 
-The two parts of the claim come apart. The premium for bearing volatility risk is real, but the strategies sold to collect it are mostly stock-market positions with larger losses in crashes.
+Whether these findings make most anomalies ``false'' depends on whether the question is scientific or practical. The two sides agree on most facts and disagree on the four choices in Section~\ref{sec:19-why}, so a verdict on this claim is a choice of standard as much as a reading of the data.
 
-\textbf{What would change the picture.} The evidence for option-income strategies would strengthen if their alpha against a benchmark with the same beta stayed significant after counting skewness and costs over a full cycle of crises. It would weaken further if, after adjusting for beta, costs and fees consistently ate up the premium.
+\textbf{What would change the picture.} A shared replication standard, such as pre-registered\index{pre-registration} hurdles (standards fixed before the data are examined) or value-weighted, micro-cap-robust results reported alongside the original construction, would narrow the disagreement more than any new data set.
 
 \subsection{Open questions}
-\label{sec:16-open}
+\label{sec:19-open}
 
 \begin{itemize}
-  \item \textbf{Has the boom in very short-dated options changed the premium?} Options that expire on the day they are traded (zero days to expiry, or 0DTE) made up over 61\% of S\&P 500 index option volume in May 2025, according to Cboe (Cboe Global Markets 2025). Have they changed the price of one-month volatility, or the size of the variance premium?
-  \item \textbf{How large is the premium after costs for individual investors?} Covered-call ETFs on single stocks and on indexes have grown rapidly. What do they deliver after fees, spreads and taxes\index{taxes}, compared with an index position with the same beta?
-  \item \textbf{Is the premium compensation or mispricing\index{mispricing}?} Rational models with crash risk explain much of it (Broadie, Chernov and Johannes 2009). Does demand from hedgers push prices above that level?
-  \item \textbf{Can the premium be collected with less crash risk?} Hedged option positions\index{delta hedging}, variance swaps with a cap on losses, and strategies that cut exposure when volatility rises all aim to keep the premium and avoid the worst losses. Do they work out of sample\index{in-sample versus out-of-sample}?
+  \item \textbf{What replication standard should the field adopt?} Should journals require value-weighted, micro-cap-robust results, pre-registered\index{pre-registration} hurdles, or Bayesian posteriors?
+  \item \textbf{How many signals were tested but never published?} The unknown size of this \textbf{file drawer}\index{publication bias|textbf}, the studies left unpublished, limits every correction for multiple testing.
+  \item \textbf{Is post-publication decay learning or selection?} Part E's benchmark separates the two in simulation; doing so convincingly in real data remains open.
+  \item \textbf{Do anomalies reflect risk or mispricing?} Their decay after publication favors mispricing for many; their persistence\index{persistence} across countries favors something more durable for a few themes.
 \end{itemize}
 
 \section{What practitioners and investors can use}
-\label{sec:16-investors}
+\label{sec:19-investors}
 
-The evidence in Section~\ref{sec:16-verdict} suggests several practical lessons.
+The evidence in Section~\ref{sec:19-verdict} suggests several practical lessons.
 
-\textbf{What an option-income fund actually delivers.} Covered-call and put-writing funds advertise high payouts. Three facts help interpret them. Israelov and Nielsen (2014) discuss these and other common misunderstandings about covered calls.
+\textbf{A checklist for judging any new factor fund or signal:}
 
-\begin{itemize}
-  \item \textbf{Payouts are not yield.} The premium a fund collects and pays out comes with a cap on the fund's gains. In a strong market, the investor gives up gains in exchange for the income. The premium is not a dividend added on top of the market's return. Part of it is the market's return, turned into a different shape.
-  \item \textbf{The fund is mostly a stock fund.} With a beta of around 0.5 to 0.7 and a down beta near 1, it will fall nearly as much as the market in a crash and rise much less in a rally. Compare it with a mix of an index fund and Treasury bills that has the same beta, not with the index.
-  \item \textbf{Look at the worst months, not the Sharpe ratio.} A smooth history of returns can hide occasional large losses. Ask how the fund did in 2008 and in March 2020.
-\end{itemize}
-
-\textbf{Questions to ask a manager who sells volatility:}
-
-\begin{itemize}
-  \item What are the strategy's beta and down beta? What would a position in the index with the same beta have returned?
-  \item How far out of the money, and how close to expiry, are the options sold? How is the strike reset?
-  \item What is the largest loss the strategy could suffer in one day, and how was that figure worked out?
-  \item Does the strategy use borrowed money\index{leverage}, or margin that could be called in a volatility spike?
-\end{itemize}
+\begin{enumerate}
+  \item \textbf{Is the original evidence strong?} Ask for the t-statistic in the original study and whether it clears about 3.
+  \item \textbf{Does it hold among large, liquid stocks, value-weighted?} If the effect lives in micro-caps, it is unlikely to be investable at scale.
+  \item \textbf{What happened after publication?} Ask for returns from the paper's publication date forward. Expect roughly half the backtest\index{backtest} at best.
+  \item \textbf{Does it belong to a theme that works?} A signal related to established themes such as value, momentum, profitability or low risk has corroborating evidence; an isolated signal has none.
+  \item \textbf{What survives costs?} Ask for turnover\index{turnover} and net returns at realistic costs (Chapter~\ref{ch:13}).
+  \item \textbf{How many signals did the provider test before choosing this one?} Apply this chapter's multiple-testing corrections to the answer.
+\end{enumerate}
 
 \begin{callout}
-\textbf{What Failed: selling volatility on margin, February 2018.} LJM Partners ran funds that used borrowed money to sell out-of-the-money puts and calls on S\&P 500 futures. For years the strategy produced steady returns. In February 2018, when volatility spiked, the funds managed by LJM lost more than 80\%, over \$1 billion, in two trading days. In the same week, the VelocityShares inverse VIX note described in Chapter~\ref{ch:10} lost 96\% in a day.
-
-In 2021 the SEC charged LJM and two of its portfolio managers with misleading investors about how the funds managed risk. According to the SEC, the firm had told investors that it tested its mutual fund against a worst-case daily loss of 20\%, but that figure had been derived from a historical one-day loss of about 9\%, doubled and rounded up.
-
-The episode shows this chapter's evidence in its sharpest form. The variance risk premium is real, and selling volatility earned it for years. But the premium is payment for exactly the kind of day that ended LJM. Borrowed money turned a strategy that should lose heavily in a spike into one that could not survive it.
+\textbf{What Failed: the trading-frictions anomalies.} A family of anomalies based on liquidity\index{liquidity}, idiosyncratic volatility\index{idiosyncratic volatility} and other trading frictions looked strong in the papers that introduced them. Hou, Xue and Zhang played down micro-caps with NYSE breakpoints and value weights. In their replication, 96\% of the anomalies in this group then failed to clear a t-statistic of 1.96. Their returns had come mostly from the smallest and least liquid stocks, where costs and frictions are largest. The claim that frictions-based anomalies offer returns an investor can capture \textbf{fails}. Whether they reveal something real about how illiquid stocks are priced is a separate, open question.
 \end{callout}
