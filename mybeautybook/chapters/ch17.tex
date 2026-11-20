@@ -2,6 +2,7 @@
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{fegray}{HTML}{4D4D4D}
 \providecolor{feshade}{HTML}{F3F5FA}
 \makeatletter
 \@ifundefined{callout}{%
@@ -28,49 +29,65 @@
 
 Assume a fund manager will receive \$1 million in three months, and she plans to invest it in a stock that now trades at \$100. She worries that the stock will rise before her money arrives. She could wait and hope, but she would rather pay a small amount today for protection. She buys a \textbf{call option}\index{option!call|textbf}, a contract that gives her the right, but not the obligation, to buy the stock in three months at a fixed price of \$100, called the \textbf{strike price}\index{option!strike price|textbf}. The option costs about \$4.50 per share, a price called the \textbf{premium}\index{option!premium|textbf}. If the stock rises to \$120, she uses her right, buys at \$100 and saves \$20 per share. If the stock falls to \$90, she simply lets the option expire and buys in the market at \$90, and her only cost is the premium. The option works like insurance against a rising price. A \textbf{put option}\index{option!put|textbf}, the right to \emph{sell} at a fixed price, works the same way for an investor who fears a falling price.
 
-The bank that sold the fund manager the option now has the opposite problem. If the stock rises to \$120, the bank must deliver shares worth \$120 for only \$100 and lose \$20 per share, far more than the \$4.50 it received. The bank does not want to bet on the stock, so it hedges. On the day it sells the option, it buys about 0.56 shares for every option it has sold. This number is the option's \textbf{delta}\index{Greeks!delta|textbf}, which measures how much the option's value changes when the stock price moves by \$1. If the stock rises by \$1, the option the bank owes becomes about 56 cents more costly, but the 0.56 shares it holds gain about 56 cents, so the two changes cancel.
+Every option has two sides. The \textbf{buyer}\index{option!buyer|textbf} pays the premium and gets the right, and the \textbf{seller}\index{option!seller (writer)|textbf}, also called the writer, receives the premium and must honor the contract if the buyer uses it. With two kinds of option and two sides to each, there are four basic positions, and Figure~\ref{fig:14-four-payoffs} shows the profit of each when the option expires. All four use the stock in the story, which trades at \$100 today, and a strike price of \$100 in three months. The call costs \$4.50 and the put \$3.50. The fund manager is in the top-left panel. If the stock rises to \$120, she gains \$20 a share, or \$15.50 after the premium, and the higher the stock goes, the more she gains. If the stock ends at \$90 or \$100, she loses only the \$4.50 premium. The buyer of a put, in the bottom-left panel, is in the mirror position: she gains when the stock falls, \$10 a share at \$90, or \$6.50 after the premium, and loses only the premium if it does not. The two right-hand panels show the sellers, and each is the mirror image of the buyer beside it, because the buyer's gain is the seller's loss. A seller's best outcome is to keep the premium, while the loss from a large move has no such limit. Buyers of options therefore risk a small, known amount for the chance of a large gain, and sellers collect a small, steady income in exchange for bearing the risk of a large loss.
 
+% Figure: profit at expiration of the four basic option positions
 \begin{figure}[htbp]
 \centering
-\scalebox{0.8}{%
 \begin{tikzpicture}[
-  party/.style={draw=fenavy, fill=fenavy, text=white, rounded corners=2pt,
-                align=center, font=\small\bfseries, minimum width=3.2cm,
-                minimum height=0.9cm},
-  box/.style={draw=gray!70, fill=feshade, rounded corners=2pt,
-              align=left, font=\footnotesize, inner sep=5pt,
-              text width=6.9cm},
-  hedge/.style={draw=fenavy, thick, fill=white, rounded corners=2pt,
-                align=left, font=\footnotesize, inner sep=5pt,
-                text width=14.6cm},
-  deal/.style={-stealth, thick}]
-
-  % Row 1: the deal today
-  \node[party] (fm)   at (0,0)    {Fund manager};
-  \node[party] (bank) at (11.8,0) {Bank};
-  \draw[deal] ([yshift=0.2cm]fm.east) -- node[above, font=\footnotesize]
-    {pays a premium of \$4.50 per share today} ([yshift=0.2cm]bank.west);
-  \draw[deal] ([yshift=-0.2cm]bank.west) -- node[below, font=\footnotesize]
-    {gives the right to buy the stock at \$100 in three months} ([yshift=-0.2cm]fm.east);
-
-  % Row 2: the two outcomes in three months
-  \node[box, anchor=north west] (up) at (-1.6,-1.1)
-    {\textbf{In three months, if the stock rises to \$120}\\[2pt]
-     Fund manager: uses the option and buys at \$100, saving \$20 per share, or \$15.50 after the premium.\\[2pt]
-     Bank, without a hedge: sells a \$120 share for \$100 and loses \$15.50 per share after the premium.};
-  \node[box, anchor=north east] (down) at (13.4,-1.1)
-    {\textbf{In three months, if the stock falls to \$90}\\[2pt]
-     Fund manager: lets the option expire and buys at \$90. Her only cost is the \$4.50 premium.\\[2pt]
-     Bank: owes nothing and keeps the \$4.50 premium.};
-
-  % Row 3: the bank's hedge
-  \node[hedge, anchor=north west] at ([yshift=-0.3cm]up.south west)
-    {\textbf{The bank's hedge.} To avoid betting on the stock, the bank buys \textbf{delta} $= 0.56$ shares for each option it sold. If the stock rises by \$1, the option it owes gains about 56 cents and its 0.56 shares gain about 56 cents, so the two changes cancel.};
-\end{tikzpicture}%
-}
-\caption{The call option in the story. The fund manager pays the bank \$4.50 per share today for the right to buy the stock at \$100 in three months. If the stock rises, the option protects her, and without a hedge the bank bears the loss. If the stock falls, she loses only the premium, which the bank keeps. The bank hedges by holding delta, 0.56 shares per option, so that small moves in the stock change its shares and the option it owes by the same amount.}
-\label{fig:14-story}
+  dot/.style={only marks, mark=*, mark size=1.7pt},
+  val/.style={font=\scriptsize},
+  note/.style={font=\scriptsize, text=fegray, align=center}]
+\begin{groupplot}[
+  group style={group size=2 by 2, horizontal sep=1.5cm, vertical sep=2.4cm},
+  width=0.5\linewidth, height=5.4cm,
+  xmin=70, xmax=130, ymin=-30, ymax=30,
+  xtick={90,100,120}, ytick={-20,-10,0,10,20},
+  xticklabel style={font=\scriptsize}, yticklabel style={font=\scriptsize},
+  xlabel={Stock price at expiration (\$)}, xlabel style={font=\footnotesize},
+  axis lines=left, grid=major, grid style={gray!20},
+  title style={font=\small\bfseries},
+  every axis plot/.append style={line width=1.2pt},
+]
+% ---------------- Buy a call ----------------
+\nextgroupplot[title={Buy a call (premium \$4.50)}, ylabel={Profit per share (\$)}, ylabel style={font=\footnotesize}]
+\addplot[gray!60, line width=0.5pt, domain=70:130] {0};
+\addplot[fenavy, domain=70:130, samples=200] {max(x-100,0)-4.5};
+\addplot[dot, fenavy] coordinates {(90,-4.5) (100,-4.5) (120,15.5)};
+\node[val, fenavy, anchor=south east] at (axis cs:120,15.5) {+\$15.50};
+\node[val, fenavy, anchor=north] at (axis cs:90,-5.5) {$-$\$4.50};
+\node[note, anchor=north west] at (axis cs:71,28) {gain grows\\with a rise};
+% ---------------- Sell a call ----------------
+\nextgroupplot[title={Sell a call (premium \$4.50)}]
+\addplot[gray!60, line width=0.5pt, domain=70:130] {0};
+\addplot[red!60!black, domain=70:130, samples=200] {4.5-max(x-100,0)};
+\addplot[dot, red!60!black] coordinates {(90,4.5) (100,4.5) (120,-15.5)};
+\node[val, red!60!black, anchor=north east] at (axis cs:120,-15.5) {$-$\$15.50};
+\node[val, red!60!black, anchor=south] at (axis cs:90,5.5) {+\$4.50};
+\node[note, anchor=north west] at (axis cs:71,-10) {loss grows\\with a rise};
+% ---------------- Buy a put ----------------
+\nextgroupplot[title={Buy a put (premium \$3.50)}, ylabel={Profit per share (\$)}, ylabel style={font=\footnotesize}]
+\addplot[gray!60, line width=0.5pt, domain=70:130] {0};
+\addplot[fenavy, domain=70:130, samples=200] {max(100-x,0)-3.5};
+\addplot[dot, fenavy] coordinates {(90,6.5) (100,-3.5) (120,-3.5)};
+\node[val, fenavy, anchor=south west] at (axis cs:90,6.5) {+\$6.50};
+\node[val, fenavy, anchor=north] at (axis cs:120,-4.5) {$-$\$3.50};
+\node[note, anchor=north east] at (axis cs:129,28) {gain grows\\with a fall};
+% ---------------- Sell a put ----------------
+\nextgroupplot[title={Sell a put (premium \$3.50)}]
+\addplot[gray!60, line width=0.5pt, domain=70:130] {0};
+\addplot[red!60!black, domain=70:130, samples=200] {3.5-max(100-x,0)};
+\addplot[dot, red!60!black] coordinates {(90,-6.5) (100,3.5) (120,3.5)};
+\node[val, red!60!black, anchor=north west] at (axis cs:90,-6.5) {$-$\$6.50};
+\node[val, red!60!black, anchor=south] at (axis cs:120,4.5) {+\$3.50};
+\node[note, anchor=north east] at (axis cs:129,-10) {loss grows\\with a fall};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Profit at expiration of the four basic option positions. The stock trades at \$100 today, every option has a strike price of \$100 and three months to expiry, the call costs \$4.50 and the put \$3.50. The dots mark three outcomes: the stock falls to \$90, stays at \$100 or rises to \$120. Buyers (navy, left) pay the premium, risk only that amount and gain from a large move. Sellers (red, right) receive the premium, gain at most that amount and bear the loss from a large move. Each seller's line is the mirror image of the buyer's, because the buyer's gain is the seller's loss. The fund manager in the story is in the top-left panel, and the bank that sold her the call is in the top-right panel.}
+\label{fig:14-four-payoffs}
 \end{figure}
+
+The bank that sold the fund manager the option sits in the top-right panel of Figure~\ref{fig:14-four-payoffs}, and it has the opposite problem. If the stock rises to \$120, the bank must deliver shares worth \$120 for only \$100 and lose \$20 per share, far more than the \$4.50 it received. The bank does not want to bet on the stock, so it hedges. On the day it sells the option, it buys about 0.56 shares for every option it has sold. This number is the option's \textbf{delta}\index{Greeks!delta|textbf}, which measures how much the option's value changes when the stock price moves by \$1. If the stock rises by \$1, the option the bank owes becomes about 56 cents more costly, but the 0.56 shares it holds gain about 56 cents, so the two changes cancel.
 
 \textbf{How does the bank determine the 0.56 shares?} The bank uses an option pricing model, which gives the option's value for any stock price. To find delta, it asks the model a simple question: how much would the option be worth if the stock were \$1 higher or \$1 lower? Table~\ref{tab:14-delta} shows the answer.
 
@@ -91,44 +108,7 @@ Stock price & Option value \\
 
 When the stock moves from \$99 to \$101, the option's value rises by about \$1.12, or about 56 cents for each \$1 move in the stock. That rate of change is the option's delta. A share always moves dollar for dollar with the stock, so 0.56 shares move by exactly as much as the option, and holding them cancels the bank's risk from small moves. The same number, 0.56, can be derived directly from the Black--Scholes formula, which is introduced later in this chapter.
 
-\begin{figure}[htbp]
-\centering
-\scalebox{0.85}{%
-\begin{tikzpicture}[x=4.2cm, y=1.3cm,
-  state/.style={draw=gray!70, fill=feshade, rounded corners=2pt,
-                align=center, font=\footnotesize, inner sep=4pt,
-                text width=2.9cm},
-  move/.style={-stealth, thick, fenavy}]
-
-  \node[state] (t0) at (0,0)
-    {\textbf{Stock \$100}\\delta 0.56:\\hold 0.56 shares};
-  \node[state] (up1) at (1,1.3)
-    {\textbf{Stock \$110}\\delta rises:\\buy more shares};
-  \node[state] (dn1) at (1,-1.3)
-    {\textbf{Stock \$90}\\delta falls:\\sell some shares};
-  \node[state] (up2) at (2,1.3)
-    {\textbf{Stock \$120}\\delta 1: hold 1 share,\\deliver it for \$100};
-  \node[state] (dn2) at (2,-1.3)
-    {\textbf{Stock \$90}\\delta 0: hold no shares,\\option expires};
-
-  \draw[move] (t0) -- node[above left, font=\footnotesize] {rises} (up1);
-  \draw[move] (t0) -- node[below left, font=\footnotesize] {falls} (dn1);
-  \draw[move] (up1) -- (up2);
-  \draw[move] (dn1) -- (dn2);
-
-  \draw[-stealth, gray] (-0.4,-2.75) -- (2.5,-2.75);
-  \foreach \x/\lab in {0/Today, 1/1 month, 2/3 months (expiry)} {
-    \draw[gray] (\x,-2.67) -- (\x,-2.83);
-    \node[anchor=north, font=\footnotesize] at (\x,-2.85) {\lab};
-  }
-\end{tikzpicture}%
-}
-\caption{How the bank follows delta along two possible paths of the stock. The bank starts with 0.56 shares for each option it has sold. When the stock rises, the option becomes more likely to be used and its delta rises, so the bank buys more shares. When the stock falls, the delta falls, so the bank sells some. At expiry, the bank holds one share if the option will be used and none if it will not.}
-\label{fig:14-hedge}
-\end{figure}
-
 The delta does not stay fixed, so the bank must keep adjusting its holding. When the stock rises, the option becomes more likely to be used, so the bank buys more shares. When the stock falls, the option becomes less likely to be used, so the bank sells some. By the expiry date, the bank holds one full share per option if the stock is above \$100 and none if it is below, which is exactly what it needs to keep its promise to the fund manager. This strategy is called \textbf{delta hedging}\index{delta hedging|textbf}. If it works perfectly, the net cost of all the buying and selling along the way equals the premium the bank received. The bank has then reproduced the option with shares alone and carries no risk.
-
 
 In 1973 Fischer Black and Myron Scholes, together with a closely related paper by Robert Merton, turned this idea into a striking claim: an option can be replicated\index{replication|textbf}, meaning that its payoff can be reproduced exactly by trading the stock and borrowing or lending cash. The trader only has to hold the right number of shares and adjust that number continuously, whatever the market does. If that is true, an option's price is not a matter of opinion about where the market is going. It is simply the cost of replicating the option. The Chicago Board Options Exchange opened the same year, and within a few years traders were pricing options with the formula on handheld calculators. The work earned Scholes and Merton the 1997 Nobel Prize in economics. Black had died in 1995 and was not eligible, because the prize is not awarded after death.
 
@@ -151,6 +131,10 @@ By the end of the chapter you will be able to:
   \item explain why the volatility smile\index{volatility smile} is evidence against the model's assumptions;
   \item judge what risks a ``fully hedged'' option seller or structured-product issuer still carries.
 \end{itemize}
+
+
+
+
 
 
 \section{Foundations: options and Black--Scholes}
