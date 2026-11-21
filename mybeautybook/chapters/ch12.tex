@@ -449,22 +449,21 @@ The tests are statistically delicate, for reasons the shaded box explains.
 To test it, three points need to be settled:
 
 \begin{itemize}
-  \item \textbf{Up to a constant.} The pure version of the EH says that forward rates equal expected short rates. Almost no one believes that, because long bonds have earned more than short ones on average. The version tested here allows a constant term premium and denies only that the premium \emph{changes}.
-  \item \textbf{Which horizon.} The tests use one-year holding periods, the standard in the literature. Fama and Bliss also look at longer horizons.
-  \item \textbf{What would count against it.} The EH fails if forward spreads predict excess bond returns (a Fama--Bliss slope significantly above 0), if they predict changes in short rates less than one for one, or if long yields fail to rise when the curve is steep (a Campbell--Shiller slope significantly below 1). It fails convincingly if these patterns hold out of sample.
+  \item \textbf{Up to a constant.} Long bonds have earned more than short ones on average, so the version tested here allows a constant term premium and denies only that the premium \emph{changes}.
+  \item \textbf{Which horizon.} One-year holding periods, the standard in the literature.
+  \item \textbf{What would count against it.} Forward spreads that predict excess bond returns (a Fama--Bliss slope significantly above 0) or predict short rates less than one for one, or long yields that fail to rise when the curve is steep (a Campbell--Shiller slope significantly below 1), especially out of sample.
 \end{itemize}
 
 \section{The original evidence}
 \label{sec:07-evidence}
 
-\textbf{Fama and Bliss (1987).} Using zero-coupon bond prices built from CRSP\index{CRSP} Treasury data, Fama and Bliss found that the spread between the $n$-year forward rate and the one-year rate predicted the next year's excess return on $n$-year bonds, contrary to the EH. The same spread did little to predict changes in the one-year rate over the next year. Its power grew with the horizon, however, so forward rates did contain information about short rates several years ahead, as interest rates drift back toward their average.
+\textbf{Fama and Bliss (1987).} Using zero-coupon prices built from CRSP\index{CRSP} Treasury data, Fama and Bliss found that the spread between the $n$-year forward rate and the one-year rate predicted the next year's excess return on $n$-year bonds, contrary to the EH, but did little to predict changes in the one-year rate. Its power to predict short rates grew with the horizon, because rates drift back toward their average.
 
-\textbf{Campbell and Shiller (1991).} For maturities from a few months to ten years, the yield spread predicted that long yields would move in the \emph{wrong} direction. When the curve was steep, long yields tended to fall over the following period, the opposite of what the EH requires, and the effect grew stronger with maturity. A steep curve thus predicted high returns on long bonds, because falling yields mean rising prices.
+\textbf{Campbell and Shiller (1991).} For maturities from a few months to ten years, a steep curve predicted that long yields would \emph{fall}, the opposite of what the EH requires, and more strongly at longer maturities. Falling yields mean rising prices, so a steep curve predicted high returns on long bonds.
 
-\textbf{Cochrane and Piazzesi (2005).} Instead of using one forward spread at a time, they regressed excess returns on all the forward rates at once. A single combination of forward rates, shaped like a tent, predicted one-year excess returns on bonds of all maturities, with $R^2$\index{regression!R-squared@$R^2$} values of up to 43\% in their sample. This combination was largely unrelated to the level, slope and curvature of the yield curve, the three standard summaries of how high the curve sits, how steeply it rises and how much it bends, and it rose in bad times, consistent with a risk premium\index{risk premium} that is high in recessions.
+\textbf{Cochrane and Piazzesi (2005).} A single tent-shaped combination of all the forward rates predicted one-year excess returns on bonds of every maturity, with $R^2$\index{regression!R-squared@$R^2$} of up to 43\%. It was largely unrelated to the level, slope and curvature of the yield curve, and it rose in bad times, consistent with a risk premium\index{risk premium} that is high in recessions.
 
-\textbf{The skeptics.} That the EH fails is now widely accepted. How strongly bond returns can be predicted is not. Bauer and Hamilton (2018) showed that standard tests are badly distorted in small samples when the predictors change slowly and the returns overlap\index{overlapping observations}. With more robust tests, the evidence that anything beyond the level, slope and curvature of the curve predicts bond returns, including the Cochrane--Piazzesi combination, became much weaker. Thornton and Valente (2012) found that forecasts from forward rates gave an investor choosing between bonds little economic value out of sample.
-
+\textbf{The skeptics.} That the EH fails is widely accepted; how strongly bond returns can be predicted is not. Bauer and Hamilton (2018) showed that standard tests are badly distorted when predictors move slowly and returns overlap\index{overlapping observations}, and with robust tests the evidence that anything beyond level, slope and curvature predicts returns, including the Cochrane--Piazzesi factor, became much weaker. Thornton and Valente (2012) found that forecasts from forward rates gave an investor little economic value out of sample.
 
 \section{Lab~\thechapter: Replicating Fama and Bliss (1987), Campbell and Shiller (1991) and Cochrane and Piazzesi (2005)}
 \label{sec:07-lab}
@@ -473,32 +472,30 @@ To test it, three points need to be settled:
 \textbf{Lab~\ref{ch:12} at a glance.} \emph{Papers replicated:} Fama and Bliss (1987); Campbell and Shiller (1991); Cochrane and Piazzesi (2005). \emph{Claim on trial\index{claims-on-trial method}:} forward rates are unbiased forecasts of future short rates. \emph{Data:} the Federal Reserve's zero-coupon Treasury yield curve (G\"urkaynak, Sack and Wright 2007), month-end yields for maturities of one to ten years; free and updated regularly. \emph{Code:} runs as a script (\texttt{python lab16.py}) or as a notebook with a prediction prompt before each step.
 \end{callout}
 
-\textbf{Part A, the classic tests.} The lab runs Fama--Bliss regressions of one-year excess returns on forward spreads for maturities of 2 to 10 years, the companion regression of future changes in short rates on forward spreads, and Campbell--Shiller regressions for maturities of 2 to 10 years (Lab Figures~\ref{ch:12}.2 and~\ref{ch:12}.3). Standard errors\index{standard error} are Newey--West with 18 lags, to allow for the overlapping monthly observations.
+\textbf{Part A, the classic tests.} Fama--Bliss regressions of excess returns, and of future changes in short rates, on forward spreads, and Campbell--Shiller regressions, for maturities of 2 to 10 years, with Newey--West standard errors\index{standard error} and 18 lags for the overlapping data (Lab Figures~\ref{ch:12}.2 and~\ref{ch:12}.3).
 
-\textbf{Part B, Cochrane--Piazzesi.} The lab regresses the average excess return on 2- to 5-year bonds on the one-year yield and four forward rates, and reports how strongly each maturity responds to the resulting combination. It then makes out-of-sample forecasts from 1985, using all data available at each date\index{walk-forward evaluation!expanding window} and leaving an 11-month gap so that no training data overlap the forecast. Three sets of predictors are compared with the historical mean\index{historical-mean benchmark}: the full set of forward rates, a single forward spread, and the level of rates alone (Lab Figure~\ref{ch:12}.4).
+\textbf{Part B, Cochrane--Piazzesi.} The average excess return on 2- to 5-year bonds regressed on the one-year yield and four forward rates, and out-of-sample forecasts from 1985 using only data available at each date\index{walk-forward evaluation!expanding window}, with an 11-month gap so that no training data overlap the forecast. Three sets of predictors are compared with the historical mean\index{historical-mean benchmark} (Lab Figure~\ref{ch:12}.4).
 
-\textbf{Part C, subperiods.} The Fama--Bliss slope for 5-year bonds, the Campbell--Shiller slope at the longest maturity, and the Cochrane--Piazzesi $R^2$ in four periods: the start of the data to 1984, 1985--2007, 2008--2015 (when short rates were near zero), and 2016 onward.
+\textbf{Part C, subperiods.} Key slopes and the Cochrane--Piazzesi $R^2$ before 1985, in 1985--2007, in 2008--2015 (near-zero short rates) and from 2016.
 
-\textbf{Part D, the investor's view.} Average excess returns by maturity, and returns after steep and after flat curves, with ``steep'' defined using only past information (Lab Figure~\ref{ch:12}.5).
+\textbf{Part D, the investor's view.} Average excess returns by maturity, and returns after steep and flat curves defined with past information only (Lab Figure~\ref{ch:12}.5).
 
-Two caveats apply. The Fed's curve is fitted to bond prices rather than made of traded bonds, and the classic studies used zero-coupon prices built from CRSP data, which are not free. Results will therefore be similar in spirit but not identical. Ten-year yields begin in 1971, so the longest maturities have a shorter sample.
+The Fed's curve is fitted to bond prices, unlike the CRSP data of the classic studies, which are not free, so results will be similar in spirit but not identical. Ten-year yields begin in 1971.
 
-\textbf{What the simulated run shows.} The simulation adds a term premium that changes over time to the expected path of short rates, so the EH is false by design. The lab finds what it should: Fama--Bliss slopes of about 0.6 to 0.7, significantly above zero; Campbell--Shiller slopes that are negative and well below 1; and higher excess returns after steep curves. On simulated data where the EH holds exactly, the tests recover slopes of 0 and 1. These results confirm that the code works. They say nothing about real markets. Run the lab on real data to reach your own verdict.
+\textbf{What the simulated run shows.} With a time-varying term premium built in, so that the EH is false by design, the lab finds Fama--Bliss slopes of about 0.6 to 0.7, Campbell--Shiller slopes well below 1, and higher excess returns after steep curves. Where the EH holds exactly, it recovers slopes of 0 and 1. These results confirm that the code works. They say nothing about real markets.
 
 \subsection{Robustness checks}
 \label{sec:07-stress}
 
-Results over the full sample can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
+\textbf{Subperiods.} The sample spans the 1970s inflation, the Volcker disinflation of the early 1980s, the long fall in rates, near-zero rates after 2008 and the rapid rises of 2022--23. A premium driven by inflation uncertainty should be most visible early on. Part C shows whether the rejection comes from one era.
 
-\textbf{Subperiods.} The postwar sample covers very different monetary regimes: the inflation of the 1970s, the Volcker disinflation (the sharp fall in inflation after Federal Reserve Chairman Paul Volcker raised interest rates steeply around 1980), the long fall in rates from the 1980s, near-zero rates after 2008, and the rapid rate rises of 2022--23. A term premium that moves with inflation uncertainty should be most visible in the first half. Part C shows whether the rejection of the EH comes from a single era.
+\textbf{Near-zero rates.} From 2008 to 2015, forward rates moved with expectations about when the Fed would raise rates, but the short rates that followed did not, so older evidence may not apply.
 
-\textbf{Near-zero rates.} From 2008 to 2015 the short rate was held near zero. Forward rates still moved, driven by expectations of when the Fed would raise rates and by the term premium, but the short rates that followed did not. Regressions over this period behave differently, and the older evidence may not apply to it.
+\textbf{Maturities.} If the EH fails at two years but nearly holds at ten, or the reverse, that shows where the term premium is concentrated.
 
-\textbf{Maturities.} The EH is a statement about all maturities. If it fails at two years but nearly holds at ten, or the reverse, that tells us where the term premium is concentrated.
+\textbf{Out of sample.}\index{in-sample versus out-of-sample|textbf} Slow-moving predictors and overlapping returns inflate in-sample $R^2$. A negative out-of-sample $R^2$\index{out-of-sample $R^2$} would mean the historical mean did better.
 
-\textbf{Out of sample.}\index{in-sample versus out-of-sample|textbf} In-sample $R^2$ values for bond-return forecasts are inflated by slow-moving predictors and overlapping returns. The lab's out-of-sample test, which uses only data available at each date and leaves an 11-month gap, is the honest test. A negative out-of-sample $R^2$\index{out-of-sample $R^2$} would mean that an investor would have done better by using the historical mean.
-
-\textbf{Small samples.} Bauer and Hamilton (2018) showed that standard errors can badly understate the uncertainty in these regressions. Their bootstrap\index{bootstrap} tests are beyond this lab. Treat $t$-statistics near 2 with suspicion.
+\textbf{Small samples.} Standard errors can badly understate the uncertainty in these regressions (Bauer and Hamilton 2018). Their bootstrap\index{bootstrap} tests are beyond this lab, so treat $t$-statistics near 2 with suspicion.
 
 \subsection*{Your verdict}
 
@@ -507,7 +504,7 @@ Reach your own verdict on the claim from the numbers in your own run, using the 
 \section{Where the evidence stands}
 \label{sec:07-verdict}
 
-The published studies cited in this chapter point to a clear pattern: \textbf{forward rates contain information about future short rates but are biased forecasts of them, because a term premium that changes over time drives much of the slope of the yield curve. How well that premium can be forecast in real time is disputed.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you check these findings with free data.
+The published studies point to a clear pattern: \textbf{forward rates contain information about future short rates but are biased forecasts of them, because a term premium that changes over time drives much of the slope of the yield curve. How well that premium can be forecast in real time is disputed.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.48\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -525,55 +522,45 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Forward spreads and excess returns & \textbf{No} & Forward spreads forecast one-year excess returns on long bonds, which the hypothesis rules out. & Fama and Bliss (1987) \\
+Forward spreads and excess returns & \textbf{No} & Forward spreads forecast excess returns on long bonds, which the hypothesis rules out. & Fama and Bliss (1987) \\
 \addlinespace[3pt]
-Long yields when the curve is steep & \textbf{No} & Long yields tended to fall rather than rise, and the slopes became more negative as maturity increased. & Campbell and Shiller (1991) \\
+Long yields when the curve is steep & \textbf{No} & Long yields tended to fall, more so at longer maturities. & Campbell and Shiller (1991) \\
 \addlinespace[3pt]
-Forward rates at long horizons & \textbf{Partly} & Forward rates forecast changes in short rates several years ahead, because rates mean-revert. & Fama and Bliss (1987) \\
+Forward rates at long horizons & \textbf{Partly} & They forecast short rates several years ahead, because rates mean-revert. & Fama and Bliss (1987) \\
 \addlinespace[3pt]
-A constant term premium & \textbf{No} & A single combination of forward rates forecast excess returns on all maturities and rose in bad times. & Cochrane and Piazzesi (2005) \\
+A constant term premium & \textbf{No} & One combination of forward rates forecast excess returns on all maturities and rose in bad times. & Cochrane and Piazzesi (2005) \\
 \addlinespace[3pt]
-Strength of the forecasting evidence & \textbf{Disputed} & Robust small-sample tests weaken the evidence that variables beyond level, slope and curvature forecast bond returns. & Bauer and Hamilton (2018) \\
+Strength of the forecasting evidence & \textbf{Disputed} & Robust tests weaken the evidence beyond level, slope and curvature. & Bauer and Hamilton (2018) \\
 \addlinespace[3pt]
-Value to an investor out of sample & \textbf{Partly} & Forecasts from forward rates gave little economic value out of sample to an investor choosing between bonds. & Thornton and Valente (2012) \\
+Value to an investor out of sample & \textbf{Partly} & Forecasts gave little economic value out of sample. & Thornton and Valente (2012) \\
 \end{longtable}
 }
 
-The evidence is strong that the term premium changes over time, and weaker on how well anyone can track it in real time. That weakness does not rescue the expectations hypothesis, which requires the premium to be constant.
+The evidence that the term premium changes is strong; the evidence that anyone can track it in real time is weaker. Neither rescues the expectations hypothesis, which needs the premium to be constant.
 
-\textbf{What would change the picture.} The evidence would move toward the claim if the rejection of the hypothesis came from one monetary regime and disappeared in the others.
+\textbf{What would change the picture.} The claim would gain support if its rejection came from one monetary regime and disappeared in the others.
 
 \subsection{Open questions}
 \label{sec:07-open}
 
 \begin{itemize}
-  \item \textbf{Has central-bank bond buying changed the term premium?} The large bond purchases after 2008 and in 2020 were designed to lower long yields by reducing the term premium. Did they change how the premium behaves or how predictable it is?
-  \item \textbf{Is the Cochrane--Piazzesi factor real?} Robust small-sample tests weaken it. Does it hold up in other countries and in data after 2003?
-  \item \textbf{What drives the term premium?} Inflation uncertainty, risk aversion, and the supply of and demand for bonds all play a part. Which matters most now?
-  \item \textbf{Do economic data add to the yield curve?} Several studies find that measures of economic activity predict bond returns beyond what yields predict. Does that evidence survive the same robust tests?
+  \item \textbf{Has central-bank bond buying changed the term premium?} Did the purchases after 2008 and in 2020 change how the premium behaves or how predictable it is?
+  \item \textbf{Is the Cochrane--Piazzesi factor real?} Does it hold up in other countries and after 2003?
+  \item \textbf{What drives the term premium?} Inflation uncertainty, risk aversion, or the supply of and demand for bonds?
+  \item \textbf{Do economic data add to the yield curve?} Does the evidence that activity measures predict bond returns survive robust tests?
 \end{itemize}
 
 \section{What practitioners and investors can use}
 \label{sec:07-investors}
 
-The evidence in Section~\ref{sec:07-verdict} suggests several practical lessons.
+\textbf{Read forward rates as a forecast plus a premium.} A rate path read from forward rates or futures overstates expected rate rises when the premium is positive. Published term-premium estimates, such as the Federal Reserve Bank of New York's based on Adrian, Crump and Moench (2013), help separate the two, with wide uncertainty.
 
-\textbf{Read forward rates as a forecast plus a premium.} A path for policy rates taken from forward rates or futures prices includes a term premium. It overstates expected rate rises when the premium is positive, and understates them when the premium is negative. Published estimates of the term premium, such as those of the Federal Reserve Bank of New York based on the Adrian, Crump and Moench (2013) model, are one way to separate the two, though they are model estimates with wide uncertainty.
+\textbf{Carry and roll-down.} When the curve is steep, a bond earns its extra yield, \textbf{carry}, and a price gain as its yield falls toward those of shorter maturities, \textbf{roll-down}\index{roll-down|textbf}. The EH says rising rates will cancel both; the evidence says they have not on average, so carry and roll-down are a reasonable, though not guaranteed, guide to expected excess returns.
 
-\textbf{Carry and roll-down.} When the yield curve is steep, a bond investor earns two things if rates do not change. The first is the extra yield of the longer bond, called \textbf{carry}. The second is the price gain as the bond ages and its yield falls toward the lower yields of shorter maturities, called \textbf{roll-down}\index{roll-down|textbf}. The EH says that rising rates are expected to cancel both. The evidence says they have not been fully cancelled on average. Carry and roll-down are therefore a reasonable guide to expected excess returns, though not a guaranteed one.
+\textbf{Duration is a bet.}\index{duration|textbf} Longer bonds have been rewarded on average when the curve is steep, at the cost of higher volatility\index{volatility}: in 2022 long Treasuries had some of their worst losses on record.
 
-\textbf{Duration is a bet.}\index{duration|textbf} Buying longer bonds when the curve is steep has been rewarded on average, but at the cost of the higher volatility\index{volatility} of long bonds. In 2022, when rates rose sharply, long Treasuries suffered some of their worst losses on record.
-
-\textbf{Questions to ask a bond manager:}
-
-\begin{itemize}
-  \item How much of the portfolio's expected return comes from carry and roll-down, and what happens if rates rise as the forward rates imply?
-  \item Does the strategy treat forward rates as forecasts of future rates, or does it allow for a term premium?
-  \item How did the strategy perform when the curve was inverted\index{yield curve!inverted}, and in 2022?
-\end{itemize}
+\textbf{Questions to ask a bond manager:} How much of the expected return comes from carry and roll-down, and what happens if rates rise as forward rates imply? Does the strategy allow for a term premium? How did it do when the curve was inverted\index{yield curve!inverted}, and in 2022?
 
 \begin{callout}
-\textbf{What Failed: reading the yield curve as a pure forecast of policy.} Between June 2004 and June 2006, the Federal Reserve raised its policy rate from 1\% to 5.25\%. Under the expectations hypothesis, long-term yields should have risen as the expected path of short rates moved up. Instead, long yields fell during the first year of the rate rises and ended the period little higher than where they began. In February 2005, Chairman Alan Greenspan called the behaviour of long rates a ``conundrum'' (Greenspan 2005).
-
-The conundrum was a puzzle only if long yields were pure forecasts of short rates. Models of the term premium attributed much of the fall to a shrinking premium, which various explanations linked to lower uncertainty about inflation, purchases of Treasuries by foreign governments, and demand from pension funds. Investors and policymakers who read long yields as the market's forecast of policy rates misread the market. The same mistake recurs whenever a change in the term premium is taken for a change in expected policy.
+\textbf{What Failed: reading the yield curve as a pure forecast of policy.} Between June 2004 and June 2006, the Federal Reserve raised its policy rate from 1\% to 5.25\%. Under the expectations hypothesis long yields should have risen; instead they fell during the first year and ended little higher. In February 2005, Chairman Alan Greenspan called this a ``conundrum'' (Greenspan 2005). It was a puzzle only if long yields were pure forecasts of short rates. Term-premium models attributed much of the fall to a shrinking premium, variously linked to lower inflation uncertainty, foreign governments' Treasury purchases and pension-fund demand. The same mistake recurs whenever a change in the term premium is taken for a change in expected policy.
 \end{callout}

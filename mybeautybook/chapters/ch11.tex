@@ -471,62 +471,53 @@ The three explanations leave different fingerprints. A risk premium should show 
 To test it, three points need to be settled:
 
 \begin{itemize}
-  \item \textbf{Over what period.} UIP is a statement about expectations. Over a few months, random exchange-rate movements swamp everything else, so the test needs decades of data and many currencies.
-  \item \textbf{Which currencies.} The lab uses nine developed-market currencies against the dollar. Emerging-market currencies offer higher interest gaps but also capital controls, default risk and much higher trading costs.
-  \item \textbf{What would count against it.} UIP fails if the Fama slopes are significantly below 1 and a carry portfolio earns a significant average return. It fails more deeply if the return survives trading costs and the slopes are below zero, not merely below one.
+  \item \textbf{Over what period.} Over a few months, random exchange-rate moves swamp everything, so the test needs decades of data and many currencies.
+  \item \textbf{Which currencies.} Nine developed-market currencies against the dollar. Emerging-market currencies offer larger interest gaps but also capital controls, default risk and much higher costs.
+  \item \textbf{What would count against it.} Fama slopes significantly below 1 and a significant average carry return. The failure is deeper if the return survives costs and the slopes are below zero, not merely below one.
 \end{itemize}
 
 \section{The original evidence}
 \label{sec:06-evidence}
 
-\textbf{Fama (1984).} Using monthly data for nine currencies against the dollar after 1973, Fama found that the slopes were not just below 1 but generally negative: high-interest currencies tended to rise. He showed that this implies a risk premium in forward rates that changes over time and moves more than expected exchange-rate changes do. Froot and Thaler (1990) later summarized the literature: across 75 published estimates, the average slope was about $-0.88$.
+\textbf{Fama (1984).} For nine currencies against the dollar after 1973, the slopes were not just below 1 but generally negative: high-interest currencies tended to rise. Fama showed that this implies a time-varying risk premium in forward rates. Across 75 published estimates, the average slope was about $-0.88$ (Froot and Thaler 1990).
 
-\textbf{Carry as a risk factor.} Lustig, Roussanov and Verdelhan (2011) grouped currencies into portfolios by interest rate. The portfolio that was long high-rate and short low-rate currencies\index{factor!HML (value)} earned substantial average returns. A single carry factor, together with a dollar factor, explained much of the difference in returns across currencies, and high-interest currencies were more exposed to the carry factor. Menkhoff, Sarno, Schmeling and Schrimpf (2012) found that carry losses coincided with rises in global currency volatility\index{volatility}.
+\textbf{Carry as a risk factor.} Lustig, Roussanov and Verdelhan (2011) found that a portfolio long high-rate and short low-rate currencies\index{factor!HML (value)} earned substantial returns, and that a carry factor and a dollar factor explained much of the difference in returns across currencies. Menkhoff, Sarno, Schmeling and Schrimpf (2012) found that carry losses coincided with rises in global currency volatility\index{volatility}.
 
-\textbf{Crashes.} Brunnermeier, Nagel and Pedersen (2008) showed that carry returns are negatively skewed\index{skewness}: large losses are more likely than large gains. The losses came when risk appetite and the availability of funding\index{liquidity} fell, measured among other things by rises in the VIX\index{VIX}, as carry traders were forced to close their positions together.
+\textbf{Crashes.} Brunnermeier, Nagel and Pedersen (2008) showed that carry returns are negatively skewed\index{skewness}, with losses when risk appetite and funding\index{liquidity} fell, measured among other things by rises in the VIX\index{VIX}, as carry traders closed their positions together.
 
-\textbf{Peso problems.}\index{peso problem|textbf} Another possible explanation is that the high returns pay for rare disasters that have not yet appeared in the data, a \textbf{peso problem}. Burnside, Eichenbaum, Kleshchelski and Rebelo (2011) tested this by buying currency options that protect carry positions against crashes. The protected trade still earned a substantial return. They concluded that rare disasters could explain the premium only if the market prices them far above their likely cost.
-
+\textbf{Peso problems.}\index{peso problem|textbf} The premium might pay for rare disasters not yet in the data, a \textbf{peso problem}. Burnside, Eichenbaum, Kleshchelski and Rebelo (2011) protected carry positions with currency options and still found a substantial return, so unseen disasters could explain the premium only if priced far above their likely cost.
 
 \section{Lab~\thechapter: Replicating Fama (1984) and Lustig, Roussanov and Verdelhan (2011)}
 \label{sec:06-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:11} at a glance.} \emph{Papers replicated:} the Fama (1984) regression; the carry portfolios of Lustig, Roussanov and Verdelhan (2011). \emph{Claim on trial\index{claims-on-trial method}:} high-interest currencies fall enough to cancel their extra yield. \emph{Data:} free monthly data from FRED\index{FRED}: the Federal Reserve's exchange rates for nine currencies (yen, pound, Swiss franc, Canadian, Australian and New Zealand dollars, Swedish krona and Norwegian krone, and the euro from 1999) and OECD three-month interbank rates, the interest rates banks charge one another, for each country and the United States. The VIX and the Fama--French\index{Fama--French factors} market factor are optional. \emph{Code:} runs as a script (\texttt{python lab18.py}) or as a notebook with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:11} at a glance.} \emph{Papers replicated:} the Fama (1984) regression; the carry portfolios of Lustig, Roussanov and Verdelhan (2011). \emph{Claim on trial\index{claims-on-trial method}:} high-interest currencies fall enough to cancel their extra yield. \emph{Data:} free monthly data from FRED\index{FRED}: the Federal Reserve's exchange rates for nine currencies (yen, pound, Swiss franc, Canadian, Australian and New Zealand dollars, Swedish krona and Norwegian krone, and the euro from 1999) and OECD three-month interbank rates for each country and the United States. The VIX and the Fama--French\index{Fama--French factors} market factor are optional. \emph{Code:} runs as a script (\texttt{python lab18.py}) or as a notebook with a prediction prompt before each step.
 \end{callout}
 
-\textbf{Part A, Fama regressions.} For each currency, the lab regresses the monthly change in the log exchange rate (dollars per unit of foreign currency) on last month's U.S.-minus-foreign interest gap, with Newey--West\index{standard error!Newey--West (HAC)} standard errors. It also estimates a single slope for all currencies together (Lab Figure~\ref{ch:11}.1).
+\textbf{Part A, Fama regressions.} For each currency and for all together, the monthly change in the log exchange rate regressed on last month's U.S.-minus-foreign interest gap, with Newey--West\index{standard error!Newey--West (HAC)} standard errors (Lab Figure~\ref{ch:11}.1).
 
-\textbf{Part B, the carry portfolio.} Each month, the lab buys the three currencies with the highest interest rates and sells the three with the lowest, in equal amounts, using rates known at the end of the previous month. It splits the portfolio's return into the interest earned and the change in exchange rates (Lab Figure~\ref{ch:11}.2), and compares the distribution of returns with a normal distribution\index{distribution!normal} (Lab Figure~\ref{ch:11}.3).
+\textbf{Part B, the carry portfolio.} Each month, long the three highest-rate currencies and short the three lowest, split into interest earned and exchange-rate change (Lab Figure~\ref{ch:11}.2), with its distribution compared with a normal\index{distribution!normal} one (Lab Figure~\ref{ch:11}.3).
 
-\textbf{Part C, robustness checks.} Three subperiods (up to 1998, 1999--2007, and 2008 onward), trading costs\index{transaction costs} of 0 to 20 basis points\index{basis point} per unit traded, exposure to stock returns and to changes in the VIX, and the ten worst months.
+\textbf{Part C, robustness checks.} Three subperiods (to 1998, 1999--2007, and from 2008), costs\index{transaction costs} of 0 to 20 basis points\index{basis point}, exposure to stocks and to changes in the VIX, and the ten worst months.
 
-\textbf{Part D, the investor's view.} Drawdowns\index{drawdown}, recovery times, the share of losses that came from the worst months, and carry returns plotted against changes in the VIX (Lab Figures~\ref{ch:11}.4 and~\ref{ch:11}.5).
+\textbf{Part D, the investor's view.} Drawdowns\index{drawdown}, recovery times, the share of losses from the worst months, and carry returns against changes in the VIX (Lab Figures~\ref{ch:11}.4 and~\ref{ch:11}.5).
 
-Three choices about the data matter:
+Three data choices matter. The interest gap stands in for the forward discount, which covered interest parity makes nearly equal, because forward rates are not freely available. FRED's exchange rates are monthly averages, which smooth returns and make crashes look milder. And the sample is limited to developed currencies, with smaller gaps but minor costs and controls.
 
-\begin{itemize}
-  \item The interest gap stands in for the forward discount, which covered interest parity makes nearly equal, because forward rates are not freely available.
-  \item FRED's exchange rates are monthly averages of daily rates. Averaging smooths returns and makes crashes look milder than they were.
-  \item The sample covers only developed-market currencies, where interest gaps are smaller but trading costs and capital controls are minor.
-\end{itemize}
-
-\textbf{What the simulated run shows.} In the simulation, high-interest currencies fall by only 30\% of their interest advantage, and there are rare months of panic in which they fall sharply. The lab finds what it should: a combined Fama slope well below 1; a carry portfolio with a positive average return and negative skewness; interest income partly offset by exchange-rate losses; and losses when the VIX jumps. The slopes for individual currencies are very imprecise, as they are in real data. These results confirm that the code works. They say nothing about real markets. Run the lab on real data to reach your own verdict.
+\textbf{What the simulated run shows.} With high-interest currencies built to fall by only 30\% of their interest advantage, plus rare panic months, the lab finds a combined Fama slope well below 1, a carry portfolio with a positive average return and negative skewness, interest income partly offset by exchange-rate losses, and losses when the VIX jumps. These results confirm that the code works. They say nothing about real markets.
 
 \subsection{Robustness checks}
 \label{sec:06-stress}
 
-Results over the full sample can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
+\textbf{Subperiods.} Carry earns most of its return in long calm stretches and gives much back in a few months, so the start and end of the sample matter. The period since 2008 matters most, because developed-country interest rates were close together for years.
 
-\textbf{Subperiods.} Carry returns have varied a great deal over time. A strategy that earns most of its return in a few long calm stretches and gives much of it back in a few months can look very different depending on where the sample starts and ends. The period since 2008 matters most, because interest rates among developed countries were close to one another for years, leaving little carry to earn.
+\textbf{Trading costs.}\index{transaction costs|textbf} Major currencies have spreads\index{bid--ask spread} of a few basis points, and carry portfolios trade\index{rebalancing} only when the ranking of rates changes, so costs rarely eliminate the premium in developed markets. They matter much more in emerging markets.
 
-\textbf{Trading costs.}\index{transaction costs|textbf} The currencies of the largest developed economies are among the most liquid assets in the world, with bid--ask spreads\index{bid--ask spread} of a few basis points. Carry portfolios trade\index{rebalancing} only when the ranking of interest rates changes, so turnover\index{turnover} is modest. Costs reduce the carry premium in developed markets but rarely eliminate it. For emerging-market currencies, they matter much more.
+\textbf{Skewness and crashes.}\index{skewness|textbf} Traders call carry ``going up the stairs and down the elevator.'' The lab lists the worst months, which should cluster in 1992, 1998, 2008 and August 2024, and their share of total losses.
 
-\textbf{Skewness and crashes.}\index{skewness|textbf} Traders describe the carry trade as ``going up the stairs and down the elevator.'' Its returns should be negatively skewed, and its worst months should cluster in episodes of global stress: 1992 (the European exchange-rate crisis), 1998 (the Russian default and the collapse of LTCM), 2008, and the yen rally of August 2024. The lab lists the worst months and their share of total losses.
+\textbf{Exposure to stocks and fear.} If carry is a risk premium\index{risk premium}, it should fall with stocks and with rises in the VIX. A beta\index{beta} that rises in falling markets means less diversification\index{diversification} than the average correlation\index{correlation} suggests.
 
-\textbf{Exposure to stocks and fear.} If carry is a risk premium\index{risk premium}, its returns should rise and fall with stocks, especially in bad months, and fall when the VIX rises. A strategy whose sensitivity to stocks, its beta\index{beta}, rises in falling markets offers less diversification\index{diversification} than its average correlation\index{correlation} suggests.
-
-\textbf{Monthly averages.} Because the exchange rates are monthly averages of daily rates, the lab's worst months understate how fast the real crashes were. In October 2008, several carry currencies fell by more than 10\% against the yen within days.
+\textbf{Monthly averages.} The lab's worst months understate the real crashes: in October 2008, several carry currencies fell more than 10\% against the yen within days.
 
 \subsection*{Your verdict}
 
@@ -535,7 +526,7 @@ Reach your own verdict on the claim from the numbers in your own run, using the 
 \section{Where the evidence stands}
 \label{sec:06-verdict}
 
-The published studies cited in this chapter point to a clear pattern: \textbf{high-interest currencies have not fallen by their interest advantage on average, so the carry trade has earned a premium, but that premium is paid for with sudden crashes in global downturns.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you check these findings with free data.
+The published studies point to a clear pattern: \textbf{high-interest currencies have not fallen by their interest advantage on average, so the carry trade has earned a premium, but that premium is paid for with sudden crashes in global downturns.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.48\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -553,56 +544,47 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Fama slope equal to 1 & \textbf{No} & Slopes are below 1 and usually below zero; across 75 published estimates the average was about $-0.88$. & Fama (1984); Froot and Thaler (1990) \\
+Fama slope equal to 1 & \textbf{No} & Slopes are below 1 and usually below zero, averaging about $-0.88$ across 75 estimates. & Fama (1984); Froot and Thaler (1990) \\
 \addlinespace[3pt]
-Carry portfolios earn nothing & \textbf{No} & Portfolios long high-rate and short low-rate currencies earned substantial returns, largely explained by a common carry factor. & Lustig, Roussanov and Verdelhan (2011) \\
+Carry portfolios earn nothing & \textbf{No} & Long high-rate, short low-rate portfolios earned substantial returns, largely explained by a carry factor. & Lustig, Roussanov and Verdelhan (2011) \\
 \addlinespace[3pt]
-Carry in global downturns & \textbf{Yes} & Carry returns are negatively skewed and lose heavily when volatility rises and funding dries up, giving back years of interest income. & Brunnermeier, Nagel and Pedersen (2008); Menkhoff, Sarno, Schmeling and Schrimpf (2012) \\
+Carry in global downturns & \textbf{Yes} & Returns are negatively skewed and lose heavily when volatility rises and funding dries up. & Brunnermeier, Nagel and Pedersen (2008); Menkhoff, Sarno, Schmeling and Schrimpf (2012) \\
 \addlinespace[3pt]
-Rare disasters not yet seen & \textbf{No} & Carry hedged with currency options still earned a substantial return, so unseen disasters explain the premium only if priced far above their likely cost. & Burnside, Eichenbaum, Kleshchelski and Rebelo (2011) \\
+Rare disasters not yet seen & \textbf{No} & Carry hedged with currency options still earned a substantial return. & Burnside, Eichenbaum, Kleshchelski and Rebelo (2011) \\
 \addlinespace[3pt]
-Long horizons and very high inflation & \textbf{Partly} & Some studies find slopes closer to 1 at horizons of several years and where large interest gaps are matched by large depreciations. & Later studies; not tested in the lab \\
+Long horizons and very high inflation & \textbf{Partly} & Slopes are closer to 1 over several years and where large interest gaps match large depreciations. & Later studies; not tested in the lab \\
 \addlinespace[3pt]
-Carry after 2008 & \textbf{Unclear} & Narrow interest differentials among developed countries shrank the carry available; whether the premium per unit of differential changed is open. & Section~\ref{sec:06-stress} \\
+Carry after 2008 & \textbf{Unclear} & Narrow interest gaps shrank the carry available; whether the premium per unit of gap changed is open. & Section~\ref{sec:06-stress} \\
 \end{longtable}
 }
 
-The premium looks like payment for risk, not like an arbitrage. An investor who earns carry is paid for providing money and insurance to the rest of the world at the moments when both are scarce.
+The premium looks like payment for risk, not an arbitrage: carry investors provide money and insurance to the rest of the world at the moments when both are scarce.
 
-\textbf{What would change the picture.} The evidence would move toward the claim if carry returns since 2008 had been consistently close to zero, as small interest gaps and crowded trades\index{crowding} might imply.
+\textbf{What would change the picture.} The claim would gain support if carry returns since 2008 had been consistently close to zero, as small interest gaps and crowded trades\index{crowding} might imply.
 
 \subsection{Open questions}
 \label{sec:06-open}
 
 \begin{itemize}
-  \item \textbf{Is carry a risk premium or a mispricing\index{mispricing} that is slowly corrected?} If it were a mispricing, it should shrink as more money chases it. Has it?
-  \item \textbf{What happened to carry after 2008?} Interest rates near zero in many developed countries removed most interest gaps. Did the premium per point of interest gap change, or only the opportunity?
-  \item \textbf{Do departures from covered interest parity matter?} Since 2008, covered interest parity has not held exactly, reflecting the cost of using banks' balance sheets. How does this affect measured carry returns?
-  \item \textbf{Can crashes be avoided?} Rules based on momentum\index{momentum} or volatility claim to sidestep the worst months. Do they work out of sample, or do they simply give up the premium?
+  \item \textbf{Risk premium or slowly corrected mispricing\index{mispricing}?} A mispricing should shrink as more money chases it. Has it?
+  \item \textbf{What happened after 2008?} Did the premium per point of interest gap change, or only the opportunity?
+  \item \textbf{Do departures from covered interest parity matter?} Since 2008 it has not held exactly, reflecting the cost of banks' balance sheets. How does this affect measured carry returns?
+  \item \textbf{Can crashes be avoided?} Do momentum\index{momentum} or volatility rules sidestep the worst months out of sample, or simply give up the premium?
 \end{itemize}
 
 \section{What practitioners and investors can use}
 \label{sec:06-investors}
 
-The evidence in Section~\ref{sec:06-verdict} suggests several practical lessons.
+\textbf{What a currency carry fund earns.} Modest, steady interest differentials in calm years, with most losses concentrated in a few months of global stress, when high-yielding currencies fall together and the borrowed currencies, above all the yen and the Swiss franc, rise.
 
-\textbf{What a currency carry fund earns.} A carry strategy collects the differences in interest rates between currencies, and keeps them as long as exchange rates do not move against it. In calm years it delivers modest, steady gains. Its risk is not spread evenly over time. Most of its losses come in a few months of global stress, when high-yielding currencies fall together and the borrowed currencies, above all the yen and the Swiss franc, rise.
+\textbf{How it loses money.} Carry crashes are fast. A volatility spike, a margin call\index{margin} (a lender's demand for more collateral) or a surprise from the central bank of a borrowed currency forces leveraged traders to sell, which pushes high-yielding\index{credit rating} currencies down further and forces more selling. Spreading the trade across many pairs helps little, because the losses share a common source.
 
-\textbf{How it loses money.} Carry crashes are fast. They begin when something forces carry traders who have borrowed heavily to cut their positions: a rise in volatility, a margin call\index{margin} (a lender's demand for more collateral), or a surprise from the central bank of a borrowed currency. Their selling pushes high-yielding\index{credit rating} currencies down further, which forces more selling. Spreading the trade across many currency pairs helps little, because the losses come from a common source.
+\textbf{Carry in a portfolio.} Carry tends to lose when stocks fall, so measure its correlation with stocks in bad months, not over the whole sample.
 
-\textbf{Carry in a portfolio.} Because carry tends to lose money when stocks fall, it diversifies a stock portfolio less than its average correlation with stocks suggests. Investors should measure that correlation in bad months, not over the whole sample.
-
-\textbf{Questions to ask a manager running currency carry:}
-
-\begin{itemize}
-  \item Which currencies does the fund borrow in, and how much of the portfolio depends on one or two currency pairs?
-  \item How much leverage\index{leverage} does the fund use, and what happens to its margin in a volatility spike?
-  \item How did the strategy perform in late 2008 and in August 2024?
-  \item Does it use a rule to reduce exposure when volatility rises, and how did that rule perform out of sample\index{in-sample versus out-of-sample}?
-\end{itemize}
+\textbf{Questions to ask a manager running currency carry:} Which currencies does the fund borrow in, and how much depends on one or two pairs? How much leverage\index{leverage} does it use, and what happens to its margin in a volatility spike? How did it do in late 2008 and August 2024? Does it cut exposure when volatility rises, and did that rule work out of sample\index{in-sample versus out-of-sample}?
 
 \begin{callout}
-\textbf{What Failed: the yen carry trade, 2008.} In the years before 2008, borrowing yen at interest rates near zero and investing in Australian dollars, New Zealand dollars and other high-yielding currencies was one of the most popular trades in the world, among Japanese retail investors and hedge funds alike. When the financial crisis deepened in the autumn of 2008, carry traders rushed to repay their yen loans at the same time. Between July and late October 2008, the Australian and New Zealand dollars lost more than a third of their value against the yen, wiping out years of interest income in a few weeks.
+\textbf{What Failed: the yen carry trade, 2008.} Before 2008, borrowing yen at near-zero rates to invest in Australian, New Zealand and other high-yielding currencies was one of the world's most popular trades, among Japanese retail investors and hedge funds alike. As the financial crisis deepened, carry traders rushed to repay their yen loans together, and between July and late October 2008 the Australian and New Zealand dollars lost more than a third of their value against the yen, wiping out years of interest income in weeks.
 
-The episode matched the risk-premium explanation exactly. The trade paid steadily in good times and lost heavily in the worst global downturn in decades, when investors could least afford it. It happened again on a smaller scale in August 2024. After the Bank of Japan raised its policy rate to 0.25\% at the end of July, the yen rose sharply, carry positions were cut, and on August 5 the Nikkei 225, Japan's main stock index, fell 12.4\%.
+The trade paid steadily in good times and lost heavily in the worst downturn in decades, exactly as the risk-premium explanation predicts. It happened again on a smaller scale in August 2024: after the Bank of Japan raised its policy rate to 0.25\%, the yen rose sharply, carry positions were cut, and on August 5 the Nikkei 225 fell 12.4\%.
 \end{callout}

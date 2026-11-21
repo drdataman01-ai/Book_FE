@@ -757,23 +757,23 @@ This chapter's lab applies the method to a claim at the root of the whole field:
 
 \subsection*{Design}
 
-The design of this lab rests on two influential papers. Bailey, Borwein, L\'opez de Prado and Zhu (2014) show that the best of many backtests can look impressive by chance alone. Harvey, Liu and Zhu (2016) argue that the usual $t > 2$ hurdle is far too low when many strategies are tried. Following their logic, the lab answers the claim by first measuring what luck alone can do. It builds strategies that we know for certain have no skill at all. Whatever these strategies achieve sets the bar that a real strategy's record must clear. Every month, each of the 1,000 strategies is either invested in the stock market or holding Treasury bills. It switches between the two at random, with an average holding period between 3 and 24 months, so the strategies look like real market-timing rules. They use no information at all, and each month's position is fixed before that month's return is known.
+Bailey and colleagues (2014) show that the best of many backtests can look impressive by chance alone, and Harvey, Liu and Zhu (2016) argue that the usual $t > 2$ hurdle is far too low when many strategies are tried. The lab therefore first measures what luck alone can do. It builds 1,000 strategies with no skill at all: each month, each one is either in the stock market or in Treasury bills, switching at random with an average holding period of 3 to 24 months, so that they look like real market-timing rules. Each month's position is fixed before that month's return is known.
 
-The sample is split in two. The first half, roughly 1926 to 1975, plays the role of the \textbf{backtest}\index{backtest|textbf}. This is the period in which a researcher would test the strategies and choose the best. The second half, roughly 1976 to today, is the period \textbf{after selection}. It shows what an investor who adopted the chosen strategy would have experienced.
+The first half of the sample, roughly 1926 to 1975, is the \textbf{backtest}\index{backtest|textbf}, in which a researcher would test the strategies and choose the best. The second half, roughly 1976 to today, is the period \textbf{after selection}, which shows what an investor who adopted the chosen strategy would have experienced.
 
-\textbf{Measuring skill.} A strategy that is in the market part of the time will earn part of the market's return with no skill at all. Skill is therefore measured as \textbf{alpha against buy-and-hold} (Section~\ref{sec:01-foundations}), which is the intercept in a regression of the strategy's excess return on the market's excess return. For every strategy in this lab, the true alpha is zero. The significance of each alpha is measured by its t-statistic, computed with Newey--West\index{standard error!Newey--West (HAC)} standard errors, which Chapter~\ref{ch:03} explains. These are standard errors adjusted for the fact that a strategy that holds its position for several months produces returns that are linked from one month to the next. We write this statistic as $t_\alpha$. Throughout the lab, every t-statistic is $t_\alpha$, and the tests are one-sided\index{hypothesis testing!one-sided and two-sided}, which means they look only for alphas that are too high to be luck, because only a positive alpha would suggest skill. A strategy with $t_\alpha > 1.96$ therefore has an alpha that is significantly positive at the usual threshold.
+\textbf{Measuring skill.} A strategy that is in the market part of the time earns part of the market's return with no skill, so skill is measured as \textbf{alpha against buy-and-hold} (Section~\ref{sec:01-foundations}), the intercept in a regression of the strategy's excess return on the market's. For every strategy here, the true alpha is zero. Its significance is the t-statistic $t_\alpha$, computed with Newey--West\index{standard error!Newey--West (HAC)} standard errors (Chapter~\ref{ch:03}), which allow for returns that are linked from month to month when positions are held for several months. The tests are one-sided\index{hypothesis testing!one-sided and two-sided}, looking only for alphas too high to be luck, so $t_\alpha > 1.96$ means a significantly positive alpha.
 
 \subsection*{Three parts}
 
 \begin{enumerate}
-  \item \textbf{Signal and noise.}\index{signal and noise|textbf} Measure the market's Sharpe ratio over the full sample and over every 10-year window, and compute how many years are needed to detect a given Sharpe ratio (Lab Figure~\ref{ch:01}.1 and the table in Section~\ref{sec:01-signal-noise}).
-  \item \textbf{Brilliant by chance.} Backtest the 1,000 random strategies, count how many have a significant alpha ($t_\alpha > 1.96$), pick the one with the highest $t_\alpha$, and follow all of them into the period after selection (Lab Figures~\ref{ch:01}.2 to~\ref{ch:01}.4).
-  \item \textbf{The cost of searching.} Show how the best backtest $t_\alpha$ rises as more strategies are tried, from 1 to 1,000 (Lab Figure~\ref{ch:01}.5).
+  \item \textbf{Signal and noise.}\index{signal and noise|textbf} Measure the market's Sharpe ratio over the full sample and every 10-year window, and compute how many years are needed to detect a given Sharpe ratio (Lab Figure~\ref{ch:01}.1 and the table in Section~\ref{sec:01-signal-noise}).
+  \item \textbf{Brilliant by chance.} Backtest the 1,000 random strategies, count those with $t_\alpha > 1.96$, pick the one with the highest $t_\alpha$, and follow all of them after selection (Lab Figures~\ref{ch:01}.2 to~\ref{ch:01}.4).
+  \item \textbf{The cost of searching.} Show how the best backtest $t_\alpha$ rises as the number of strategies tried grows from 1 to 1,000 (Lab Figure~\ref{ch:01}.5).
 \end{enumerate}
 
 \subsection*{What theory predicts}
 
-Because every strategy has zero skill, statistics tells us in advance roughly what to expect, which makes the lab a test of your intuition:
+Because every strategy has zero skill, statistics tells us roughly what to expect, which makes the lab a test of your intuition:
 
 \begin{center}
 \small
@@ -790,11 +790,11 @@ Average later $t_\alpha$ of the backtest ``winners'' & About zero \\
 \end{tabularx}
 \end{center}
 
-The Bonferroni threshold in the table is a simple correction for trying many strategies. It divides the usual 5\% chance of a false alarm among all 1,000 tries, so each individual strategy must clear a much higher bar before the search as a whole can be trusted. The count of significant strategies varies more than a simple coin-flip model suggests. There are two reasons, and the lab asks readers to explain them. All 1,000 strategies share one market history, and heavy-tailed\index{fat tails} returns, in which extreme months occur more often than the bell curve predicts, make the standard errors slightly too small.
+The Bonferroni threshold divides the usual 5\% chance of a false alarm among all 1,000 tries, so each strategy must clear a much higher bar before the search as a whole can be trusted. The count of significant strategies varies more than a coin-flip model suggests, for two reasons the lab asks readers to explain: all 1,000 strategies share one market history, and heavy-tailed\index{fat tails} returns make the standard errors slightly too small.
 
 \subsection*{What readers will see}
 
-The chapter presents five exhibits. Lab Figure~\ref{ch:01}.1 tracks the market's 10-year Sharpe ratio. Lab Figure~\ref{ch:01}.2 shows the 1,000 backtest values of $t_\alpha$ against the bell curve that pure luck predicts. Lab Figure~\ref{ch:01}.3 plots the growth of \$1 in the best random strategy against the market, with the backtest and after-selection periods marked. Lab Figure~\ref{ch:01}.4 plots each strategy's backtest $t_\alpha$ against its later $t_\alpha$. Lab Figure~\ref{ch:01}.5 shows how the highest backtest $t_\alpha$ rises with the number of strategies tried.
+Lab Figure~\ref{ch:01}.1 tracks the market's 10-year Sharpe ratio. Lab Figure~\ref{ch:01}.2 compares the 1,000 backtest values of $t_\alpha$ with the bell curve that luck predicts. Lab Figure~\ref{ch:01}.3 plots the growth of \$1 in the best random strategy against the market. Lab Figure~\ref{ch:01}.4 plots each strategy's backtest $t_\alpha$ against its later $t_\alpha$, and Lab Figure~\ref{ch:01}.5 shows how the highest backtest $t_\alpha$ rises with the number of strategies tried.
 
 \emph{[Draft note: the figures and numbers are generated by running the lab on the Kenneth French data at the time of publication. The book prints the real-data results; the text above does not anticipate them beyond what statistical theory predicts.]}
 
@@ -805,7 +805,7 @@ The lab ends by asking you to write your own verdict on the claim in two or thre
 \section{Where the evidence stands}
 \label{sec:01-verdict}
 
-The published studies cited in this chapter point to a clear pattern: \textbf{a track record can reveal real skill, but only when it is long enough, clears a bar that allows for how many strategies were tried, and keeps working after it was chosen.} Most records do not meet these conditions, and genuine skill appears to be rare. The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+The published studies point to a clear pattern: \textbf{a track record can reveal real skill, but only when it is long enough, clears a bar that allows for how many strategies were tried, and keeps working after it was chosen.} Most records do not meet these conditions, and genuine skill appears to be rare. The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
 
 \begin{center}
 \small
@@ -822,40 +822,31 @@ The best of many backtests & \textbf{No} & When many strategies are tried, the b
 \end{tabularx}
 \end{center}
 
-Together, these findings turn into three conditions that a record must meet before it counts as evidence of skill:
+A record therefore counts as evidence of skill only if it meets three conditions:
 
 \begin{enumerate}
-  \item \textbf{It is long enough for its Sharpe ratio.} The record needs about $(1.96/\mathrm{SR})^2$ years, which is roughly 15 years for a Sharpe ratio of 0.5 and 4 years for a Sharpe ratio of 1.0 (Section~\ref{sec:01-signal-noise}).
-  \item \textbf{It clears a bar that allows for how many strategies were tried.} After 1,000 tries, the alpha must reach $t_\alpha > 3.89$, not 1.96, and Harvey, Liu and Zhu (2016) argue that, because the field as a whole has already tested so many ideas, any new finding should clear a $t$ of about 3.
+  \item \textbf{It is long enough for its Sharpe ratio:} about $(1.96/\mathrm{SR})^2$ years, roughly 15 years for a Sharpe ratio of 0.5 and 4 years for 1.0 (Section~\ref{sec:01-signal-noise}).
+  \item \textbf{It clears a bar that allows for how many strategies were tried:} $t_\alpha > 3.89$ after 1,000 tries, and, Harvey, Liu and Zhu (2016) argue, a $t$ of about 3 for any new finding, because the field has already tested so many ideas.
   \item \textbf{It keeps working on data that played no part in choosing it}, such as the period after the strategy was selected.
 \end{enumerate}
 
-These conditions are not obstacles. They are the specification that a credible strategy must meet. The rest of the book gives you the tools to meet each condition, and later chapters find strategies whose alpha holds up under testing.
+These conditions are not obstacles but the specification a credible strategy must meet. The rest of the book gives you the tools to meet them, and later chapters find strategies whose alpha holds up.
 
-\textbf{What would change the picture.} The evidence would support the claim more broadly if large groups of managers, chosen in advance, kept beating cheap alternatives after fees over long periods. It would reject the claim if even the managers singled out by Kosowski and colleagues and by Berk and van Binsbergen lost their edge in later data.
+\textbf{What would change the picture.} The claim would gain broader support if large groups of managers, chosen in advance, kept beating cheap alternatives after fees over long periods. It would be rejected if even the managers singled out by Kosowski and colleagues and by Berk and van Binsbergen lost their edge in later data.
 
 \section{What practitioners and investors can use}
 \label{sec:01-investors}
 
-The evidence in Section~\ref{sec:01-verdict} suggests several practical lessons. The most important is to judge evidence by \textbf{how it was produced}, not by how good it looks. A spectacular track record and a modest one can carry the same information, or none, depending on the search behind them. The same lesson tells you what a convincing record looks like. It is long enough for its Sharpe ratio, it is honest about the number of tries, and it is confirmed on new data.
+The most important lesson is to judge evidence by \textbf{how it was produced}, not by how good it looks. A spectacular record and a modest one can carry the same information, or none, depending on the search behind them. A convincing record is long enough for its Sharpe ratio, honest about the number of tries, and confirmed on new data.
 
 \textbf{Rules of thumb}
 
 \begin{enumerate}
-  \item \textbf{Keep in mind that a backtest may be the best of many tries.} When you see a backtest, it is worth remembering that the researcher may have tested many strategies before settling on this one. Unless you know otherwise, a strong result could simply be the luckiest of the group.
-  \item \textbf{Be cautious with short records.} A few good years can happen by luck alone. With fewer than ten years of results, a record usually tells us only a little about whether the manager is truly skilled (Section~\ref{sec:01-signal-noise}).
-  \item \textbf{Look at what happened after the strategy was chosen.} Results from the period used to build a strategy tend to look good, because the strategy was shaped to fit those years. A more informative test is what happened afterward, for example after the research paper was published, after the fund launched, or after the rules were fixed.
-  \item \textbf{Compare the result with a simple alternative.} A return of 10\% a year sounds good, but on its own it says little. It helps to ask what a low-cost index fund earned over the same years. A strategy begins to show skill when it does better than that easy choice.
-  \item \textbf{Have a sense of what a convincing record looks like.} A strategy with a Sharpe ratio of 0.5 typically needs about 15 years of results before luck can reasonably be ruled out. If the strategy was chosen from many tries, it is fair to expect it to clear a higher bar. It is also reassuring when the strategy keeps working after its rules were fixed.
+  \item \textbf{Remember that a backtest may be the best of many tries.} Unless you know otherwise, a strong result could simply be the luckiest of the group.
+  \item \textbf{Be cautious with short records.} With fewer than ten years of results, a record usually says little about skill (Section~\ref{sec:01-signal-noise}).
+  \item \textbf{Look at what happened after the strategy was chosen,} for example after the paper was published, the fund launched or the rules were fixed. Results from the years used to build a strategy tend to look good because it was shaped to fit them.
+  \item \textbf{Compare the result with a simple alternative.} A return of 10\% a year says little until you know what a low-cost index fund earned over the same years.
+  \item \textbf{Know what a convincing record looks like.} A Sharpe ratio of 0.5 needs about 15 years before luck can be ruled out, a strategy chosen from many tries should clear a higher bar, and it should keep working after its rules were fixed.
 \end{enumerate}
 
-\textbf{Questions to ask a fund manager or strategy vendor}
-
-\begin{itemize}
-  \item How many strategies or parameter settings did you test before choosing this one?
-  \item Which part of this record is a live track record, and which part is a backtest?
-  \item When was the strategy's design fixed, and how has it performed since then?
-  \item What is the benchmark, and what is the strategy's alpha against it, with its t-statistic?
-  \item What happened to the other strategies or funds you launched at the same time?
-  \item Are transaction costs, fees and taxes included?
-\end{itemize}
+\textbf{Questions to ask a fund manager or strategy vendor:} How many strategies or settings did you test before choosing this one? Which part of the record is live, and which is a backtest? When was the design fixed, and how has it performed since? What is the benchmark, and what is the alpha against it, with its t-statistic? What happened to the other strategies or funds you launched at the same time? Are transaction costs, fees and taxes included?

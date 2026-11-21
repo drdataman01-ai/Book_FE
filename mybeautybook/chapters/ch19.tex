@@ -746,20 +746,14 @@ One response to these difficulties is to use machine learning inside an economic
 \textbf{Claim.} Machine-learning models find return predictability that traditional linear models miss, and it can be turned into profitable portfolios.
 \end{callout}
 
-The claim has three parts, each of which can fail on its own:
-
-\begin{itemize}
-  \item \textbf{Statistical:} flexible models forecast returns out of sample better than linear models using the same inputs.
-  \item \textbf{Hidden:} the gain comes from interactions or nonlinear effects, not from simply using more of the characteristics already known to predict returns.
-  \item \textbf{Economic:} the gain survives trading costs and holds among stocks large enough to trade.
-\end{itemize}
+The claim has three parts, each of which can fail on its own. The \textbf{statistical} part: flexible models forecast returns out of sample better than linear models with the same inputs. The \textbf{hidden} part: the gain comes from interactions or nonlinear effects, not just from using more known characteristics. The \textbf{economic} part: the gain survives trading costs and holds among stocks large enough to trade.
 
 \section{The original evidence and the debate it started}
 \label{sec:20-evidence}
 
 \subsection{The original study: Gu, Kelly and Xiu (2020)}
 
-Gu, Kelly and Xiu\index{Gu, Kelly and Xiu (2020)|textbf} used monthly CRSP\index{CRSP} returns for almost 30,000 U.S. stocks from 1957 to 2016. The inputs were 94 stock characteristics, 8 macroeconomic predictors and 74 industry indicators. Once the characteristics were interacted with the macroeconomic variables, there were about 920 inputs in all. Models were trained on 1957--1974, validated on 1975--1986 and tested on 1987--2016. Table~\ref{tab:20-gkx} shows the main results.
+Gu, Kelly and Xiu\index{Gu, Kelly and Xiu (2020)|textbf} used monthly CRSP\index{CRSP} returns for almost 30,000 U.S. stocks from 1957 to 2016, with 94 characteristics, 8 macroeconomic predictors and 74 industry indicators, about 920 inputs in all once interacted. Models were trained on 1957--1974, validated on 1975--1986 and tested on 1987--2016 (Table~\ref{tab:20-gkx}).
 
 \begin{table}[htbp]
 \centering
@@ -780,20 +774,16 @@ Neural networks (one to five layers) & 0.33 to 0.40 \\
 \end{tabularx}
 \end{table}
 
-The economic results told the same story. A long--short portfolio bought the top decile of neural-network forecasts and sold the bottom decile. It earned an annualized Sharpe ratio\index{Sharpe ratio} of 1.35 when its stocks were value-weighted, and 2.45 when they were equal-weighted\index{index weighting!equal-weighted}. The figures for OLS-3 were 0.61 and 0.83. All the methods relied on the same few groups of signals: price trends (momentum and short-term reversal\index{short-term reversal}), liquidity\index{liquidity} (size, trading volume and the bid--ask spread\index{bid--ask spread}) and risk (volatility\index{idiosyncratic volatility} and beta\index{beta}). The networks' advantage over linear models came mainly from interactions among these familiar signals.
-
-Two lessons stand out. First, OLS with all inputs was a disaster, so some form of regularization is essential. Second, the large gap between equal-weighted and value-weighted results suggests that much of the profit comes from small stocks.
+A long--short portfolio of the top and bottom deciles of neural-network forecasts earned an annualized Sharpe ratio\index{Sharpe ratio} of 1.35 value-weighted and 2.45 equal-weighted\index{index weighting!equal-weighted}, against 0.61 and 0.83 for OLS-3. All the methods relied on the same signals: price trends (momentum and short-term reversal\index{short-term reversal}), liquidity\index{liquidity} (size, volume and the bid--ask spread\index{bid--ask spread}) and risk (volatility\index{idiosyncratic volatility} and beta\index{beta}), and the networks' edge came mainly from interactions among them. OLS with all inputs was a disaster, so regularization is essential, and the gap between equal- and value-weighted results suggests that much of the profit comes from small stocks.
 
 \subsection{Where the gains come from}
 
-Later studies asked where the predictability lives, and whether an investor can trade it there. Leippold, Wang and Zhou (2022) applied the same methods to the Chinese stock market, where retail investors dominate trading. Predictability was stronger than in the United States and concentrated in small stocks, and the gains stayed economically significant\index{economic significance} after transaction costs. Avramov, Cheng and Metzker (2023) asked whether the U.S. gains survive the restrictions a real investor faces. Much of the profit came from stocks that are hard to arbitrage\index{arbitrage}. Excluding microcaps\index{micro-caps} and distressed firms, or periods of high market volatility, cut the profits considerably. High turnover\index{turnover} eroded them further once trading costs were charged.
-
-Taken together, the evidence supports the statistical part of the claim for broad samples of stocks. It is weaker on the ``hidden'' part, because the models rely on well-known signals. It is weakest on the economic part, because the gains are concentrated where trading is costly.
+Leippold, Wang and Zhou (2022) found stronger predictability in China's retail-dominated market, concentrated in small stocks and significant after costs. Avramov, Cheng and Metzker (2023) found that in the U.S. much of the profit came from stocks that are hard to arbitrage\index{arbitrage}: excluding microcaps\index{micro-caps} and distressed firms, or volatile periods, cut profits considerably, and high turnover\index{turnover} eroded them further after costs. The evidence therefore supports the statistical part of the claim, is weaker on the hidden part, and is weakest on the economic part.
 
 \subsection{The virtue of complexity, and a second look}
 \label{sec:20-complexity}
 
-The bias--variance trade-off of Figure~\ref{fig:09-biasvar} suggests that beyond some point, more parameters can only hurt. Research in machine learning has found that this is not always so. Belkin, Hsu, Ma and Mandal (2019) documented \textbf{double descent}\index{double descent|textbf} (Figure~\ref{fig:20-doubledescent}). As complexity grows, test error first follows the familiar U shape. It peaks at the \textbf{interpolation threshold}\index{interpolation threshold|textbf}, where the model has as many parameters as observations and can fit the training data exactly. Beyond that point, test error can fall again. The reason is that many sets of coefficients now fit the training data perfectly. The usual estimation methods pick the set with the smallest coefficients, which acts as a hidden form of shrinkage.
+The bias--variance trade-off of Figure~\ref{fig:09-biasvar} suggests that beyond some point more parameters only hurt. Belkin, Hsu, Ma and Mandal (2019) documented \textbf{double descent}\index{double descent|textbf} (Figure~\ref{fig:20-doubledescent}): test error peaks at the \textbf{interpolation threshold}\index{interpolation threshold|textbf}, where parameters equal observations and the model fits the training data exactly, and can fall again beyond it, because estimation then picks the fit with the smallest coefficients, a hidden form of shrinkage.
 
 \providecolor{fenavy}{HTML}{1B2A6B}
 \providecolor{fegray}{HTML}{4D4D4D}
@@ -851,13 +841,9 @@ The bias--variance trade-off of Figure~\ref{fig:09-biasvar} suggests that beyond
   \label{fig:20-doubledescent}
 \end{figure}
 
-Kelly, Malamud and Zhou (2024) carried this idea into market timing\index{market timing}. They argued that when the true relationship between predictors and returns is unknown, simple models understate predictability. To test this, they expanded the Goyal--Welch\index{Goyal--Welch critique} predictors into thousands of random nonlinear transformations, called \textbf{random Fourier features}\index{random Fourier features|textbf}. They then fitted regressions on rolling windows as short as 12 months. Market-timing performance improved as the number of features grew, even when the out-of-sample $R^2$ was negative.
+Kelly, Malamud and Zhou (2024) argued that simple models understate predictability when the true relationship is unknown. Expanding the Goyal--Welch\index{Goyal--Welch critique} predictors into thousands of \textbf{random Fourier features}\index{random Fourier features|textbf}, random nonlinear transformations, and fitting them on windows as short as 12 months, they found that market timing\index{market timing} improved with complexity, even with a negative out-of-sample $R^2$. Nagel (2025) showed that when features far outnumber training months, the forecast becomes a weighted average of recent returns, a \textbf{volatility-timed momentum}\index{momentum!volatility-managed|textbf} strategy. On artificial data in which returns reverse, the method built the same strategy and performed poorly, so in his reading its historical success came from momentum happening to work. The debate is still active.
 
-Nagel (2025) took a second look at what these models were doing. He showed that when the features far outnumber the training months, the forecast becomes a weighted average of recent returns. That amounts to a \textbf{volatility-timed momentum}\index{momentum!volatility-managed|textbf} strategy. His decisive test used artificial data in which returns reverse rather than continue. The method built the same momentum-like strategy anyway, and it performed poorly. In Nagel's reading, the strong historical results did not come from patterns the model learned. They came from the fact that volatility-timed momentum happened to work over the sample. The debate is still active.
-
-The exchange offers two lessons for testing any complex model. First, compare it with the simple strategies it might be reproducing, here volatility-timed momentum. A sophisticated method that only reproduces a simple rule should be judged against that rule. Second, test it on simulated data with a known truth, as in Section~\ref{sec:09-insample}, to check that it finds only the structure that is really there.
-
-The broader lesson confirms Chapter~\ref{ch:06}. In-sample fit is a poor guide to forecasting: the unpenalized regression on 920 inputs fit the training data best and forecast worst. The methods that worked build shrinkage and validation into the estimator. Their gains are largest in the cross-section and in corners of the market that are hard to trade. They are smallest, and most disputed, for the market as a whole.
+Two lessons follow for any complex model: compare it with the simple strategy it may be reproducing, and test it on simulated data with a known truth (Section~\ref{sec:09-insample}). As Chapter~\ref{ch:06} showed, in-sample fit is a poor guide: the methods that worked build shrinkage and validation into the estimator, and their gains are largest in the cross-section and in hard-to-trade corners of the market, and smallest and most disputed for the market as a whole.
 
 \section{Lab~\thechapter: Replicating Gu, Kelly and Xiu (2020) on a portfolio panel}
 \label{sec:20-lab}
@@ -866,38 +852,29 @@ The broader lesson confirms Chapter~\ref{ch:06}. In-sample fit is a poor guide t
 \textbf{Lab~\ref{ch:19} at a glance.} \emph{Papers replicated:} Gu, Kelly and Xiu (2020), on portfolios rather than individual stocks. \emph{Claim on trial:} machine learning finds return predictability that linear models miss, and it survives costs. \emph{Data:} 149 value-weighted portfolios from the Kenneth R. French Data Library\index{Kenneth French data library} (100 sorted on size and book-to-market, and 49 industries), the Fama--French\index{Fama--French factors} factors, and the Goyal--Welch predictors from Lab~\ref{ch:06}. All are free. \emph{Code:} \texttt{python lab05.py} (add \texttt{-{}-fast} for a quick run, or \texttt{-{}-source sim} for simulated data), or the notebook \texttt{lab05\_walkthrough.ipynb}.
 \end{callout}
 
-\textbf{Design.} The lab uses portfolios rather than individual stocks, because CRSP is not free. Portfolios average away much of the noise in single stocks and leave out microcaps. The test is therefore closer to what a large investor can trade, but it is not the same test as Gu, Kelly and Xiu's. Each month, the lab computes ten characteristics for every portfolio, covering size, value, past returns and risk, and converts them to ranks. Two market variables let the models change their view with market conditions. The target is each portfolio's next-month return relative to the average portfolio, so the models compete on ranking, not on timing the market. Five models compete: OLS-3, OLS on all twelve inputs, an elastic net, gradient-boosted trees, and a three-layer neural network averaged over three random seeds. They are retrained every five years, tuned on the preceding ten years, and tested from 1975 onward.
+\textbf{Design.} Because CRSP is not free, the lab uses portfolios, which average away single-stock noise and leave out microcaps, a test closer to what a large investor can trade but not the same as Gu, Kelly and Xiu's. Each month it ranks ten characteristics covering size, value, past returns and risk, adds two market variables, and forecasts each portfolio's next-month return relative to the average. Five models compete: OLS-3, OLS on all twelve inputs, an elastic net, gradient-boosted trees and a three-layer neural network averaged over three seeds, retrained every five years, tuned on the preceding ten and tested from 1975.
 
-\textbf{The four parts.}
 \begin{itemize}
-  \item \textbf{Part A} compares out-of-sample $R^2$, Diebold--Mariano tests against OLS-3, and long--short portfolios of the top and bottom 10\% of forecasts.
-  \item \textbf{Part B} repeats the comparison for large portfolios only, before and after 2000, and net of trading costs of 10, 25 and 50 basis points\index{basis point} per unit of turnover.
-  \item \textbf{Part C} checks how much the network depends on its random seed, and which inputs matter most.
-  \item \textbf{Part D} tests the virtue of complexity: ridge regressions on 2 to 1,200 random Fourier features of the Goyal--Welch predictors, timing the market with a 12-month rolling window\index{walk-forward evaluation!rolling window}.
+  \item \textbf{Part A} compares out-of-sample $R^2$, Diebold--Mariano tests against OLS-3, and top-minus-bottom 10\% long--short portfolios.
+  \item \textbf{Part B} repeats this for large portfolios only, before and after 2000, and net of costs of 10, 25 and 50 basis points\index{basis point}.
+  \item \textbf{Part C} checks how much the network depends on its seed, and which inputs matter most.
+  \item \textbf{Part D} tests the virtue of complexity with ridge regressions on 2 to 1,200 random Fourier features of the Goyal--Welch predictors and a 12-month rolling window\index{walk-forward evaluation!rolling window}.
 \end{itemize}
 
-\textbf{What the simulated run shows.} The lab has so far been run only on simulated data, in which returns depend on value and momentum and also on two nonlinear effects, so a flexible model should win. The run confirms that the code can detect such a signal, and it previews the chapter's main themes:
-\begin{itemize}
-  \item Gradient-boosted trees had the highest out-of-sample $R^2$, 0.21\% against 0.14\% for OLS-3, and were the only model to beat OLS-3 decisively (Diebold--Mariano $t = 3.6$).
-  \item The trees also had the best long--short Sharpe ratio before costs (1.32 against 1.12), but they traded the most. At 25 basis points per unit of turnover, a plain OLS on all inputs overtook them, and at 50 basis points the trees' Sharpe ratio fell to 0.22.
-  \item In Part D, where the predictors carried almost no information, complex models with little shrinkage produced an $R^2$ of about $-1{,}200\%$. With heavy shrinkage, $R^2$ stayed near zero at every level of complexity.
-\end{itemize}
-On real data, the lab answers what the simulation cannot: whether real portfolios contain nonlinear structure that flexible models find, and whether it survives costs.
+\textbf{What the simulated run shows.} In simulated data with value, momentum and two nonlinear effects, gradient-boosted trees had the highest out-of-sample $R^2$, 0.21\% against 0.14\% for OLS-3 (Diebold--Mariano $t = 3.6$), and the best Sharpe ratio before costs, 1.32 against 1.12. But they traded most: at 25 basis points a plain OLS on all inputs overtook them, and at 50 their Sharpe ratio fell to 0.22. In Part D, with almost no real signal, lightly shrunk complex models produced an $R^2$ near $-1{,}200\%$, while heavily shrunk ones stayed near zero. Real data will show whether real portfolios contain nonlinear structure that survives costs.
 
 \subsection{Robustness checks}
 \label{sec:20-stress}
 
-Five checks determine whether a machine-learning result is robust\index{robustness}.
-
 \begin{itemize}
-  \item \textbf{The universe.} Which assets are included matters more than anything else. Gu, Kelly and Xiu's equal-weighted Sharpe ratio was almost twice the value-weighted one, and removing microcaps and distressed firms considerably weakened profits (Avramov, Cheng and Metzker 2023).
-  \item \textbf{Trading costs.}\index{transaction costs|textbf} Flexible models tend to trade more, because small changes in inputs can flip a forecast. In the simulated lab run, the best model before costs fell behind a linear model at 25 basis points. Turnover should be reported alongside every Sharpe ratio (Chapter~\ref{ch:13}).
-  \item \textbf{Time.} The 1987--2016 test period includes years before many anomalies were published and traded away (Chapter~\ref{ch:15}), so results should be split, as the lab does at 2000.
-  \item \textbf{Tuning and seeds.} A network result that holds for one seed or configuration but not others is closer to luck than to skill. Averaging over seeds helps, and single-seed results show the spread.
-  \item \textbf{Researcher degrees of freedom.}\index{researcher degrees of freedom|textbf} Every published model survived a search among many designs. Validation controls overfitting within one design, but not the choice among designs (Section~\ref{sec:01-backtests}).
+  \item \textbf{The universe.} Which assets are included matters most: Gu, Kelly and Xiu's equal-weighted Sharpe ratio was almost twice the value-weighted one, and excluding microcaps and distressed firms weakened profits (Avramov, Cheng and Metzker 2023).
+  \item \textbf{Trading costs.}\index{transaction costs|textbf} Flexible models trade more, so report turnover with every Sharpe ratio (Chapter~\ref{ch:13}).
+  \item \textbf{Time.} The 1987--2016 test includes years before many anomalies were traded away (Chapter~\ref{ch:15}), so the lab splits at 2000.
+  \item \textbf{Tuning and seeds.} A result that holds for one seed or configuration only is closer to luck than skill.
+  \item \textbf{Researcher degrees of freedom.}\index{researcher degrees of freedom|textbf} Validation controls overfitting within one design, not the choice among many designs (Section~\ref{sec:01-backtests}).
 \end{itemize}
 
-For the virtue of complexity, Nagel's argument implies one sharp test: if a complex model's timing signal is close to a simple volatility-scaled momentum rule, the complexity adds little. The lab's forecasts can be correlated with such a rule to run that comparison.
+For the virtue of complexity, Nagel's argument implies a sharp test: correlate a complex model's timing signal with a simple volatility-scaled momentum rule. If they are close, the complexity adds little.
 
 \subsection*{Your verdict}
 
@@ -906,7 +883,7 @@ Reach your own verdict on the claim from the numbers in your own run, using the 
 \section{Where the evidence stands}
 \label{sec:20-verdict}
 
-The published studies cited in this chapter point to a mixed picture: \textbf{in broad samples of U.S. stocks, regularized nonlinear models forecast returns better out of sample than linear models with a few characteristics. But they rely on familiar signals, and their gains are concentrated where trading is costly.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+The published studies point to a mixed picture: \textbf{in broad samples of U.S. stocks, regularized nonlinear models forecast returns better out of sample than linear models with a few characteristics. But they rely on familiar signals, and their gains are concentrated where trading is costly.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.48\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -924,49 +901,47 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Out-of-sample forecasts in broad samples & \textbf{Yes} & Neural networks and trees roughly doubled the performance of leading regression-based strategies, and unregularized OLS on all inputs did worst. & Gu, Kelly and Xiu (2020) \\
+Out-of-sample forecasts in broad samples & \textbf{Yes} & Networks and trees roughly doubled the performance of leading regression strategies; unregularized OLS did worst. & Gu, Kelly and Xiu (2020) \\
 \addlinespace[3pt]
-Hidden structure & \textbf{Weakly} & The models rely on momentum, reversal, liquidity and volatility; their gain comes mainly from interactions among these familiar signals. & Gu, Kelly and Xiu (2020) \\
+Hidden structure & \textbf{Weakly} & The gain comes mainly from interactions among familiar signals. & Gu, Kelly and Xiu (2020) \\
 \addlinespace[3pt]
-Value-weighted portfolios & \textbf{Partly} & The long--short Sharpe ratio was 1.35 value-weighted, against 2.45 equal-weighted. & Gu, Kelly and Xiu (2020) \\
+Value-weighted portfolios & \textbf{Partly} & Sharpe ratio of 1.35 value-weighted, against 2.45 equal-weighted. & Gu, Kelly and Xiu (2020) \\
 \addlinespace[3pt]
-Hard-to-arbitrage stocks excluded, after costs & \textbf{Weakly} & Excluding micro-caps and distressed firms, or volatile periods, cut profits considerably, and turnover eroded them further. & Avramov, Cheng and Metzker (2023) \\
+Hard-to-arbitrage stocks excluded, after costs & \textbf{Weakly} & Excluding micro-caps, distressed firms or volatile periods cut profits, and turnover eroded them further. & Avramov, Cheng and Metzker (2023) \\
 \addlinespace[3pt]
-A retail-dominated market & \textbf{Yes} & Predictability in China was stronger than in the United States, concentrated in small stocks, and significant after costs. & Leippold, Wang and Zhou (2022) \\
+A retail-dominated market & \textbf{Yes} & Stronger predictability in China, concentrated in small stocks and significant after costs. & Leippold, Wang and Zhou (2022) \\
 \addlinespace[3pt]
-Very large models for market timing & \textbf{Disputed} & Timing improved with thousands of random features, but the strategy may be volatility-timed momentum in disguise. & Kelly, Malamud and Zhou (2024); Nagel (2025) \\
+Very large models for market timing & \textbf{Disputed} & Timing improved with thousands of random features, but may be volatility-timed momentum in disguise. & Kelly, Malamud and Zhou (2024); Nagel (2025) \\
 \end{longtable}
 }
 
 Machine learning is a better tool for an old job, not a source of hidden alpha.
 
-\textbf{What would change the picture.} The evidence would support the economic part of the claim if value-weighted, net-of-cost machine-learning portfolios beat regularized linear ones among large stocks, out of sample after 2016, by a significant margin.
+\textbf{What would change the picture.} The economic part of the claim would gain support if value-weighted, net-of-cost machine-learning portfolios beat regularized linear ones among large stocks, out of sample after 2016, by a significant margin.
 
 \subsection{Open questions}
 \label{sec:20-open}
 
 \begin{itemize}
-  \item \textbf{Does the edge survive among large stocks?} The strongest machine-learning results come from broad samples dominated by small stocks. How much remains in the largest 500 or 1,000?
-  \item \textbf{Hidden or known?} Do flexible models find genuinely new interactions, or mostly better ways to combine momentum, volatility and liquidity?
-  \item \textbf{Complexity or momentum?} Is the virtue of complexity in market timing a general result or, as Nagel argues, a disguised volatility-timed momentum strategy?
-  \item \textbf{New models and new data.} Chapters~\ref{ch:20} to~\ref{ch:22} ask the parallel question for transformers and time-series foundation models\index{foundation models}.
+  \item \textbf{Does the edge survive among large stocks?} How much remains in the largest 500 or 1,000?
+  \item \textbf{Hidden or known?} Do flexible models find new interactions, or better ways to combine momentum, volatility and liquidity?
+  \item \textbf{Complexity or momentum?} Is the virtue of complexity a general result or, as Nagel argues, disguised volatility-timed momentum?
+  \item \textbf{New models and new data.} Chapters~\ref{ch:20} to~\ref{ch:22} ask the same question of transformers and time-series foundation models\index{foundation models}.
 \end{itemize}
 
 \section{What practitioners and investors can use}
 \label{sec:20-investors}
 
-The evidence in Section~\ref{sec:20-verdict} leads to five practical lessons for anyone offered a machine-learning strategy.
-
 \begin{itemize}
-  \item \textbf{Machine learning is a better blender, not a crystal ball.} Its proven value lies in combining many well-known signals while guarding against overfitting. Expect a modest improvement over a well-built linear multi-factor model, not a new source of returns.
-  \item \textbf{Ask where the returns come from.} Some strategies earn most of their profit from microcaps, from the stocks they sell short, or from months of market stress. Such profits may disappear once the strategy is run at scale or after trading costs.
-  \item \textbf{Insist on the realistic number.} Ask for performance with stocks weighted by their market value and after trading costs. Backtests\index{backtest} that weight all stocks equally and ignore costs flatter flexible models the most, because those models trade often and lean on small stocks.
-  \item \textbf{Treat interpretability\index{interpretability} as a risk control.} If a manager cannot say which signals drive the forecasts, there is no way to judge whether those signals will keep working.
-  \item \textbf{Expect decay.} Signals published in the academic literature lose part of their power after publication (Chapter~\ref{ch:15}), and a model trained on them inherits that decay.
+  \item \textbf{Machine learning is a better blender, not a crystal ball.} Expect a modest improvement over a well-built linear multi-factor model, not a new source of returns.
+  \item \textbf{Ask where the returns come from.} Profits from microcaps, the short side or months of stress may vanish at scale or after costs.
+  \item \textbf{Insist on the realistic number:} value-weighted and after costs. Equal-weighted backtests\index{backtest} without costs flatter flexible models most.
+  \item \textbf{Treat interpretability\index{interpretability} as a risk control.} If no one can say which signals drive the forecasts, no one can judge whether they will keep working.
+  \item \textbf{Expect decay.} Published signals lose power after publication (Chapter~\ref{ch:15}), and models trained on them inherit it.
 \end{itemize}
 
-The six questions of Section~\ref{sec:09-investors} apply to any machine-learning model an investor is shown. For a machine-learning strategy, three further questions matter most. How much of the return comes from the 20\% smallest stocks, and from the short side? What is the monthly turnover, and what trading costs are assumed? And how much do the results change with the random seed or with small changes to the training window?
+Beyond the six questions of Section~\ref{sec:09-investors}, ask: How much of the return comes from the smallest 20\% of stocks and from the short side? What are the monthly turnover and assumed costs? How much do the results change with the random seed or the training window?
 
 \begin{callout}
-\textbf{What Failed: the AI fund that trailed the index.} In 2017 the AI Powered Equity ETF (ticker AIEQ\index{AI Powered Equity ETF (AIEQ)}) launched as the first exchange-traded fund run by artificial intelligence. Its manager, EquBot, used IBM Watson to process news, filings and market data and to monitor tens of thousands of models. By January 2022 the fund was up 57\% since launch. Over the same period the S\&P 500 total return\index{return!total} index was up 84\% (Tech Brew 2022). The fund held about \$150 million. The models were sophisticated; the difficulty was the task. Stock returns carry little signal, and the competition for that signal is intense. A model that learns from the past is always learning about a market that has already moved on.
+\textbf{What Failed: the AI fund that trailed the index.} In 2017 the AI Powered Equity ETF (ticker AIEQ\index{AI Powered Equity ETF (AIEQ)}) launched as the first exchange-traded fund run by artificial intelligence, with its manager, EquBot, using IBM Watson to process news, filings and market data. By January 2022 it was up 57\% since launch, against 84\% for the S\&P 500 total return\index{return!total} index (Tech Brew 2022). The models were sophisticated; the task was hard. Stock returns carry little signal, competition for it is intense, and a model that learns from the past is always learning about a market that has already moved on.
 \end{callout}

@@ -140,40 +140,24 @@ Stated so that it can fail:
 \textbf{Foundation models that are pretrained or fine-tuned on financial market data forecast volatility more accurately than GARCH and HAR models, and generate synthetic price paths that match the stylized facts of returns better than a GARCH simulation, on data that arrived after the models were trained.}
 \end{callout}
 
-The claim has a \textbf{forecasting form} and a \textbf{generative form}. The tests follow:
-
-\begin{itemize}
-  \item \textbf{Benchmarks.} Are the comparisons against well-specified econometric models, such as GARCH and HAR, estimated on the same data?
-  \item \textbf{Loss functions.} Does the advantage hold under the QLIKE loss that Chapter~\ref{ch:07} recommended for volatility, not only under squared error?
-  \item \textbf{Clean data.} Does the advantage survive on data the model could not have seen?
-  \item \textbf{Economic value.} Is the improvement large enough to change a risk number, such as a 99\% VaR, in a way that its backtest can detect?
-\end{itemize}
+The claim has a \textbf{forecasting form} and a \textbf{generative form}. The tests are whether the comparisons use well-specified \textbf{benchmarks} such as GARCH and HAR on the same data; whether the advantage holds under the QLIKE \textbf{loss} that Chapter~\ref{ch:07} recommended, not only squared error; whether it survives on \textbf{clean data} the model could not have seen; and whether it has \textbf{economic value}, changing a risk number such as a 99\% VaR by enough for its backtest to detect.
 
 \section{The original evidence}
 \label{sec:23-evidence}
 
 \subsection{Shi et al. (2025): Kronos}
 
-Shi and coauthors\index{Kronos|textbf} trained Kronos on more than 12 billion bars from 45 exchanges. The bars came at seven frequencies, including minute and daily bars, with six fields each: open, high, low, close, volume and amount. They compared Kronos with 25 alternatives. These included general time-series foundation models, deep networks without pretraining, GARCH for volatility, and generative models for synthetic data. They reported the following results, mostly with Kronos used zero-shot:
-
-\begin{itemize}
-  \item on price forecasting, a rank information coefficient (the correlation between predicted and actual rankings of returns across assets) 93\% higher than the best general foundation model and 87\% higher than the best non-pretrained model;
-  \item on volatility forecasting, a 9\% lower mean absolute error;
-  \item on synthetic data, a 22\% improvement in their measure of fidelity;
-  \item a simulated long-only investment test on Chinese A-shares, scored by excess return and information ratio.
-\end{itemize}
-
-The results come from the authors' own benchmarks, and the paper's main text does not make clear which periods and markets were held out of pretraining. The model's code and smaller versions are openly available, which makes independent testing possible.
+Shi and coauthors\index{Kronos|textbf} trained Kronos on more than 12 billion bars from 45 exchanges, at seven frequencies with six fields each (open, high, low, close, volume and amount), and compared it with 25 alternatives, from general foundation models and deep networks to GARCH and generative models. Mostly used zero-shot, Kronos had a rank information coefficient (the correlation between predicted and actual rankings of returns across assets) 93\% higher than the best general foundation model and 87\% higher than the best non-pretrained model, a 9\% lower mean absolute error for volatility, a 22\% improvement in synthetic-data fidelity, and good results in a simulated long-only test on Chinese A-shares. These are the authors' own benchmarks, and the main text does not make clear which periods and markets were held out of pretraining. The code and smaller versions are open, so independent testing is possible.
 
 \subsection{Goel, Pasricha, Magris and Kanniainen (2025)}
 
-Goel and coauthors asked a narrower question with a careful design. They forecast next-day realized variance for 21 stock indices, including the S\&P 500, FTSE 100 and Nikkei 225, from 2000 to 2021. Realized variance came from five-minute returns in the Oxford-Man Institute's Realized Library. They compared TimesFM 2.0, used zero-shot and with incremental fine-tuning, against realized GARCH, ARFIMA, HAR and CHAR models, all statistical models designed for volatility's long memory, in both levels and logs. They scored forecasts with six loss functions, including MSE and QLIKE. They tested the differences with Diebold--Mariano and Giacomini--White tests and the model confidence set, a procedure that identifies the group of models that cannot be told apart from the best.
+Goel and coauthors forecast next-day realized variance, from five-minute returns in the Oxford-Man Realized Library, for 21 stock indices from 2000 to 2021. They compared TimesFM 2.0, zero-shot and incrementally fine-tuned, with realized GARCH, ARFIMA, HAR and CHAR models in levels and logs, scored with six losses including MSE and QLIKE, and tested with Diebold--Mariano and Giacomini--White tests and the model confidence set, which identifies the models that cannot be told apart from the best.
 
-Their findings were mixed. Incrementally fine-tuned versions generally beat their zero-shot counterparts. The best model overall was a fine-tuned TimesFM that read 64 days of history and forecast log variance. It had the lowest average squared error, and under three of the loss functions it was never significantly worse than any other model. Under QLIKE, the TimesFM versions that read 512 days of history, both zero-shot and fine-tuned, beat every econometric model at the 10\% level. The realized GARCH model remained hard to beat at predicting whether volatility would rise or fall.
+Fine-tuned versions generally beat zero-shot ones. A fine-tuned TimesFM reading 64 days of log variance had the lowest average squared error and was never significantly worse than any model under three losses. Under QLIKE, the 512-day TimesFM versions, zero-shot and fine-tuned, beat every econometric model at the 10\% level. Realized GARCH remained hard to beat at predicting whether volatility would rise or fall.
 
 \subsection{Marconi (2025)}
 
-Marconi tested two foundation models, Tiny Time Mixers (TTM) and Chronos, on three financial tasks: changes in the U.S. 10-year Treasury yield, the volatility of the euro--dollar exchange rate, and an equity spread. The pretrained TTM, once fine-tuned, beat an identical network trained from scratch. Its advantage was 25\% to 50\% when data were limited and 15\% to 30\% with longer data. It reached similar accuracy with three to ten fewer years of data. Without fine-tuning, TTM beat naive benchmarks on volatility and the equity spread. Specialized traditional models, however, matched or beat TTM in two of the three tasks. The study's main lesson is that pretraining saves data, not that it beats the best specialized model.
+Marconi tested Tiny Time Mixers (TTM) and Chronos on Treasury yield changes, euro--dollar volatility and an equity spread. Fine-tuned TTM beat an identical network trained from scratch by 25\% to 50\% with limited data and 15\% to 30\% with longer data, reaching similar accuracy with three to ten fewer years. But specialized traditional models matched or beat it in two of the three tasks. Pretraining saves data; it does not beat the best specialized model.
 
 \section{Lab~\thechapter: Replicating Kronos and fine-tuned TimesFM on daily market data}
 \label{sec:23-lab}
@@ -182,41 +166,37 @@ Marconi tested two foundation models, Tiny Time Mixers (TTM) and Chronos, on thr
 \textbf{Lab~\ref{ch:22} at a glance.} \emph{Papers replicated:} Shi et al.\ (2025); Goel, Pasricha, Magris and Kanniainen (2025). \emph{Claim on trial\index{claims-on-trial method}:} foundation models trained or fine-tuned on market data forecast volatility better than GARCH and HAR. \emph{Data:} daily OHLCV bars for major stock indices and exchange-traded funds from a free source such as Stooq, used within its terms; daily market returns from the Kenneth R. French Data Library\index{Kenneth French data library}; the VIX from FRED\index{FRED}. If the bars cannot be downloaded, a fallback mode runs on the French library alone (see below). \emph{Models:} the open small version of Kronos, TimesFM, Chronos-Bolt from Lab~\ref{ch:20}, GARCH(1,1) and HAR. \emph{Code:} runs as a script or as a notebook, with a prediction prompt before each step. The zero-shot parts run on a laptop; fine-tuning TimesFM needs a GPU, a graphics processor of the kind used to train AI models, such as one in a free cloud notebook.
 \end{callout}
 
-\textbf{The design.} The lab's measure of daily variance is the Garman--Klass estimator of Equation~\eqref{eq:23-gk}, because intraday data are not freely available. Every model forecasts tomorrow's Garman--Klass variance using only data up to today. HAR is estimated on the same measure, and GARCH on daily returns.
+\textbf{The design.} Because intraday data are not free, daily variance is measured by the Garman--Klass estimator of Equation~\eqref{eq:23-gk}. Every model forecasts tomorrow's value from data up to today; HAR uses the same measure, and GARCH uses daily returns.
 
 \begin{itemize}
-  \item \textbf{Part A, zero-shot forecasts.} Kronos, TimesFM and Chronos-Bolt forecast next-day returns and next-day variance for each asset, with no fine-tuning. Return forecasts are scored by their rank correlation with actual returns across assets; variance forecasts by MSE and QLIKE.
-  \item \textbf{Part B, the Goel et al.\ replication.} TimesFM is fine-tuned incrementally on log Garman--Klass variance, following the 50\%--20\%--20\%--10\% schedule of the original study, and compared with GARCH and HAR estimated in the same windows. Differences are tested with Diebold--Mariano and Giacomini--White tests.
-  \item \textbf{Part C, fine-tuning choices.} The lab varies the history length (64, 128 and 512 days) and the fine-tuning method (last layers only, or LoRA) and reports how much each choice matters.
-  \item \textbf{Part D, synthetic paths.} Kronos generates 1,000 one-year daily paths for the S\&P 500, and a GARCH model with Student-$t$ shocks generates 1,000 more. Each set is scored on the stylized facts: kurtosis, autocorrelation of returns and of absolute returns at lags 1 to 50, and the correlation between today's return and tomorrow's absolute return.
-  \item \textbf{Part E, risk.} Each model's variance forecast is turned into a 99\% one-day VaR and backtested with the Kupiec and Christoffersen tests of Chapter~\ref{ch:08}.
-  \item \textbf{Part F, clean data.} Parts A, B and E are repeated using only days after each model's public release, the only period that no pretraining corpus could contain.
+  \item \textbf{Part A, zero-shot forecasts.} Kronos, TimesFM and Chronos-Bolt forecast next-day returns, scored by rank correlation across assets, and next-day variance, scored by MSE and QLIKE.
+  \item \textbf{Part B, the Goel et al.\ replication.} TimesFM is fine-tuned incrementally on log variance with the original 50\%--20\%--20\%--10\% schedule and tested against GARCH and HAR with Diebold--Mariano and Giacomini--White tests.
+  \item \textbf{Part C, fine-tuning choices.} History lengths of 64, 128 and 512 days, and fine-tuning of the last layers only or with LoRA.
+  \item \textbf{Part D, synthetic paths.} 1,000 one-year S\&P 500 paths from Kronos and 1,000 from a Student-$t$ GARCH, scored on kurtosis, autocorrelation of returns and absolute returns at lags 1 to 50, and the correlation between today's return and tomorrow's absolute return.
+  \item \textbf{Part E, risk.} Each variance forecast becomes a 99\% one-day VaR, backtested with the Kupiec and Christoffersen tests of Chapter~\ref{ch:08}.
+  \item \textbf{Part F, clean data.} Parts A, B and E repeated on days after each model's public release only.
 \end{itemize}
 
-\textbf{A fallback that needs no download.}\index{squared return!as variance proxy} Free daily bars can be hard to obtain. Since early 2026 Stooq asks each user to request a free key, and it limits how many files can be downloaded each day. If the bars cannot be obtained, the lab switches to a fallback mode. This mode uses only the daily market return and the daily 49 industry portfolios from the Kenneth R. French Data Library, which the code downloads without a key. The day's variance is then measured by the squared close-to-close return instead of the Garman--Klass estimator. HAR is built from daily, weekly and monthly averages of squared returns. A single squared return can be zero, so TimesFM and Chronos-Bolt read the logarithm of the five-day average of squared returns. Every forecast is scored against the next day's squared return. QLIKE, in the form $\log F + RV/F$ of Section~\ref{sec:10-eval}, accepts a zero value, so the scoring rule does not change.
+\textbf{A fallback that needs no download.}\index{squared return!as variance proxy} Since early 2026 Stooq requires a free key and limits daily downloads. If the bars cannot be obtained, the lab uses only the daily market return and 49 industry portfolios from the French library, which download without a key. The day's variance becomes the squared close-to-close return; HAR uses daily, weekly and monthly averages of it; and because a single squared return can be zero, TimesFM and Chronos-Bolt read the log of its five-day average. Scoring is against the next day's squared return, and QLIKE in the form $\log F + RV/F$ of Section~\ref{sec:10-eval} accepts a zero value. The fallback runs Parts A, B, C, E and F without Kronos, which needs full OHLCV bars, and Part D with GARCH paths only. The code reports its mode, and readers should too.
 
-The fallback runs Parts A, B, C, E and F for TimesFM, Chronos-Bolt, GARCH and HAR, with the industry portfolios in place of the indices and funds. Kronos is skipped, because it reads open, high, low, close and volume together, and the French library publishes only returns. In Part D only the GARCH paths are generated and compared with the real data. The code reports which mode it ran in, and readers should state the mode when they report results.
+The squared return is a much noisier measure, so every loss rises and fewer differences will be significant. As Andersen and Bollerslev (1998) showed in Chapter~\ref{ch:07}, noise makes good forecasts look worse, but with a robust loss such as QLIKE it does not on average change which model ranks first (Patton 2011). A clear win in the fallback mode is therefore likely to hold with better data, but a tie is not evidence that the models are equally good.
 
-The fallback answers a narrower question, but it still teaches something. A squared daily return measures variance with much more noise than the Garman--Klass estimator. Every model's loss therefore rises, and the gaps between models shrink relative to the noise. The tests in Part B will find fewer significant differences. Andersen and Bollerslev (1998) drew the same lesson in Chapter~\ref{ch:07}. A noisy measure makes good forecasts look worse and makes models harder to tell apart. But with a robust loss such as QLIKE, it does not on average change which model ranks first (Patton 2011). A model that wins clearly in the fallback mode is therefore likely to win with better data too. A tie in the fallback mode, however, is not evidence that the models are equally good.
-
-\textbf{What readers will find.} Lab Figure~\ref{ch:22}.1 shows each model's variance forecasts for the S\&P 500 against the Garman--Klass variance in 2020 and 2022. Lab Figure~\ref{ch:22}.2 compares the autocorrelation of absolute returns in real data, Kronos paths and GARCH paths. Lab Figure~\ref{ch:22}.3 reports QLIKE losses relative to HAR, before and after each model's release date. The test of the claim is whether the foundation models beat GARCH and HAR under QLIKE, significantly, in Part F.
+\textbf{What readers will find.} Lab Figure~\ref{ch:22}.1 shows variance forecasts for the S\&P 500 in 2020 and 2022, Lab Figure~\ref{ch:22}.2 compares the autocorrelation of absolute returns in real data, Kronos paths and GARCH paths, and Lab Figure~\ref{ch:22}.3 reports QLIKE losses relative to HAR before and after each model's release. The test of the claim is whether the foundation models beat GARCH and HAR significantly under QLIKE in Part F.
 
 \emph{[Draft note: the figures and numbers are generated by running the lab on data at the time of publication. The book prints the results; the text above does not anticipate them.]}
 
 \subsection{Robustness checks}
 \label{sec:23-stress}
 
-The full-sample results can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
+\textbf{1. Crisis periods.} Losses are reported separately for February to April 2020 and for 2022, asking whether any model reacts before the jump or only after it.
 
-\textbf{1. Crisis periods.} Volatility forecasts matter most when volatility jumps. The lab reports losses separately for February to April 2020 and for 2022, and asks whether any model reacts before the jump or only after it.
+\textbf{2. A placebo with known truth.} On simulated GARCH data, GARCH is the correct model, so a foundation model that beats it is fitting noise, and one that comes close has learned volatility clustering.
 
-\textbf{2. A placebo with known truth.} The lab simulates a GARCH process with the parameters estimated on the S\&P 500 and asks each model to forecast it. On such data GARCH is the correct model, so a foundation model that beats it would be fitting noise. A foundation model that comes close shows that it has learned volatility clustering.
+\textbf{3. Assets the model is unlikely to have seen.} A large drop in accuracy on small-country indices would suggest that part of the major-index performance is memory.
 
-\textbf{3. Assets the model is unlikely to have seen.} The lab repeats Part A on small-country stock indices and on the simulated series. A large drop in accuracy compared with the major indices would suggest that part of the major-index performance is memory.
+\textbf{4. The measure of variance.} Garman--Klass is noisier than five-minute realized variance, which does not change the ranking under MSE and QLIKE (Patton 2011) but reduces the power of the tests.
 
-\textbf{4. The measure of variance.} Garman--Klass variance is noisier than five-minute realized variance. Patton (2011) showed that noise in the measure does not change the ranking of forecasts under MSE and QLIKE, but it does reduce the power of the tests. Results that are not significant here may become significant with better data, and the lab says so.
-
-\textbf{5. Compute against accuracy.} A HAR model is three regression coefficients estimated in a fraction of a second. A fine-tuned foundation model needs a GPU and hours of computation. The lab reports the gain in QLIKE per hour of computation, a reminder that a small gain may not be worth the cost.
+\textbf{5. Compute against accuracy.} HAR takes a fraction of a second; a fine-tuned foundation model needs a GPU and hours. The lab reports the QLIKE gain per hour of computation.
 
 \subsection*{Your verdict}
 
@@ -225,7 +205,7 @@ Reach your own verdict on the claim from the numbers in your own run, using the 
 \section{Where the evidence stands}
 \label{sec:23-verdict}
 
-The published studies cited in this chapter point to an early picture: \textbf{training on market data appears to help, and a general model fine-tuned on volatility data can match and sometimes beat the best econometric models. But the evidence is young and mostly from working papers, and none of it yet uses data the models could not have seen.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+The published studies point to an early picture: \textbf{training on market data appears to help, and a general model fine-tuned on volatility data can match and sometimes beat the best econometric models. But the evidence is young and mostly from working papers, and none of it yet uses data the models could not have seen.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.48\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -243,55 +223,45 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Kronos, volatility & \textbf{Partly} & 9\% lower error than its baselines, on the authors' own benchmarks; not yet verified independently. & Shi et al.\ (2025) \\
+Kronos, volatility & \textbf{Partly} & 9\% lower error on the authors' own benchmarks; not verified independently. & Shi et al.\ (2025) \\
 \addlinespace[3pt]
-Kronos, synthetic data & \textbf{Partly} & 22\% better fidelity, on the authors' own measure; not yet verified independently. & Shi et al.\ (2025) \\
+Kronos, synthetic data & \textbf{Partly} & 22\% better fidelity on the authors' own measure; not verified independently. & Shi et al.\ (2025) \\
 \addlinespace[3pt]
-Fine-tuned TimesFM & \textbf{Yes} & Beat GARCH and HAR under several losses, including QLIKE, on 21 stock indices. & Goel, Pasricha, Magris and Kanniainen (2025) \\
+Fine-tuned TimesFM & \textbf{Yes} & Beat GARCH and HAR under several losses, including QLIKE, on 21 indices. & Goel, Pasricha, Magris and Kanniainen (2025) \\
 \addlinespace[3pt]
-Zero-shot TimesFM & \textbf{Partly} & Generally behind the fine-tuned versions, but ahead of the econometric models under QLIKE with a 512-day history. & Goel, Pasricha, Magris and Kanniainen (2025) \\
+Zero-shot TimesFM & \textbf{Partly} & Behind the fine-tuned versions, but ahead of the econometric models under QLIKE with a 512-day history. & Goel, Pasricha, Magris and Kanniainen (2025) \\
 \addlinespace[3pt]
-Direction of volatility & \textbf{No} & Realized GARCH remained hard to beat at predicting whether volatility would rise or fall. & Goel, Pasricha, Magris and Kanniainen (2025) \\
+Direction of volatility & \textbf{No} & Realized GARCH remained hard to beat. & Goel, Pasricha, Magris and Kanniainen (2025) \\
 \addlinespace[3pt]
-Against specialized models & \textbf{Weakly} & Specialized models matched or beat a fine-tuned foundation model in two of three tasks; pretraining mainly saved data. & Marconi (2025) \\
+Against specialized models & \textbf{Weakly} & Specialized models matched or beat it in two of three tasks; pretraining mainly saved data. & Marconi (2025) \\
 \addlinespace[3pt]
-Clean post-release data & \textbf{Untested} & No study yet reports results on data after the models' release. & None yet \\
+Clean post-release data & \textbf{Untested} & No study yet reports such results. & None yet \\
 \end{longtable}
 }
 
-\textbf{What would change the picture.} The claim would gain support if foundation models beat GARCH and HAR significantly under QLIKE on data released after the models were trained, by enough to change a VaR backtest. It would lose support if their advantage disappeared on such data.
+\textbf{What would change the picture.} The claim would gain support if foundation models beat GARCH and HAR significantly under QLIKE on post-release data, by enough to change a VaR backtest, and lose it if their advantage disappeared there.
 
 \subsection{Open questions}
 \label{sec:23-open}
 
 \begin{itemize}
-  \item \textbf{Memory or skill?} How much of a market-trained model's accuracy on major indices comes from having seen them in pretraining?
-  \item \textbf{Which data to pretrain on?} Is more data from more markets always better, or does data from very different markets, such as cryptocurrencies or minute bars, help or hurt daily equity forecasts?
-  \item \textbf{Returns as well as risk?} Volatility is predictable, so a better model can improve on GARCH. Returns are mostly not, as Chapter~\ref{ch:06} showed. Do the gains in price forecasting survive costs and post-release data?
-  \item \textbf{Generative models for risk.} Can synthetic paths from a foundation model improve stress tests and capital estimates, and how should regulators judge them?
+  \item \textbf{Memory or skill?} How much accuracy on major indices comes from having seen them in pretraining?
+  \item \textbf{Which data to pretrain on?} Do very different markets, such as cryptocurrencies or minute bars, help or hurt daily equity forecasts?
+  \item \textbf{Returns as well as risk?} Volatility is predictable; returns mostly are not (Chapter~\ref{ch:06}). Do price-forecasting gains survive costs and post-release data?
+  \item \textbf{Generative models for risk.} Can synthetic paths improve stress tests and capital estimates, and how should regulators judge them?
 \end{itemize}
 
 \section{What practitioners and investors can use}
 \label{sec:23-investors}
 
-The evidence in Section~\ref{sec:23-verdict} suggests several practical lessons.
-
 \textbf{Keep HAR and GARCH as the yardstick.} They are cheap, transparent and hard to beat. A foundation model earns a place in a risk system only if it beats them out of sample, under QLIKE, by enough to change a risk decision.
 
-\textbf{Fine-tune, and fine-tune honestly.} The evidence favors models adapted to the series at hand over models used as delivered. Every fine-tuning step must use only data available at the time.
+\textbf{Fine-tune, and fine-tune honestly.} Adapted models beat models used as delivered, but every fine-tuning step must use only data available at the time.
 
-\textbf{Use synthetic data for stress tests, with checks.} Synthetic price paths can widen a stress test beyond the few crises in history, but only if they reproduce fat tails and volatility clustering. Check them against a GARCH simulation before trusting them.
+\textbf{Use synthetic data for stress tests, with checks.} Synthetic paths can widen a stress test beyond history's few crises, but only if they reproduce fat tails and volatility clustering as well as a GARCH simulation.
 
-\textbf{Questions to ask a vendor of a financial foundation model:}
-
-\begin{enumerate}
-  \item What data was the model trained on, and up to what date?
-  \item How does it compare with HAR and GARCH under QLIKE, on data after the training cutoff?
-  \item Was the model fine-tuned on the test period, or on any data after the forecast date?
-  \item How much better are its VaR numbers, by the Kupiec and Christoffersen tests?
-  \item What does it cost to run and to re-train, and how often must it be re-trained?
-\end{enumerate}
+\textbf{Questions to ask a vendor of a financial foundation model:} What data was the model trained on, and up to what date? How does it compare with HAR and GARCH under QLIKE after the training cutoff? Was it fine-tuned on any data after the forecast date? How much better are its VaR numbers by the Kupiec and Christoffersen tests? What does it cost to run and re-train, and how often?
 
 \begin{callout}
-\textbf{What Failed: forecasting volatility from calm data, March 2020.} In mid-February 2020 the VIX was below 15, and models estimated on the calm years before it forecast low volatility. Within a month the S\&P 500 fell by about a third. On March 16 the VIX closed at 82.69, its highest close on record. Every model that forecasts volatility from past data, from GARCH to a foundation model, raised its forecast only after the turmoil had begun. Models that react quickly to new data, such as GARCH and HAR, adjusted within days. Risk measures based on long, equally weighted windows took months. The claim that any model trained on calm data can anticipate a sudden change of regime \textbf{fails}. What a better model can offer is a faster and more accurate response once the change begins, which is exactly what the crisis tests in this chapter measure.
+\textbf{What Failed: forecasting volatility from calm data, March 2020.} In mid-February 2020 the VIX was below 15, and models estimated on the calm years before forecast low volatility. Within a month the S\&P 500 fell by about a third, and on March 16 the VIX closed at 82.69, its highest close on record. Every model that forecasts from past data, from GARCH to a foundation model, raised its forecast only after the turmoil began: fast-reacting models such as GARCH and HAR adjusted within days, while risk measures on long, equally weighted windows took months. The claim that a model trained on calm data can anticipate a sudden change of regime \textbf{fails}. A better model can offer only a faster, more accurate response once the change begins, which is what this chapter's crisis tests measure.
 \end{callout}

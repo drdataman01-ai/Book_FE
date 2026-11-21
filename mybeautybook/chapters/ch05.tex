@@ -188,11 +188,11 @@ Stated so that it can fail:
 \textbf{Simple trend rules, which buy assets whose prices have been rising and sell assets whose prices have been falling, earn returns above a buy-and-hold benchmark, and the best of them remain significant after accounting for the number of rules tried, after publication, and after trading costs.}
 \end{callout}
 
-The claim has two forms. The \textbf{strong form} is that classic technical rules on a single stock index, such as the Dow, beat buy-and-hold. The \textbf{weak form} is that a diversified time-series momentum portfolio across many asset classes earns a positive risk-adjusted return. The tests follow:
+The claim has a \textbf{strong form}, that classic technical rules on a single stock index such as the Dow beat buy-and-hold, and a \textbf{weak form}, that a diversified time-series momentum portfolio across many asset classes earns a positive risk-adjusted return. The tests are:
 
 \begin{itemize}
   \item \textbf{Search.} Is the best rule still significant after the Reality Check and the SPA test?
-  \item \textbf{Time.} Did the rules keep working after the samples that established them, and after they were published?
+  \item \textbf{Time.} Did the rules keep working after the samples that established them, and after publication?
   \item \textbf{Breadth.} Is the evidence strong asset by asset, or only in a pooled test?
   \item \textbf{Costs.} Trend rules trade often. Does the profit survive realistic costs?
 \end{itemize}
@@ -202,76 +202,55 @@ The claim has two forms. The \textbf{strong form} is that classic technical rule
 
 \subsection{Brock, Lakonishok and LeBaron (1992)}
 
-Brock, Lakonishok and LeBaron\index{Brock, Lakonishok and LeBaron|textbf} tested 26 rules on the daily Dow Jones Industrial Average from 1897 to 1986. Ten were variable-length moving-average rules (the window pairs 1--50, 1--150, 5--150, 1--200 and 2--200, each with no band and with a 1\% band), ten were the same rules in fixed-length form with a ten-day holding period, and six were trading-range breakout rules with windows of 50, 150 and 200 days, with and without a 1\% band.
-
-The results were striking for their time. Returns after buy signals were consistently higher than returns after sell signals. For the fixed-length rules, the average ten-day return after a buy signal was about 0.53\%, the average after a sell signal was about $-0.40\%$, and the average ten-day return over the whole sample was 0.17\%. Returns after sell signals were also more volatile. A negative expected return after sell signals is hard to explain with any model in which investors are paid for risk.
-
-The authors used a bootstrap to check the results. They fitted four standard models of returns to the data, a random walk, an AR(1), a GARCH-in-mean and an exponential GARCH, which range from purely random price changes to models in which volatility rises and falls over time, simulated many artificial Dow histories from each, and applied the rules to the simulated data. None of the four models produced the buy--sell differences seen in the real data.
+Brock, Lakonishok and LeBaron\index{Brock, Lakonishok and LeBaron|textbf} tested 26 moving-average and trading-range breakout rules on the daily Dow Jones Industrial Average from 1897 to 1986. Returns after buy signals were consistently higher than after sell signals: for the fixed-length rules, about 0.53\% over ten days after a buy signal and $-0.40\%$ after a sell signal, against 0.17\% on average. A negative expected return after sell signals is hard to explain with any model in which investors are paid for risk. The authors simulated many artificial Dow histories from four standard models of returns, from a random walk to GARCH models in which volatility changes over time, and none produced differences as large as the real ones.
 
 \subsection{Sullivan, Timmermann and White (1999)}
 
-Sullivan, Timmermann and White asked the question that Brock, Lakonishok and LeBaron could not: how many rules had the profession tried before settling on these 26? They extended the Dow data to 1996, built the universe of 7,846 rules described in Section~\ref{sec:08-foundations}, and applied White's Reality Check.
-
-In the original 1897--1986 sample the answer favored technical analysis. The best of Brock, Lakonishok and LeBaron's own rules, a 50-day variable moving average with a 1\% band, earned about 10\% a year, and the best rule in the full universe, a 5-day moving average, earned about 19\% a year. Both had Reality Check $p$-values close to zero.
-
-The ten years after the original sample told a different story. From 1987 to 1996 the best rule in the full universe had a $p$-value of 0.34, and the best of the original 26 had a $p$-value of 0.15. On S\&P 500 futures from 1984 to 1996, no rule beat the benchmark. The rules had worked in the sample in which they were discovered and not in the decade that followed.
+Sullivan, Timmermann and White asked how many rules the profession had tried before settling on these 26. They built a universe of 7,846 rules (Section~\ref{sec:08-foundations}), extended the Dow data to 1996 and applied White's Reality Check. In the original sample, the best rules stayed significant, with $p$-values near zero. From 1987 to 1996, the best rule in the universe had a $p$-value of 0.34 and the best of the original 26 had 0.15, and on S\&P 500 futures from 1984 to 1996 no rule beat the benchmark. The rules had worked in the sample in which they were found, and not in the decade after.
 
 \subsection{Moskowitz, Ooi and Pedersen (2012) and Hurst, Ooi and Pedersen (2017)}
 
-Moskowitz, Ooi and Pedersen\index{Moskowitz, Ooi and Pedersen|textbf} moved the question from one stock index to many markets. They studied 58 liquid futures and forward contracts, meaning contracts that trade in large volumes and can be bought and sold cheaply: 24 commodities, 12 currency pairs, 9 equity indices and 13 government bond futures. Their price data begin in 1965, and they evaluated the strategy from 1985 to 2009, when many more markets were available.
+Moskowitz, Ooi and Pedersen\index{Moskowitz, Ooi and Pedersen|textbf} moved the question to 58 liquid futures and forward contracts in commodities, currencies, equity indices and government bonds, evaluated from 1985 to 2009. Trends persisted for about a year and then partly reversed. The twelve-month strategy of Equation~\eqref{eq:08-tsmom} earned a positive average return in all 58 contracts, 52 of them significant, and the diversified portfolio had a Sharpe ratio above one, an alpha of about 1.6\% a month, and its best results in extreme market quarters, up or down.
 
-Three findings stand out. First, in a pooled regression of each asset's volatility-scaled monthly return on its own past returns, the coefficients were positive for the first twelve months of past returns and mostly negative beyond, so trends persisted for about a year and then partly reversed. Second, the twelve-month strategy of Equation~\eqref{eq:08-tsmom} had a positive average return in every one of the 58 contracts, and 52 were significant at the 5\% level. Third, the diversified portfolio had a Sharpe ratio above one and an alpha of about 1.6\% a month against a global stock index and the size, value and momentum factors. It performed best in extreme market quarters, up or down.
-
-Hurst, Ooi and Pedersen (2017) pushed the test back in time. They combined one-, three- and twelve-month signals in 67 markets, including commodities, equity indices, bond markets and currency pairs, and simulated the strategy from 1880 to 2016, with higher assumed trading costs in the early decades and after a 2\% management fee and a 20\% performance fee, the typical fees of a hedge fund, which take 2\% of the money each year plus a fifth of any profit. The strategy earned positive returns in every decade, had low correlations with stocks and bonds, and made money in most of the ten largest drawdowns of a 60/40 stock--bond portfolio, the classic mix of 60\% stocks and 40\% bonds, where a drawdown is a fall from a previous peak.
+Hurst, Ooi and Pedersen (2017) simulated a similar strategy in 67 markets from 1880 to 2016, with higher trading costs in early decades and after typical hedge-fund fees of 2\% a year plus 20\% of profits. It earned positive returns in every decade and made money in most of the ten largest drawdowns, or falls from a previous peak, of a 60/40 stock--bond portfolio.
 
 \subsection{Huang, Li, Wang and Zhou (2020)}
 
-Huang, Li, Wang and Zhou\index{time-series momentum!critique} challenged the statistical evidence. Their argument has three parts.
-
-\begin{itemize}
-  \item \textbf{The pooled regression overstates the evidence.} A regression that stacks all assets together can find a significant slope even when no single asset is predictable, for example when assets with higher average returns also tend to have positive past returns. When Huang and coauthors bootstrapped the pooled $t$-statistic, it was no longer significant.
-  \item \textbf{Asset by asset, the evidence is weak.} Running the predictive regression separately for each of their 55 assets, most slopes were insignificant, and only a few assets showed significant out-of-sample predictability.
-  \item \textbf{A simpler strategy does as well.} A ``time-series history'' strategy, which goes long an asset whose average return over its whole past is positive and short otherwise, earned about the same as time-series momentum. That strategy needs no predictability at all. It profits from the fact that assets with positive average returns in the past, such as stock indices and bonds, kept earning positive average returns.
-\end{itemize}
-
-Their conclusion was that the strategy is profitable but that the profit need not come from trends. Defenders of trend following reply that the strategy's value lies in its behavior in crises, not only in its average return, and that a diversified portfolio of weak signals can be valuable even when each signal is hard to detect on its own (Section~\ref{sec:08-stress}).
-
+Huang, Li, Wang and Zhou\index{time-series momentum!critique} challenged the statistics. A pooled regression that stacks all assets together can find a significant slope even when no single asset is predictable, and with a bootstrap the pooled $t$-statistic was no longer significant. Asset by asset, most of their 55 slopes were insignificant. And a simpler ``time-series history'' strategy, long an asset whose average past return is positive and short otherwise, earned about as much without any predictability, by holding assets such as stocks and bonds that tend to rise. Defenders reply that the strategy's value lies in its behavior in crises, and that many weak signals can be valuable together even when each is hard to detect (Section~\ref{sec:08-stress}).
 
 \section{Lab~\thechapter: Replicating Brock--Lakonishok--LeBaron and Moskowitz--Ooi--Pedersen}
 \label{sec:08-lab}
 
 \begin{callout}
-\textbf{Lab~\ref{ch:05} at a glance.} \emph{Papers replicated:} Brock, Lakonishok and LeBaron (1992); Sullivan, Timmermann and White (1999); Moskowitz, Ooi and Pedersen (2012). \emph{Claim on trial\index{claims-on-trial method}:} simple trend rules beat buy-and-hold after correcting for the number of rules tried. \emph{Data:} the daily U.S. market index built from the Kenneth R. French Data Library\index{Kenneth French data library}, from July 1926, and optionally the daily Dow Jones Industrial Average from a free source such as Stooq; AQR's free \emph{Time Series Momentum: Factors, Monthly} data set; and, for a small multi-asset test, the 10-year Treasury yield (GS10), the H.10 exchange rates, three-month interbank rates and the WTI oil price from FRED\index{FRED}, which earlier labs already use. \emph{Code:} runs as a script or as a notebook, with a prediction prompt before each step.
+\textbf{Lab~\ref{ch:05} at a glance.} \emph{Papers replicated:} Brock, Lakonishok and LeBaron (1992); Sullivan, Timmermann and White (1999); Moskowitz, Ooi and Pedersen (2012). \emph{Claim on trial\index{claims-on-trial method}:} simple trend rules beat buy-and-hold after correcting for the number of rules tried. \emph{Data:} the daily U.S. market index from the Kenneth R. French Data Library\index{Kenneth French data library}, from July 1926, and optionally the daily Dow from a free source such as Stooq; AQR's free \emph{Time Series Momentum: Factors, Monthly} data set; and, for a small multi-asset test, the 10-year Treasury yield, H.10 exchange rates, three-month interbank rates and WTI oil prices from FRED\index{FRED}. \emph{Code:} runs as a script or as a notebook, with a prediction prompt before each step.
 \end{callout}
 
-The lab has five parts. Each signal uses only prices up to the day, or month, before the position is taken.
+Each signal uses only prices up to the day, or month, before the position is taken.
 
 \begin{itemize}
-  \item \textbf{Part A, the 26 rules.} The lab applies Brock, Lakonishok and LeBaron's ten variable-length, ten fixed-length and six breakout rules to the daily U.S. market. For each rule it reports the number of buy and sell days, the mean daily return after buy and after sell signals, and the buy--sell difference with its $t$-statistic. It does this separately for 1926--1986, the overlap with the original sample, and for 1987 to the present, the period after publication.
-  \item \textbf{Part B, the search correction.} The lab builds a universe of a few thousand moving-average and breakout rules by varying the windows, bands and holding periods. It computes each rule's excess return over buy-and-hold and applies White's Reality Check and Hansen's SPA test, using the stationary bootstrap with an average block length of ten days and 1,000 bootstrap samples. Again the two periods are reported separately.
-  \item \textbf{Part C, time-series momentum across asset classes.} The lab reads AQR's monthly time-series momentum factors for equity indices, bonds, currencies and commodities, and for the diversified portfolio. It reports the average return, Sharpe ratio and alpha against the market, before and after the original sample ended in 2009.
-  \item \textbf{Part D, the smile.} Using the AQR diversified factor and the U.S. market return, the lab regresses quarterly trend returns on the market's return and its square, as in Moskowitz, Ooi and Pedersen, and lists the strategy's return in the ten worst quarters for U.S. stocks.
-  \item \textbf{Part E, asset by asset.} With free data the lab builds a small universe of about a dozen assets: U.S. stocks, a 10-year Treasury bond built from yields as in Lab~\ref{ch:10}, nine currencies against the dollar with their interest differentials as in Lab~\ref{ch:11}, and spot crude oil. It runs Huang and coauthors' tests on this universe: separate predictive regressions for each asset, the pooled regression with a bootstrap $p$-value, and a comparison of time-series momentum with the time-series history strategy.
+  \item \textbf{Part A, the 26 rules.} Brock, Lakonishok and LeBaron's rules on the daily U.S. market: buy and sell days, mean returns after each signal, and the buy--sell difference with its $t$-statistic, for 1926--1986 and for 1987 to the present.
+  \item \textbf{Part B, the search correction.} A universe of a few thousand moving-average and breakout rules, tested against buy-and-hold with White's Reality Check and Hansen's SPA test (stationary bootstrap, average block length of ten days, 1,000 samples), for both periods.
+  \item \textbf{Part C, across asset classes.} AQR's time-series momentum factors: average return, Sharpe ratio and alpha against the market, before and after 2009.
+  \item \textbf{Part D, the smile.} Quarterly trend returns regressed on the market's return and its square, and the strategy's return in the ten worst quarters for U.S. stocks.
+  \item \textbf{Part E, asset by asset.} About a dozen assets built from free data (U.S. stocks, a 10-year Treasury bond as in Lab~\ref{ch:10}, nine currencies as in Lab~\ref{ch:11}, and crude oil), with Huang and coauthors' tests: separate regressions, the pooled regression with a bootstrap $p$-value, and time-series momentum against the time-series history strategy.
 \end{itemize}
 
-\textbf{What readers will find.} Lab Figure~\ref{ch:05}.1 compares the buy--sell differences of the 26 rules before and after 1987. Lab Figure~\ref{ch:05}.2 shows the Reality Check and SPA $p$-values for the best rule in a rolling ten-year window. Lab Figure~\ref{ch:05}.3 plots quarterly trend returns against market returns, with the fitted smile. The test of the claim is whether the best rule survives the search correction after 1986, and whether the diversified strategy's return holds up after 2009 and asset by asset.
+\textbf{What readers will find.} Lab Figure~\ref{ch:05}.1 compares the 26 rules before and after 1987, Lab Figure~\ref{ch:05}.2 shows the Reality Check and SPA $p$-values in a rolling ten-year window, and Lab Figure~\ref{ch:05}.3 plots quarterly trend returns against market returns, with the fitted smile.
 
 \emph{[Draft note: the figures and numbers are generated by running the lab on data at the time of publication. The book prints the results; the text above does not anticipate them.]}
 
 \subsection{Robustness checks}
 \label{sec:08-stress}
 
-The full-sample results can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
+\textbf{1. After publication.} For the stock-index rules, the clean test begins in 1987; for time-series momentum, in 2010. Diversified trend strategies had a weak decade after 2009, then a strong 2022, when stocks and bonds fell together. The post-publication record is the evidence an investor should weigh most.
 
-\textbf{1. After publication.} The cleanest test of a trading rule is the period after the paper that made it famous. For the stock-index rules that period begins in 1992, or in 1987 if one counts from the end of the sample. For time-series momentum it begins in 2010. Industry reports and the AQR data show that diversified trend strategies had a weak decade after 2009, with long flat periods, before a strong year in 2022 when inflation surged and bonds and stocks fell together. A strategy that works in one regime and stalls in another is not disproved by a flat decade, but the post-publication record is the evidence an investor should weigh most.
+\textbf{2. Costs and a one-day lag.} The stock-index rules switch positions many times a year. Bajgrowicz and Scaillet (2012) found that even low costs offset the best Dow rules' in-sample gains, and the lab measures the effect of a 0.1\% cost per switch or a one-day delay. Twelve-month trend signals on liquid futures trade far less, and Hurst, Ooi and Pedersen still found positive net returns with costs six times higher before 1993.
 
-\textbf{2. Costs and a one-day lag.} The stock-index rules switch between long and short many times a year, and most of their profit comes from short holding periods. Bajgrowicz and Scaillet (2012) found that even low transaction costs offset the in-sample performance of the best rules on the Dow, and the lab measures how much a cost of 0.1\% per switch, or trading at the next day's close instead of today's, takes away. Time-series momentum with a twelve-month signal changes position far less often than daily rules, and it trades liquid futures, so its costs are much lower. Hurst, Ooi and Pedersen assumed costs six times higher before 1993 to reflect older markets and still found positive net returns.
+\textbf{3. Asset by asset or pooled.} An investor trading one market needs that market to be predictable. An investor holding fifty markets benefits from many weak signals combined, just as Chapter~\ref{ch:01} showed that a higher Sharpe ratio needs fewer years to detect. The lab reports both views.
 
-\textbf{3. Asset by asset or pooled.} A pooled test can find a significant result when no single asset is significant, and Huang and coauthors argue that this is what happened. The answer depends on what the investor holds. An investor who trades a single market needs that market to be predictable. An investor who holds a diversified portfolio of fifty markets benefits from many weak signals combined, in the same way that Chapter~\ref{ch:01} showed a higher Sharpe ratio requires fewer years to detect. The lab reports both views.
+\textbf{4. Trend or carry?} \emph{Carry} here means the return from simply holding assets that tend to rise, such as stocks and bonds. If trend following's long-run return is mostly carry, its value lies in turning short during long declines, which Part D tests directly.
 
-\textbf{4. Is it trend or carry?} Here \emph{carry} means the return an investor earns simply by holding an asset that tends to pay off on average, as stocks and bonds have. The time-series history strategy of Huang and coauthors earns its return by holding assets that have had positive average returns, mainly stocks and bonds. If trend following's return over a long sample is mostly that, then its value lies elsewhere: in its tendency to turn short during long declines. Part D tests that tendency directly.
-
-\textbf{5. Data snooping in the defense.} The one-, three- and twelve-month windows, the 40\% target and the 60-day volatility estimate are themselves choices. They were made by researchers who knew the history. The lab lets readers vary each choice and reports how sensitive the results are.
+\textbf{5. Data snooping in the defense.} The look-back windows, volatility target and volatility estimate were chosen by researchers who knew the history. The lab lets you vary each choice.
 
 \subsection*{Your verdict}
 
@@ -280,7 +259,7 @@ Reach your own verdict on the claim from the numbers in your own run, using the 
 \section{Where the evidence stands}
 \label{sec:08-verdict}
 
-The published studies cited in this chapter point to a clear pattern: \textbf{classic trend rules on a single stock index do not survive a full accounting for the number of rules tried, while diversified trend following across many markets has a stronger record, though its average return is smaller and less certain than the original studies suggested.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+The published studies point to a clear pattern: \textbf{classic trend rules on a single stock index do not survive a full accounting for the number of rules tried, while diversified trend following across many markets has a stronger record, though its return is smaller and less certain than the original studies suggested.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
 
 \begin{center}
 \small
@@ -288,58 +267,53 @@ The published studies cited in this chapter point to a clear pattern: \textbf{cl
 \toprule
 Situation & Holds? & Why & Evidence \\
 \midrule
-Stock-index rules in the original sample & \textbf{Yes} & Returns after buy signals far exceeded returns after sell signals, and the best rules stayed significant even after the Reality Check. & Brock, Lakonishok and LeBaron (1992); Sullivan, Timmermann and White (1999) \\
+Stock-index rules in the original sample & \textbf{Yes} & Returns after buy signals far exceeded those after sell signals, even after the Reality Check. & Brock, Lakonishok and LeBaron (1992); Sullivan, Timmermann and White (1999) \\
 \addlinespace[3pt]
 Stock-index rules after 1986 & \textbf{No} & The best rule was no longer significant, and costs and a one-day lag removed much of the profit. & Sullivan, Timmermann and White (1999); Bajgrowicz and Scaillet (2012) \\
 \addlinespace[3pt]
-Time-series momentum across many markets & \textbf{Yes} & The strategy was profitable in all 58 contracts, with a Sharpe ratio above one for the diversified portfolio. & Moskowitz, Ooi and Pedersen (2012) \\
+Time-series momentum across many markets & \textbf{Yes} & Profitable in all 58 contracts, with a Sharpe ratio above one for the diversified portfolio. & Moskowitz, Ooi and Pedersen (2012) \\
 \addlinespace[3pt]
-A century of trend following & \textbf{Yes} & A diversified trend strategy earned positive returns in every decade since 1880, after fees. & Hurst, Ooi and Pedersen (2017) \\
+A century of trend following & \textbf{Yes} & Positive returns in every decade since 1880, after fees. & Hurst, Ooi and Pedersen (2017) \\
 \addlinespace[3pt]
-Asset by asset & \textbf{No} & Most single-asset slopes are insignificant, and the pooled test overstated the evidence. & Huang, Li, Wang and Zhou (2020) \\
+Asset by asset & \textbf{No} & Most single-asset slopes are insignificant; the pooled test overstated the evidence. & Huang, Li, Wang and Zhou (2020) \\
 \addlinespace[3pt]
-After 2009 & \textbf{Unclear} & Diversified trend strategies had a long weak period, then strong gains in 2022. & AQR time-series momentum data \\
+After 2009 & \textbf{Unclear} & A long weak period, then strong gains in 2022. & AQR time-series momentum data \\
 \addlinespace[3pt]
-In long market declines & \textbf{Yes} & Trend following made money in most long equity drawdowns, which makes it a useful diversifier. & Moskowitz, Ooi and Pedersen (2012); Hurst, Ooi and Pedersen (2017) \\
+In long market declines & \textbf{Yes} & Made money in most long equity drawdowns, a useful diversifier. & Moskowitz, Ooi and Pedersen (2012); Hurst, Ooi and Pedersen (2017) \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-The trend is not a reliable friend for someone who trades a single stock index with a classic moving-average rule. Those rules worked in the century in which they were found, and not after. Diversified trend following has a much stronger record, but part of its return may come from holding assets that simply rose over time, and its most dependable feature is its tendency to make money during long market declines.
-
-\textbf{What would change the picture.} The evidence would support the weak form of the claim more strongly if diversified trend following kept earning a positive return after 2022 and if more single assets showed significant predictability on their own. It would weaken the claim further if the strategy's return turned out to come mainly from holding stocks and bonds on average rather than from trends.
+\textbf{What would change the picture.} The weak form would gain support if diversified trend following kept earning positive returns after 2022 and more single assets proved predictable on their own. It would weaken if its return turned out to come mainly from holding stocks and bonds rather than from trends.
 
 \subsection{Open questions}
 \label{sec:08-open}
 
 \begin{itemize}
-  \item \textbf{Has trend following become crowded?} Assets in managed-futures funds grew sharply after 2008. Did the extra money weaken trends, and is that why returns were lower after 2009?
-  \item \textbf{Trend or carry?} How much of trend following's long-run return is predictability, and how much is the average return of the assets it tends to hold?
-  \item \textbf{Which window?} Short windows react faster to turning points but trade more. Is there a principled way to choose, or to combine, look-back periods without overfitting?
-  \item \textbf{Will the crisis behavior continue?} Trend following profited in long declines such as 2008 and 2022. Will it do so in the next crisis, which may be faster or shaped differently?
+  \item \textbf{Has trend following become crowded?} Did the money that flowed into managed-futures funds after 2008 weaken trends?
+  \item \textbf{Trend or carry?} How much of the long-run return is predictability, and how much the average return of the assets held?
+  \item \textbf{Which window?} Is there a principled way to choose or combine look-back periods without overfitting?
+  \item \textbf{Will the crisis behavior continue?} Trend following profited in 2008 and 2022. Will it in a faster or differently shaped crisis?
 \end{itemize}
 
 \section{What practitioners and investors can use}
 \label{sec:08-investors}
 
-The evidence in Section~\ref{sec:08-verdict} suggests several practical lessons.
+\textbf{Use trend as a diversifier, not a stand-alone bet.} A modest allocation to diversified trend following has historically reduced the drawdowns of a stock--bond portfolio, but it can go years without gains.
 
-\textbf{Use trend as a diversifier, not as a stand-alone bet.} A modest allocation to a diversified trend strategy has historically reduced the drawdowns of a stock--bond portfolio. It is not a strategy that wins every year, and it can go through years of flat or negative returns.
+\textbf{Prefer breadth and patience.} Many markets and slow signals are more robust than one market and fast signals, which bring more trades, higher costs and more room for overfitting.
 
-\textbf{Prefer breadth and patience.} A trend strategy that holds many markets in several asset classes and uses slow signals is more robust than one that trades a single market with fast signals. Fast rules generate more trades, higher costs and more room for overfitting.
-
-\textbf{Check fees carefully.} Trend-following funds have often charged high fees. Simple rules on liquid futures are cheap to run, so the fee should be judged against what a transparent rule would deliver.
+\textbf{Check fees.} Simple rules on liquid futures are cheap to run, so judge a fund's fee against what a transparent rule would deliver.
 
 \textbf{Questions to ask a trend-following manager:}
 
 \begin{enumerate}
-  \item How many signal variants did you test before choosing the ones you use, and were the choices fixed before the backtest\index{backtest}?
-  \item How did the strategy perform after 2009, and in 2022?
-  \item What would the strategy have done in a one-day crash such as October 1987, and in a sharp rebound such as March 2009?
-  \item How much of the long-run return comes from being long stocks and bonds on average?
-  \item What are the turnover, trading costs and fees, and what is the return after all three?
+  \item How many signal variants did you test, and were your choices fixed before the backtest\index{backtest}?
+  \item How did the strategy do after 2009, and in 2022?
+  \item What would it have done in a one-day crash such as October 1987, or a sharp rebound such as March 2009?
+  \item How much of the return comes from being long stocks and bonds on average, and what is the return after turnover, costs and fees?
 \end{enumerate}
 
 \begin{callout}
-\textbf{What Failed: fast trend rules on a single stock index.} For decades, newsletters and trading systems sold moving-average rules for timing the stock market, often with backtests on the Dow going back to the early twentieth century. The rules that looked best were short-window rules that traded many times a year. Sullivan, Timmermann and White's test showed what happened next: from 1987 to 1996 the best rules were no longer significant, and on S\&P 500 futures, the market where the rules could actually be traded cheaply, no rule beat the benchmark. The failure was in treating the best rule in a long backtest as a rule with real predictive power. The claim that a fast moving-average rule on a single index beats buy-and-hold \textbf{fails}.
+\textbf{What Failed: fast trend rules on a single stock index.} For decades, newsletters and trading systems sold moving-average rules for timing the stock market, backed by Dow backtests reaching into the early twentieth century, and the best-looking rules traded many times a year. Sullivan, Timmermann and White showed what happened next: from 1987 to 1996 the best rules were no longer significant, and on S\&P 500 futures, where they could be traded cheaply, no rule beat the benchmark. The failure was treating the best rule in a long backtest as one with real predictive power. The claim that a fast moving-average rule on a single index beats buy-and-hold \textbf{fails}.
 \end{callout}

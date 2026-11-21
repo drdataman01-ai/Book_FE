@@ -466,25 +466,21 @@ Three defenses work, and later chapters use all of them.
 \textbf{Lab~\ref{ch:02} at a glance.} \emph{Papers replicated:} the size effect of Banz (1981) before and after publication (Horowitz, Loughran and Savin 2000; Schwert 2003); the survivorship and delisting biases of Brown et al.\ (1992) and Shumway (1997), in a simulated market. \emph{Claim on trial:} free, public data can support a reliable backtest. \emph{Data:} monthly and daily U.S. market returns and size-sorted portfolios\index{portfolio sort} since 1926, from the Kenneth R. French Data Library\index{Kenneth French data library} (downloaded automatically), plus a simulated stock market. \emph{Tools:} Python with pandas, NumPy and matplotlib, plus the fintest module. \emph{Time:} about 90 minutes, including the guided notebook. \emph{Code:} repository folder \texttt{ch02-data-traps/}.
 \end{callout}
 
-The design of this lab draws on a line of well-known studies, each of which showed how one feature of the data can change a result. Brown, Goetzmann, Ibbotson and Ross (1992) suspected that reports of persistent fund performance came partly from funds missing from the samples, and used a simulation to show that dropping the funds that disappear can create patterns in performance that are not really there. Shumway (1997) measured how large the missing delisting losses are. Brock, Lakonishok and LeBaron (1992) tested trading rules that academics had long dismissed and made moving-average rules famous. Because those rules came from a long search by traders on the same data, Sullivan, Timmermann and White (1999) later showed how much of their apparent success came from searching across many rules. Banz (1981) discovered the size effect, and Horowitz, Loughran and Savin (2000) and Schwert (2003) asked whether it lasted once investors knew about it, finding that it weakened after publication and depended heavily on the smallest stocks. Each part of the lab follows the logic of one of these studies, using free data, so that you can see the problem for yourself.
+Each part of the lab follows one study that showed how a feature of the data can change a result. Brown, Goetzmann, Ibbotson and Ross (1992) showed by simulation that dropping funds that disappear can create false persistence, and Shumway (1997) measured the missing delisting losses. Brock, Lakonishok and LeBaron (1992) made moving-average rules famous, and Sullivan, Timmermann and White (1999) showed how much of their success came from searching across many rules. Banz (1981) discovered the size effect, and Horowitz, Loughran and Savin (2000) and Schwert (2003) found that it weakened after publication and depended on the smallest stocks.
 
-The lab measures each of the problems from Sections~\ref{sec:02-returns} to~\ref{sec:02-microcaps} in turn. Three of its parts use real data, while the part on survivorship uses a simulation. 
-The reason for the simulation is itself part of the lesson. To measure survivorship bias, we need to compare a backtest on all companies, including the ones that failed, with the same backtest on the survivors alone. Free stock-price sites list mainly the companies that still exist, so the failures are missing. The French library does include failed companies, but only inside its portfolio returns, so we cannot take them out to see how much difference they make. A simulation solves this problem, because it gives us the full history of every company, including the ones that disappear.
-
+The lab measures the problems of Sections~\ref{sec:02-returns} to~\ref{sec:02-microcaps} in turn, three with real data and survivorship with a simulation. The reason for the simulation is part of the lesson. Measuring survivorship bias requires the same backtest with and without the failed companies. Free price sites list mainly survivors, and the French library includes failures only inside its portfolio returns, so neither lets us take them out. A simulation gives the full history of every company.
 
 \subsection*{Part A: Arithmetic versus geometric averages}
 
-\textbf{Predict first.} Before running this part, write down which of the four portfolios you expect to show the largest gap between its arithmetic and geometric average returns, and roughly how large you expect that gap to be.
+\textbf{Predict first.} Which of the four portfolios will show the largest gap between its arithmetic and geometric averages, and how large will it be?
 
-The lab computes both averages for Treasury bills, the stock market, and the largest and smallest 10\% of stocks, annualizing each in the same way so that the comparison is fair. It then compares each measured gap with the volatility-drag approximation from Section~\ref{sec:02-returns}, which says that the geometric average is roughly the arithmetic average minus half the variance\index{variance}, $G \approx A - \sigma^2/2$ (Lab Figure~\ref{ch:02}.1). You should expect almost no gap for Treasury bills, a gap of about 2 percentage points a year for the market, and the largest gap, several points a year, for the smallest stocks. If a measured gap differs from the approximation, ask why. The approximation assumes that returns are close to normally distributed, and the returns of small stocks are not.
+The lab computes both averages for Treasury bills, the market, and the largest and smallest 10\% of stocks, annualized in the same way, and compares each gap with the volatility-drag approximation of Section~\ref{sec:02-returns}, $G \approx A - \sigma^2/2$\index{variance} (Lab Figure~\ref{ch:02}.1). Expect almost no gap for Treasury bills, about 2 percentage points a year for the market, and several points for the smallest stocks. Where a gap differs from the approximation, the reason is that small-stock returns are far from normal.
 
 \subsection*{Part B: Survivorship bias in a market where the truth is known}
 
-\textbf{Predict first.} Before running this part, write down how much you expect survivorship bias to add to the market's average return each year.
+\textbf{Predict first.} How much will survivorship bias add to the market's average return each year?
 
-With real data we never know the true answer, so the lab builds a market in which we do. This approach follows Brown, Goetzmann, Ibbotson and Ross (1992), who simulated funds with no skill and showed that keeping only the survivors made their performance appear to persist. The lab simulates about 2,000 listed companies over 30 years, and every company has the \textbf{same expected return}, so no stock or strategy has a real advantage. Following Shumway (1997), a company whose price falls below 20\% of its listing price is delisted with a final return of $-30$\%. Other companies are acquired at a premium, meaning that a buyer pays shareholders more than the current share price, and every company that leaves is replaced by a new listing.
-
-From this single simulated history, the lab builds three datasets:
+Following Brown and colleagues (1992), the lab simulates about 2,000 listed companies over 30 years, all with the \textbf{same expected return}, so no stock or strategy has a real advantage. Following Shumway (1997), a company whose price falls below 20\% of its listing price is delisted with a final return of $-30$\%. Others are acquired at a premium, a price above the current share price, and every company that leaves is replaced. From this one history the lab builds three datasets:
 
 \begin{center}
 \small
@@ -499,9 +495,7 @@ Survivors only & Only companies still listed at the end & Today's stocks downloa
 \end{tabularx}
 \end{center}
 
-On each dataset, the lab measures two things. The first is the equal-weighted market return. The second is the return of a strategy that each month buys the most volatile fifth of stocks and sells the least volatile fifth, where volatility is measured using past returns only (Lab Figure~\ref{ch:02}.2). The full data give the true answer, so any difference in the other two datasets comes entirely from the way they were built.
-
-With the lab's default settings (2,000 listed companies, 30 years and seed 2026), 5,856 companies are listed over the period, 1,693 of them are delisted for poor performance, and 2,000 survive to the end. The results are as follows:
+On each, it measures the equal-weighted market return and a strategy that each month buys the most volatile fifth of stocks and sells the least volatile fifth, using past returns only (Lab Figure~\ref{ch:02}.2). The full data give the true answer, so any difference comes from how the other datasets were built. With the default settings (seed 2026), 5,856 companies are listed, 1,693 are delisted for poor performance, and 2,000 survive:
 
 \begin{center}
 \small
@@ -516,21 +510,21 @@ Survivors only & 14.0\% & $+12.0$\% & 14.7 \\
 \end{tabularx}
 \end{center}
 
-Read the table from top to bottom. In the full data, the volatile-minus-calm strategy loses about 1\% a year, because volatile companies are delisted more often. Leaving out only the delisting returns flips the sign, so that the strategy now appears to earn 2\% a year. Keeping only the survivors adds almost five percentage points a year to the market's return and creates a ``volatility premium'' of 12\% a year, with a t-statistic far beyond any hurdle in this book. None of this premium is real. Compare these numbers with your prediction.
+In the full data, the volatile-minus-calm strategy loses about 1\% a year, because volatile companies are delisted more often. Leaving out only the delisting returns flips the sign to a gain of 2\% a year. Keeping only the survivors adds almost five points a year to the market's return and creates a ``volatility premium'' of 12\% a year with a t-statistic of 14.7. None of it is real. Compare these numbers with your prediction.
 
 \subsection*{Part C: Look-ahead bias}
 
-\textbf{Predict first.} Before running this part, write down whether you expect a one-day timing error to change a strategy's Sharpe ratio a little or a lot.
+\textbf{Predict first.} Will a one-day timing error change a strategy's Sharpe ratio a little or a lot?
 
-\textbf{C1. Trading on the same day's close.} This part tests a classic timing rule, which holds stocks when the market closes above its 200-day \textbf{moving average}\index{moving average|textbf}, the average closing price over the past 200 trading days, and holds Treasury bills otherwise. Brock, Lakonishok and LeBaron (1992) studied rules of this kind on nearly a century of daily Dow Jones data and found that they appeared to predict returns. The lab runs the rule in two ways. The correct version makes its decision at yesterday's close and earns today's return, whereas the look-ahead version makes its decision at today's close but is still credited with today's return. The two versions differ by a single day, which is the kind of error that can hide in one misplaced line of code. Compare their returns and Sharpe ratios (Lab Figure~\ref{ch:02}.3).
+\textbf{C1. Trading on the same day's close.} The rule holds stocks when the market closes above its 200-day \textbf{moving average}\index{moving average|textbf}, the average close over the past 200 trading days, and Treasury bills otherwise, a rule of the kind Brock, Lakonishok and LeBaron (1992) found to predict returns. The correct version decides at yesterday's close and earns today's return; the look-ahead version decides at today's close but is still credited with today's return. The one-day difference can hide in one misplaced line of code (Lab Figure~\ref{ch:02}.3).
 
-\textbf{C2. Choosing the window with hindsight.} Next, the lab tests moving-average windows from 20 to 300 days and chooses one of them in two ways. The hindsight version picks the window with the best Sharpe ratio over the whole evaluation period. The walk-forward version picks, each January, the window that had worked best up to that point, using only past data (Lab Figure~\ref{ch:02}.4). The gap between the two versions measures how much a result is inflated by choosing a rule's settings after seeing the results. Sullivan, Timmermann and White (1999) made the same point on a much larger scale. They expanded the rules of Brock, Lakonishok and LeBaron to a universe of several thousand and adjusted for the search with a bootstrap\index{bootstrap}, a method that reshuffles the actual data many times to see how good the best rule would look by luck alone. The best rule still looked strong in the original sample, but it did not continue to outperform in the decade that followed.
+\textbf{C2. Choosing the window with hindsight.} The lab tests windows from 20 to 300 days. The hindsight version picks the window with the best Sharpe ratio over the whole period; the walk-forward version picks, each January, the window that had worked best so far (Lab Figure~\ref{ch:02}.4). The gap measures the inflation from choosing settings after seeing the results. Sullivan, Timmermann and White (1999) made the same point at scale: across several thousand rules, adjusted for the search with a bootstrap\index{bootstrap} that reshuffles the data to see how good the best rule would look by luck, the best rule still looked strong in sample but did not keep outperforming in the following decade.
 
 \subsection*{Part D: Micro-caps, weighting and the size premium}
 
-\textbf{Predict first.} Before running this part, write down whether you expect the size premium to be larger in value-weighted or in equal-weighted portfolios, and whether you expect it to survive after 1981.
+\textbf{Predict first.} Will the size premium be larger with value or equal weights, and will it survive after 1981?
 
-Using size-sorted portfolios, the lab measures the \textbf{size premium}\index{size premium|textbf}, which is the return of the smallest tenth of stocks minus the return of the largest tenth. It does so in four ways, using value weights and equal weights, each with and without the smallest tenth of stocks. It then splits the sample into the years before and after Banz published his finding in 1981 (Lab Figure~\ref{ch:02}.5). Together, these steps test the What Failed box in Section~\ref{sec:02-microcaps} directly. They also repeat, with free data, two tests from the literature. Horowitz, Loughran and Savin (2000) found that removing the very smallest firms eliminated any statistically significant\index{statistical significance} size effect, and Schwert (2003) found that the size effect weakened after the papers that reported it were published. If the premium lives mainly in tiny, hard-to-trade stocks, or if it disappeared after it was published, the claim weakens.
+The lab measures the \textbf{size premium}\index{size premium|textbf}, the smallest tenth of stocks minus the largest tenth, with value and equal weights, each with and without the smallest tenth, before and after Banz's 1981 publication (Lab Figure~\ref{ch:02}.5). This tests the What Failed box in Section~\ref{sec:02-microcaps} and repeats two published tests with free data: Horowitz, Loughran and Savin (2000) found that removing the smallest firms eliminated any statistically significant\index{statistical significance} size effect, and Schwert (2003) found that it weakened after publication. If the premium lives mainly in tiny stocks or disappeared after publication, the claim weakens.
 
 \emph{[Draft note: figures and numbers for Parts A, C and D are generated from the Kenneth R. French data at the time of publication; the book prints those results. The Part B simulation is fixed by design and its results can be printed as they stand.]}
 
@@ -541,7 +535,7 @@ Write one sentence for each problem, saying how much it changed the result and i
 \section{Where the evidence stands}
 \label{sec:02-verdict}
 
-The published studies cited in this chapter point to a clear pattern: \textbf{free, public data can support a reliable backtest, but only when the data include failed companies and the backtest avoids hindsight and checks how its portfolios are weighted.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+The published studies point to a clear pattern: \textbf{free, public data can support a reliable backtest, but only when the data include failed companies and the backtest avoids hindsight and checks how its portfolios are weighted.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
 
 \begin{center}
 \small
@@ -564,39 +558,32 @@ Findings tested only on the data where they were found & \textbf{Partly} & The w
 \end{tabularx}
 \end{center}
 
-Together, these findings turn into four conditions that a backtest built on free data must meet:
+A backtest built on free data must therefore meet four conditions:
 
 \begin{enumerate}
-  \item \textbf{Use the right returns.} Use total returns, compare them with a total-return benchmark, and quote the geometric average when reporting growth (Section~\ref{sec:02-returns}).
-  \item \textbf{Include the failures.} Use data that include failed companies, such as the French library's portfolios, rather than a list of today's stocks (Section~\ref{sec:02-survivorship}).
-  \item \textbf{Use only what was known.} Lag every signal and every accounting figure, and choose a rule's settings with walk-forward tests (Section~\ref{sec:02-lookahead}).
-  \item \textbf{Check the weighting.} Confirm that the result survives value weighting and the removal of micro-caps (Section~\ref{sec:02-microcaps}).
+  \item \textbf{Use the right returns:} total returns, a total-return benchmark, and the geometric average for growth (Section~\ref{sec:02-returns}).
+  \item \textbf{Include the failures,} for example by using the French library's portfolios rather than a list of today's stocks (Section~\ref{sec:02-survivorship}).
+  \item \textbf{Use only what was known:} lag every signal and accounting figure, and choose settings with walk-forward tests (Section~\ref{sec:02-lookahead}).
+  \item \textbf{Check the weighting:} confirm that the result survives value weighting and the removal of micro-caps (Section~\ref{sec:02-microcaps}).
 \end{enumerate}
 
-A backtest that skips these steps can look excellent and still mean nothing, while one that follows them can be trusted as far as its statistics allow.
+A backtest that skips these steps can look excellent and mean nothing; one that follows them can be trusted as far as its statistics allow.
 
-\textbf{What would change the picture.} The evidence would support the claim more broadly if free sources began to publish stock-level data that include delisted companies, so that individual-stock strategies could be tested without a paid database. It would weaken the claim if the portfolio data built from CRSP were found to contain errors of their own that change published results.
+\textbf{What would change the picture.} The claim would gain broader support if free sources published stock-level data that include delisted companies, and would weaken if the CRSP-based portfolio data were found to contain errors that change published results.
 
 \section{What practitioners and investors can use: a data checklist}
 \label{sec:02-checklist}
 
-The evidence in Section~\ref{sec:02-verdict} turns into a practical checklist. Before you trust any backtest, whether it is your own or someone else's, work through the following questions. Each question corresponds to a section of this chapter, and most of them can be answered in a few minutes.
+Before you trust any backtest, your own or someone else's, work through these questions. Most take a few minutes.
 
 \begin{itemize}
-  \item[$\square$] \textbf{Returns (Section~\ref{sec:02-returns}):} Are the returns total returns that include dividends? Are they compared with a total-return benchmark? Is the reported average arithmetic or geometric?
+  \item[$\square$] \textbf{Returns (Section~\ref{sec:02-returns}):} Are they total returns, compared with a total-return benchmark? Is the average arithmetic or geometric?
   \item[$\square$] \textbf{Excess returns (Section~\ref{sec:02-returns}):} Is performance measured above the risk-free rate?
-  \item[$\square$] \textbf{Survivorship (Section~\ref{sec:02-survivorship}):} Does the dataset include companies or funds that no longer exist, and are their delisting returns included?
-  \item[$\square$] \textbf{Look-ahead (Section~\ref{sec:02-lookahead}):} Is every signal lagged so that it uses only information available before the trade, and are accounting data lagged to their publication dates?
+  \item[$\square$] \textbf{Survivorship (Section~\ref{sec:02-survivorship}):} Are companies or funds that no longer exist included, with their delisting returns?
+  \item[$\square$] \textbf{Look-ahead (Section~\ref{sec:02-lookahead}):} Is every signal lagged, and are accounting data lagged to their publication dates?
   \item[$\square$] \textbf{Hindsight choices (Section~\ref{sec:02-lookahead}):} Were any parameters, thresholds or universes chosen using the whole sample?
-  \item[$\square$] \textbf{Weighting (Section~\ref{sec:02-microcaps}):} Is the portfolio value-weighted or equal-weighted, and does the result survive without micro-caps?
-  \item[$\square$] \textbf{Shared data (Section~\ref{sec:02-snooping}):} Has the result been tested on data that played no part in its discovery, such as other periods, other markets or the years after publication?
+  \item[$\square$] \textbf{Weighting (Section~\ref{sec:02-microcaps}):} Is the portfolio value- or equal-weighted, and does the result survive without micro-caps?
+  \item[$\square$] \textbf{Shared data (Section~\ref{sec:02-snooping}):} Has the result been tested on other periods, other markets or the years after publication?
 \end{itemize}
 
-\textbf{Questions to ask a fund manager or strategy vendor}
-
-\begin{itemize}
-  \item Which database was the backtest built on, and does it include delisted stocks and their delisting returns?
-  \item How were the signals lagged, and when would each piece of data actually have been available?
-  \item Is the strategy value-weighted or equal-weighted, and what share of its return comes from the smallest stocks?
-  \item Is the reported return an arithmetic or a compound average, and is it measured before or after costs?
-\end{itemize}
+\textbf{Questions to ask a fund manager or strategy vendor:} Which database was the backtest built on, and does it include delisted stocks and their returns? How were the signals lagged? Is the strategy value- or equal-weighted, and how much of its return comes from the smallest stocks? Is the reported return arithmetic or compound, and before or after costs?

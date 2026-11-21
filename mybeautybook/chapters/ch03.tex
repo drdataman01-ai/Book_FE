@@ -730,15 +730,11 @@ errors.
 \textbf{Lab~\ref{ch:03} at a glance.} \emph{Papers replicated:} the time-series regressions of Fama and French (1993) on their 25 portfolios; a multiple-testing experiment after Harvey, Liu and Zhu (2016). All data are free. \emph{Claim on trial:} additional factors improve our ability to explain differences in portfolio returns, but testing many candidate factors can produce false discoveries. \emph{Data:} monthly returns on the 25 Fama--French portfolios formed on size and book-to-market, together with the market, size and value factors, from the Kenneth R. French Data Library\index{Kenneth French data library}. \emph{Tools:} Python with pandas, NumPy, SciPy and matplotlib, plus the fintest module. \emph{Time:} about two hours, including the guided notebook. \emph{Code:} repository folder \texttt{ch03-multifactor-models/}.
 \end{callout}
 
-This lab examines two important questions in empirical asset pricing. First, do additional risk factors improve our ability to explain stock returns? Second, when researchers test hundreds of potential factors, how can we distinguish genuine discoveries from results that arise by chance?
-
-Part~A replicates the central empirical analysis of Fama and French (1993), using the 25 portfolios formed on size and book-to-market to estimate the CAPM and the Fama--French three-factor model. Readers compare the explanatory power and estimated factor exposures of the two models. Part~B conducts a controlled multiple-testing experiment inspired by Harvey, Liu and Zhu (2016), demonstrating why conventional significance thresholds can produce many false discoveries when researchers examine a large number of candidate factors. Part~C examines the economic significance of factor premiums and considers whether statistically significant results translate into attractive investment opportunities.
+The lab asks two questions: do additional factors improve our ability to explain returns, and when hundreds of factors are tested, how can genuine discoveries be told apart from chance? Part~A replicates Fama and French (1993), Part~B runs a multiple-testing experiment inspired by Harvey, Liu and Zhu (2016), and Part~C asks whether statistically significant premiums are also economically attractive.
 
 \subsection*{Part A: Replicating the Fama--French three-factor model}
 
-The 25 portfolios formed on size and book-to-market are the classic \textbf{test assets}\index{factor!test assets|textbf} of Fama and French (1993): the portfolios whose returns an asset-pricing model is designed to explain. The lab uses monthly data beginning in July 1963 and estimates two models for each portfolio.
-
-The first is the CAPM:
+The 25 portfolios formed on size and book-to-market are the classic \textbf{test assets}\index{factor!test assets|textbf} of Fama and French (1993), the portfolios a model is meant to explain. Using monthly data from July 1963, the lab estimates two models for each portfolio. The first is the CAPM:
 \begin{equation}
   R^{e}_{i,t}
   = \alpha_i+\beta_{i,M}R^{e}_{m,t}+\varepsilon_{i,t}.
@@ -753,35 +749,19 @@ The second is the Fama--French three-factor model:
   +\beta_{i,H}HML_t+\varepsilon_{i,t},
   \label{eq:04-lab-ff3}
 \end{equation}
-where $R^{e}_{m,t}$ is the market excess return, which the French library labels Mkt-RF, $SMB$ is the return on small stocks minus large stocks, and $HML$ is the return on high book-to-market stocks minus low book-to-market stocks.
+where $R^{e}_{m,t}$ is the market excess return (Mkt-RF in the French library), $SMB$ is the return on small minus large stocks, and $HML$ is the return on high minus low book-to-market stocks.
 
-For each portfolio, the lab reports the estimated alpha, factor loadings and $R^2$. Readers then compare the results from the two models. Adding $SMB$ and $HML$ should improve the model's ability to explain the returns of portfolios formed on size and book-to-market. The estimated factor loadings also reveal how different portfolios are exposed to market, size and value risks.
-
-The results illustrate an important distinction. A higher $R^2$ means that the model explains more of the variation in portfolio returns. It does not necessarily mean that the model fully explains differences in average returns or that every estimated alpha is zero. The estimated alphas provide an additional way to examine the returns that remain unexplained by the included factors.
+For each portfolio the lab reports the alpha, the factor loadings and the $R^2$. Adding $SMB$ and $HML$ should raise the $R^2$, and the loadings show how each portfolio is exposed to market, size and value risk. But a higher $R^2$ means only that the model explains more of the variation in returns, not that it explains differences in average returns; the alphas show what remains unexplained.
 
 \subsection*{Part B: A multiple-testing experiment}
 
-The factor zoo creates a different statistical problem. If researchers test enough candidate factors, some will appear significant simply by chance, even when none has a genuine return premium.
+If enough candidate factors are tested, some will look significant by chance. The lab simulates 1,000 factors whose true premium is zero, so every rejection is a false discovery, and tests each premium at two thresholds: the conventional $|t|>1.96$, a two-sided 5\% test that counts a surprisingly positive or negative premium as a discovery, and the stricter $|t|>3.0$ suggested by Harvey, Liu and Zhu (2016). At 1.96, about 50 of the 1,000 should look significant on average; at 3.0, far fewer.
 
-To see why, consider 1,000 candidate factors, each of which has a true expected premium of zero. The lab simulates monthly returns for these factors and tests whether the average premium of each factor differs from zero. Because the true premium is known to be zero, every rejection is a false discovery.
-
-The experiment applies two significance thresholds:
-\begin{itemize}
-  \item The conventional threshold, $|t|>1.96$, corresponding approximately to a two-sided 5\% test, which counts a result as a discovery whether the premium looks surprisingly positive or surprisingly negative.
-  \item A more demanding threshold, $|t|>3.0$, inspired by the recommendations of Harvey, Liu and Zhu (2016).
-\end{itemize}
-
-The lab repeats the experiment and records the number of false discoveries under each threshold. With 1,000 independent tests and a conventional 5\% significance level, we would expect approximately 50 false positives on average, even though none of the factors has a genuine premium. A higher threshold substantially reduces this number.
-
-This experiment illustrates the basic logic behind the multiple-testing problem. The more candidate factors researchers examine, the greater the chance that some will appear significant by coincidence. Harvey, Liu and Zhu (2016) argue that the conventional $t$-statistic threshold of approximately 2 is too weak for many new factor discoveries and that a higher hurdle is needed.
-
-The simulation is deliberately simplified: it treats the candidate factors as independent and assumes that their true premiums are zero. In actual asset-pricing research, candidate factors may be correlated, and some may have genuine economic foundations. The experiment is therefore not a replication of Harvey, Liu and Zhu (2016), but a demonstration of the statistical problem that motivates their analysis.
+The simulation is deliberately simple. Real candidate factors are correlated and some have genuine economic foundations, so this is not a replication of Harvey, Liu and Zhu but a demonstration of the problem that motivates their higher hurdle.
 
 \subsection*{Part C: Statistical and economic significance}
 
-A factor can have a statistically significant premium without offering an attractive investment opportunity. The final part of the lab examines the size of the estimated factor premiums and their potential economic value.
-
-For each factor, the lab calculates its average monthly return, annualized premium and annualized Sharpe ratio. For a factor with monthly mean return $\bar{f}$ and standard deviation $s_f$, the annualized quantities are
+A significant premium is not necessarily an attractive investment. For a factor with monthly mean return $\bar{f}$ and standard deviation $s_f$, the lab computes
 \begin{equation}
   \text{Annualized premium}=12\bar{f},
   \qquad
@@ -790,10 +770,7 @@ For each factor, the lab calculates its average monthly return, annualized premi
   \label{eq:04-lab-sharpe}
 \end{equation}
 
-Readers then consider whether the estimated premiums are large enough to matter in practice. A strategy may have a statistically significant premium but require frequent trading, substantial turnover or investment in illiquid stocks. Transaction costs and implementation constraints can reduce or eliminate its apparent advantage.
-
-The purpose is not to decide whether every factor is investable. Rather, it is to recognize that statistical evidence is only one part of evaluating an investment strategy. A credible finding should also have an economically meaningful magnitude and remain attractive after realistic implementation costs are considered.
-
+Readers then ask whether each premium is large enough to matter once frequent trading, high turnover or illiquid stocks are taken into account, since transaction costs can reduce or eliminate it. Statistical evidence is only one part of judging a strategy; a credible finding must also be economically meaningful after realistic costs.
 
 \subsection*{Your verdict}
 
@@ -802,7 +779,7 @@ Reach your own verdict on the claim from the numbers in your own run, using the 
 \section{Where the evidence stands}
 \label{sec:04-verdict}
 
-The published studies cited in this chapter point to a clear pattern: \textbf{adding size and value to the market explains differences in portfolio returns that beta alone cannot, but many of the factors proposed since are likely to be false discoveries, so a new factor must clear a higher bar.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+The published studies point to a clear pattern: \textbf{adding size and value to the market explains differences in portfolio returns that beta alone cannot, but many of the factors proposed since are likely to be false discoveries, so a new factor must clear a higher bar.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
 
 \begin{center}
 \small
@@ -825,31 +802,24 @@ Hundreds of new factors judged at $t > 2$ & \textbf{No} & So many factors have b
 \end{tabularx}
 \end{center}
 
-Together, these findings turn into three conditions that a factor must meet before it is accepted:
+A factor should therefore meet three conditions before it is accepted:
 
 \begin{enumerate}
-  \item \textbf{It explains returns that existing factors do not.} A higher $R^2$ is a start, but the pricing errors, the alphas, must also shrink toward zero.
-  \item \textbf{It clears a bar that allows for the search.} Because hundreds of factors have been tested on the same data, a $t$-statistic of about 2 is weak evidence, and a hurdle closer to 3 is safer.
-  \item \textbf{It matters economically.} The premium must be large enough to survive risk, trading costs and implementation constraints, and there should be a convincing reason why it exists.
+  \item \textbf{It explains returns that existing factors do not:} a higher $R^2$ is a start, but the alphas must also shrink toward zero.
+  \item \textbf{It clears a bar that allows for the search:} after hundreds of factors tested on the same data, a hurdle closer to 3 than 2 is safer.
+  \item \textbf{It matters economically:} the premium must survive risk, trading costs and implementation constraints, with a convincing reason why it exists.
 \end{enumerate}
 
-\textbf{What would change the picture.} The evidence would support the claim more strongly if the size and value premiums held up in data that played no part in their discovery, such as other countries and the years after publication, with a settled explanation of why they exist. It would weaken the claim if the profitability and investment factors, like many others in the zoo, faded once they were published.
+\textbf{What would change the picture.} The claim would gain support if the size and value premiums held up in other countries and after publication, with a settled explanation of why they exist, and would weaken if the profitability and investment factors faded once published, like many others in the zoo.
 
 \section{What practitioners and investors can use}
 \label{sec:04-investors}
 
-The evidence in Section~\ref{sec:04-verdict} suggests a few useful habits for judging any claim about returns.
-
 \textbf{Rules of thumb:}
 \begin{enumerate}
-  \item \textbf{Separate alpha from factor exposure.} Many index funds and factor ETFs now offer exposure to size, value and other known factors at low cost. When a fund charges higher fees for active management, or claims that its manager has skill, check how much of its return comes from steady exposure to those same factors. 
-  \item \textbf{Be cautious with new factors that only just clear the usual bar.} Because so many factors have been tested on the same data, a $t$-statistic of 2 is weaker evidence than it looks. Harvey, Liu and Zhu (2016) suggest a hurdle closer to 3. Remember, too, that among 25 portfolios tested at the 5\% level, one or two will usually look significant by chance.
-  \item \textbf{Look at returns after costs.} A statistically significant alpha can still be too small to survive trading costs, short-selling fees and management fees. Chapter~\ref{ch:13} shows how to make that comparison.
+  \item \textbf{Separate alpha from factor exposure.} Index funds and factor ETFs offer size, value and other known factors cheaply. When a fund charges more for active management, check how much of its return comes from those same factors.
+  \item \textbf{Be cautious with new factors that only just clear the usual bar.} A $t$-statistic of 2 is weaker evidence than it looks (Harvey, Liu and Zhu 2016 suggest about 3), and among 25 portfolios tested at 5\%, one or two will usually look significant by chance.
+  \item \textbf{Look at returns after costs.} A significant alpha can still be too small to survive trading costs, short-selling fees and management fees (Chapter~\ref{ch:13}).
 \end{enumerate}
 
-\textbf{Questions to ask fund managers:}
-\begin{itemize}
-  \item How much of your performance comes from alpha, and how much from exposure to factors that a low-cost index or factor fund would also provide?
-  \item How many models or variations did you test before choosing this strategy?
-  \item What is the confidence interval for your alpha, and how large is the alpha after fees and trading costs?
-\end{itemize}
+\textbf{Questions to ask fund managers:} How much of your performance is alpha, and how much is exposure to factors a low-cost fund would also provide? How many models or variations did you test before choosing this strategy? What is the confidence interval for your alpha, and how large is it after fees and trading costs?

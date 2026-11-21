@@ -549,28 +549,27 @@ The first breakdown comes from the model itself: it would happen even if Black--
 \textbf{Claim.} An option seller who delta-hedges as Black--Scholes prescribes is left with little risk. Hedging removes most of the variance of the unhedged position, and what remains is small, symmetric, and shrinks as hedging becomes more frequent.
 \end{callout}
 
-This claim is what justifies treating an option's Black--Scholes price as its cost of production. To test it, four points need to be settled:
+This claim justifies treating an option's Black--Scholes price as its cost of production. Four points need to be settled:
 
 \begin{itemize}
-  \item \textbf{Little risk compared with what.} The benchmark is the unhedged short option. A hedge that removes 90\% of its variance and leaves errors of about a fifth of the premium, as daily hedging does when the model holds, meets the claim. A hedge that sometimes leaves losses of several times the premium does not.
-  \item \textbf{Which volatility.} The seller must price and hedge at some volatility. The test uses the VIX\index{VIX}, the market's implied volatility, so it asks whether hedging at the market's price leaves little risk.
-  \item \textbf{Which measure.} The standard deviation of the hedging error captures everyday risk. The worst 1\% of outcomes\index{quantile} and the worst month capture the risk of extreme losses. The claim requires both to be small.
-  \item \textbf{What would count against it.} The claim fails if hedging on real paths leaves much more risk than on simulated Black--Scholes paths, if the remaining errors include occasional very large losses\index{fat tails}, or if hedging more often fails to reduce them.
+  \item \textbf{Little risk compared with what.} The benchmark is the unhedged short option. Removing 90\% of its variance and leaving errors of about a fifth of the premium, as daily hedging does when the model holds, meets the claim; occasional losses of several times the premium do not.
+  \item \textbf{Which volatility.} The test prices and hedges at the VIX\index{VIX}, the market's implied volatility.
+  \item \textbf{Which measure.} The standard deviation of the hedging error for everyday risk, and the worst 1\% of outcomes\index{quantile} and worst month for extreme losses. Both must be small.
+  \item \textbf{What would count against it.} Much more risk on real paths than on simulated Black--Scholes paths, occasional very large losses\index{fat tails}, or errors that do not shrink with more frequent hedging.
 \end{itemize}
 
 \section{The original evidence}
 \label{sec:14-evidence}
 
-\textbf{The model.} Black and Scholes (1973) derived the option price from a hedging argument, and Merton (1973) generalized it and set out the conditions under which it holds. Early tests, including the authors' own (Black and Scholes 1972), found the model a useful approximation, with systematic differences from market prices. Within a few years, Black--Scholes prices and deltas were standard on trading floors.
+\textbf{The model.} Black and Scholes (1973) derived the option price from a hedging argument, and Merton (1973) generalized it. Early tests, including the authors' own (Black and Scholes 1972), found it a useful approximation with systematic differences from market prices, and within a few years its prices and deltas were standard on trading floors.
 
-\textbf{Trading costs.}\index{transaction costs|textbf} Leland (1985) showed that with trading costs proportional to the amount traded, perfect replication is impossible, because hedging continuously would cost an infinite amount. He proposed hedging at intervals and pricing the option at a higher volatility, so that a seller is paid for the expected costs. The adjustment grows as the hedge is adjusted more often. Even in theory, then, the seller must trade off hedging error against trading costs.
+\textbf{Trading costs.}\index{transaction costs|textbf} Leland (1985) showed that with costs proportional to trading, continuous hedging would cost an infinite amount, so perfect replication is impossible. He proposed hedging at intervals and pricing at a higher volatility, so that even in theory the seller trades off hedging error against costs.
 
-\textbf{The smile after 1987.}\index{volatility smile} Rubinstein (1994) showed that before October 1987, S\&P 500 index options at different strikes had roughly the same implied volatility, as Black--Scholes requires. After the crash, a strong skew appeared, with low-strike puts priced at much higher implied volatilities, and it has lasted ever since. He developed implied binomial trees, a method for pricing options that lets prices move up or down step by step in a way that fits the skew. The smile is direct evidence that the market does not price options as if Black--Scholes held.
+\textbf{The smile after 1987.}\index{volatility smile} Rubinstein (1994) showed that before October 1987, S\&P 500 options at different strikes had roughly the same implied volatility, as Black--Scholes requires; after the crash, low-strike puts carried much higher implied volatilities, a skew that has lasted ever since. The market does not price options as if Black--Scholes held.
 
-\textbf{Better models.} Bakshi, Cao and Chen (1997) tested models of S\&P 500 options that allow volatility and interest rates to change at random and allow prices to jump. Adding changing volatility and jumps improved pricing. For hedging, allowing volatility to change gave the best results, while adding jumps helped pricing but not hedging, because a jump cannot be hedged with the underlying asset at all.
+\textbf{Better models.} Bakshi, Cao and Chen (1997) found that letting volatility change at random and allowing price jumps improved the pricing of S\&P 500 options. For hedging, changing volatility helped most, while jumps helped pricing but not hedging, because a jump cannot be hedged with the underlying asset.
 
-\textbf{Portfolio insurance.} The most important test of dynamic replication was not an academic study. In the 1980s, portfolio insurance programs traded index futures to copy a protective put on large stock portfolios. The Brady Commission (Presidential Task Force on Market Mechanisms 1988) estimated that \$60 to \$90 billion of stock portfolios were covered by portfolio insurance when the market crashed in October 1987. The What Failed box in Section~\ref{sec:14-investors} tells what happened.
-
+\textbf{Portfolio insurance.} The most important test of dynamic replication was not an academic study. In the 1980s, portfolio insurance programs traded index futures to copy a protective put, and \$60 to \$90 billion of stock portfolios were covered when the market crashed in October 1987 (Presidential Task Force on Market Mechanisms 1988). The What Failed box in Section~\ref{sec:14-investors} tells what happened.
 
 \section{Lab~\thechapter: Replicating the Black--Scholes hedge along real and simulated paths}
 \label{sec:14-lab}
@@ -579,34 +578,32 @@ This claim is what justifies treating an option's Black--Scholes price as its co
 \textbf{Lab~\ref{ch:17} at a glance.} \emph{Papers replicated:} the Black--Scholes (1973) hedge; the gains on delta-hedged options, in the spirit of Bakshi and Kapadia (2003). \emph{Claim on trial\index{claims-on-trial method}:} an option seller who delta-hedges as Black--Scholes prescribes is left with little risk. \emph{Data:} daily market returns from the Kenneth French\index{Kenneth French data library} library and the VIX from FRED\index{FRED}, from 1990; both are free. \emph{Code:} runs as a script (\texttt{python lab14.py}) or as a notebook with a prediction prompt before each step.
 \end{callout}
 
-At the end of each month, the lab sells a one-month at-the-money call on the market at its Black--Scholes price, using the VIX as the implied volatility. It buys $\Delta$ units of the index with borrowed money at the risk-free rate, adjusts the hedge on a schedule, and pays the option's payoff at expiry. What is left at the end is the \textbf{hedging P\&L}\index{hedging P\&L|textbf}, expressed as a share of the premium. The lab then runs the same strategy on 20 simulated price paths a month, generated with that month's implied volatility, on which the Black--Scholes assumptions hold exactly.
+At each month-end, the lab sells a one-month at-the-money call on the market at its Black--Scholes price, using the VIX as implied volatility, holds $\Delta$ units of the index with borrowed money, adjusts the hedge on a schedule and pays the payoff at expiry. What is left is the \textbf{hedging P\&L}\index{hedging P\&L|textbf}, as a share of the premium. The same strategy runs on 20 simulated paths a month on which the Black--Scholes assumptions hold exactly.
 
-\textbf{Part A, the risk that remains.} The mean, standard deviation, skewness\index{skewness}, worst 1\% of outcomes and worst month of the hedged profit and loss, for hedging daily, every two days, weekly, every two weeks and not at all, on real and simulated paths. The lab also reports the share of the unhedged risk that hedging removes (Lab Figure~\ref{ch:17}.1).
+\textbf{Part A, the risk that remains.} The mean, standard deviation, skewness\index{skewness}, worst 1\% and worst month of the hedged P\&L, hedging daily, every two days, weekly, every two weeks and not at all, on real and simulated paths, and the share of unhedged risk removed (Lab Figure~\ref{ch:17}.1).
 
-\textbf{Part B, where it comes from.} A regression of the actual profit and loss on the gamma--theta approximation of Equation~\eqref{eq:14-pnl}, added up over the month (Lab Figure~\ref{ch:17}.3), and on the gap between implied and realized variance.
+\textbf{Part B, where it comes from.} The actual P\&L regressed on the gamma--theta approximation of Equation~\eqref{eq:14-pnl}, summed over the month (Lab Figure~\ref{ch:17}.3), and on the gap between implied and realized variance.
 
-\textbf{Part C, frictions.} The effect of hedging frequency (Lab Figure~\ref{ch:17}.4) and of trading costs of 0 to 10 basis points\index{basis point} per unit of index traded (Lab Figure~\ref{ch:17}.5).
+\textbf{Part C, frictions.} Hedging frequency (Lab Figure~\ref{ch:17}.4) and costs of 0 to 10 basis points\index{basis point} per unit of index traded (Lab Figure~\ref{ch:17}.5).
 
-\textbf{Part D, the worst months.} For the worst months, the market's move, implied and realized volatility and the largest daily move, together with the share of all losses that came from the worst 5\% of months (Lab Figure~\ref{ch:17}.2).
+\textbf{Part D, the worst months.} Their market move, implied and realized volatility and largest daily move, and the share of all losses from the worst 5\% of months (Lab Figure~\ref{ch:17}.2).
 
-Two design choices matter for interpreting the results. First, pricing at the VIX overstates the implied volatility of at-the-money options, as Chapter~\ref{ch:18} explains, so the \emph{average} hedged profit includes the variance risk premium\index{risk premium} plus some overstatement. The \emph{spread} of the profit and loss, which is what the claim is about, is little affected. Second, a delta-hedged call and a delta-hedged put with the same strike are the same position, so the lab uses calls only.
+Pricing at the VIX overstates at-the-money implied volatility (Chapter~\ref{ch:18}), so the \emph{average} hedged profit includes the variance risk premium\index{risk premium} plus some overstatement, but the \emph{spread} of the P\&L, which the claim is about, is little affected. A delta-hedged call and put with the same strike are the same position, so the lab uses calls only.
 
-\textbf{What the simulated run shows.} On the simulated Black--Scholes paths, daily hedging leaves an average profit near zero and a standard deviation of about 17\% of the premium, in line with the Kamal--Derman formula, and the error falls steadily as hedging becomes more frequent. On simulated GARCH\index{GARCH} paths with occasional very large moves, which stand in for real paths in the test run, daily hedging still removes most of the unhedged risk. But what remains is larger, tilted toward losses and concentrated: the worst 5\% of months produced most of the losses. The gamma--theta approximation explains most of the profit and loss, and the largest departures from it come in months with big daily moves. These results confirm that the code works. They say nothing about real markets. Run the lab on real data to reach your own verdict.
+\textbf{What the simulated run shows.} On Black--Scholes paths, daily hedging leaves an average profit near zero and a standard deviation of about 17\% of the premium, as the Kamal--Derman formula predicts, falling as hedging becomes more frequent. On GARCH\index{GARCH} paths with occasional very large moves, daily hedging still removes most of the risk, but what remains is larger, tilted toward losses and concentrated, with the worst 5\% of months producing most of the losses. These results confirm that the code works. They say nothing about real markets.
 
 \subsection{Robustness checks}
 \label{sec:14-stress}
 
-Results over the full sample can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
+\textbf{Hedging frequency.} When Black--Scholes holds, hedging four times as often halves the error (Figure~\ref{fig:14-freq}). On real paths, only the part of the error from hedging at intervals\index{delta hedging!discrete rebalancing} falls this way, not the parts from jumps and changing volatility. If daily hedging helps much less on real paths than on simulated ones, those risks dominate.
 
-\textbf{Hedging frequency.} When Black--Scholes holds, hedging four times as often halves the error (Figure~\ref{fig:14-freq}). On real paths, the part of the error that comes from hedging at intervals\index{delta hedging!discrete rebalancing} falls in the same way, but the parts that come from jumps and changes in volatility do not. If moving from weekly to daily hedging reduces risk much less on real paths than on simulated ones, the remaining risk is dominated by risks that more frequent hedging cannot remove.
+\textbf{Trading costs.}\index{transaction costs} With costs of a few basis points, daily hedging can eat a large share of the seller's profit, which is why dealers hedge less often than the model prescribes and why Leland's higher-volatility pricing exists.
 
-\textbf{Trading costs.}\index{transaction costs} Every adjustment of the hedge pays a spread. With costs of a few basis points per unit of index traded, daily hedging can eat up a large share of the seller's profit. That is why dealers hedge less often than the model prescribes, and why Leland's higher-volatility pricing exists. The lab's cost experiment shows how quickly the trade-off bites.
+\textbf{Crash months.} The months that matter have jumps: October 1987 (before the sample), August 1998, October 2008, August 2011, August 2015, February 2018 and March 2020. Expect losses of several times the premium in them even with daily hedging.
 
-\textbf{Crash months.} The months that matter are those with jumps: October 1987 (before the lab's sample), August 1998, October 2008, August 2011, August 2015, February 2018 and March 2020. In each, a one-month option sold at the start of the month faced daily moves far larger than its implied volatility allowed for. Expect the hedged seller's worst months to be these, with losses of several times the premium even with daily hedging.
+\textbf{Realized against implied volatility.} The hedged P\&L is a bet that realized variance will be below implied. When implied is higher, as in most months (Chapter~\ref{ch:18}), the seller profits, but that profit is the variance risk premium, earned by bearing the risk that remains, not evidence that hedging removed it.
 
-\textbf{Realized against implied volatility.} The gamma--theta approximation says that the hedged profit and loss is a bet that realized variance will be below implied variance. When implied volatility is above realized volatility, as it is in most months (Chapter~\ref{ch:18}), the hedged seller makes a profit. That profit is not evidence that hedging removed risk. It is the variance risk premium, earned by bearing the risk that remains. A hedge that leaves a positive average profit and occasional large losses has turned an option position into a bet against volatility, not into a riskless position.
-
-\textbf{The hedge ratio.} Black--Scholes deltas assume that volatility does not change when the price moves. For stock indexes, volatility tends to rise when prices fall (Chapter~\ref{ch:07}). Hull and White (2017) showed that a delta adjusted for this relationship, a \textbf{minimum-variance delta}\index{delta hedging!minimum-variance delta|textbf}, reduces hedging errors for index options. The size of the improvement measures how far off the Black--Scholes hedge ratio is.
+\textbf{The hedge ratio.} Black--Scholes deltas assume volatility does not move with the price, but index volatility rises when prices fall (Chapter~\ref{ch:07}). Hull and White (2017) showed that a \textbf{minimum-variance delta}\index{delta hedging!minimum-variance delta|textbf}, adjusted for this, reduces hedging errors for index options.
 
 \subsection*{Your verdict}
 
@@ -615,7 +612,7 @@ Reach your own verdict on the claim from the numbers in your own run, using the 
 \section{Where the evidence stands}
 \label{sec:14-verdict}
 
-The published studies cited in this chapter point to a clear pattern: \textbf{delta hedging removes most of the everyday risk of an option position, but what remains is a bet on realized against implied volatility, with large losses in jumps and volatility spikes that more frequent hedging cannot remove.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you check these findings with free data.
+The published studies point to a clear pattern: \textbf{delta hedging removes most of the everyday risk of an option position, but what remains is a bet on realized against implied volatility, with large losses in jumps and volatility spikes that more frequent hedging cannot remove.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.48\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -633,58 +630,49 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Hedging when the model holds & \textbf{Yes} & With continuous, costless trading and constant volatility, replication is exact; hedging daily leaves an error of about a fifth of the premium. & Black and Scholes (1973); Merton (1973); Kamal and Derman (1999) \\
+Hedging when the model holds & \textbf{Yes} & Replication is exact with continuous, costless trading; daily hedging leaves an error of about a fifth of the premium. & Black and Scholes (1973); Merton (1973); Kamal and Derman (1999) \\
 \addlinespace[3pt]
-Hedging with trading costs & \textbf{No} & Perfect replication is impossible: hedging often costs a great deal, and hedging rarely leaves risk. & Leland (1985) \\
+Hedging with trading costs & \textbf{No} & Hedging often costs a great deal, and hedging rarely leaves risk. & Leland (1985) \\
 \addlinespace[3pt]
-Market prices consistent with the model & \textbf{No} & Since 1987 index options have shown a persistent skew, the market's price for the risks the hedge leaves. & Rubinstein (1994) \\
+Market prices consistent with the model & \textbf{No} & Since 1987 index options have shown a persistent skew. & Rubinstein (1994) \\
 \addlinespace[3pt]
-Hedged option positions earn zero & \textbf{No} & Delta-hedged option positions have lost money on average for buyers, a premium for bearing volatility risk. & Bakshi and Kapadia (2003) \\
+Hedged option positions earn zero & \textbf{No} & Delta-hedged positions have lost money on average for buyers, a premium for volatility risk. & Bakshi and Kapadia (2003) \\
 \addlinespace[3pt]
-Better hedges & \textbf{Partly} & Modeling stochastic volatility improves hedging, jumps help pricing but not hedging, and minimum-variance deltas reduce errors for index options. & Bakshi, Cao and Chen (1997); Hull and White (2017) \\
+Better hedges & \textbf{Partly} & Stochastic volatility and minimum-variance deltas improve hedging; jumps help pricing but not hedging. & Bakshi, Cao and Chen (1997); Hull and White (2017) \\
 \addlinespace[3pt]
 Dynamic replication in a crash & \textbf{No} & Portfolio insurers could not trade at the prices their models assumed in October 1987. & Presidential Task Force on Market Mechanisms (1988) \\
 \end{longtable}
 }
 
-The hedging profit and loss is well understood: the gamma--theta approximation explains most of it, and a trader knows what bet the hedged position contains. That is why delta hedging remains the industry's first step, and why dealers also hedge vega and gamma with other options instead of relying on delta alone.
+The gamma--theta approximation explains most of the hedged P\&L, so a trader knows what bet the hedged position contains. That is why delta hedging remains the industry's first step, and why dealers also hedge vega and gamma with other options.
 
-\textbf{What would change the picture.} The evidence would move toward the claim if a simple extension, such as a minimum-variance delta or a small position in other options to hedge vega and gamma, removed most of the large losses on real paths.
+\textbf{What would change the picture.} The claim would gain support if a simple extension, such as a minimum-variance delta or a small position in other options, removed most of the large losses on real paths.
 
 \subsection{Open questions}
 \label{sec:14-open}
 
 \begin{itemize}
-  \item \textbf{How much of the hedged seller's profit is payment for jump risk?} If option sellers earn a positive average profit after hedging, is it just enough to pay for the jumps, or more?
-  \item \textbf{How much better do practical hedges do?} Minimum-variance deltas, hedging vega with other options, and models in which volatility changes all reduce hedging errors. How much of the large losses do they remove on real paths?
-  \item \textbf{Do very short-dated options change the picture?} Options that expire within a day have very large gamma near expiry. Does dealers' hedging of them make intraday moves larger?
-  \item \textbf{Can machine-learning hedges beat Black--Scholes?} ``Deep hedging'' learns hedging rules directly from data, allowing for costs and constraints. Do its gains hold up out of sample\index{in-sample versus out-of-sample} and in crashes?
+  \item \textbf{How much of the hedged seller's profit pays for jump risk,} and is it just enough or more?
+  \item \textbf{How much better do practical hedges do?} How much of the large losses do minimum-variance deltas, vega hedges and stochastic-volatility models remove on real paths?
+  \item \textbf{Do very short-dated options change the picture?} Does dealers' hedging of options that expire within a day, with their very large gamma, make intraday moves larger?
+  \item \textbf{Can machine-learning hedges beat Black--Scholes?} Do the gains of ``deep hedging'' hold out of sample\index{in-sample versus out-of-sample} and in crashes?
 \end{itemize}
 
 \section{What practitioners and investors can use}
 \label{sec:14-investors}
 
-The evidence in Section~\ref{sec:14-verdict} suggests several practical lessons.
+\textbf{The risks left inside structured products.} A bank selling a note with a capped stock-market return or a principal guarantee has sold options and hedges them dynamically, but keeps the jump, volatility and hedging-cost risks of this chapter and charges for them, which is part of why such products are expensive.
 
-\textbf{The risks left inside structured products.} A bank that sells a structured note with a capped stock-market return or a principal guarantee has sold options, and it hedges them dynamically. The hedge removes most of the market risk, but the bank keeps the risks identified in this chapter: jumps, changes in volatility and the cost of adjusting the hedge. It charges for them, which is part of why such products are expensive. An investor who buys one pays a fee that includes the price of risks the bank cannot hedge away.
+\textbf{Option-based funds.} A fund that sells options and delta-hedges them is not market-neutral\index{market-neutral} in the sense that matters: it bets against volatility, earning steadily in calm markets and losing heavily in jumps.
 
-\textbf{Option-based funds.} A fund that sells options and delta-hedges them is not market-neutral\index{market-neutral} in the sense that matters. It is betting against volatility: it earns steady returns in calm markets and loses heavily in jumps. Its track record will look smooth until a crash.
+\textbf{Why the smile exists.} The higher implied volatility of out-of-the-money index puts is the price of crash risk\index{crash risk}, which delta hedging cannot remove: buyers of protection pay it, and sellers are paid it for bearing the jumps.
 
-\textbf{Why the smile exists.} The higher implied volatility of out-of-the-money index puts is not a quirk. It is the price of crash risk\index{crash risk}, which delta hedging cannot remove. An investor who buys downside protection pays this price, and an investor who sells protection is paid it for bearing the jumps.
-
-\textbf{Questions to ask a manager or a structured-product issuer:}
-
-\begin{itemize}
-  \item How are the option positions hedged: with delta only, or also against vega and gamma with other options?
-  \item What happens to the hedge if the market moves 10\% or 20\% in a day?
-  \item How often is the hedge adjusted, and what does that cost?
-  \item What was the strategy's worst month, and did it come in a crash?
-\end{itemize}
+\textbf{Questions to ask a manager or a structured-product issuer:} Is the position hedged with delta only, or also against vega and gamma? What happens to the hedge if the market moves 10\% or 20\% in a day? How often is it adjusted, and at what cost? What was the worst month, and did it come in a crash?
 
 \begin{callout}
-\textbf{What Failed: portfolio insurance, October 1987.} Portfolio insurance, developed by Hayne Leland and Mark Rubinstein, copied a protective put on a stock portfolio by trading: selling stock-index futures, contracts that track the value of the whole stock market, as the market fell and buying them back as it rose, exactly as delta hedging prescribes. By October 1987, according to the Brady Commission, \$60 to \$90 billion of stock portfolios were covered by portfolio insurance.
+\textbf{What Failed: portfolio insurance, October 1987.} Portfolio insurance, developed by Hayne Leland and Mark Rubinstein, copied a protective put by selling stock-index futures as the market fell and buying them back as it rose, exactly as delta hedging prescribes, and by October 1987 covered \$60 to \$90 billion of stock portfolios, according to the Brady Commission.
 
-On October 19, 1987, the market fell more than 20\% in a single day. The strategy required insurers to sell at every step down. According to the Brady Commission, portfolio insurers sold the equivalent of about \$4 billion of stock in index futures, more than 40\% of futures volume excluding trades by floor traders, and just under \$2 billion of stock directly on the New York Stock Exchange. Prices moved faster than the trades could be made, so the hedge was always behind. Insurers could not trade at the prices their models assumed, so the protection they delivered fell short of the puts they were copying. The Brady Commission concluded that their mechanical selling added to the pressure on prices.
+On October 19, 1987, the market fell more than 20\% in a single day. Portfolio insurers sold the equivalent of about \$4 billion of stock in index futures, more than 40\% of futures volume excluding floor traders, and just under \$2 billion on the New York Stock Exchange. Prices moved faster than the trades, so the hedge was always behind, and the protection delivered fell short of the puts being copied. The Commission concluded that this mechanical selling added to the pressure on prices.
 
-What failed was the replication assumption itself: continuous trading at prices that move smoothly. A real put would have paid off however the market got there. A copied put depended on trading through the fall, and the market did not allow it. The volatility skew that appeared after the crash has been the market's price for that lesson ever since.
+What failed was the replication assumption itself: continuous trading at smoothly moving prices. A real put would have paid off however the market got there; a copied put depended on trading through the fall. The skew that appeared after the crash has been the market's price for that lesson ever since.
 \end{callout}

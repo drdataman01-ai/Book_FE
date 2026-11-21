@@ -458,17 +458,17 @@ Each rule trades a little signal for a lot less trading. The trade-off depends o
 
 The lab takes the three factors and asks what each would have earned after costs.
 
-\textbf{Part A: gross performance.} Average returns, t-statistics and Sharpe ratios as published. On paper, all three look like discoveries.
+\textbf{Part A: gross performance.} The lab reports average returns, t-statistics and Sharpe ratios as published. On paper, all three look like discoveries.
 
-\textbf{Part B: turnover.} The French library does not publish holdings, so turnover comes from two sources. The first is Novy-Marx and Velikov's estimates for value-weighted versions of the same strategies. The second is a simulated universe of 1,000 stocks over 40 years. Its returns have fat tails\index{fat tails}, its company sizes vary realistically, and its portfolios are built just as the Fama--French factors are. They are value-weighted 30/70 sorts, with value updated each June and momentum and reversal updated each month. The simulated universe has no delistings\index{delisting} or new listings, so its turnover is a lower bound. In the version shipped with the lab, turnover is about 2\% a month for value, 25\% for momentum and 76\% for reversal. The ordering and the sizes are close to the published estimates. Turnover therefore follows mechanically from how each signal is built.
+\textbf{Part B: turnover.} The French library does not publish holdings, so turnover comes from Novy-Marx and Velikov's estimates and from a simulated universe of 1,000 stocks over 40 years, with fat tails\index{fat tails}, realistic company sizes, and value-weighted 30/70 sorts built like the Fama--French factors (value updated each June, momentum and reversal each month). With no delistings\index{delisting} or new listings, its turnover is a lower bound: about 2\% a month for value, 25\% for momentum and 76\% for reversal, close to the published estimates. Turnover follows mechanically from how each signal is built.
 
-\textbf{Part C: costs.} Net returns across one-way costs from 0 to 100 basis points, plus a short-borrowing fee of 0.25\% a year; break-even costs; and the ranking of the three strategies by Sharpe ratio before and after costs at a headline cost of 20 basis points. Lab Figure~\ref{ch:13}.1 plots each strategy's net return against cost, with its break-even point marked; Lab Figure~\ref{ch:13}.2 shows the growth of a dollar on paper and after costs.
+\textbf{Part C: costs.} The lab computes net returns for one-way costs from 0 to 100 basis points plus a short-borrowing fee of 0.25\% a year, the break-even costs, and the Sharpe-ratio ranking before and after a headline cost of 20 basis points. Lab Figure~\ref{ch:13}.1 plots net return against cost with each break-even point marked, and Lab Figure~\ref{ch:13}.2 shows the growth of a dollar on paper and after costs.
 
-\textbf{Part D: capacity.} The simulated universe is scaled to a \$50 trillion market, with daily volume of 0.4\% of each company's value, half-spreads from 2 basis points for the largest stocks to 50 for the smallest, and square-root impact. Each strategy's net return is traced as its assets grow from \$10 million to \$1 trillion. The assumptions are explicit and adjustable, so readers can see which matters most.
+\textbf{Part D: capacity.} The simulated universe is scaled to a \$50 trillion market, with daily volume of 0.4\% of each company's value, half-spreads from 2 to 50 basis points, and square-root impact, and each strategy's net return is traced as its assets grow from \$10 million to \$1 trillion. The assumptions are explicit and adjustable.
 
-\textbf{Part E: mitigation, with known truth.} In the simulated universe, expected returns are known, so cost-mitigation rules can be compared without sampling noise. The lab compares the standard sort with buy/hold spreads of increasing width. For momentum at a one-way cost of 50 basis points, holding stocks until they leave the top 50\% cuts turnover roughly in half, from about 25\% to 12\% a month, gives up about a fifth of the expected gross return, and raises the expected net return from about 0.30\% to 0.41\% a month. For reversal, no band width rescues the strategy at that cost: the signal decays too fast for patience to pay.
+\textbf{Part E: mitigation, with known truth.} Because expected returns are known in the simulated universe, the lab compares the standard sort with buy/hold spreads of increasing width without sampling noise. For momentum at a one-way cost of 50 basis points, holding stocks until they leave the top 50\% cuts turnover roughly in half, from about 25\% to 12\% a month, gives up about a fifth of the expected gross return, and raises the expected net return from about 0.30\% to 0.41\% a month. For reversal, no band width rescues the strategy at that cost: the signal decays too fast for patience to pay.
 
-The lab, its tests and a guided notebook are in \texttt{ch05-costs} in the book's repository. The README records what has been tested and how, including that the parsers for the momentum and reversal files have been tested on the library's layout but not yet on the live files.
+The README in \texttt{ch05-costs} records what has been tested, including that the parsers for the momentum and reversal files have been tested on the library's layout but not yet on the live files.
 
 \subsection*{Your verdict}
 
@@ -477,7 +477,7 @@ Reach your own verdict on the claim from the numbers in your own run, using the 
 \section{Where the evidence stands}
 \label{sec:17-verdict}
 
-The published studies cited in this chapter point to a clear pattern: \textbf{whether a profitable backtest is profitable to trade depends on how much the strategy trades, what it trades and how much money is behind it: slow strategies in liquid stocks survive realistic costs, while fast strategies in small stocks often do not.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you verify these findings with free data.
+The published studies point to a clear pattern: \textbf{whether a profitable backtest is profitable to trade depends on how much the strategy trades, what it trades and how much money is behind it: slow strategies in liquid stocks survive realistic costs, while fast strategies in small stocks often do not.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.48\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -497,15 +497,15 @@ Situation & Holds? & Why & Evidence \\
 \endlastfoot
 Slow strategies, such as value & \textbf{Yes} & Turnover of about 3\% a month gives a break-even cost of about 4\% per trade. & Novy-Marx and Velikov (2016) \\
 \addlinespace[3pt]
-Momentum & \textbf{Partly} & It survives one-way costs of up to about 1\%, which a careful institution can achieve, but its profits concentrate in costly stocks and shrink as the portfolio grows. & Novy-Marx and Velikov (2016); Lesmond, Schill and Zhou (2004); Korajczyk and Sadka (2004) \\
+Momentum & \textbf{Partly} & Survives one-way costs up to about 1\%, but its profits concentrate in costly stocks and shrink with size. & Novy-Marx and Velikov (2016); Lesmond, Schill and Zhou (2004); Korajczyk and Sadka (2004) \\
 \addlinespace[3pt]
-Short-term reversal & \textbf{No} & It replaces nearly the whole portfolio each month, and its costs exceed its gross return by more than a percentage point a month. & Novy-Marx and Velikov (2016) \\
+Short-term reversal & \textbf{No} & Nearly full monthly turnover; costs exceed its gross return by more than a point a month. & Novy-Marx and Velikov (2016) \\
 \addlinespace[3pt]
-High-turnover strategies in general & \textbf{No} & Most strategies that trade more than half their portfolio each month lose their significance after costs. & Novy-Marx and Velikov (2016) \\
+High-turnover strategies in general & \textbf{No} & Most strategies trading over half their portfolio monthly lose significance after costs. & Novy-Marx and Velikov (2016) \\
 \addlinespace[3pt]
-For a large, patient institution & \textbf{More often} & Actual trading costs were an order of magnitude below academic estimates, though the evidence comes from one manager's trades. & Frazzini, Israel and Moskowitz (2018) \\
+For a large, patient institution & \textbf{More often} & Actual costs were an order of magnitude below academic estimates, but from one manager's trades. & Frazzini, Israel and Moskowitz (2018) \\
 \addlinespace[3pt]
-Strategies that rely on the short side & \textbf{Often not} & Many anomalies earn most of their profit on the short side, where borrowing fees, recalls and bans bite. & D'Avolio (2002); Stambaugh, Yu and Yuan (2012) \\
+Strategies that rely on the short side & \textbf{Often not} & Many anomalies earn most on the short side, where fees, recalls and bans bite. & D'Avolio (2002); Stambaugh, Yu and Yuan (2012) \\
 \addlinespace[3pt]
 The average anomaly & \textbf{No} & After costs and post-publication decay, its expected return is about 4 basis points a month. & Chen and Velikov (2023) \\
 \end{longtable}
@@ -513,7 +513,7 @@ The average anomaly & \textbf{No} & After costs and post-publication decay, its 
 
 The claim holds only for strategies whose break-even costs sit well above what their investors actually pay, at the size they intend to run.
 
-\textbf{What would change the picture.} The evidence would move toward the claim if trading records from many managers, not one, confirmed costs as low as those of Frazzini, Israel and Moskowitz (2018). It would move against it if cost-saving designs fixed in advance failed out of sample.
+\textbf{What would change the picture.} The claim would gain support if many managers' trading records confirmed costs as low as those of Frazzini, Israel and Moskowitz (2018), and lose it if cost-saving designs fixed in advance failed out of sample.
 
 \section{What practitioners and investors can use}
 \label{sec:17-investors}
@@ -521,11 +521,11 @@ The claim holds only for strategies whose break-even costs sit well above what t
 Five questions turn the evidence in Section~\ref{sec:17-verdict} into a checklist for any strategy an investor is shown:
 
 \begin{enumerate}
-  \item \textbf{What is the turnover?} Ask for one-sided monthly turnover, on both sides. If the answer is not known, the strategy has not been evaluated as an investment.
-  \item \textbf{What is the break-even cost, and what will you pay?} Compare the break-even one-way cost with realistic costs for the stocks the strategy holds, in the period it will be traded. A strategy that needs costs below ten basis points is a bet on execution, not on the signal.
-  \item \textbf{What does the short side cost?} Ask how much of the return comes from the short side, what borrowing fees were assumed, and how the strategy would behave if hard-to-borrow stocks could not be shorted.
-  \item \textbf{At what size?} Ask for net returns at the assets the manager plans to run, and how the estimate of market impact was made. Capacity claims without stated assumptions are marketing.
-  \item \textbf{Were cost-saving rules chosen in advance?} Bands, rebalancing schedules and liquidity screens are sensible, but each is a parameter. Ask whether they were fixed before the backtest, and how the strategy performed after they were.
+  \item \textbf{What is the turnover?} Ask for one-sided monthly turnover on both sides. If it is not known, the strategy has not been evaluated as an investment.
+  \item \textbf{What is the break-even cost, and what will you pay?} A strategy that needs costs below ten basis points is a bet on execution, not on the signal.
+  \item \textbf{What does the short side cost?} Ask how much return comes from it, what borrowing fees were assumed, and what happens if hard-to-borrow stocks cannot be shorted.
+  \item \textbf{At what size?} Ask for net returns at the planned assets and how market impact was estimated. Capacity claims without stated assumptions are marketing.
+  \item \textbf{Were cost-saving rules chosen in advance?} Bands, rebalancing schedules and liquidity screens are parameters too. Ask whether they were fixed before the backtest.
 \end{enumerate}
 
-The broader lesson is that costs change the ranking of strategies, not just their level. A modest, slow premium that can be harvested cheaply may be worth more than a spectacular, fast one that cannot. Chapters~\ref{ch:14} and~\ref{ch:15} test more anomalies, and report their evidence after costs as well as before.
+Costs change the ranking of strategies, not just their level: a modest, slow premium harvested cheaply may be worth more than a spectacular, fast one that cannot be. Chapters~\ref{ch:14} and~\ref{ch:15} test more anomalies, and report their evidence after costs as well as before.

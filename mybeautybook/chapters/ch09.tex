@@ -492,43 +492,22 @@ Each of these approaches accepts that the inputs are uncertain and builds a port
 \textbf{Claim.} Optimized portfolio strategies achieve higher out-of-sample risk-adjusted returns than equal weighting ($1/N$), which puts the same amount of money in every asset.
 \end{callout}
 
-The claim can be read in two ways, one bolder than the other:
-
-\begin{itemize}
-  \item \textbf{The strong form} says that classic mean--variance optimization, using estimates from past data, beats 1/N out of sample.
-  \item \textbf{The weak form} says that some disciplined version of optimization beats 1/N reliably after trading costs\index{transaction costs}. The discipline might come from constraints, shrinkage, risk budgeting or grouping similar assets.
-\end{itemize}
-
-A result counts as evidence for either form only if it meets four conditions:
-
-\begin{itemize}
-  \item it uses only data that were available when each portfolio was formed;
-  \item it reports the Sharpe ratio or the certainty equivalent after realistic trading costs;
-  \item it shows that the advantage over 1/N is larger than chance alone would produce;
-  \item it holds for more than one set of assets.
-\end{itemize}
+The \textbf{strong form} says that classic mean--variance optimization, using estimates from past data, beats 1/N out of sample. The \textbf{weak form} says that some disciplined version of optimization, using constraints, shrinkage, risk budgeting or grouping similar assets, beats 1/N reliably after trading costs\index{transaction costs}. A result counts as evidence only if it uses data available when each portfolio was formed, reports the Sharpe ratio or certainty equivalent after realistic costs, shows an advantage larger than chance, and holds for more than one set of assets.
 
 \section{The original evidence}
 \label{sec:12-evidence}
 
-\textbf{The theory (Markowitz 1952).} Markowitz proved that the mean--variance portfolio is the best choice when the expected returns and covariances are known. His paper contains no test, and none was possible in sample: an optimized portfolio always wins on the data used to build it.
+\textbf{The theory (Markowitz 1952).} Markowitz proved that the mean--variance portfolio is best when expected returns and covariances are known. No in-sample test was possible, because an optimized portfolio always wins on the data used to build it.
 
-\textbf{The warnings (Michaud 1989; Black and Litterman 1992; Chopra and Ziemba 1993).} Practitioners soon reported that optimized portfolios were concentrated, unstable and hard to explain to clients. Chopra and Ziemba measured how much damage errors in each input do, and found that errors in expected returns are by far the most harmful. That finding is why minimum-variance and risk-based rules were developed.
+\textbf{The warnings (Michaud 1989; Black and Litterman 1992; Chopra and Ziemba 1993).} Practitioners found optimized portfolios concentrated, unstable and hard to explain to clients. Chopra and Ziemba showed that errors in expected returns do by far the most damage, which is why minimum-variance and risk-based rules were developed.
 
-\textbf{The repairs pass their own tests.}
+\textbf{The repairs.} Jagannathan and Ma (2003) found that once short sales were ruled out, long-only minimum-variance portfolios built from simple monthly estimates did about as well as those built with factor models\index{factor model}, shrinkage or daily data. Ledoit and Wolf (2004) showed how much to shrink a covariance estimate so that it stays usable even with more assets than observations. L\'opez de Prado (2016) designed hierarchical risk parity to avoid the way an optimizer magnifies small errors, and reported lower out-of-sample risk than a minimum-variance optimizer, though on simulated data\index{Monte Carlo simulation} only.
 
-\begin{itemize}
-  \item Jagannathan and Ma (2003) asked whether elaborate risk estimates were still worth the trouble once short sales were ruled out, and found that long-only minimum-variance portfolios built from simple monthly estimates did about as well as those built with more elaborate methods, such as factor models\index{factor model}, shrinkage or daily data.
-  \item Because a covariance estimate breaks down when assets outnumber observations, Ledoit and Wolf (2004) showed how much to shrink a covariance estimate, and that the shrunk estimate remains usable even when there are more assets than observations.
-  \item L\'opez de Prado (2016) designed hierarchical risk parity to avoid the way an optimizer magnifies small estimation errors, and reported that it produced lower out-of-sample risk than a standard minimum-variance optimizer, even though lower risk is that optimizer's own goal. His evidence comes from simulated data\index{Monte Carlo simulation}, not from market data.
-\end{itemize}
+\textbf{The challenge (DeMiguel, Garlappi and Uppal 2009).} DeMiguel, Garlappi and Uppal (DGU) compared fourteen optimized strategies, including constrained, Bayesian and mixed rules, with 1/N on seven data sets. None beat 1/N consistently. They estimated that sample mean--variance would need about 3,000 months of data to win with 25 assets and about 6,000 with 50, against only about 1,100 months of U.S. stock data.
 
-\textbf{The challenge (DeMiguel, Garlappi and Uppal 2009).} DeMiguel, Garlappi and Uppal (DGU) compared fourteen optimized strategies with 1/N on seven data sets, judging them by the Sharpe ratio, the certainty equivalent and turnover. The strategies ranged from sample mean--variance and minimum variance to versions with constraints, Bayesian adjustments (which blend the data with prior beliefs about sensible values) and mixtures of several rules. None beat 1/N consistently. DGU then asked how much data sample mean--variance would need to win. Their answer was about 3,000 months for 25 assets and about 6,000 months for 50, while only about 1,100 months of U.S. stock data exist today.
+\textbf{The response (Kirby and Ostdiek 2012).} Kirby and Ostdiek argued that DGU's design favored 1/N. In their tests mean--variance often beat 1/N before costs, but heavy trading erased the gain. Two simpler rules did better even after high costs: \textbf{volatility timing}\index{volatility targeting|textbf}, with weights proportional to one over each asset's variance, and \textbf{reward-to-risk timing}, with weights proportional to average return divided by variance. Both ignore correlations and trade little.
 
-\textbf{The response (Kirby and Ostdiek 2012).} Kirby and Ostdiek argued that DGU's test favored 1/N, because it used portfolios with large estimation errors and very high turnover. In their own tests, standard mean--variance often beat 1/N before costs, but its heavy trading erased the advantage. Two simpler rules did better. \textbf{Volatility timing}\index{volatility targeting|textbf} gives each asset a weight in proportion to one over its variance, and \textbf{reward-to-risk timing} gives it a weight in proportion to its average return divided by its variance. Both ignore correlations and trade little, and both beat 1/N even after high trading costs.
-
-The literature therefore agrees on the strong form: sample mean--variance loses to 1/N. It disagrees on the weak form, and the answer depends on trading costs, turnover and which assets are used.
-
+The literature therefore agrees that sample mean--variance loses to 1/N, and disagrees on the weak form, where the answer depends on costs, turnover and the assets used.
 
 \section{Lab~\thechapter: Replicating DeMiguel, Garlappi and Uppal (2009)}
 \label{sec:12-lab}
@@ -537,7 +516,7 @@ The literature therefore agrees on the strong form: sample mean--variance loses 
 \textbf{Lab~\ref{ch:09} at a glance.} \emph{Paper replicated:} DeMiguel, Garlappi and Uppal (2009). \emph{Claim on trial\index{claims-on-trial method}:} optimized portfolio strategies beat equal weighting ($1/N$) out of sample. \emph{Data:} 10 and 30 industry portfolios and 25 portfolios sorted on size and book-to-market\index{book-to-market ratio}, from the Kenneth R. French Data Library\index{Kenneth French data library}, with the risk-free rate\index{risk-free rate}; all free. \emph{Code:} runs as a script (\texttt{python lab06.py}) or as a notebook (\texttt{lab06\_walkthrough.ipynb}) with a prediction prompt before each step.
 \end{callout}
 
-The lab repeats DGU's test with nine allocation rules, using the walk-forward design of Chapter~\ref{ch:06}. Each month, every rule estimates what it needs from the previous 120 months of value-weighted\index{index weighting!value-weighted} excess returns, holds the resulting portfolio for one month, and records its return. Turnover is measured against the weights the portfolio has drifted to by the end of the month.
+The lab repeats DGU's test with nine rules, using the walk-forward design of Chapter~\ref{ch:06}. Each month, every rule estimates what it needs from the previous 120 months of value-weighted\index{index weighting!value-weighted} excess returns, holds the portfolio for one month and records its return.
 
 \begin{center}
 \small
@@ -546,7 +525,7 @@ The lab repeats DGU's test with nine allocation rules, using the walk-forward de
 Rule & What it estimates \\
 \midrule
 1/N & Nothing \\
-Mean--variance (sample) & Expected returns and covariances; weights scaled to sum to 1, with total long and short positions capped at 5 times capital \\
+Mean--variance (sample) & Expected returns and covariances; weights sum to 1, with total long and short positions capped at 5 times capital \\
 Mean--variance, long-only & Expected returns and covariances; risk aversion 5, each weight between 0 and 1 \\
 Minimum variance (sample) & Covariances \\
 Minimum variance, long-only & Covariances \\
@@ -558,56 +537,38 @@ Hierarchical risk parity & Groups of correlated assets, and variances \\
 \end{tabularx}
 \end{center}
 
-\textbf{How the rules are judged.} Each rule's monthly out-of-sample returns, produced as in Section~\ref{sec:12-oos}, are summarized in two ways:
-\begin{itemize}
-  \item by the Sharpe ratio of Equation~\eqref{eq:01-sr};
-  \item by the certainty equivalent of Section~\ref{sec:09-accuracy}: the safe return that an investor would accept in place of the portfolio. For a mean--variance investor with risk aversion $\gamma$, it is the portfolio's average return minus a charge for its risk,
-  \begin{equation}
-    CE = \mu_p - \frac{\gamma}{2}\,\sigma_p^2.
-    \label{eq:12-ce}
-  \end{equation}
-\end{itemize}
-The \textbf{Jobson--Korkie test}\index{Jobson--Korkie test|textbf} (Jobson and Korkie 1981), with Memmel's (2003) correction, then checks whether two Sharpe ratios differ by more than chance.
-
-The lab has four parts:
+\textbf{How the rules are judged.} Each rule's out-of-sample returns (Section~\ref{sec:12-oos}) are summarized by the Sharpe ratio of Equation~\eqref{eq:01-sr} and by the certainty equivalent of Section~\ref{sec:09-accuracy}, the safe return an investor with risk aversion $\gamma$ would accept in place of the portfolio:
+\begin{equation}
+  CE = \mu_p - \frac{\gamma}{2}\,\sigma_p^2.
+  \label{eq:12-ce}
+\end{equation}
+The \textbf{Jobson--Korkie test}\index{Jobson--Korkie test|textbf} (Jobson and Korkie 1981), with Memmel's (2003) correction, checks whether two Sharpe ratios differ by more than chance.
 
 \begin{itemize}
-  \item \textbf{Part A} runs all nine rules on the 10 industry portfolios. It reports each rule's Sharpe ratio, certainty equivalent with $\gamma = 1$, turnover, most extreme weights and maximum drawdown\index{maximum drawdown}, and tests each rule against 1/N (Lab Figures~\ref{ch:09}.1 and~\ref{ch:09}.2).
-  \item \textbf{Part B} repeats the comparison on the 30 industries and the 25 size and book-to-market portfolios, after charging 25 basis points\index{basis point} for each unit of turnover (Lab Figure~\ref{ch:09}.3).
-  \item \textbf{Part C} changes one design choice at a time: the estimation window (60, 120 or 240 months), trading costs (0, 25 or 50 basis points) and how often the portfolio is rebalanced (every 1, 3 or 12 months). It also reports each rule's returns in three crises (Lab Figure~\ref{ch:09}.4).
-  \item \textbf{Part D} measures how unstable each rule's weights are: the total size of its long and short positions, its largest weight, its share of short positions and how much its weights change from month to month (Lab Figure~\ref{ch:09}.5).
+  \item \textbf{Part A} runs the nine rules on the 10 industries and reports each rule's Sharpe ratio, certainty equivalent with $\gamma = 1$, turnover, most extreme weights and maximum drawdown\index{maximum drawdown}, tested against 1/N (Lab Figures~\ref{ch:09}.1 and~\ref{ch:09}.2).
+  \item \textbf{Part B} repeats this on the 30 industries and the 25 size and book-to-market portfolios, after a cost of 25 basis points\index{basis point} per unit of turnover (Lab Figure~\ref{ch:09}.3).
+  \item \textbf{Part C} varies the estimation window (60, 120 or 240 months), costs (0, 25 or 50 basis points) and rebalancing (every 1, 3 or 12 months), and reports returns in three crises (Lab Figure~\ref{ch:09}.4).
+  \item \textbf{Part D} measures how unstable each rule's weights are (Lab Figure~\ref{ch:09}.5).
 \end{itemize}
 
 {\sloppy The option \texttt{-{}-fast} skips the three slowest constrained rules, and \texttt{python lab06.py -{}-source sim} tests the code on simulated data.\par}
 
-\textbf{What the simulated run shows.} So far the lab has been run from start to finish only on simulated data. In the simulation every asset has about the same true Sharpe ratio, so 1/N is close to the best possible rule by design. The results therefore show that the code behaves as theory predicts. They say nothing about real markets.
-
-\begin{itemize}
-  \item With ten assets, 1/N earned a Sharpe ratio of 0.44. Sample mean--variance earned only 0.30, while holding long and short positions worth 4.1 times its capital and replacing 74\% of its portfolio each month.
-  \item Inverse volatility, equal risk contribution and hierarchical risk parity all earned between 0.44 and 0.45. None differed significantly from 1/N.
-  \item Sample minimum variance cut volatility from 16\% to 12\% but earned a lower Sharpe ratio, 0.40. With Ledoit--Wolf shrinkage it earned 0.43, recovering most of the gap.
-  \item With 30 or 25 assets, the estimation errors grew. After costs, sample mean--variance fell to Sharpe ratios of 0.15 and 0.25, and sample minimum variance to 0.07 and 0.10. Both were significantly worse than 1/N.
-  \item A 240-month window raised sample mean--variance to 0.44, close to 1/N, and cut its turnover by a third.
-\end{itemize}
-
-Run on real data, the lab answers the question that the simulation cannot: whether real assets differ enough in expected return and risk for optimization to make up for its estimation errors.
+\textbf{What the simulated run shows.} In the simulation every asset has about the same true Sharpe ratio, so 1/N is close to the best rule by design, and the results show only that the code behaves as theory predicts. With ten assets, 1/N earned a Sharpe ratio of 0.44, while sample mean--variance earned 0.30, with long and short positions worth 4.1 times its capital and 74\% monthly turnover. The three risk-based rules earned 0.44 to 0.45, no different from 1/N. Sample minimum variance cut volatility from 16\% to 12\% but earned 0.40, and 0.43 with Ledoit--Wolf shrinkage. With 30 or 25 assets and costs, sample mean--variance fell to 0.15 and 0.25, and sample minimum variance to 0.07 and 0.10, significantly worse than 1/N. A 240-month window raised sample mean--variance to 0.44. Run on real data, the lab asks whether real assets differ enough for optimization to make up for its estimation errors.
 
 \subsection{Robustness checks}
 \label{sec:12-stress}
 
-Results over the full sample can hide weaknesses. The checks below test the claim under the conditions in which it is hardest to meet.
+\textbf{Estimation window.} A longer window reduces estimation errors but relies on older data that may no longer describe today's markets. Part C shows how the ranking changes from five to twenty years.
 
-\textbf{Estimation window.} DGU estimated that sample mean--variance needs about 3,000 months of data to beat 1/N with 25 assets, far more than any real sample. A longer window reduces estimation errors but relies on older data, which may no longer describe today's markets. Part C shows how the ranking of the rules changes as the window grows from five to twenty years.
+\textbf{Trading costs.}\index{transaction costs|textbf} In the simulated run, sample mean--variance turned over 74\% of its portfolio each month against 3\% for 1/N, which costs about 2\% a year at 25 basis points. Gains should be judged after the costs an investor would pay (Chapter~\ref{ch:13}).
 
-\textbf{Trading costs.}\index{transaction costs|textbf} Optimized rules trade far more than 1/N. In the simulated run, sample mean--variance replaced 74\% of its portfolio each month, against 3\% for 1/N. At 25 basis points per unit of turnover, that difference alone costs about 2\% a year. Any gain from optimization should be judged after the costs the investor would actually pay (Chapter~\ref{ch:13}).
+\textbf{Rebalancing frequency.}\index{rebalancing|textbf} Rebalancing less often cuts turnover but uses older information. Part C shows whether this helps the optimized rules more than 1/N.
 
-\textbf{Rebalancing frequency.}\index{rebalancing|textbf} Rebalancing every quarter or every year cuts turnover, but the portfolio then holds weights based on older information. Part C shows whether this trade-off helps the optimized rules more than it helps 1/N.
+\textbf{The set of assets.} Optimization should do best when assets differ most. Industry and size--value portfolios move closely together, while stocks, bonds and commodities give the optimizer more to work with. Individual stocks give it less, because the number of covariances grows with the square of the number of assets.
 
-\textbf{The set of assets.} Optimization should do best when assets differ most. Industry and size and book-to-market portfolios are already diversified\index{diversification} and move closely with the market, so their covariance matrix is close to the point at which it cannot be inverted. Asset classes with truly different risks, such as stocks, bonds and commodities, give the optimizer more to work with. Individual stocks give it less, because the number of covariances to estimate grows with the square of the number of assets.
+\textbf{Crises.} Part C checks the predictions of Section~\ref{sec:12-regimes} and Table~\ref{tab:12-regimes}, that minimum-variance portfolios lose less in sell-offs and risk parity suffered in 2022, in 2008, 2020 and 2022. Losing less in a crisis can be valuable even without a higher Sharpe ratio.
 
-\textbf{Crises.} Section~\ref{sec:12-regimes} explains why minimum-variance portfolios tend to lose less in sell-offs and why risk parity suffered in 2022. Part C checks these predictions, and Table~\ref{tab:12-regimes}, by reporting each rule's returns in the 2008 crisis, the 2020 crash and 2022. Losing less in a crisis is a real benefit to some investors, even if the rule's Sharpe ratio over the whole sample is no higher.
-
-\textbf{Statistical power.}\index{statistical power|textbf} Even a Sharpe ratio estimated over 90 years has a standard error of about 0.1, so a rule would need a large advantage over 1/N for the difference to be detectable. Failing to find a significant difference does not prove that two rules are equally good.
+\textbf{Statistical power.}\index{statistical power|textbf} Even over 90 years a Sharpe ratio has a standard error of about 0.1, so failing to find a significant difference does not prove that two rules are equally good.
 
 \subsection*{Your verdict}
 
@@ -616,7 +577,7 @@ Reach your own verdict on the claim from the numbers in your own run, using the 
 \section{Where the evidence stands}
 \label{sec:12-verdict}
 
-The published studies cited in this chapter point to a clear pattern: \textbf{sample mean--variance optimization loses to equal weighting out of sample, and its repaired versions mostly tie with it. The repairs lower risk, but they rarely raise the Sharpe ratio after costs.} The table summarizes where the evidence supports the claim and where it does not, as of November 2026, and names the source of each finding. The lab lets you check these findings with free data.
+The published studies point to a clear pattern: \textbf{sample mean--variance optimization loses to equal weighting out of sample, and its repaired versions mostly tie with it. The repairs lower risk, but they rarely raise the Sharpe ratio after costs.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.48\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -634,57 +595,46 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Sample mean--variance against 1/N & \textbf{No} & Errors in the estimated expected returns outweigh the gain from optimizing; none of fourteen strategies beat 1/N consistently. & DeMiguel, Garlappi and Uppal (2009) \\
+Sample mean--variance against 1/N & \textbf{No} & Errors in expected returns outweigh the gain from optimizing; none of fourteen strategies beat 1/N consistently. & DeMiguel, Garlappi and Uppal (2009) \\
 \addlinespace[3pt]
-Data needed for sample mean--variance to win & \textbf{No} & About 3,000 months for 25 assets and 6,000 for 50, against about 1,100 months of U.S. stock data. & DeMiguel, Garlappi and Uppal (2009) \\
+Data needed for sample mean--variance to win & \textbf{No} & About 3,000 months for 25 assets, against about 1,100 months of U.S. stock data. & DeMiguel, Garlappi and Uppal (2009) \\
 \addlinespace[3pt]
-Mean--variance with smaller estimation errors & \textbf{Partly} & Standard mean--variance often beat 1/N before costs in other test designs, but its heavy trading erased the advantage. & Kirby and Ostdiek (2012) \\
+Mean--variance with smaller estimation errors & \textbf{Partly} & Often beat 1/N before costs, but heavy trading erased the gain. & Kirby and Ostdiek (2012) \\
 \addlinespace[3pt]
-Constrained and shrunk minimum variance & \textbf{Partly} & These rules reliably lower volatility, but they do not reliably raise the Sharpe ratio above that of 1/N. & Jagannathan and Ma (2003); Ledoit and Wolf (2004) \\
+Constrained and shrunk minimum variance & \textbf{Partly} & Reliably lower volatility, but not reliably a higher Sharpe ratio than 1/N. & Jagannathan and Ma (2003); Ledoit and Wolf (2004) \\
 \addlinespace[3pt]
-Risk-based rules & \textbf{No} & Inverse volatility, equal risk contribution and hierarchical risk parity tend to tie with 1/N, which they resemble when assets have similar risks. The evidence for hierarchical risk parity comes mainly from simulations. & L\'opez de Prado (2016) \\
+Risk-based rules & \textbf{No} & Tend to tie with 1/N, which they resemble when assets have similar risks; the evidence for hierarchical risk parity is mainly simulated. & L\'opez de Prado (2016) \\
 \addlinespace[3pt]
-Timing rules that ignore correlations & \textbf{Yes} & Volatility timing and reward-to-risk timing beat 1/N even after high trading costs, because they trade little. & Kirby and Ostdiek (2012) \\
+Timing rules that ignore correlations & \textbf{Yes} & Beat 1/N even after high costs, because they trade little. & Kirby and Ostdiek (2012) \\
 \end{longtable}
 }
 
-The strongest evidence for the weak form, Kirby and Ostdiek's timing rules, comes from rules that ignore correlations and trade little. In other words, they succeed by giving up most of what makes optimization different from simpler rules.
+The strongest evidence for the weak form comes from rules that ignore correlations and trade little, that is, from rules that give up most of what makes optimization different.
 
-\textbf{What would change the picture.} The evidence would support the weak form if a disciplined optimizer beat 1/N significantly, after costs, on several different sets of assets and in data not used to design it.
+\textbf{What would change the picture.} The weak form would gain support if a disciplined optimizer beat 1/N significantly, after costs, on several sets of assets and in data not used to design it.
 
 \subsection{Open questions}
 \label{sec:12-open}
 
 \begin{itemize}
-  \item \textbf{Many assets.} With hundreds of stocks, the sample covariance matrix can no longer be inverted. Do newer shrinkage methods and factor models make optimization over many stocks competitive with 1/N?
-  \item \textbf{Machine-learning allocations.} Do methods that learn portfolio weights directly from data avoid estimation error, or do they merely hide it in more parameters? Chapter~\ref{ch:19} took up the general question.
-  \item \textbf{Optimizing with costs in mind.} An optimizer that penalizes turnover chooses different weights and trades less. How much of DGU's result survives when costs are part of the optimization?
-  \item \textbf{Diversification in a crisis.}\index{diversification|textbf} Risk-based portfolios assume that correlations stay stable. Chapter~\ref{ch:10} asks what happens when they do not.
+  \item \textbf{Many assets.} Do newer shrinkage methods and factor models make optimization over hundreds of stocks competitive with 1/N?
+  \item \textbf{Machine-learning allocations.} Do methods that learn weights directly from data avoid estimation error, or hide it in more parameters (Chapter~\ref{ch:19})?
+  \item \textbf{Optimizing with costs in mind.} How much of DGU's result survives when the optimizer penalizes turnover?
+  \item \textbf{Diversification in a crisis.}\index{diversification|textbf} Risk-based portfolios assume stable correlations. Chapter~\ref{ch:10} asks what happens when they are not.
 \end{itemize}
 
 \section{What practitioners and investors can use}
 \label{sec:12-investors}
 
-The evidence in Section~\ref{sec:12-verdict} suggests several practical lessons.
-
 \begin{itemize}
-  \item \textbf{Treat 1/N as the benchmark.} Compare any optimized allocation with equal weighting of the same assets, out of sample and after costs. A strategy that cannot beat it adds complexity, not value.
-  \item \textbf{Distrust the expected returns most.} If the optimizer's weights change sharply when one expected return moves by a percentage point, the weights reflect the inputs, not the market.
-  \item \textbf{Use optimization to manage risk, not to chase return.} Minimum-variance and risk-budgeting tools deliver what they promise, lower volatility or more evenly spread risk, without relying on forecasts of returns.
-  \item \textbf{Count the turnover.} A gain of a few tenths of a percent a year disappears quickly when 70\% of the portfolio is traded each month.
-  \item \textbf{Prefer constraints you can explain.} Position limits and rules against short selling work partly because they are simple.
+  \item \textbf{Treat 1/N as the benchmark.} Compare any optimized allocation with equal weighting of the same assets, out of sample and after costs.
+  \item \textbf{Distrust the expected returns most.} If the weights swing when one expected return moves by a percentage point, they reflect the inputs, not the market.
+  \item \textbf{Use optimization to manage risk, not to chase return.} Minimum-variance and risk-budgeting tools deliver lower or more evenly spread risk without forecasting returns.
+  \item \textbf{Count the turnover,} and \textbf{prefer constraints you can explain,} such as position limits and no short selling.
 \end{itemize}
 
-\textbf{Questions to ask a manager who sells optimized portfolios:}
-
-\begin{itemize}
-  \item How does the strategy compare with 1/N on the same assets, out of sample and after costs?
-  \item Where do the expected returns come from, and how much do the weights change when they change?
-  \item How many quantities does the model estimate, and from how many observations?
-  \item What is the average monthly turnover, and what cost per trade is assumed?
-  \item Which constraints are imposed, and how much of the performance comes from them rather than from the optimizer?
-\end{itemize}
+\textbf{Questions to ask a manager who sells optimized portfolios:} How does the strategy compare with 1/N on the same assets, out of sample and after costs? Where do the expected returns come from, and how much do the weights change when they change? How many quantities are estimated from how many observations? What is the monthly turnover and assumed cost? How much of the performance comes from the constraints rather than the optimizer?
 
 \begin{callout}
-\textbf{What Failed: the optimizer nobody would use.} In the early 1990s, Fischer Black and Robert Litterman of Goldman Sachs reported that asset-allocation models had not played the role in portfolio management that their logic deserved. Investment professionals found the models hard to use, and the portfolios they produced were ``badly behaved'': concentrated, extreme and sensitive to small changes in the inputs. Black and Litterman's solution was to stop trusting historical averages. They started from the expected returns implied by market equilibrium and let managers depart from them only where they had confident views. Michaud reached the same diagnosis from another direction: an unconstrained optimizer magnifies the errors in its inputs. The lesson has outlived both papers. The optimizer does exactly what it was designed to do; the problem is what it is fed.
+\textbf{What Failed: the optimizer nobody would use.} In the early 1990s, Fischer Black and Robert Litterman of Goldman Sachs reported that investment professionals found asset-allocation models hard to use, because the portfolios they produced were ``badly behaved'': concentrated, extreme and sensitive to small changes in the inputs. Their solution was to start from the expected returns implied by market equilibrium and depart from them only where managers had confident views. Michaud reached the same diagnosis: an unconstrained optimizer magnifies the errors in its inputs. The optimizer does exactly what it was designed to do; the problem is what it is fed.
 \end{callout}
