@@ -55,18 +55,6 @@ Repeated across twenty-two claims, the cycle becomes a habit. That habit, more t
 \section*{How the book is organized}
 
 The book has nine parts, twenty-two claim chapters and four appendices. Every chapter puts a famous claim on trial, and the chapters are ordered by two rules. Methods climb from simple to complex, so no chapter needs a method taught later. Within that ladder, the chapters follow the dates of the papers that started each claim, so the book moves from the performance tests of the 1960s to the foundation models of 2025 in roughly the order the field itself did. The one exception is Part VIII, on derivatives and credit, which comes after Part VII even though its founding papers are older. It is the most technical part of the book, and no later chapter depends on it.
-
-\begin{itemize}
-  \item Part I tests claims about returns, luck and data, using averages, Sharpe ratios, t-statistics and simulation.
-  \item Part II tests the classical claims about the cross-section of stock returns, size and value, and momentum, using regression, factor models and portfolio sorts.
-  \item Part III tests claims about forecasting stock returns through time, with trading rules and valuation ratios, and builds the out-of-sample tests the rest of the book reuses.
-  \item Parts IV and V move from the mean of returns to their risk: volatility and Value at Risk, then portfolios and diversification.
-  \item Part VI turns to currencies and interest rates, testing interest parity and the expectations hypothesis of the yield curve.
-  \item Part VII returns to the classical findings with the tools of the last two decades: trading costs, the low-risk anomaly and the replication debate.
-  \item Part VIII tests claims about credit and options.
-  \item Part IX tests the newest claims, about machine learning, transformers and foundation models. The companion GitHub repository adds a capstone project guide, which shows you how to replicate a claim of your own choosing.
-\end{itemize}
-
 Table~\ref{tab:pref-parts} lists the chapters in each part.
 
 \begin{table}[htbp]
@@ -113,15 +101,16 @@ IX & Machine learning and foundation models & \ref{ch:19} & Machine Learning Pre
 \end{table}
 
 
-The claims were chosen so that testing them carries you through the standard curriculum of financial engineering. Each one rests on a core model: the CAPM, GARCH, Black--Scholes, the yield curve, expected default losses, mean--variance optimization. Every claim chapter opens with a self-contained Foundations section that teaches that model before the claim is tested. You meet the same material as in a conventional course, but you meet each model at the point where it makes a prediction the data can contradict.
+Testing the claims takes you through the standard financial engineering curriculum. Each claim rests on a core model, and each chapter teaches that model in a self-contained Foundations section before testing the claim. You learn the same material as in a conventional course, but you meet each model where it makes a prediction the data can contradict.
 
-This also means the book can stand on its own, or sit beside the classics. Hull, Cochrane, and Campbell, Lo and MacKinlay teach how the models are built. This book asks whether their predictions hold, and the table later in this preface shows, for each chapter, where those texts treat the topic in depth.
+The book can therefore stand alone or sit beside the classics. Hull, Cochrane, and Campbell, Lo and MacKinlay teach how the models are built, while this book asks whether their predictions hold.
 
-Every chapter has a Python lab. The book describes each lab by its question, data, setup and results, with tables and charts, so you can follow every argument without running any code. The code itself lives in a companion GitHub repository, where it can be kept working as data sources and libraries change. Every lab replicates the paper or papers that founded its chapter's claim, and every lab runs on free data, including the Kenneth French library, FRED, the Federal Reserve's yield curve, Goyal and Welch's predictor file and the open replication datasets now available, so no paid subscription is required. Where an original study used a paid database, the lab says so and explains how the free substitute differs.
+Every chapter has a Python lab that replicates the papers behind its claim. All labs use free data, such as the Kenneth French library, FRED and Goyal and Welch's predictor file. Where an original study used a paid database, the lab explains how the free substitute differs.
+
 
 \section*{Why these claims}
 
-Each of the twenty-two claims, in Chapters~\ref{ch:01} to~\ref{ch:22}, was chosen to do two jobs at once: to settle a question that matters, and to teach a core model. The table shows how the claims map onto the standard curriculum. For each area of financial engineering, it lists the model or tool that the chapter's Foundations section teaches and the claim that puts it to work.
+Each of the twenty-two claims, in Chapters~\ref{ch:01} to~\ref{ch:22}, was chosen to do two jobs at once: to settle a question that matters, and to teach a core model. The table shows how the claims map onto the standard curriculum. 
 
 \begingroup
 \small
@@ -162,8 +151,6 @@ Financial time series and AI & Range-based volatility, fine-tuning, synthetic da
 \end{longtable}
 \endgroup
 
-Each method is taught once, in the first chapter that needs it, and later chapters point back to it.
-
 Every claim had to pass five tests before it earned a chapter.
 
 \begin{enumerate}
@@ -178,7 +165,8 @@ The claims do not cover everything. This is not a full treatment of stochastic c
 
 \section*{Foundations sections by chapter}
 
-Every claim chapter opens its teaching with a Foundations section. It is not optional background: it sets out the concepts, formulas and terms that the rest of the chapter depends on, and it is part of what each chapter expects you to learn. Each Foundations section runs about two to three pages, with key terms in bold, the essential formulas and a worked example. The table below lists, for each chapter, the standard texts that treat its topic in depth. They are written so that a reader without a prior course in investments or financial engineering can follow every chapter, which lets the book stand on its own. You do not need the books in the Further reading column to follow this one. They are listed for readers who want a deeper treatment of a topic, now or later.
+The Foundations section in every claim chapter is part of what each chapter expects you to learn. 
+The table below lists the standard texts that treat its topic in depth. You do not need the books in the Further reading column to follow this one. They are listed for readers who want a deeper treatment of a topic.
 
 \begingroup
 \small
@@ -219,9 +207,7 @@ Ch. & Foundations covers & Further reading \\
 \end{longtable}
 \endgroup
 
-
-
-Full references for these books are listed alphabetically by author under Further Reading at the end of the book (page~\pageref{furtherreading}).
+Full references for these books are listed alphabetically under Further Reading at the end of the book (page~\pageref{furtherreading}).
 
 
 \section*{Who this book is for}
@@ -235,16 +221,12 @@ This book is for anyone who builds, buys or studies quantitative strategies and 
 
 You will need to possess basic Python, and to know introductory statistics, regression and the elements of investments. Everything else is taught along the way.
 
-This is not a book of trading signals. If anything, its most consistent lesson is how rarely a promising backtest survives honest testing. What it offers instead is more durable: the ability to tell the difference.
-
 \section*{How to use this book}
 
-The book covers a wide range of financial engineering, from the statistics of returns to options, credit and foundation models, and few courses will cover all of it in a single term. Because each chapter is built around one claim and teaches its methods when they are first needed, instructors can choose the parts that fit their course and their students.
+The book covers a wide range of financial engineering. Because each chapter is built around one claim and teaches its methods when they are first needed, instructors can choose the parts that fit their course and their students.
 
-A one-semester course can follow Parts I to VII and Part IX in order. These parts form a continuous path, since the methods taught in each part are used by the parts that follow it. Instructors can treat Part VIII, on derivatives and credit, as optional. It is the most technical part of the book, and no later chapter depends on it, so a course that does not cover derivatives can leave it out without breaking the thread. A course that does cover derivatives can teach Part VIII between Part VII and Part IX, where it sits in the book.
-
-Readers who study on their own can read the chapters in order, or start with any claim that interests them and follow the pointers back to the chapters where its methods are first taught. Practitioners who want only the verdicts can read the Claim, Judge and Apply sections of each chapter and come back to the Foundations and the labs when a result surprises them.
-
+A one-semester course can follow Parts I to VII and Part IX in order. Instructors can treat Part VIII, on derivatives and credit, as optional. A course that does not cover derivatives can leave it out without breaking the thread. A course that does cover derivatives can teach Part VIII between Part VII and Part IX, where it sits in the book.
+Readers who study on their own can read the chapters in order, or start with any claim that interests them and follow the pointers back to the chapters where its methods are first taught. 
 
 \section*{An invitation}
 
