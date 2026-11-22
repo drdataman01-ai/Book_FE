@@ -57,15 +57,23 @@ Repeated across twenty-two claims, the cycle becomes a habit. That habit, more t
 The book has nine parts, twenty-two claim chapters and four appendices. Every chapter puts a famous claim on trial, and the chapters are ordered by two rules. Methods climb from simple to complex, so no chapter needs a method taught later. Within that ladder, the chapters follow the dates of the papers that started each claim, so the book moves from the performance tests of the 1960s to the foundation models of 2025 in roughly the order the field itself did. The one exception is Part VIII, on derivatives and credit, which comes after Part VII even though its founding papers are older. It is the most technical part of the book, and no later chapter depends on it.
 Table~\ref{tab:pref-parts} lists the chapters in each part.
 
-\begin{table}[htbp]
-\centering
+\begingroup
 \small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.07\linewidth}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedleft\arraybackslash}p{0.04\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.56\linewidth-6\tabcolsep\relax}@{}}
 \caption{The nine parts of the book and their chapters.}
-\label{tab:pref-parts}
-\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.07\linewidth}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedleft\arraybackslash}p{0.04\linewidth}>{\raggedright\arraybackslash}X@{}}
+\label{tab:pref-parts} \\
 \toprule
 Part & Theme & Ch. & Title \\
 \midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\footnotesize\itshape Table~\ref{tab:pref-parts}, continued} \\
+\toprule
+Part & Theme & Ch. & Title \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
 I & Returns, luck and data & \ref{ch:01} & A Strong Track Record Proves Skill \\
  &  & \ref{ch:02} & Historical Data Show What a Strategy Would Have Earned \\
 \addlinespace
@@ -96,9 +104,8 @@ IX & Machine learning and foundation models & \ref{ch:19} & Machine Learning Pre
  &  & \ref{ch:20} & Foundation Models Forecast Better Than Classical Methods \\
  &  & \ref{ch:21} & Transformers Price Stocks Better Than Factor Models \\
  &  & \ref{ch:22} & Foundation Models Trained on Market Data Beat GARCH \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\end{longtable}
+\endgroup
 
 
 Testing the claims takes you through the standard financial engineering curriculum. Each claim rests on a core model, and each chapter teaches that model in a self-contained Foundations section before testing the claim. You learn the same material as in a conventional course, but you meet each model where it makes a prediction the data can contradict.
@@ -115,39 +122,39 @@ Each of the twenty-two claims, in Chapters~\ref{ch:01} to~\ref{ch:22}, was chose
 \begingroup
 \small
 \setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
-\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.198\linewidth}>{\raggedright\arraybackslash}p{0.288\linewidth}>{\raggedright\arraybackslash}p{0.297\linewidth}r@{}}
+\begin{longtable}{@{}l>{\raggedright\arraybackslash}p{0.198\linewidth}>{\raggedright\arraybackslash}p{0.288\linewidth}>{\raggedright\arraybackslash}p{0.297\linewidth}@{}}
 \toprule
-Core area & Model or tool & Claim on trial & Ch. \\
+Ch. & Core area & Model or tool & Claim on trial \\
 \midrule
 \endfirsthead
 \toprule
-Core area & Model or tool & Claim on trial & Ch. \\
+Ch. & Core area & Model or tool & Claim on trial \\
 \midrule
 \endhead
 \bottomrule
 \endlastfoot
-Statistics of returns & Returns, Sharpe ratio, t-statistics, luck by simulation & A strong track record proves skill & \ref{ch:01} \\
-Financial data & Adjusted prices; survivorship, look-ahead and micro-cap biases & Historical data show what a strategy would have earned & \ref{ch:02} \\
-Asset pricing and factors & OLS, the CAPM, factor models & Size and value explain returns that beta cannot & \ref{ch:03} \\
-Market efficiency and behavior & Portfolio sorts, cross-sectional momentum, crash risk & Past winners keep winning & \ref{ch:04} \\
-Technical analysis & Trading rules, time-series momentum, the Reality Check & Simple trading rules beat buy-and-hold & \ref{ch:05} \\
-Forecasting and the equity premium & Walk-forward evaluation, out-of-sample $R^2$, forecast tests & Valuations predict the equity premium out of sample & \ref{ch:06} \\
-Volatility modelling & ARCH/GARCH, realized and implied volatility, HAR & Volatility is predictable & \ref{ch:07} \\
-Risk management & VaR, expected shortfall, backtesting, Basel & VaR models measure risk reliably & \ref{ch:08} \\
-Portfolio construction & Mean--variance, efficient frontier, covariance estimation & Optimized portfolios beat an equal split across assets & \ref{ch:09} \\
-Diversification and dependence & Correlation dynamics, tail dependence & Diversification fails when you need it most & \ref{ch:10} \\
-International finance & Covered and uncovered interest parity, carry & High-interest currencies depreciate enough to offset their yield & \ref{ch:11} \\
-Fixed income & Yield curves, forward rates, duration, expectations hypothesis & Forward rates predict future rates & \ref{ch:12} \\
-Trading and implementation & Spreads, turnover, break-even costs, capacity & A profitable backtest is profitable to trade & \ref{ch:13} \\
-CAPM and leverage & Security market line, Fama--MacBeth, leverage constraints & Low-risk stocks beat high-risk stocks & \ref{ch:14} \\
-Econometrics of finance & Multiple testing, shrinkage, post-publication tests & Most published anomalies fail to replicate & \ref{ch:15} \\
-Credit & Default, recovery, spreads, the expected-loss spread & Credit spreads mainly reflect expected defaults & \ref{ch:16} \\
-Derivative pricing and hedging & Options, Black--Scholes, the Greeks, dynamic hedging & Delta hedging removes option risk & \ref{ch:17} \\
-Options and volatility premia & Implied volatility, the VIX, the variance risk premium & Selling options earns a reliable premium & \ref{ch:18} \\
-Machine learning & Regularization, trees, neural nets, cross-validation & Machine learning predicts returns better than linear models & \ref{ch:19} \\
-Forecasting & ARIMA, exponential smoothing, zero-shot foundation models & Foundation models forecast better than classical methods & \ref{ch:20} \\
-Asset-pricing theory & Stochastic discount factor, IPCA, attention & Transformers price stocks better than factor models & \ref{ch:21} \\
-Financial time series and AI & Range-based volatility, fine-tuning, synthetic data & Foundation models trained on market data beat GARCH & \ref{ch:22} \\
+\ref{ch:01} & Statistics of returns & Returns, Sharpe ratio, t-statistics, luck by simulation & A strong track record proves skill \\
+\ref{ch:02} & Financial data & Adjusted prices; survivorship, look-ahead and micro-cap biases & Historical data show what a strategy would have earned \\
+\ref{ch:03} & Asset pricing and factors & OLS, the CAPM, factor models & Size and value explain returns that beta cannot \\
+\ref{ch:04} & Market efficiency and behavior & Portfolio sorts, cross-sectional momentum, crash risk & Past winners keep winning \\
+\ref{ch:05} & Technical analysis & Trading rules, time-series momentum, the Reality Check & Simple trading rules beat buy-and-hold \\
+\ref{ch:06} & Forecasting and the equity premium & Walk-forward evaluation, out-of-sample $R^2$, forecast tests & Valuations predict the equity premium out of sample \\
+\ref{ch:07} & Volatility modelling & ARCH/GARCH, realized and implied volatility, HAR & Volatility is predictable \\
+\ref{ch:08} & Risk management & VaR, expected shortfall, backtesting, Basel & VaR models measure risk reliably \\
+\ref{ch:09} & Portfolio construction & Mean--variance, efficient frontier, covariance estimation & Optimized portfolios beat an equal split across assets \\
+\ref{ch:10} & Diversification and dependence & Correlation dynamics, tail dependence & Diversification fails when you need it most \\
+\ref{ch:11} & International finance & Covered and uncovered interest parity, carry & High-interest currencies depreciate enough to offset their yield \\
+\ref{ch:12} & Fixed income & Yield curves, forward rates, duration, expectations hypothesis & Forward rates predict future rates \\
+\ref{ch:13} & Trading and implementation & Spreads, turnover, break-even costs, capacity & A profitable backtest is profitable to trade \\
+\ref{ch:14} & CAPM and leverage & Security market line, Fama--MacBeth, leverage constraints & Low-risk stocks beat high-risk stocks \\
+\ref{ch:15} & Econometrics of finance & Multiple testing, shrinkage, post-publication tests & Most published anomalies fail to replicate \\
+\ref{ch:16} & Credit & Default, recovery, spreads, the expected-loss spread & Credit spreads mainly reflect expected defaults \\
+\ref{ch:17} & Derivative pricing and hedging & Options, Black--Scholes, the Greeks, dynamic hedging & Delta hedging removes option risk \\
+\ref{ch:18} & Options and volatility premia & Implied volatility, the VIX, the variance risk premium & Selling options earns a reliable premium \\
+\ref{ch:19} & Machine learning & Regularization, trees, neural nets, cross-validation & Machine learning predicts returns better than linear models \\
+\ref{ch:20} & Forecasting & ARIMA, exponential smoothing, zero-shot foundation models & Foundation models forecast better than classical methods \\
+\ref{ch:21} & Asset-pricing theory & Stochastic discount factor, IPCA, attention & Transformers price stocks better than factor models \\
+\ref{ch:22} & Financial time series and AI & Range-based volatility, fine-tuning, synthetic data & Foundation models trained on market data beat GARCH \\
 \end{longtable}
 \endgroup
 
@@ -171,7 +178,7 @@ The table below lists the standard texts that treat its topic in depth. You do n
 \begingroup
 \small
 \setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
-\begin{longtable}{@{}r>{\raggedright\arraybackslash}p{0.468\linewidth}>{\raggedright\arraybackslash}p{0.324\linewidth}@{}}
+\begin{longtable}{@{}r>{\raggedright\arraybackslash}p{0.468\linewidth}>{\raggedright\arraybackslash}p{0.364\linewidth}@{}}
 \toprule
 Ch. & Foundations covers & Further reading \\
 \midrule
@@ -213,20 +220,15 @@ Full references for these books are listed alphabetically under Further Reading 
 \section*{Who this book is for}
 
 This book is for anyone who builds, buys or studies quantitative strategies and needs to judge whether the evidence behind them holds up.
-
-\begin{itemize}
-  \item Students in financial engineering, quantitative finance and financial data science will use the whole book, labs included, as will quantitative analysts and researchers at asset managers, banks and fintech firms.
-  \item PhD students can use it as a companion for the replication debate. Portfolio managers, allocators and serious individual investors can read the principles and verdicts and skim the labs.
-\end{itemize}
+Students in financial engineering, quantitative finance and financial data science will use the whole book, labs included, as will quantitative analysts and researchers at asset managers, banks and fintech firms.
+PhD students can use it as a companion for the replication debate. Portfolio managers, allocators and serious individual investors can read the principles and verdicts and skim the labs.
 
 You will need to possess basic Python, and to know introductory statistics, regression and the elements of investments. Everything else is taught along the way.
 
 \section*{How to use this book}
 
-The book covers a wide range of financial engineering. Because each chapter is built around one claim and teaches its methods when they are first needed, instructors can choose the parts that fit their course and their students.
-
-A one-semester course can follow Parts I to VII and Part IX in order. Instructors can treat Part VIII, on derivatives and credit, as optional. A course that does not cover derivatives can leave it out without breaking the thread. A course that does cover derivatives can teach Part VIII between Part VII and Part IX, where it sits in the book.
-Readers who study on their own can read the chapters in order, or start with any claim that interests them and follow the pointers back to the chapters where its methods are first taught. 
+The book covers a wide range of financial engineering. 
+A one-semester course can follow Parts I to VII and Part IX in order. Instructors can treat Part VIII, on derivatives and credit, as optional. 
 
 \section*{An invitation}
 
