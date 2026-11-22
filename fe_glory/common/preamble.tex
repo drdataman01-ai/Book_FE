@@ -1,0 +1,130 @@
+% ======================================================================
+% Shared preamble -- Financial Engineering and the Evidence
+% Same look as "Designing Agentic AI Solutions" (book class, Latin Modern,
+% pale tcolorbox callouts, natbib/hyperref), set for a 7.5 x 9.25 in
+% Kindle Direct Publishing (KDP) paperback/hardcover trim.
+% ======================================================================
+
+% ---------- where to look for \input files ---------------------------
+\makeatletter
+\@ifundefined{input@path}{\def\input@path{}}{}
+\g@addto@macro\input@path{{./}{common/}{../common/}{chapters/}{images/}}
+\makeatother
+
+% ---------- fonts and page ------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% KDP trim 7.5 in x 9.25 in, no bleed.
+% KDP minimums for 301-500 pages: inside (gutter) 0.625 in, outside 0.25 in.
+% The values below leave comfortable room above those minimums.
+\usepackage[
+  paperwidth=7.5in, paperheight=9.25in,
+  inner=0.875in, outer=0.625in,
+  top=0.75in, bottom=0.75in,
+  headheight=14pt, headsep=14pt, footskip=24pt,
+  includehead, includefoot=false,
+  twoside
+]{geometry}
+
+% ---------- maths, tables, lists, graphics ---------------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{textcomp}% \textyen
+\usepackage{graphicx}
+\graphicspath{{./}{images/}{cover/}{inner_pics/}}
+\usepackage[dvipsnames,svgnames,table]{xcolor}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{enumitem}
+\setlist[itemize]{itemsep=0pt}
+\setlist[enumerate]{itemsep=0pt}
+\usepackage{multicol}
+\usepackage{pdfpages}
+
+% ---------- TikZ and pgfplots (the book's figures) -------------------
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.geometric,shapes.multipart,shapes.misc,
+  arrows.meta,fit,backgrounds,calc,decorations.pathreplacing}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usepgfplotslibrary{fillbetween,groupplots}
+\usepackage{pgfplotstable}
+
+% Book colours used by the chapter figures
+\definecolor{fenavy}{HTML}{1B2A6B}
+\definecolor{fegray}{HTML}{4D4D4D}
+\definecolor{feshade}{HTML}{F3F5FA}
+
+% ---------- code listings --------------------------------------------
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{RoyalBlue}\bfseries,
+  commentstyle=\color{Gray}\itshape,
+  stringstyle=\color{BrickRed},
+  numbers=left, numberstyle=\tiny\color{Gray}, numbersep=6pt,
+  frame=lines, framesep=4pt,
+  breaklines=true, breakatwhitespace=true,
+  showstringspaces=false, columns=fullflexible, keepspaces=true,
+  captionpos=t, xleftmargin=1.5em, tabsize=4,
+  upquote=true,
+  extendedchars=true,
+  literate={§}{{\S}}1 {é}{{\'e}}1 {è}{{\`e}}1 {ü}{{\"u}}1 {ö}{{\"o}}1
+           {ä}{{\"a}}1 {€}{{\texteuro}}1 {£}{{\pounds}}1 {–}{{--}}1 {—}{{---}}1
+           {’}{{'}}1 {‘}{{`}}1 {“}{{``}}1 {”}{{''}}1 {→}{{$\rightarrow$}}1
+           {≥}{{$\geq$}}1 {≤}{{$\leq$}}1 {×}{{$\times$}}1 {±}{{$\pm$}}1,
+}
+\renewcommand{\lstlistingname}{Listing}
+
+% ---------- boxes (same palette as the agentic book) -----------------
+\usepackage[most]{tcolorbox}
+\definecolor{boxframe}{HTML}{3C3489}
+\definecolor{boxfill}{HTML}{F3F2FB}
+\definecolor{notefill}{HTML}{EEF6F2}
+\definecolor{noteframe}{HTML}{0F6E56}
+\definecolor{warnfill}{HTML}{FBEFEA}
+\definecolor{warnframe}{HTML}{993C1D}
+
+\tcbset{bookbox/.style={enhanced, breakable, boxrule=0.5pt, arc=2pt,
+  left=6pt, right=6pt, top=4pt, bottom=4pt, fonttitle=\bfseries\sffamily}}
+
+\newtcolorbox{objectives}{bookbox, colback=boxfill, colframe=boxframe,
+  title={Learning objectives}}
+\newtcolorbox{definition}{bookbox, colback=white, colframe=boxframe,
+  before upper={\textbf{\sffamily Definition.}\ }}
+\newtcolorbox{principle}[1][]{bookbox, colback=boxfill, colframe=boxframe,
+  before upper={\textbf{\sffamily Principle\ifx\relax#1\relax\else\ (#1)\fi.}\ }}
+\newtcolorbox{designnote}{bookbox, colback=notefill, colframe=noteframe,
+  before upper={\textbf{\sffamily Design note.}\ }}
+
+% ---------- small commands -------------------------------------------
+\newcommand{\keyterm}[1]{\textbf{#1}}
+\providecommand{\indexgroup}[1]{\par\bigskip{\large\bfseries #1}\par\nopagebreak\smallskip}
+
+% ---------- running heads ---------------------------------------------
+% Same look as the agentic book (slanted capitals, page number outside,
+% no rule), but long chapter titles are shortened with an ellipsis so they
+% never run past the narrower 7.5 in page.
+\usepackage{fancyhdr}
+\usepackage[fit]{truncate}
+\usepackage{emptypage}% no running heads on blank left pages
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[RE]{\truncate{0.86\headwidth}{\slshape\small\leftmark}}
+\fancyhead[LO]{\truncate{0.86\headwidth}{\slshape\small\rightmark}}
+
+% ---------- subject index (load before hyperref) ---------------------
+\usepackage{imakeidx}
+\makeindex[intoc, columns=2, title=Index]
+
+% ---------- citations and links (hyperref last) ----------------------
+\usepackage[round]{natbib}
+\usepackage[colorlinks=true, linkcolor=boxframe, citecolor=noteframe,
+  urlcolor=boxframe]{hyperref}

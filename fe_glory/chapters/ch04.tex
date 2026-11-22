@@ -1,0 +1,331 @@
+% Chapter 5 -- Claim: Past Winners Keep Winning
+% Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
+% Defines the callout box only if the preamble has not.
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+\@ifundefined{callout}{%
+  \newtcolorbox{callout}{breakable, enhanced,
+    colback=white, colframe=gray!70, boxrule=0.5pt, arc=1mm,
+    borderline west={2.5pt}{0pt}{gray!70},
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
+\chapter{Claim: Past Winners Keep Winning}
+\label{ch:04}
+
+Many ordinary investors buy the stocks that have been rising and in the news, and avoid those that have been falling, often without thinking of it as a strategy at all. Economists long treated this habit as a mistake. This chapter asks whether the data have proved them wrong.
+
+Do stocks that have risen keep rising? The idea is as old as the stock market, and it runs against one of the central ideas of finance. In an efficient market\index{efficient market hypothesis}, prices already reflect all available information, including the history of past prices, so past returns should not predict future returns (Section~\ref{sec:01-efficient-markets}). 
+
+By the late 1980s, however, researchers had found that past returns do predict future returns, though in different directions at different horizons. De Bondt and Thaler (1985) asked whether investors overweight dramatic recent news, as psychology experiments suggested, and found that stocks with the worst returns over the previous three to five years went on to beat the previous winners, and they read the pattern as investor overreaction, much like the overreaction of sports fans who pay too much for tickets to last season's champions and too little for last season's losers. Jegadeesh and Titman (1993) were puzzled that professional investors bought recent winners although the evidence on reversals suggested this should lose money. They looked at shorter horizons and found the opposite. Stocks with the highest returns over the past three to twelve months kept outperforming the past losers over the following months, by about one percentage point a month in their 1965--1989 sample, which is roughly 12 percentage points a year. This pattern is called \textbf{momentum}\index{momentum|textbf}. Stated so plainly, it sounds like a chart-reader's superstition, and for decades many economists had treated it as one.
+
+The finding mattered because no accepted model of risk could explain it. Fama and French (1996) showed that their three-factor model, which absorbed most other anomalies, could not account for momentum\index{momentum}. Carhart (1997) suspected that persistent fund performance came partly from funds holding past winners, so he added a momentum factor to the model used to judge mutual funds, and found that it explained much of that persistence. To check that momentum was not simply a product of searching the data, Jegadeesh and Titman (2001) showed that the premium survived in the decade after their paper was published. Further,
+Daniel and Moskowitz (2016), seeking to explain momentum's rare but enormous losses, showed that when the market suddenly rebounds, the past losers, which have fallen furthest, bounce back sharply. These rebounds produce momentum's rare but brutal losses: by their measures, the strategy lost about 92\% in two months in 1932 and about 73\% in three months in 2009.
+
+The implications reach from theory to practice. For theory, momentum is evidence that prices adjust slowly to news, or that investors bear a risk that the standard models miss. For practice, it shapes how fund managers are evaluated and how factor funds are built, and its crashes decide whether anyone can hold it long enough to collect the premium. 
+
+The claim on trial\index{claims-on-trial method} is: \textbf{stocks that rose most over the past 12 months, skipping the latest month, continue to outperform past losers, and the premium survives its crashes.}
+
+The lab in Section~\ref{sec:05-lab} replicates the winner-minus-loser returns of Jegadeesh and Titman (1993) on the free momentum portfolios of the Kenneth R. French Data Library from 1927, in their original sample and after it, in order to check whether the premium has lasted. It then replicates the crash regressions of Daniel and Moskowitz (2016) and the volatility scaling of Barroso and Santa-Clara (2015), in order to see whether momentum's crashes can be predicted and managed.
+
+By the end of the chapter you will be able to:
+
+\begin{itemize}
+  \item compute the standard 12--1 momentum signal, explain why it skips the most recent month\index{momentum!skipping the most recent month}, and distinguish cross-sectional from time-series momentum\index{momentum!time-series};
+  \item explain momentum through underreaction\index{underreaction} and overreaction\index{overreaction}, and show how a long--short portfolio\index{long--short portfolio}'s beta\index{beta} changes over time;
+  \item explain why momentum crashes\index{momentum!crashes} after market rebounds, and manage that risk by scaling positions to a volatility\index{volatility} target\index{momentum!volatility-managed} using only past data;
+  \item test whether momentum still works over time, across markets and through its crashes.
+\end{itemize}
+
+
+
+\section{Foundations: past returns, two kinds of momentum, and investor behavior}
+\label{sec:05-foundations}
+
+\subsection{Measuring past performance}
+
+In words, a stock's return over several months is found by compounding its monthly returns, so that each month's gain or loss applies to the amount reached the month before. A stock's past return over a window is its cumulative return over those months: $(1 + R_1)(1 + R_2)\cdots(1 + R_k) - 1$. The standard momentum signal uses the return from twelve months ago to two months ago, written ``12--1'' or ``12--2'': it covers eleven months and \textbf{skips the most recent month}\index{momentum!skipping the most recent month|textbf} (Figure~\ref{fig:05-signal}). The skip exists because returns over a single month tend to reverse (Chapter~\ref{ch:13}'s short-term reversal\index{short-term reversal}); including that month would mix two opposite effects.
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.8}{%
+\begin{tikzpicture}[x=0.82cm, y=1cm]
+  % Ranking period t-12 to t-1, skipped month t-1 to t, holding month t to t+1
+  \fill[fenavy]   (0,0.25) rectangle (11,0.95);
+  \fill[gray!35]  (11,0.25) rectangle (12,0.95);
+  \fill[gray!70]  (12,0.25) rectangle (13,0.95);
+  \node[white] at (5.5,0.6) {ranking period: 11 months};
+
+  % Time axis
+  \draw[-stealth, thick] (0,0) -- (14.2,0) node[anchor=west] {months};
+  \foreach \wfI in {0,...,13} { \draw (\wfI,0.08) -- (\wfI,-0.08); }
+  \node[anchor=north] at (0,-0.15)  {$t-12$};
+  \node[anchor=north] at (11,-0.15) {$t-1$};
+  \node[anchor=north] at (12,-0.15) {$t$};
+  \node[anchor=north] at (13,-0.15) {$t+1$};
+
+  % Labels
+  \node[anchor=south, align=center] (skip) at (11.5,1.25) {skipped\\month};
+  \draw[-stealth] (11.5,1.25) -- (11.5,0.98);
+  \node[anchor=north, align=center] at (12.6,-0.75) {holding\\month};
+\end{tikzpicture}%
+}
+\caption{Momentum ranks stocks on their past year, leaving out the latest month. The 12--1 momentum signal. Stocks are ranked on their return over the eleven months from $t-12$ to $t-1$; the most recent month is skipped; the portfolio is held for the month that follows.}
+\label{fig:05-signal}
+\end{figure}
+
+\subsection{Cross-sectional momentum}
+
+
+\textbf{Cross-sectional} or relative momentum ranks stocks against each other. It buys the stocks with the highest past returns (winners) and sells those with the lowest (losers), whether the market as a whole rose or fell. In plain words, the standard momentum factor buys roughly the best-performing third of stocks over the past year, sells the worst-performing third, and repeats the sort every month; the shaded box gives the exact recipe.
+
+\begin{technote}
+\textbf{Technical note: building the momentum factor.} The Fama--French momentum factor, often called UMD (up minus down) or Mom, is built in four steps:
+
+\begin{itemize}
+  \item \textbf{Measure past returns.} At the end of each month, compute each stock's cumulative return from 12 months ago to 2 months ago, skipping the most recent month.
+  \item \textbf{Sort into six portfolios.} Split stocks into small and big at the median size of NYSE stocks, and into losers, middle and winners at the 30th and 70th percentiles of past return, using NYSE stocks to set the cut-offs. Each portfolio is value-weighted.
+  \item \textbf{Form the long--short return.} Hold the average of the two winner portfolios and sell short the average of the two loser portfolios, in the same style as HML (Section~\ref{sec:04-factors}).
+  \item \textbf{Rebalance every month.} Hold the positions for one month, then repeat the sort. Roughly a third of the portfolio changes each month.
+\end{itemize}
+\end{technote}
+
+Because the portfolio holds as much in winners as it sells in losers, its beta to the market is close to zero on average, although it changes a great deal over time, as Section~\ref{sec:05-how} shows. Running it requires selling stocks short, that is, borrowing shares and selling them in the hope of buying them back cheaper, which costs borrowing fees. Most individual investors instead hold long-only momentum funds, which tilt toward winners but keep the market's full beta.
+
+Because the stocks in each side of the portfolio change from month to month, the portfolio's beta changes too, sometimes sharply; Section~\ref{sec:05-how} explains why this matters for momentum's worst months.
+
+\subsection{Time-series momentum}
+
+\textbf{Time-series} or \textbf{absolute} momentum looks at each asset on its own: it holds the asset long if the asset's own past return is positive, and short if it is negative. It is also called \textbf{trend following}\index{trend following|textbf}, and it is what most \textbf{managed-futures funds}\index{managed futures|textbf}, funds that trade futures contracts across many markets, do. A futures contract is an agreement to buy or sell something, such as a stock index, a bond or a barrel of oil, at a set price on a future date, and it lets an investor bet on rising or falling prices without owning the asset. Unlike cross-sectional momentum\index{momentum!cross-sectional}, it can be \textbf{net long} or \textbf{net short} the market, holding more long than short positions or the reverse. It is usually applied across asset classes: stock indices, government bonds, currencies and commodities. Moskowitz, Ooi and Pedersen (2012), who documented the pattern in 58 futures markets, built the strategy in four steps:
+
+\begin{itemize}
+  \item \textbf{Measure each market's trend.} At the end of each month, compute each futures market's excess return over the past 12 months.
+  \item \textbf{Choose the direction.} Go long if that return is positive, and short if it is negative.
+  \item \textbf{Size each position by its risk.} Scale each position so that it has the same expected volatility, using volatility estimated only from past daily returns. Without this step, a volatile market such as natural gas would dominate a calm one such as government bonds.
+  \item \textbf{Rebalance every month.} Hold the positions for one month, then repeat. The portfolio's return is the average across all markets.
+\end{itemize}
+
+Managed-futures funds follow the same idea with a few changes:
+
+\begin{itemize}
+  \item \textbf{Several look-back periods.} Most funds combine signals over one, three and twelve months, or use moving-average rules, instead of relying on one look-back.
+  \item \textbf{More frequent trading.} Many rebalance daily or weekly rather than monthly.
+  \item \textbf{Futures mechanics.} Positions are held through futures contracts, which need only margin, a deposit that is a fraction of the contract's value, rather than full payment, and which must be rolled, that is, replaced with the next contract, before they expire.
+  \item \textbf{Access for individual investors.} Individual investors can buy managed-futures mutual funds and ETFs that run these strategies, usually at higher fees than index funds.
+\end{itemize}
+
+Chapter~\ref{ch:05} tests trend-following rules in detail.
+
+
+\subsection{Volatility scaling}
+
+\textbf{Volatility scaling}\index{volatility scaling|textbf} means sizing a position by how risky it currently is: holding more when markets are calm and less when they are turbulent. The rule is simple:
+\begin{equation}
+  w = \frac{\sigma^*}{\hat\sigma}
+  \label{eq:05-volscale}
+\end{equation}
+Here $w$ is the size of the position relative to a normal, full-sized position, $\sigma^*$ is the volatility the investor wants to target, and $\hat\sigma$ is a forecast of the asset's volatility. When the forecast doubles, the position is halved, so the risk taken stays roughly the same over time. For example, with a target of 12\%:
+
+\begin{itemize}
+  \item a forecast of 24\% gives $w = 12/24 = 0.5$, so the position is cut to half its normal size;
+  \item a forecast of 12\% gives $w = 1$, a normal-sized position;
+  \item a forecast of 8\% gives $w = 12/8 = 1.5$, so the position is one and a half times its normal size.
+\end{itemize}
+
+The forecast must use only data available before the position is set. Using later data would let the strategy ``know'' about turbulence before it happened, which no investor can do.
+
+Volatility scaling is part of how time-series momentum is built: each market's position is scaled so that a volatile market does not dominate a calm one. 
+Also, volatility scaling is the main tool for managing momentum's crashes. Momentum's own returns become unusually volatile before and during its worst losses, which come when the market rebounds after a long decline. Barroso and Santa-Clara (2015) scaled the momentum strategy to a 12\% volatility target, using its daily returns over the previous six months to forecast its volatility. The scaled strategy cut its exposure as turbulence rose, avoided much of the 1932 and 2009 crashes, and nearly doubled momentum's Sharpe ratio. Part~C of the lab tests whether that improvement holds up.
+
+\subsection{Underreaction and overreaction}
+\label{sec:05-behavior}
+
+\textbf{Behavioral finance}\index{behavioral finance|textbf} studies how investors' systematic errors affect prices. It starts from a different premise than the efficient market hypothesis. In an efficient market, investors may make mistakes, but the mistakes are random and cancel out, and any mispricing that remains is quickly traded away by well-informed investors. Behavioral finance argues instead that many investors make the \emph{same} mistakes at the same time, and that trading against them is risky and costly, so their errors can move prices for months or years. Two errors matter here.
+
+\begin{itemize}
+  \item \textbf{Underreaction}\index{underreaction|textbf}: investors adjust too slowly to news, because of conservatism or limited attention, so prices drift in the direction of the news for months. News about a company spreads the way a rumor spreads through a town, reaching some investors at once and others weeks later.
+  \item \textbf{Overreaction}\index{overreaction|textbf}: investors extrapolate a run of good or bad news too far, pushing prices past their fair value, which later reverses.
+\end{itemize}
+
+Momentum at horizons of a few months to a year fits underreaction or delayed overreaction; the long-run reversals documented by De Bondt and Thaler (1985) fit overreaction followed by correction.
+
+
+\section{How it works}
+\label{sec:05-how}
+
+\textbf{The strategy.} At the end of each month, rank stocks on their 12--1 past return. Buy the top group, sell the bottom group, hold for a month, and repeat. Because the ranking window shifts by one month at a time, ten of its eleven months carry over, and about a third of each side of the portfolio is replaced each month (Chapter~\ref{ch:13}). Jegadeesh and Titman\index{Jegadeesh and Titman} (1993) studied many combinations of ranking and holding periods from three to twelve months; the 12--1 ranking with a one-month hold has become the standard.
+
+\textbf{Why momentum might exist.} Three families of explanation compete.
+
+\begin{itemize}
+  \item \textbf{Underreaction.}\index{underreaction|textbf} Investors update slowly. Good news about a firm is only partly reflected in its price at first, and the rest arrives over the following months. Hong and Stein (1999) model news diffusing gradually through the investor population; Barberis, Shleifer and Vishny (1998) model investors who are too conservative in updating their beliefs.
+  \item \textbf{Delayed overreaction.} Daniel, Hirshleifer and Subrahmanyam (1998) argue that overconfident\index{overconfidence} investors, seeing their views confirmed by early price moves, push prices further than fundamentals justify, producing momentum in the medium term and reversal later.
+  \item \textbf{Risk.} Momentum's crashes are themselves a candidate explanation: a strategy that loses heavily in rare, sharp market rebounds may earn a premium for bearing that risk. Rational models in which expected returns\index{return!expected} vary with firms' growth options have also been proposed, though none has become standard.
+\end{itemize}
+
+\textbf{Crashes and changing beta.} Momentum's market beta is not constant (Figure~\ref{fig:05-beta}). In a rising market, past winners\index{winners and losers} are high-beta stocks and momentum has positive beta. After a market decline, past losers are the high-beta stocks and momentum is short them, giving it a strongly negative beta. Grundy and Martin (2001) noted this time variation; Daniel and Moskowitz (2016) showed that it explains momentum's crashes, which occur when markets rebound after a decline, and that their timing is partly predictable from the past market return and recent volatility.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.64\linewidth, height=0.34\linewidth,
+  ybar, bar width=0.41cm,
+  axis lines=left, axis line style={-stealth},
+  ymin=-1.35, ymax=1.8,
+  ytick={-1,0,1},
+  ylabel={Market beta},
+  symbolic x coords={Winners (long side),Losers (short side),Momentum (net)},
+  xtick=data, enlarge x limits=0.22,
+  xticklabel style={align=center, text width=2.2cm, font=\small},
+  nodes near coords, every node near coord/.append style={font=\small},
+  legend style={draw=none, font=\small, at={(0.5,1.10)}, anchor=south, legend columns=2,
+                /tikz/every even column/.append style={column sep=1em}},
+  extra y ticks={0}, extra y tick labels={},
+  extra y tick style={grid=major, major grid style={gray, thin}},
+  clip=false,
+]
+  \addplot[fill=gray!40, draw=none] coordinates
+    {(Winners (long side),1.2) (Losers (short side),0.9) (Momentum (net),0.3)};
+  \addplot[fill=fenavy, draw=none] coordinates
+    {(Winners (long side),0.7) (Losers (short side),1.6) (Momentum (net),-0.9)};
+  \legend{after a rising market, after a falling market}
+\end{axis}
+\end{tikzpicture}
+\caption{After a market fall, momentum ends up betting against the stocks most likely to rebound. Why momentum's beta flips (illustrative values). After a rising market the winners it holds are the high-beta stocks, so its net beta is positive. After a falling market the losers it sells short are the high-beta stocks, so its net beta turns strongly negative, and a sharp market rebound produces a large loss.}
+\label{fig:05-beta}
+\end{figure}
+
+\textbf{Managing the crashes.} Because momentum's volatility rises sharply before and during crashes, scaling the position by forecast volatility, as in Equation~\eqref{eq:05-volscale}, cuts exposure when crashes are most likely. Barroso and Santa-Clara (2015) found that this nearly doubled momentum's Sharpe ratio\index{Sharpe ratio} and largely eliminated its crashes in U.S. data. Daniel and Moskowitz (2016) proposed a dynamic version that also uses a forecast of momentum's mean return.
+
+
+\section{The claim}
+\label{sec:05-claim}
+
+Stated so that it can fail:
+
+\begin{callout}
+\textbf{Stocks with high returns over the past year continue to outperform stocks with low past returns over the following months, by enough to survive costs, in data beyond the samples that established the result, and with risks an investor can manage.}
+\end{callout}
+
+The last clause matters: a premium that is real on average but brings losses of 50\% or more in a few months may be one few investors can collect. The tests are:
+
+\begin{itemize}
+  \item \textbf{Time.} Is the premium present after Jegadeesh and Titman's 1965--1989 sample, and in every era?
+  \item \textbf{Breadth.} Is it found in other countries and asset classes?
+  \item \textbf{Costs.} Momentum trades far more than value. Does its premium exceed its costs?
+  \item \textbf{Crashes.} How large are they, can they be anticipated, and does managing them change the verdict?
+\end{itemize}
+
+\section{The original evidence}
+\label{sec:05-evidence}
+
+\textbf{Jegadeesh and Titman (1993)}\index{Jegadeesh and Titman|textbf} sorted U.S. stocks from 1965 to 1989 on their past three- to twelve-month returns and found that buying winners and selling losers earned about 1\% a month, more than market risk could explain, with part of the profit reversing after a year. Their follow-up (Jegadeesh and Titman 2001) found a similar premium in the years after publication\index{anomaly!post-publication decay}, one of the earliest successful out-of-sample\index{in-sample versus out-of-sample} tests of an anomaly\index{anomaly}.
+
+\textbf{Carhart (1997)}\index{Carhart four-factor model|textbf} added a momentum factor to the Fama--French model to study mutual funds, and found that much of the apparent persistence\index{persistence} in fund returns was momentum exposure rather than skill. His four-factor model\index{factor model} became a standard benchmark.
+
+\textbf{Breadth.} Rouwenhorst (1998) found momentum in twelve European markets, and Asness, Moskowitz and Pedersen (2013) found it in stocks across countries and in bonds, currencies and commodities. Moskowitz, Ooi and Pedersen (2012) documented \textbf{time-series momentum}\index{momentum!time-series|textbf}: in 58 futures and forward markets, an asset's own past twelve-month return predicted its next month's return. Japan is the notable exception, where Chui, Titman and Wei (2010) found momentum weak, consistent with their view that it is stronger in more individualistic cultures.
+
+\textbf{Crashes.} Daniel and Moskowitz (2016) showed that momentum's worst losses come when the market rebounds after a decline, as in 1932 and the spring of 2009, when battered past losers rose far more than past winners. These crashes give momentum negative skewness\index{skewness} and extreme drawdowns\index{drawdown}. Barroso and Santa-Clara (2015) showed that scaling by forecast volatility removed much of this risk in U.S. data.
+
+\section{Lab~\thechapter: Replicating Jegadeesh and Titman (1993) and Daniel and Moskowitz (2016)}
+\label{sec:05-lab}
+
+\begin{callout}
+\textbf{Lab~\ref{ch:04} at a glance.} \emph{Papers replicated:} Jegadeesh and Titman (1993); the crash regressions of Daniel and Moskowitz (2016); the volatility scaling of Barroso and Santa-Clara (2015). \emph{The question:} has momentum earned a premium throughout a century of U.S. data, when do its crashes occur, and can volatility scaling make it holdable? \emph{Data:} Kenneth French\index{Kenneth French data library}'s library: the monthly and daily momentum factor from the 1920s, the market factor and risk-free rate\index{risk-free rate}, ten portfolios sorted on past returns (\emph{deciles}) and ten industry portfolios; optionally the Jensen--Kelly--Pedersen data for other countries. \emph{Code:} repository folder \texttt{ch09-momentum/}, with a guided notebook.
+\end{callout}
+
+\begin{itemize}
+  \item \textbf{Part A, replication\index{replication}.} Momentum's average return, t-statistic\index{t-statistic}, Sharpe ratio, skewness, worst month and \textbf{maximum drawdown}\index{maximum drawdown|textbf} (the largest fall from a previous peak), over the full sample, by decade and after publication, and the average returns of the ten deciles.
+  \item \textbf{Part B, crashes.} The ten worst months, and a regression of momentum on the market with extra terms for \textbf{bear markets} (when the market's past 24-month return is negative) and for bear-market months in which the market rises.
+  \item \textbf{Part C, volatility scaling.} Momentum scaled each month to a 12\% annual volatility target, using the past six months of daily returns, compared with raw momentum levered to the same average volatility, so the comparison is about timing, not leverage\index{leverage}.
+  \item \textbf{Part D, time-series momentum.} Ten industry portfolios and the market, each held long or short by the sign of its past twelve-month excess return\index{return!excess}: a narrow, equity-only version of Moskowitz, Ooi and Pedersen's test.
+  \item \textbf{Part E, costs.} Net returns at one-way costs\index{transaction costs!one-way and round-trip} of 20 and 50 basis points\index{basis point}, with turnover\index{turnover} of about 35\% a month.
+\end{itemize}
+
+\textbf{What readers will find.} Lab Figure~\ref{ch:04}.1 marks the five worst months on a century of momentum's growth, and Lab Figure~\ref{ch:04}.3 shows that they come when beaten-down markets rebound. Lab Figure~\ref{ch:04}.4 compares raw and volatility-scaled momentum and their drawdowns.
+
+\subsection{Robustness checks}
+\label{sec:05-stress}
+
+\textbf{1. After publication.} Momentum's record since 1993 is one of the longest out-of-sample tests of any anomaly. The lab extends Jegadeesh and Titman's (2001) check to the present, through the 2009 crash.
+
+\textbf{2. Other countries and asset classes.} Momentum is strong in Europe and weak in Japan. The JKP data allow a country-by-country count, keeping in mind how many significant results chance alone produces (Section~\ref{sec:01-backtests}).
+
+\textbf{3. Costs.} With turnover of about 35\% a month, costs absorb roughly 3 percentage points of the annual premium at 20 basis points and about 8 at 50 (Equation~\eqref{eq:17-net}). Novy-Marx and Velikov (2016) estimated momentum's costs at about 0.65\% a month and still found a significant net premium (Chapter~\ref{ch:13}). The lab also charges for the extra trading that volatility scaling causes.
+
+\textbf{4. Predicting crashes.} A crash that only hindsight can predict is no help. The lab's signals, the past 24-month market return and past daily volatility, use only information available at the start of each month.
+
+\textbf{5. Overfitting the fix.} Volatility scaling is itself a claim that can be overfit\index{overfitting}. Barroso and Santa-Clara chose a six-month window and a 12\% target, and the lab lets you change both. Chapter~\ref{ch:07} asks whether volatility timing\index{volatility targeting} works in general.
+
+\subsection*{Your verdict}
+
+Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:05-verdict}. If your verdict differs, explain which of your results led you there.
+
+\section{Where the evidence stands}
+\label{sec:05-verdict}
+
+The published studies point to a clear pattern: \textbf{momentum has survived publication, appears in most markets and covers institutional trading costs, but its rare, severe crashes make it hard to hold without managing its risk.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+A century of U.S. data & \textbf{Yes} & Past winners beat past losers by a large premium that the three-factor model cannot explain. & Jegadeesh and Titman (1993); Fama and French (1996) \\
+\addlinespace[3pt]
+After publication & \textbf{Yes, weaker} & The premium continued through the 1990s but has been weaker and more volatile since 2000. & Jegadeesh and Titman (2001); Daniel and Moskowitz (2016) \\
+\addlinespace[3pt]
+Other countries and asset classes & \textbf{Mostly} & Found in Europe, across countries and in bonds, currencies and commodities, but not in Japan. & Rouwenhorst (1998); Asness, Moskowitz and Pedersen (2013); Chui, Titman and Wei (2010) \\
+\addlinespace[3pt]
+After trading costs & \textbf{Yes, smaller} & Costs are large but below the gross premium at institutional costs. & Novy-Marx and Velikov (2016) \\
+\addlinespace[3pt]
+Through its crashes & \textbf{Partly} & Rare, severe losses come when beaten-down markets rebound, as in 1932 and 2009. & Grundy and Martin (2001); Daniel and Moskowitz (2016) \\
+\addlinespace[3pt]
+With volatility scaling & \textbf{Partly} & Scaling reduced the crashes and raised the Sharpe ratio, but the improvement is itself a claim to test. & Barroso and Santa-Clara (2015) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{What would change the picture.} The claim would hold fully if volatility scaling, fixed in advance and tested on new data, removed the crashes without removing the premium. It would weaken if the premium kept shrinking until it no longer covered realistic costs.
+
+\subsection{Open questions}
+\label{sec:05-open}
+
+\begin{itemize}
+  \item \textbf{Can momentum crashes be forecast in real time?} Do the bear-market and volatility signals work for an investor who adopts them today, after the multiple-testing\index{multiple testing} corrections of Chapter~\ref{ch:15}?
+  \item \textbf{Why not Japan?} Culture, investor behavior and market structure have all been proposed; none is settled.
+  \item \textbf{Risk or behavior?} If crashes are the risk that the premium pays for, managing them should reduce the premium. Does it?
+  \item \textbf{Momentum in factors.}\index{momentum|textbf} Ehsani and Linnainmaa (2022) argue that factor returns themselves have momentum. How does that relate to momentum in individual stocks?
+\end{itemize}
+
+\section{What practitioners and investors can use}
+\label{sec:05-investors}
+
+\textbf{Trend rules for asset allocation.} Time-series momentum across asset classes, the core of managed-futures funds, has tended to do well in long market declines, which makes it a candidate \textbf{diversifier} for a stock-heavy portfolio. Its returns have been uneven, and its fees are often high.
+
+\textbf{Stock-picking momentum.} Cross-sectional momentum is best held alongside value, with which it is negatively correlated (Asness, Moskowitz and Pedersen 2013). On its own, its crashes make it hard to hold.
+
+\textbf{Manage the risk, not just the return.} Sizing a momentum allocation so that a 50\% loss in a few months is survivable matters more than any refinement of the signal.
+
+\textbf{Questions to ask a momentum or trend-following manager:}
+
+\begin{enumerate}
+  \item How did the strategy do from March to May 2009, and what would it do in a similar rebound?
+  \item Is the position sized by volatility, and was that rule fixed before the backtest\index{backtest}?
+  \item What turnover and costs were assumed, and how do they compare with your live costs?
+  \item How much of the return comes from small, illiquid stocks, and how long were its worst flat periods?
+\end{enumerate}
+
+\begin{callout}
+\textbf{What Failed: holding raw momentum through the 2009 rebound.} Through the financial crisis momentum did well, long defensive winners and short collapsing financial and cyclical stocks. When the market turned in March 2009, the most beaten-down stocks rebounded hardest, and within months the strategy lost much of a decade's gains (Daniel and Moskowitz 2016). Nothing about the crash was a mystery afterward: the strategy was short very high-beta stocks at the bottom of a bear market. The failure was treating momentum's average return as the whole story and sizing positions as if the risk were constant. The claim that momentum's return could be harvested without managing its crash risk \textbf{fails}.
+\end{callout}
