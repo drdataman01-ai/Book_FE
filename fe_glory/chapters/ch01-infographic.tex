@@ -1,127 +1,37 @@
-% ======================================================================
-% Chapter 1 infographic -- "Claim: A Strong Track Record Proves Skill"
-% One full page. Use it right after \label{ch:01}:
-%     \input{chapters/ch01-infographic}
-% Works with both the Glory style and the agentic style (colours are
-% provided here if the preamble does not define them).
-% ======================================================================
-\providecolor{FEMaroon}{RGB}{128,30,45}
-\providecolor{FECream}{RGB}{253,248,238}
-\providecolor{FEGold}{RGB}{196,150,60}
-\providecolor{fenavy}{HTML}{1B2A6B}
-\providecolor{fegray}{HTML}{4D4D4D}
-\providecolor{igRisk}{HTML}{1F4E79}
-\providecolor{igLuck}{HTML}{8A8A8A}
-\providecolor{igSkill}{HTML}{2E6B3F}
+% Chapter 1 infographic -- use at the end of the chapter: \input{chapters/ch01-infographic}
+\ifcsname FEinfoLoaded\endcsname\else\input{common/fe-infographic}\fi
+\begin{FEinfographic}{ch:01}{a long enough track record can reveal real skill}
 
-\clearpage
-\thispagestyle{plain}
-\noindent\hfil\scalebox{0.97}{\begin{tikzpicture}[
-  font=\sffamily\footnotesize,
-  x=1cm, y=1cm,
-  panel/.style={draw=FEGold, line width=0.6pt, rounded corners=3pt,
-                fill=FECream, inner sep=0pt},
-  head/.style={font=\sffamily\bfseries\small, text=FEMaroon, anchor=north west},
-  card/.style={rounded corners=2pt, text=white, align=center,
-               font=\sffamily\bfseries\footnotesize, inner sep=3pt},
-  body/.style={align=left, anchor=north west, text width=#1,
-               font=\sffamily\scriptsize, inner sep=0pt},
-  igstep/.style={fill=FEMaroon, text=white, rounded corners=2pt,
-               font=\sffamily\bfseries\scriptsize, minimum height=6mm,
-               minimum width=2.1cm, inner sep=2pt, text height=1.6ex, text depth=0.3ex},
-  arr/.style={-{Stealth[length=2mm]}, FEGold, line width=1pt},
-]
-\def\W{14.2}   % panel width (cm)
+\infopanel{1}{Three ways to make money in the market}{%
+\infocards
+  {Bearing risk}{Earning the equity premium, for example with a levered index fund, is a reward for risk, not evidence of skill.}
+  {Luck}{Noise produces winners, such as coin-flip market timers, and we hear about the winners most.}
+  {Skill}{A return beyond what the risk explains, after costs, from better information, analysis or execution.}}
 
-% ---------------- Title band ------------------------------------------
-\fill[FEMaroon, rounded corners=3pt] (0,0) rectangle (\W,-1.45);
-\node[anchor=west, text=white, font=\sffamily\bfseries\large] at (0.35,-0.48)
-  {Chapter~\ref{ch:01} at a glance};
-\node[anchor=west, text=white, font=\sffamily\small] at (0.35,-1.03)
-  {Claim on trial: \emph{a long enough track record can reveal real skill}};
+\infopanel{2}{Evidence scoreboard}{%
+\begin{infoscore}
+\scoreitem{n}{No}{Mutual funds as a group, after fees}
+\scoreitem{y}{Yes}{A minority of skilled managers}
+\scoreitem{y}{Yes}{Records with an identifiable edge}
+\scoreitem{n}{No}{Short records}
+\scoreitem{n}{No}{The best of many backtests}
+\end{infoscore}}
 
-% ---------------- Panel 1: three sources of profit ---------------------
-\draw[panel] (0,-1.65) rectangle (\W,-5.15);
-\node[head] at (0.25,-1.8) {1\quad Three ways to make money in the market};
-\foreach \i/\c/\t/\d/\e in {
-  0/igRisk/{Bearing risk}/{Earns the equity premium. A reward for risk, not evidence of skill.}/{a levered index fund; selling crash insurance},
-  1/igLuck/{Luck}/{Noise produces winners, and we hear about the winners most.}/{coin-flip market timers; one lucky stock pick},
-  2/igSkill/{Skill}/{A return beyond what the risk explains, after costs.}/{better information, analysis or execution}}{
-  \pgfmathsetmacro{\xx}{0.25+\i*4.65}
-  \node[card, fill=\c, minimum width=4.4cm, anchor=north west] at (\xx,-2.35) {\t};
-  \node[body=4.3cm] at (\xx+0.05,-3.0) {\d\\[2pt]\textcolor{fegray}{\itshape e.g.\ \e}};
-}
-\node[anchor=south west, font=\sffamily\scriptsize\itshape, text=FEMaroon]
-  at (0.25,-5.08) {Ask: does risk explain it? Does luck explain it? Only if both answers are no is skill likely.};
+\infopanel{3}{Signal is small, noise is large: years of data needed to reach $t = 1.96$}{%
+\infonumbers
+  {61}{years for a Sharpe ratio of 0.25}
+  {15}{years for a Sharpe ratio of 0.5}
+  {4}{years for a Sharpe ratio of 1.0}
+  {$t \approx \mathrm{SR}\sqrt{T}$}{evidence grows only with the square root of time}}
 
-% ---------------- Panel 2: signal and noise ----------------------------
-\draw[panel] (0,-5.35) rectangle (\W,-10.3);
-\node[head] at (0.25,-5.5) {2\quad Signal is small, noise is large};
-\node[body=6.4cm] at (0.25,-6.15) {%
-  Take a market with an expected excess return of 7\% a year and a volatility of 20\%.\\[3pt]
-  \textbullet\ Two years in three fall between $-13\%$ and $27\%$.\\
-  \textbullet\ About one year in three loses money.\\[5pt]
-  Evidence grows only with the square root of the number of years:\par
-  \smallskip{\centering\normalsize $t \approx \mathrm{SR}\sqrt{T}$\par}\smallskip
-  So about $(1.96/\mathrm{SR})^2$ years are needed to rule out luck.};
-% bar chart: years needed
-\begin{scope}[shift={(7.05,-9.5)}]
-  \node[anchor=south west, font=\sffamily\bfseries\scriptsize, text=FEMaroon]
-    at (-0.1,2.75) {Years of data needed to reach $t=1.96$};
-  \foreach \sr/\yrs/\k in {0.25/61/0, 0.50/15/1, 0.75/7/2, 1.00/4/3, 1.50/2/4}{
-    \pgfmathsetmacro{\yy}{2.45-\k*0.55}
-    \pgfmathsetmacro{\len}{\yrs/61*5.0}
-    \node[anchor=east, font=\sffamily\scriptsize] at (1.15,\yy) {SR $=\sr$};
-    \fill[fenavy!70] (1.25,\yy-0.18) rectangle ++(\len,0.36);
-    \node[anchor=west, font=\sffamily\bfseries\scriptsize] at (1.3+\len,\yy) {\yrs};
-  }
-  \draw[fegray] (1.25,0.05) -- (1.25,2.7);
-\end{scope}
+\infopanel{4}{Lab: 1,000 strategies with zero skill on the U.S. market since 1926}{%
+\begin{infolab}
+\item \textbf{Signal and noise.} The market's Sharpe ratio over the full sample and every 10-year window.
+\item \textbf{Brilliant by chance.} About 25 random strategies look significant in the backtest, and the best reaches $t \approx 3.2$, yet the winners' later $t$ is about zero.
+\item \textbf{The cost of searching.} The bar rises to $t > 3.89$ once 1,000 tries are allowed for.
+\end{infolab}}
 
-\begin{scope}[yshift=-1.25cm]
-% ---------------- Panel 3: why backtests mislead ------------------------
-\draw[panel] (0,-9.25) rectangle (\W,-11.85);
-\node[head] at (0.25,-9.4) {3\quad Seven ways a backtest misleads};
-\foreach \n/\t/\col/\row in {
-  1/{Best of many trials}/0/0, 2/{Overfitted settings}/1/0, 3/{Look-ahead bias}/2/0, 4/{Survivorship bias}/3/0,
-  5/{Costs ignored}/0/1, 6/{Short or one-regime sample}/1/1, 7/{A story told after the fact}/2/1}{
-  \pgfmathsetmacro{\xx}{0.25+\col*3.5}
-  \pgfmathsetmacro{\yy}{-10.05-\row*0.85}
-  \node[circle, fill=FEMaroon, text=white, font=\sffamily\bfseries\scriptsize,
-        inner sep=1pt, minimum size=4.6mm] at (\xx+0.25,\yy-0.25) {\n};
-  \node[anchor=west, text width=2.75cm, font=\sffamily\scriptsize] at (\xx+0.55,\yy-0.25) {\t};
-}
-\node[anchor=west, text width=3.3cm, font=\sffamily\scriptsize\itshape, text=FEMaroon]
-  at (10.75,-11.15) {Butter in Bangladesh once ``predicted'' the S\&P~500.};
-
-% ---------------- Panel 4: the lab --------------------------------------
-\draw[panel] (0,-12.05) rectangle (\W,-14.75);
-\node[head] at (0.25,-12.2) {4\quad Lab: 1,000 strategies with zero skill, U.S. market since 1926};
-\foreach \v/\l/\k in {
-  {$\approx$\,25}/{look significant in the backtest ($t_\alpha>1.96$)}/0,
-  {$\approx$\,3.2}/{best backtest $t_\alpha$, from luck alone}/1,
-  {3.89}/{bar after allowing for 1{,}000 tries (Bonferroni)}/2,
-  {$\approx$\,0}/{later $t_\alpha$ of the backtest ``winners''}/3}{
-  \pgfmathsetmacro{\xx}{0.25+\k*3.5}
-  \node[anchor=north west, fill=white, draw=FEGold, rounded corners=2pt,
-        minimum width=3.3cm, minimum height=1.85cm] at (\xx,-12.75) {};
-  \node[font=\sffamily\bfseries\Large, text=FEMaroon] at (\xx+1.65,-13.2) {\v};
-  \node[anchor=north, text width=3.0cm, align=center, font=\sffamily\scriptsize]
-    at (\xx+1.65,-13.6) {\l};
-}
-
-% ---------------- Panel 5: method and verdict ---------------------------
-\draw[panel] (0,-14.95) rectangle (\W,-17.7);
-\node[head] at (0.25,-15.1) {5\quad The claims-on-trial method used in every chapter};
-\foreach \s/\k in {Claim/0, Understand/1, Verify/2, Judge/3, Apply/4}{
-  \node[igstep] (s\k) at (1.45+\k*2.83,-15.95) {\s};
-}
-\foreach \a/\b in {0/1,1/2,2/3,3/4}{ \draw[arr] (s\a) -- (s\b); }
-\node[body=13.7cm] at (0.25,-16.45) {%
-  \textbf{\textcolor{FEMaroon}{Where the evidence stands.}} A record counts as evidence of skill
-  only if it is \textbf{long enough} for its Sharpe ratio, clears a \textbf{higher bar} for the
-  number of strategies tried ($t$ of about 3 for a new finding), and \textbf{keeps working}
-  on data that played no part in choosing it. Most records fail these tests, and genuine skill is rare.};
-\end{scope}
-\end{tikzpicture}}\hfil\par
-\clearpage
+\infoverdict
+  {A track record can reveal real skill, but only when it is long enough, clears a bar that allows for how many strategies were tried, and keeps working after it was chosen. Most records do not meet these conditions, and genuine skill appears to be rare.}
+  {Judge evidence by how it was produced: ask how many strategies were tried, which part of the record is live, and how the strategy has done since its design was fixed.}
+\end{FEinfographic}

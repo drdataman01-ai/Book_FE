@@ -1,0 +1,38 @@
+% Chapter 15 infographic -- use right after \label{ch:15}: \input{chapters/ch15-infographic}
+\ifcsname FEinfoLoaded\endcsname\else\input{common/fe-infographic}\fi
+\begin{FEinfographic}{ch:15}{most published return predictors fail to replicate once micro-caps, multiple testing and publication are accounted for}
+
+\infopanel{1}{Why the two sides disagree}{%
+\infocards
+  {Construction}{Value weights and NYSE breakpoints play down micro-caps, where many anomalies live.}
+  {The hurdle}{How high a $t$-statistic must be depends on how many signals were tested.}
+  {Pooling}{Bayesian methods that pool factors across themes and countries find most of them real.}}
+
+\infopanel{2}{Evidence scoreboard: does the claim hold?}{%
+\begin{infoscore}
+\scoreitem{n}{No}{Original construction, conventional hurdle}
+\scoreitem{y}{Yes}{Micro-caps de-emphasized, value-weighted}
+\scoreitem{o}{Disputed}{The right hurdle for multiple testing}
+\scoreitem{n}{No}{Bayesian pooling across factors and countries}
+\scoreitem{p}{Partly}{Out of sample, after publication}
+\scoreitem{y}{Yes}{After costs, for an investor}
+\end{infoscore}}
+
+\infopanel{3}{Key numbers}{%
+\infonumbers
+  {65\%}{of 452 anomalies fail $t = 1.96$ (Hou, Xue, Zhang)}
+  {96\%}{of trading-frictions anomalies fail}
+  {58\%}{lower returns after publication}
+  {93}{countries where most factors work (JKP)}}
+
+\infopanel{4}{Lab: replicating both sides of the anomaly debate}{%
+\begin{infolab}
+\item \textbf{A.} More than 200 predictors tested at 1.96, at 3 and with Benjamini--Hochberg.
+\item \textbf{B.} Decay after the sample and after publication. \textbf{C.} An alternative construction.
+\item \textbf{D.} Empirical Bayes shrinkage. \textbf{E.} A simulated literature that publishes only lucky results.
+\end{infolab}}
+
+\infoverdict
+  {Most published anomalies are not pure statistical flukes. But most are smaller than reported, concentrated in small stocks, partly traded away, and not profitable to trade after costs.}
+  {Check that a signal clears $t \approx 3$, holds among large stocks with value weights, belongs to a known theme and survives costs; expect half the backtest at best.}
+\end{FEinfographic}

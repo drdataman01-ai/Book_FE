@@ -1,0 +1,40 @@
+% Chapter 5 infographic -- use right after \label{ch:05}: \input{chapters/ch05-infographic}
+\ifcsname FEinfoLoaded\endcsname\else\input{common/fe-infographic}\fi
+\begin{FEinfographic}{ch:05}{simple trend rules beat buy-and-hold after correcting for the number of rules tried}
+
+\infopanel{1}{Three kinds of trend rule}{%
+\infocards
+  {Moving averages}{Buy when a short average of the price rises above a long one, and sell when it falls below.}
+  {Breakouts}{Buy when the price rises above its recent high, and sell when it falls below its recent low.}
+  {Time-series momentum}{Hold each market long or short by the sign of its own past twelve-month return.}}
+
+\infopanel{2}{Evidence scoreboard}{%
+\begin{infoscore}
+\scoreitem{y}{Yes}{Stock-index rules in the original sample}
+\scoreitem{n}{No}{Stock-index rules after 1986}
+\scoreitem{y}{Yes}{Time-series momentum across many markets}
+\scoreitem{y}{Yes}{A century of trend following}
+\scoreitem{n}{No}{Asset by asset}
+\scoreitem{o}{Unclear}{After 2009}
+\scoreitem{y}{Yes}{In long market declines}
+\end{infoscore}}
+
+\infopanel{3}{Key numbers}{%
+\infonumbers
+  {26}{rules tested by Brock, Lakonishok and LeBaron}
+  {58}{contracts, all profitable for time-series momentum}
+  {1880}{start of a century of positive trend returns}
+  {2022}{a strong year when stocks and bonds fell together}}
+
+\infopanel{4}{Lab: replicating Brock--Lakonishok--LeBaron and Moskowitz--Ooi--Pedersen}{%
+\begin{infolab}
+\item \textbf{A.} The 26 rules on the daily U.S. market, before and after 1987.
+\item \textbf{B.} A few thousand rules tested with White's Reality Check and Hansen's SPA test.
+\item \textbf{C.} AQR's time-series momentum factors before and after 2009. \textbf{D.} The smile against market returns.
+\item \textbf{E.} About a dozen assets tested one by one and pooled.
+\end{infolab}}
+
+\infoverdict
+  {Classic trend rules on a single stock index do not survive a full accounting for the number of rules tried, while diversified trend following across many markets has a stronger record, though its return is smaller and less certain than first reported.}
+  {Use diversified, slow trend following as a diversifier for a stock-heavy portfolio, not as a stand-alone bet, and judge its fee against a transparent rule.}
+\end{FEinfographic}

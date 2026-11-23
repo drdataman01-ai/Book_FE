@@ -1,0 +1,39 @@
+% Chapter 6 infographic -- use right after \label{ch:06}: \input{chapters/ch06-infographic}
+\ifcsname FEinfoLoaded\endcsname\else\input{common/fe-infographic}\fi
+\begin{FEinfographic}{ch:06}{a predictor that is significant in sample forecasts the equity premium better than the historical mean out of sample}
+
+\infopanel{1}{How to test a forecast honestly}{%
+\infocards
+  {Walk forward}{Forecast each month using only the data available at the time, never the whole sample.}
+  {The right benchmark}{The historical mean is hard to beat, so it is the yardstick for every return forecast.}
+  {Correct for the search}{When many models are tried, White's Reality Check and the SPA test adjust for luck.}}
+
+\infopanel{2}{Evidence scoreboard}{%
+\begin{infoscore}
+\scoreitem{y}{Yes}{In-sample predictability}
+\scoreitem{n}{No}{Single predictors out of sample}
+\scoreitem{p}{Partly}{Forecasts with economic restrictions}
+\scoreitem{p}{Partly}{Combined forecasts}
+\scoreitem{n}{No}{The dividend yield after 1990}
+\scoreitem{n}{No}{The best of many rules}
+\scoreitem{p}{Weaker}{Published return patterns in general}
+\end{infoscore}}
+
+\infopanel{3}{Key numbers}{%
+\infonumbers
+  {14}{macro predictors in the Goyal--Welch data}
+  {1965}{start of the walk-forward forecasts}
+  {about 1/4}{fall in returns out of sample}
+  {over 1/2}{fall in returns after publication}}
+
+\infopanel{4}{Lab: replicating Goyal and Welch (2008) and White's Reality Check}{%
+\begin{infolab}
+\item \textbf{A.} In-sample regressions for all 14 predictors. \textbf{B.} Walk-forward forecasts with $R^2_{\text{OS}}$, Clark--West and Diebold--Mariano tests.
+\item \textbf{C.} Remedies: sign restrictions, forecast combinations and certainty-equivalent gains.
+\item \textbf{D.} Performance after 2005. \textbf{E.} White's Reality Check on a universe of trading rules.
+\end{infolab}}
+
+\infoverdict
+  {Statistical significance in sample rarely carries over out of sample, and most single predictors fail to beat the historical mean, although economic restrictions and combined forecasts recover a modest gain.}
+  {Start from the historical mean, prefer a combination of forecasts, and ask whether any forecast was made strictly walk-forward and survived publication.}
+\end{FEinfographic}

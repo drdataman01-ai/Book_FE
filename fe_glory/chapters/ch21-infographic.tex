@@ -1,0 +1,39 @@
+% Chapter 21 infographic -- use right after \label{ch:21}: \input{chapters/ch21-infographic}
+\ifcsname FEinfoLoaded\endcsname\else\input{common/fe-infographic}\fi
+\begin{FEinfographic}{ch:21}{a transformer inside the stochastic discount factor prices stocks better than factor models out of sample}
+
+\infopanel{1}{The ideas behind the model}{%
+\infocards
+  {The SDF}{One portfolio prices every asset, and the tangency portfolio has the highest Sharpe ratio.}
+  {Attention}{Each asset borrows information from assets that have behaved similarly.}
+  {A linear surrogate}{The linear transformer is a ridge regression on products of three characteristics.}}
+
+\infopanel{2}{Evidence scoreboard}{%
+\begin{infoscore}
+\scoreitem{y}{Yes}{Against factor models}
+\scoreitem{y}{Yes}{Against networks without attention}
+\scoreitem{y}{Yes}{Deep SDFs in general}
+\scoreitem{p}{Partly}{After 2002}
+\scoreitem{p}{Weakly}{Large stocks}
+\scoreitem{o}{Untested}{After trading costs}
+\scoreitem{o}{Untested}{Independent replication}
+\end{infoscore}}
+
+\infopanel{3}{Key numbers}{%
+\infonumbers
+  {about 30\%}{smaller pricing errors than networks without attention}
+  {1.9\%}{a year of alpha ($t = 8.4$)}
+  {3.37}{Sharpe ratio after 2002, against 3.07}
+  {153}{JKP factors used as assets in the lab}}
+
+\infopanel{4}{Lab: replicating the linear-transformer SDF on anomaly portfolios}{%
+\begin{infolab}
+\item \textbf{A.} Factor and shrinkage SDFs. \textbf{B.} Weights from each factor's own characteristics only.
+\item \textbf{C.} Linear attention as a ridge regression. \textbf{D.} A small transformer averaged over ten starts.
+\item \textbf{E.} Out-of-sample Sharpe ratios, alphas and pricing errors, with a placebo and a factor-timing rule.
+\end{infolab}}
+
+\infoverdict
+  {One careful study found that a transformer prices U.S. stocks better than factor models and earlier machine-learning models out of sample. Its value after costs and among large stocks has not been tested, and no one has yet reproduced the result independently.}
+  {Read Sharpe ratios above three as research results, not as returns, and treat ``AI-powered'' as a claim to test after costs among stocks you can trade.}
+\end{FEinfographic}
