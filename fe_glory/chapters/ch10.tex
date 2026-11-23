@@ -25,10 +25,11 @@
 
 \chapter{Claim: Diversification Fails When You Need It Most}
 \label{ch:10}
+\providecommand{\term}[1]{\emph{#1}}
 
 Investors are told to spread their savings across many kinds of investments so that a loss in one is cushioned by the others. Yet many people who lived through a market crash remember the opposite: on the worst days, everything seemed to fall at once. This chapter asks which memory is closer to the truth.
 
-Diversification\index{diversification} is often called the only free lunch in finance. If you combine assets that do not move in lockstep, the portfolio is less risky than the average of its parts, and you give up no expected return\index{return!expected} to get that benefit. Every balanced fund (one that holds both stocks and bonds), target-date fund (one that shifts from stocks toward bonds as a chosen retirement year approaches) and pension portfolio relies on this arithmetic. The crash of October 1987, when stock markets around the world fell together, raised a doubt that has never gone away: perhaps assets start moving together, and correlations\index{correlation} rise, exactly when diversification is needed most.
+Diversification\index{diversification} is often called the only free lunch in finance. If you combine assets that do not move in lockstep, the portfolio is less risky than the average of its parts, and you give up no expected return\index{return!expected} to get that benefit. Every balanced fund (one that holds both stocks and bonds), target-date fund (one that shifts from stocks toward bonds as a chosen retirement year approaches) and pension portfolio relies on this arithmetic. The crash of October 1987, when stock markets around the world fell together, raised a doubt that has never gone away: perhaps assets start moving together, and \term{correlations}\index{correlation} rise, exactly when diversification is needed most.
 
 Testing this doubt turned out to be harder than it looks. Because a correlation over all months mixes calm and turbulent periods, Longin and Solnik (2001) studied only the largest monthly moves in international stock markets. They found that markets move more closely together in large falls than in large rises. This is the worst pattern an investor could face, because diversification weakens just when losses arrive. Ang and Chen (2002) found the same pattern among U.S. stock portfolios. Forbes and Rigobon (2002), questioning the evidence for contagion after the crises of the 1990s, then pointed out a trap in measuring it. When markets become more volatile, their measured correlation rises even if the link between them has not changed. Part of the apparent ``contagion'', a crisis spreading from one market to another, is therefore a statistical illusion.
 
@@ -70,7 +71,7 @@ Now consider $N$ assets that all have the same volatility $\sigma$ and the same 
   \sigma_p^2 = \sigma^2\left[\rho + \frac{1 - \rho}{N}\right].
   \label{eq:13-varN}
 \end{equation}
-As more assets are added, the second term shrinks, and the variance falls toward $\rho\sigma^2$ but never below it. The average correlation therefore sets a floor on how much risk diversification can remove (Figure~\ref{fig:13-floor}). The benefit is often measured by the \textbf{diversification ratio}\index{diversification!ratio|textbf}: the weighted average volatility of the assets divided by the volatility of the portfolio. A ratio of 1 means no benefit at all, and higher values mean more.
+As more assets are added, the second term shrinks, and the variance falls toward $\rho\sigma^2$ but never below it. The average correlation therefore sets a floor on how much risk diversification can remove (Figure~\ref{fig:13-floor}). The benefit is often measured by the \term{diversification ratio}\index{diversification!ratio|textbf}: the weighted average volatility of the assets divided by the volatility of the portfolio. A ratio of 1 means no benefit at all, and higher values mean more.
 
 \textbf{Worked example.} Ten industries each have a volatility of 20\%. If their average correlation is 0.6, an equally weighted portfolio has a volatility of $20\% \times \sqrt{0.6 + 0.4/10} = 16.0\%$. If the correlation rises to 0.8, the portfolio's volatility rises to $20\% \times \sqrt{0.8 + 0.2/10} = 18.1\%$. Diversification first cut risk by 4 points, from 20\% to 16\%. After the rise in correlation it cuts risk by less than 2 points, so half of the benefit is gone.
 
@@ -115,7 +116,7 @@ Suppose the return of one market, $y$, is linked to the return of another, $x$, 
   \rho = \frac{\beta\sigma_x}{\sqrt{\beta^2\sigma_x^2 + \sigma_e^2}},
   \label{eq:13-bias}
 \end{equation}
-which rises as $\sigma_x$ rises. The measured correlation goes up even though the link between the markets has not changed (Figure~\ref{fig:13-bias}). The reason is that the common part of the returns grows while the noise does not, so the common part dominates. Correlations measured in turbulent periods are therefore \textbf{biased upward} (Boyer, Gibson and Loretan 1999). An everyday picture helps: when a storm hits a whole town, every house gets wet at the same time, but that does not mean the houses have suddenly become more connected to one another.
+which rises as $\sigma_x$ rises. The measured correlation goes up even though the link between the markets has not changed (Figure~\ref{fig:13-bias}). The reason is that the common part of the returns grows while the noise does not, so the common part dominates. Correlations measured in turbulent periods are therefore \term{biased upward} (Boyer, Gibson and Loretan 1999). An everyday picture helps: when a storm hits a whole town, every house gets wet at the same time, but that does not mean the houses have suddenly become more connected to one another.
 
 \begin{figure}[htbp]
 \centering
@@ -158,19 +159,19 @@ For example, a correlation of 0.8 measured when variance is four times its norma
 
 \subsection{Looking only at the tails}
 
-Selecting only extreme observations also changes a correlation. Take two variables that follow a normal distribution\index{distribution!normal}, and keep only the months in which both fall below some threshold. The correlation within those months is lower than in the full sample, and it falls further as the threshold moves deeper into the tail. \textbf{Exceedance correlations}\index{correlation!exceedance|textbf} (Longin and Solnik 2001; Ang and Chen 2002) are correlations measured only in months when both returns are beyond a threshold, such as their worst 10\%\index{quantile}. They are compared with what a normal distribution with the same overall correlation would produce. The evidence of a crisis effect is the gap between the two, not the level of the correlation itself.
+Selecting only extreme observations also changes a correlation. Take two variables that follow a normal distribution\index{distribution!normal}, and keep only the months in which both fall below some threshold. The correlation within those months is lower than in the full sample, and it falls further as the threshold moves deeper into the tail. \term{Exceedance correlations}\index{correlation!exceedance|textbf} (Longin and Solnik 2001; Ang and Chen 2002) are correlations measured only in months when both returns are beyond a threshold, such as their worst 10\%\index{quantile}. They are compared with what a normal distribution with the same overall correlation would produce. The evidence of a crisis effect is the gap between the two, not the level of the correlation itself.
 
 \subsection{Tail dependence}
 
 In plain words, the question is whether the very worst months of two investments tend to arrive together. The shaded box describes how specialists measure this.
 
 \begin{technote}
-\textbf{Technical note: measuring tail dependence.} \textbf{Tail dependence}\index{tail dependence|textbf} asks a simpler question: when one asset has one of its worst months, how likely is the other to have one of its worst months too? If the assets are independent and ``worst'' means the bottom 5\%, the answer is 5\%. For a normal distribution, the answer approaches that independent level as the tail becomes more extreme, so extreme losses rarely coincide. Distributions with fat tails\index{fat tails}, which are modelled with \textbf{copulas}\index{copula|textbf} (functions that join the distributions of single assets into a joint distribution) such as the Student $t$ or the Clayton, keep the answer higher, so extreme losses tend to arrive together.
+\textbf{Technical note: measuring tail dependence.} \term{Tail dependence}\index{tail dependence|textbf} asks a simpler question: when one asset has one of its worst months, how likely is the other to have one of its worst months too? If the assets are independent and ``worst'' means the bottom 5\%, the answer is 5\%. For a normal distribution, the answer approaches that independent level as the tail becomes more extreme, so extreme losses rarely coincide. Distributions with fat tails\index{fat tails}, which are modelled with \term{copulas}\index{copula|textbf} (functions that join the distributions of single assets into a joint distribution) such as the Student $t$ or the Clayton, keep the answer higher, so extreme losses tend to arrive together.
 \end{technote}
 
 \subsection{The stock--bond correlation}
 
-Government bonds protect a stock portfolio when bad economic news lowers both expected profits and interest rates, because falling rates raise bond prices just as stocks fall. They fail as protection when news about inflation dominates. Rising inflation lowers bond prices directly, and it lowers stock prices too, because investors then discount future profits at higher rates\index{discount rate}. Over the decades, the stock--bond correlation has therefore switched between positive and negative.
+Government bonds protect a stock portfolio when bad economic news lowers both expected profits and interest rates, because falling rates raise bond prices just as stocks fall. They fail as protection when news about inflation dominates. Rising inflation lowers bond prices directly, and it lowers stock prices too, because investors then \term{discount} future profits at higher rates\index{discount rate}. Over the decades, the stock--bond correlation has therefore switched between positive and negative.
 
 
 \section{How it works}
@@ -205,9 +206,9 @@ The claim has two parts. The \textbf{statistical part} says that correlations be
 
 \textbf{U.S. stocks (Ang and Chen 2002).} U.S. stock portfolios were much more correlated with the market when it fell than when it rose, by 11.6\% more than a normal distribution would produce in falling markets. Small stocks, value stocks\index{value versus growth} and recent losers\index{winners and losers} showed the biggest gap, and models that switch between calm and turbulent regimes captured it better than GARCH\index{GARCH}.
 
-\textbf{Contagion or interdependence (Forbes and Rigobon 2002).} In the 1987 U.S. crash, the 1994 Mexican peso collapse and the 1997 East Asian crisis, several countries showed \textbf{contagion}\index{contagion|textbf}, correlations that rose during the crisis. After correcting for higher volatility, almost none did. Markets moved together because of strong links that had existed all along, which Forbes and Rigobon called \textbf{interdependence}\index{interdependence|textbf}.
+\textbf{Contagion or interdependence (Forbes and Rigobon 2002).} In the 1987 U.S. crash, the 1994 Mexican peso collapse and the 1997 East Asian crisis, several countries showed \term{contagion}\index{contagion|textbf}, correlations that rose during the crisis. After correcting for higher volatility, almost none did. Markets moved together because of strong links that had existed all along, which Forbes and Rigobon called \term{interdependence}\index{interdependence|textbf}.
 
-\textbf{Evidence for investors (Page and Panariello 2018).} From 1970 to 2017, the correlation between U.S. and other developed stock markets was $-17\%$ in the strongest U.S. rallies and $+87\%$ in the worst 1\% of U.S. sell-offs, with a similar pattern for real estate, corporate and high-yield\index{credit rating} bonds, emerging markets and hedge funds. Treasury bonds usually moved apart from stocks in sell-offs. Because months were selected by U.S. returns, part of the pattern may come from the tail-selection effect of Section~\ref{sec:13-foundations}.
+\textbf{Evidence for investors (Page and Panariello 2018).} From 1970 to 2017, the correlation between U.S. and other developed stock markets was $-17\%$ in the strongest U.S. rallies and $+87\%$ in the worst 1\% of U.S. sell-offs, with a similar pattern for real estate, corporate and \term{high-yield bonds}\index{credit rating}, emerging markets and hedge funds. Treasury bonds usually moved apart from stocks in sell-offs. Because months were selected by U.S. returns, part of the pattern may come from the tail-selection effect of Section~\ref{sec:13-foundations}.
 
 \textbf{The stock--bond correlation (Campbell, Sunderam and Viceira 2017).} Treasury bonds and stocks moved slightly together on average from 1953 to 2009, strongly in the early 1980s and negatively in the 2000s, especially in the downturns of 2000--02 and 2007--09. The authors traced these swings to how inflation and real interest rates move with the economy.
 
@@ -251,15 +252,15 @@ Situation & Holds? & Why & Evidence \\
 \endlastfoot
 Stock correlations in bear markets & \textbf{Yes} & Correlations of large negative returns rise in bear markets but not in bull markets. & Longin and Solnik (2001); Ang and Chen (2002) \\*
 \addlinespace[3pt]
-After correcting for higher volatility & \textbf{Partly} & Much of the rise disappears, but methods designed to avoid the bias still find a gap between falling and rising markets. & Forbes and Rigobon (2002); Longin and Solnik (2001) \\*
+After correcting for higher volatility & \textbf{Partly} & Much of the rise disappears, but methods designed to avoid the bias still find a gap between falling and rising markets. & Forbes and Rigobon (2002); Longin and Solnik (2001) \\
 \addlinespace[3pt]
-Other risky assets in U.S. sell-offs & \textbf{Yes} & Non-U.S. stocks, real estate, corporate bonds, emerging markets and hedge funds moved much more with U.S. stocks in the worst months. & Page and Panariello (2018) \\*
+Other risky assets in U.S. sell-offs & \textbf{Yes} & Non-U.S. stocks, real estate, corporate bonds, emerging markets and hedge funds moved much more with U.S. stocks in the worst months. & Page and Panariello (2018) \\
 \addlinespace[3pt]
-Treasury bonds, 2000--2021 & \textbf{No} & The stock--bond correlation was negative, especially in 2000--02 and 2007--09. & Campbell, Sunderam and Viceira (2017) \\*
+Treasury bonds, 2000--2021 & \textbf{No} & The stock--bond correlation was negative, especially in 2000--02 and 2007--09. & Campbell, Sunderam and Viceira (2017) \\
 \addlinespace[3pt]
 Treasury bonds when inflation dominates & \textbf{Yes} & The correlation was high in the early 1980s, and stocks and bonds fell together in 2022. & Campbell, Sunderam and Viceira (2017); Dimensional Fund Advisors (2023) \\*
 \addlinespace[3pt]
-Stock--bond portfolios in the worst months & \textbf{Mostly no} & Bonds usually moved apart from stocks in sell-offs, so mixed portfolios lost much less. & Page and Panariello (2018) \\*
+Stock--bond portfolios in the worst months & \textbf{Mostly no} & Bonds usually moved apart from stocks in sell-offs, so mixed portfolios lost much less. & Page and Panariello (2018) \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
@@ -279,3 +280,24 @@ Plan with crisis correlations, not average ones, and diversify across risks rath
 \begin{callout}
 \textbf{What Failed: bonds as protection in 2022.} For most of the two decades before 2022, Treasury bonds rose when stocks fell, and the 60/40 stock--bond portfolio became the standard choice. Then inflation reached a forty-year high and the Federal Reserve raised rates rapidly. In 2022 the S\&P 500 fell 18.1\% and the U.S. dollar bond market about 13\%, and according to Dimensional Fund Advisors (2023) a 60/40 portfolio lost 11\% over the year. The correlation had been measured in a period of low, stable inflation, when news about growth dominated. The negative stock--bond correlation belonged to one economic regime, not to all of them.
 \end{callout}
+
+% Key terms that this chapter uses without defining them, for readers new to finance.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Discount.] To discount future payments is to convert them into their value today using the return investors require, so a higher rate makes them worth less.
+  \item[High-yield bonds.] High-yield bonds, also called junk bonds, are bonds that rating agencies judge more likely to default, so they pay higher interest rates.
+\end{description}
+\end{keyterms}

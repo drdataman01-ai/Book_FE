@@ -25,6 +25,7 @@
 
 \chapter{Claim: Selling Options Earns a Reliable Premium}
 \label{ch:18}
+\providecommand{\term}[1]{\emph{#1}}
 
 Large institutions pay to protect themselves against a volatile stock market. Pension funds, endowments and other long-term investors buy put options\index{option!put} on stock indices so that a stock market crash does not wipe out years of gains. Insurance companies that sell annuities with guaranteed minimum returns buy options to hedge the promises they have made to their customers.
 
@@ -167,7 +168,7 @@ The claim on trial is: \textbf{put-writing (selling index puts) or writing cover
 
 
 
-The lab in Section~\ref{sec:16-lab} repeats Carr and Wu's (2009) measurement of the variance risk premium with the free VIX and daily U.S. market returns. It also rebuilds put-writing and covered-call strategies that can be compared with Cboe's published PUT and BXM indexes, to check whether selling options earns a reliable premium, and how much of that premium is simply stock-market risk.
+The lab in Section~\ref{sec:16-lab} repeats Carr and Wu's (2009) measurement of the variance risk premium with the free VIX and daily U.S. market returns. It also rebuilds \term{put-writing} and covered-call strategies that can be compared with Cboe's published PUT and \term{BXM} indexes, to check whether selling options earns a reliable premium, and how much of that premium is simply stock-market risk.
 
 By the end of the chapter you will be able to:
 
@@ -182,10 +183,10 @@ By the end of the chapter you will be able to:
 \section{Foundations: the VIX and the option seller's payoff}
 \label{sec:16-foundations}
 
-Chapter~\ref{ch:17} introduced option payoffs, put--call parity, the Black--Scholes--Merton model, the Greeks and implied volatility (Sections~\ref{sec:14-bsm} to~\ref{sec:14-iv}). This chapter adds the VIX and the economics of selling options.
+Chapter~\ref{ch:17} introduced option payoffs, \term{put--call parity}, the Black--Scholes--Merton model, the Greeks and implied volatility (Sections~\ref{sec:14-bsm} to~\ref{sec:14-iv}). This chapter adds the VIX and the economics of selling options.
 \subsection{The VIX}
 
-The VIX,  plotted in Figure~\ref{fig:18-vrp}, measures the volatility priced into one-month S\&P 500 options. Its square is approximately the fair price of a 30-day \textbf{variance swap}\index{variance swap|textbf}, a contract that pays the gap between the variance that occurs and a level fixed in advance. The variance risk premium is the expected profit of the seller of such a swap.
+The VIX,  plotted in Figure~\ref{fig:18-vrp}, measures the volatility priced into one-month S\&P 500 options. Its square is approximately the fair price of a 30-day \term{variance swap}\index{variance swap|textbf}, a contract that pays the gap between the variance that occurs and a level fixed in advance. The variance risk premium is the expected profit of the seller of such a swap.
 
 \textbf{Worked example.} The index is at 100, the risk-free rate\index{risk-free rate} is 4\%, and a one-month at-the-money put trades at an implied volatility of 20\%, so its Black--Scholes price is \$2.14. Suppose volatility over the month turns out to be 16\%. At that volatility, the put would have been worth \$1.68, so the seller's expected gain is about $\$2.14 - \$1.68 = \$0.46$, roughly vega (\$0.115 per point of volatility) times the 4-point gap. That is only an \emph{expected} gain. If the index falls 10\% during the month, the put pays \$10, and the seller loses $\$10 - \$2.14 = \$7.86$, about seventeen months of expected gains. The shape of this bargain is the ``sell a put'' panel of Figure~\ref{fig:14-four-payoffs}.
 
@@ -196,7 +197,7 @@ The VIX,  plotted in Figure~\ref{fig:18-vrp}, measures the volatility priced int
 \textbf{Why insurance might be overpriced.} Many investors hold stock portfolios they cannot easily sell, and they want protection against crashes. Pension funds, insurers and issuers of structured products buy index puts. The dealers who sell them must hold capital against the risk and cannot fully hedge it, so this steady demand pushes option prices up, especially for out-of-the-money puts. Sellers are paid for bearing a risk that strikes at the worst times, when investors' wealth is low and losses hurt most. A premium for that risk is not a free lunch. It is compensation, and it should be large precisely because the losses come at bad times (Bollen and Whaley 2004; G\^arleanu, Pedersen and Poteshman 2009).
 
 
-\textbf{The shape of the payoff.} Most ``option income'' products are covered calls or put-writing, and both keep much of the stock market's risk, with a beta of roughly 0.5 to 0.8, so their returns mix the reward for selling options with the stock market's own extra return, the equity premium\index{equity premium}. A covered call keeps the stock market's losses but caps its gains at the strike plus the premium (Figure~\ref{fig:16-cc}). In calm or gently rising months it beats the market. In strong rallies it lags. In crashes it loses almost as much as the market, softened only by the premium. Its returns are therefore \textbf{negatively skewed}\index{skewness|textbf}: most months bring small gains, and a few bring large losses.
+\textbf{The shape of the payoff.} Most ``option income'' products are covered calls or put-writing, and both keep much of the stock market's risk, with a beta of roughly 0.5 to 0.8, so their returns mix the reward for selling options with the stock market's own extra return, the equity premium\index{equity premium}. A covered call keeps the stock market's losses but caps its gains at the strike plus the premium (Figure~\ref{fig:16-cc}). In calm or gently rising months it beats the market. In strong rallies it lags. In crashes it loses almost as much as the market, softened only by the premium. Its returns are therefore \term{negatively skewed}\index{skewness|textbf}: most months bring small gains, and a few bring large losses.
 
 \begin{figure}[htbp]
 \centering
@@ -270,9 +271,9 @@ Option-selling strategies are the textbook case in which the usual performance m
 
 \textbf{Adjust for beta.} A covered call with a beta of 0.6 should earn about 60\% of the stock market's extra return even with no volatility premium. Compare it with a portfolio of 60\% in the market and 40\% in Treasury bills, or use its CAPM alpha (Chapter~\ref{ch:14}). Matching the market's return with less volatility may mean no extra return at all.
 
-\textbf{Look at both betas.} Selling options makes market exposure lopsided. The \textbf{down beta}, measured in months when the market falls, is close to 1, so the strategy takes most of the loss. The \textbf{up beta}, measured in months when the market rises, is much lower, because the call caps the gains.
+\textbf{Look at both betas.} Selling options makes market exposure lopsided. The \term{down beta}, measured in months when the market falls, is close to 1, so the strategy takes most of the loss. The \textbf{up beta}, measured in months when the market rises, is much lower, because the call caps the gains.
 
-\textbf{Count the skewness.} Goetzmann, Ingersoll, Spiegel and Welch (2007) showed that a manager with no skill can raise a portfolio's Sharpe ratio by selling out-of-the-money options, because the Sharpe ratio ignores skewness. They proposed a \textbf{manipulation-proof performance measure (MPPM)}, which counts a large loss far more heavily than a large gain, so selling crash insurance cannot raise the score.
+\textbf{Count the skewness.} Goetzmann, Ingersoll, Spiegel and Welch (2007) showed that a manager with no skill can raise a portfolio's Sharpe ratio by selling out-of-the-money options, because the Sharpe ratio ignores skewness. They proposed a \term{manipulation-proof performance measure (MPPM)}, which counts a large loss far more heavily than a large gain, so selling crash insurance cannot raise the score.
 
 \begin{technote}
 \textbf{Technical note: the MPPM.} The measure is
@@ -325,17 +326,17 @@ Situation & Holds? & Why & Evidence \\
 \endlastfoot
 Implied above realized variance & \textbf{Yes} & Implied variance has been well above realized variance on average for the S\&P 500 and other indexes. & Carr and Wu (2009) \\*
 \addlinespace[3pt]
-Option buyers pay for volatility & \textbf{Yes} & Zero-beta straddles lost about 3\% a week, and delta-hedged options lost money on average. & Coval and Shumway (2001); Bakshi and Kapadia (2003) \\*
+Option buyers pay for volatility & \textbf{Yes} & Zero-beta straddles lost about 3\% a week, and delta-hedged options lost money on average. & Coval and Shumway (2001); Bakshi and Kapadia (2003) \\
 \addlinespace[3pt]
-An economic reason for the premium & \textbf{Yes} & Demand for crash insurance raises option prices, and the premium predicts market returns. & Bollen and Whaley (2004); G\^arleanu, Pedersen and Poteshman (2009); Bollerslev, Tauchen and Zhou (2009) \\*
+An economic reason for the premium & \textbf{Yes} & Demand for crash insurance raises option prices, and the premium predicts market returns. & Bollen and Whaley (2004); G\^arleanu, Pedersen and Poteshman (2009); Bollerslev, Tauchen and Zhou (2009) \\
 \addlinespace[3pt]
-Covered calls against the index & \textbf{Partly} & The BuyWrite Index matched the S\&P 500's return with lower volatility from 1988 to 2006. & Whaley (2002); Callan Associates (2006) \\*
+Covered calls against the index & \textbf{Partly} & The BuyWrite Index matched the S\&P 500's return with lower volatility from 1988 to 2006. & Whaley (2002); Callan Associates (2006) \\
 \addlinespace[3pt]
-Covered calls after adjusting for beta & \textbf{Weakly} & Stock-market exposure drove most of the risk and return; the volatility bet was under 10\% of the risk. & Israelov and Nielsen (2015) \\*
+Covered calls after adjusting for beta & \textbf{Weakly} & Stock-market exposure drove most of the risk and return; the volatility bet was under 10\% of the risk. & Israelov and Nielsen (2015) \\
 \addlinespace[3pt]
 Risk adjustment that prices skewness & \textbf{Weakly} & Selling options can raise a Sharpe ratio without skill; measures that count crash losses show a smaller advantage. & Goetzmann, Ingersoll, Spiegel and Welch (2007) \\*
 \addlinespace[3pt]
-Mispricing, judged from put returns & \textbf{No} & Very negative, noisy put returns are expected in models with crashes, so they do not by themselves show mispricing. & Broadie, Chernov and Johannes (2009) \\*
+Mispricing, judged from put returns & \textbf{No} & Very negative, noisy put returns are expected in models with crashes, so they do not by themselves show mispricing. & Broadie, Chernov and Johannes (2009) \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
@@ -349,3 +350,23 @@ Mispricing, judged from put returns & \textbf{No} & Very negative, noisy put ret
 \label{sec:16-investors}
 
 Three facts help interpret the high payouts that option-income funds advertise (Israelov and Nielsen 2014). Their payouts are not yield: the income comes with a cap on the fund's gains, so part of it is the market's own return, paid in a different shape. The fund is mostly a stock fund, with a beta of 0.5 to 0.7 and a down beta near 1, so compare it with an index-and-Treasury-bill mix with the same beta. And its worst months, such as 2008 and March 2020, say more than its Sharpe ratio. Ask a manager who sells volatility what the largest possible one-day loss is, and whether the strategy uses borrowed money\index{leverage} or margin that could be called in a volatility spike.
+
+% Key terms that this chapter uses without defining them, for readers new to finance.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Put--call parity.] See Chapter~\ref{ch:17}, Section~\ref{sec:14-parity}, page~\pageref{sec:14-parity}.
+\end{description}
+\end{keyterms}

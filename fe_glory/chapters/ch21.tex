@@ -24,12 +24,13 @@
 
 \chapter{Claim: Transformers Price Stocks Better Than Factor Models}
 \label{ch:21}
+\providecommand{\term}[1]{\emph{#1}}
 
 Anyone who follows the stock market notices that companies do not move alone. When one bank reports trouble, other banks' shares often fall too, and a supplier's bad news can drag down its customers. The newest artificial-intelligence models are designed to learn such connections from data. This chapter asks whether letting a model learn how stocks relate to one another really explains their returns better than the factor models of earlier chapters.
 
-Asset pricing asks why different assets earn different average returns. Since the 1980s its general answer has been the \textbf{stochastic discount factor}\index{stochastic discount factor (SDF)}, a single random variable that prices every asset, which can be thought of as a gauge of how bad economic times are, used to weigh every payoff. The factor models of Chapter~\ref{ch:03} are one way to build it, from a handful of portfolios chosen by researchers. With hundreds of candidate characteristics, later work asked the data to build it instead. Kozak, Nagel and Santosh (2020) estimated a discount factor from many anomaly portfolios with shrinkage, which keeps so many portfolios from fitting noise. Kelly, Pruitt and Su (2019), noting that a stock's risk changes with its characteristics, let each stock's exposures depend on them. Chen, Pelger and Zhu (2024) used deep neural networks to allow more flexible relationships. Each step priced returns more accurately than the last.
+Asset pricing asks why different assets earn different average returns. Since the 1980s its general answer has been the \term{stochastic discount factor}\index{stochastic discount factor (SDF)}, a single random variable that prices every asset, which can be thought of as a gauge of how bad economic times are, used to weigh every payoff. The factor models of Chapter~\ref{ch:03} are one way to build it, from a handful of portfolios chosen by researchers. With hundreds of candidate characteristics, later work asked the data to build it instead. Kozak, Nagel and Santosh (2020) estimated a discount factor from many anomaly portfolios with shrinkage, which keeps so many portfolios from fitting noise. Kelly, Pruitt and Su (2019), noting that a stock's risk changes with its characteristics, let each stock's exposures depend on them. Chen, Pelger and Zhu (2024) used deep neural networks to allow more flexible relationships. Each step priced returns more accurately than the last.
 
-The newest step comes from the technology behind large language models. A \textbf{transformer}\index{transformer|textbf} uses a mechanism called \textbf{attention}\index{attention (neural networks)|textbf}, which lets each word in a sentence look at the other words to decide what it means. Kelly, Kuznetsov, Malamud and Xu (2025) placed a transformer inside an asset-pricing model, so that each stock could ``look at'' other stocks before the model decided how to price it. They reported that this artificial intelligence pricing model priced U.S. stocks with errors about 30\% smaller than the best earlier models. Its tangency portfolio, the portfolio with the highest Sharpe ratio, earned an out-of-sample Sharpe ratio of about four. That is far above anything an investor has earned for long, so the result calls for careful testing.
+The newest step comes from the technology behind large language models. A \textbf{transformer}\index{transformer|textbf} uses a mechanism called \term{attention}\index{attention (neural networks)|textbf}, which lets each word in a sentence look at the other words to decide what it means. Kelly, Kuznetsov, Malamud and Xu (2025) placed a transformer inside an asset-pricing model, so that each stock could ``look at'' other stocks before the model decided how to price it. They reported that this artificial intelligence pricing model priced U.S. stocks with errors about 30\% smaller than the best earlier models. Its tangency portfolio, the portfolio with the highest Sharpe ratio, earned an out-of-sample Sharpe ratio of about four. That is far above anything an investor has earned for long, so the result calls for careful testing.
 
 The stakes are large if the result holds. It would mean that the price of a stock depends on information about other stocks in ways that factor models cannot capture. It would also mean that the methods behind chatbots can improve one of the central models of finance. The claim on trial\index{claims-on-trial method} is: \textbf{an asset-pricing model that places a transformer inside the stochastic discount factor prices the cross-section with much smaller errors than earlier models, and its tangency portfolio earns a higher Sharpe ratio out of sample.}
 
@@ -77,7 +78,7 @@ In plain words, finding the discount factor turns out to be the same as finding 
 Here $\mu$ is the vector of expected excess returns and $\Sigma$ is the covariance matrix. (Strictly, second moments replace covariances, a small difference for monthly returns.) These are the weights of the tangency portfolio\index{tangency portfolio} of Chapter~\ref{ch:09}. The SDF portfolio is the portfolio with the highest possible Sharpe ratio, and its squared Sharpe ratio is $\mu'\Sigma^{-1}\mu$.
 \end{technote}
 
-This link is why studies of machine-learning SDFs report Sharpe ratios. A model that prices all assets correctly must contain the maximum-Sharpe portfolio. A model that leaves pricing errors behind has missed some return that a better portfolio would capture. Small pricing errors and a high out-of-sample Sharpe ratio are therefore two views of the same success. Studies measure pricing errors in two ways. One is the alphas\index{alpha} of test assets against the SDF portfolio. The other is the \textbf{Hansen--Jagannathan distance}\index{Hansen--Jagannathan distance|textbf}, which summarizes how far the model's SDF is from pricing a set of test assets exactly.
+This link is why studies of machine-learning SDFs report Sharpe ratios. A model that prices all assets correctly must contain the maximum-Sharpe portfolio. A model that leaves pricing errors behind has missed some return that a better portfolio would capture. Small pricing errors and a high out-of-sample Sharpe ratio are therefore two views of the same success. Studies measure pricing errors in two ways. One is the alphas\index{alpha} of test assets against the SDF portfolio. The other is the \term{Hansen--Jagannathan distance}\index{Hansen--Jagannathan distance|textbf}, which summarizes how far the model's SDF is from pricing a set of test assets exactly.
 
 \subsection{Baseline 1: the shrinkage SDF of Kozak, Nagel and Santosh}
 
@@ -86,7 +87,7 @@ With hundreds of candidate factors, Equation~\eqref{eq:22-tangency} cannot be us
   \hat w = \left(\hat\Sigma + \gamma I\right)^{-1} \hat\mu,
   \label{eq:22-kns}
 \end{equation}
-Here $\gamma$ controls how strongly the weights are pulled toward zero, and it is chosen by cross-validation. The penalty is easiest to understand through the principal components\index{principal components} of the factors. It shrinks the weight on each component by the factor $\lambda_j/(\lambda_j+\gamma)$, where $\lambda_j$ is the component's variance. Components with little variance are shrunk the most, because a large average return on them is most likely to be noise. There is also an economic reason. A factor with a high average return but almost no variance would be close to an arbitrage opportunity, and such opportunities should be rare.
+Here $\gamma$ controls how strongly the weights are pulled toward zero, and it is chosen by cross-validation. The penalty is easiest to understand through the \term{principal components}\index{principal components} of the factors. It shrinks the weight on each component by the factor $\lambda_j/(\lambda_j+\gamma)$, where $\lambda_j$ is the component's variance. Components with little variance are shrunk the most, because a large average return on them is most likely to be noise. There is also an economic reason. A factor with a high average return but almost no variance would be close to an arbitrage opportunity, and such opportunities should be rare.
 
 Kozak, Nagel and Santosh found that an SDF built from a few characteristic-based factors, such as the four- and five-factor models, could not summarize the cross-section of expected returns well, while an SDF built from a small number of principal components of many factors performed well.
 
@@ -103,11 +104,11 @@ Here $f_{t+1}$ is a short vector of unobserved factors, $z_{i,t}$ is the stock's
 
 A natural next step lets a neural network choose the weights in Equation~\eqref{eq:22-sdf}: $w_{i,t} = g(z_{i,t}, s_t)$. Here $g$ is a network of the kind described in Section~\ref{sec:20-nn}, and $s_t$ is a summary of economic conditions. The network is trained to make the pricing errors as small as possible. This is the same as making the SDF portfolio's Sharpe ratio as large as possible.
 
-Chen, Pelger and Zhu (2024) added a twist from machine learning called \textbf{adversarial training}\index{adversarial training|textbf}. A second network searches for the portfolios that the SDF prices worst. The first network then improves its pricing of exactly those portfolios. The contest continues until the adversary can find no badly mispriced portfolio. They used U.S. stocks from 1967 to 2016, 46 firm characteristics and 178 macroeconomic series, which they summarized with a recurrent network. Their SDF portfolio reached an annual out-of-sample Sharpe ratio of about 2.6, roughly twice that of a network trained only to forecast returns.
+Chen, Pelger and Zhu (2024) added a twist from machine learning called \term{adversarial training}\index{adversarial training|textbf}. A second network searches for the portfolios that the SDF prices worst. The first network then improves its pricing of exactly those portfolios. The contest continues until the adversary can find no badly mispriced portfolio. They used U.S. stocks from 1967 to 2016, 46 firm characteristics and 178 macroeconomic series, which they summarized with a recurrent network. Their SDF portfolio reached an annual out-of-sample Sharpe ratio of about 2.6, roughly twice that of a network trained only to forecast returns.
 
 \subsection{Attention and the transformer for a panel of stocks}
 
-The models above treat each stock separately: stock $i$'s weight depends only on stock $i$'s own characteristics. Attention removes that restriction. In plain words, each stock looks at every other stock, judges how similar they are, and borrows information from the most similar ones. Give each stock a vector of characteristics $x_i$. Attention computes three transformed versions of it: a \textbf{query} $q_i = W_Q x_i$, a \textbf{key} $k_i = W_K x_i$ and a \textbf{value} $v_i = W_V x_i$. Stock $i$ compares its query with every stock's key, which gives a score for each stock. The scores are turned into weights that sum to one, and stock $i$ takes the weighted average of the other stocks' values:
+The models above treat each stock separately: stock $i$'s weight depends only on stock $i$'s own characteristics. Attention removes that restriction. In plain words, each stock looks at every other stock, judges how similar they are, and borrows information from the most similar ones. Give each stock a vector of characteristics $x_i$. Attention computes three transformed versions of it: a \term{query} $q_i = W_Q x_i$, a \textbf{key} $k_i = W_K x_i$ and a \textbf{value} $v_i = W_V x_i$. Stock $i$ compares its query with every stock's key, which gives a score for each stock. The scores are turned into weights that sum to one, and stock $i$ takes the weighted average of the other stocks' values:
 \begin{equation}
   a_{ij} = \frac{\exp\left(q_i' k_j/\sqrt{d}\right)}{\sum_{l} \exp\left(q_i' k_l/\sqrt{d}\right)}, \qquad h_i = \sum_{j} a_{ij}\, v_j,
   \label{eq:22-attention}
@@ -119,7 +120,7 @@ where $d$ is the length of the query vector. The output $h_i$ is a new descripti
 A transformer stacks many such attention steps; the shaded box shows the simplest version used in asset pricing.
 
 \begin{technote}
-\textbf{Technical note: the linear transformer.} A \textbf{transformer}\index{transformer|textbf} stacks several such attention layers, each followed by a small feed-forward network, with shortcuts that add each layer's input to its output. A \textbf{linear transformer} drops the exponential and the normalization. In the asset-pricing model of Kelly and coauthors, the linear version gives portfolio weights
+\textbf{Technical note: the linear transformer.} A \textbf{transformer}\index{transformer|textbf} stacks several such attention layers, each followed by a small feed-forward network, with shortcuts that add each layer's input to its output. A \term{linear transformer} drops the exponential and the normalization. In the asset-pricing model of Kelly and coauthors, the linear version gives portfolio weights
 \begin{equation}
   w_t = \left(X_t W X_t'\right) X_t \lambda,
   \label{eq:22-linear}
@@ -183,12 +184,12 @@ Model & Sharpe ratio & Pricing error \\
 \bottomrule
 \endlastfoot
 Fama--French six factors & 1.01 & 0.55 \\*
-Hou--Xue--Zhang $q$-factors & 1.77 & 0.42 \\*
-Linear in characteristics (no attention) & 3.60 & 0.15 \\*
-Shallow random-feature network & 3.87 & 0.13 \\*
-Linear attention & 3.89 & 0.14 \\*
+Hou--Xue--Zhang $q$-factors & 1.77 & 0.42 \\
+Linear in characteristics (no attention) & 3.60 & 0.15 \\
+Shallow random-feature network & 3.87 & 0.13 \\
+Linear attention & 3.89 & 0.14 \\
 Deep network without attention (MLP) & 4.31 & 0.13 \\*
-Transformer (AIPM) & 4.57 & 0.09 \\*
+Transformer (AIPM) & 4.57 & 0.09 \\
 \end{longtable}
 \endgroup
 
@@ -243,17 +244,17 @@ Situation & Holds? & Why & Evidence \\
 \endlastfoot
 Against factor models & \textbf{Yes} & Far higher Sharpe ratio and smaller pricing errors than the Fama--French six and $q$-factors. & Kelly, Kuznetsov, Malamud and Xu (2025) \\*
 \addlinespace[3pt]
-Against networks without attention & \textbf{Yes} & Pricing errors about 30\% smaller, with an alpha of about 1.9\% a year ($t = 8.4$). & Kelly, Kuznetsov, Malamud and Xu (2025) \\*
+Against networks without attention & \textbf{Yes} & Pricing errors about 30\% smaller, with an alpha of about 1.9\% a year ($t = 8.4$). & Kelly, Kuznetsov, Malamud and Xu (2025) \\
 \addlinespace[3pt]
-Deep SDFs in general & \textbf{Yes} & A network trained on the pricing condition beat its benchmarks, mostly through familiar characteristics. & Chen, Pelger and Zhu (2024) \\*
+Deep SDFs in general & \textbf{Yes} & A network trained on the pricing condition beat its benchmarks, mostly through familiar characteristics. & Chen, Pelger and Zhu (2024) \\
 \addlinespace[3pt]
-After 2002 & \textbf{Partly} & Smaller but still present: a Sharpe ratio of 3.37 against 3.07. & Kelly, Kuznetsov, Malamud and Xu (2025) \\*
+After 2002 & \textbf{Partly} & Smaller but still present: a Sharpe ratio of 3.37 against 3.07. & Kelly, Kuznetsov, Malamud and Xu (2025) \\
 \addlinespace[3pt]
-Large stocks & \textbf{Weakly} & Best within each size group, but much weaker among mega and large stocks. & Kelly, Kuznetsov, Malamud and Xu (2025) \\*
+Large stocks & \textbf{Weakly} & Best within each size group, but much weaker among mega and large stocks. & Kelly, Kuznetsov, Malamud and Xu (2025) \\
 \addlinespace[3pt]
 After trading costs & \textbf{Untested} & No costs were reported. & None yet \\*
 \addlinespace[3pt]
-Independent replication & \textbf{Untested} & A working paper by a single team. & None yet \\*
+Independent replication & \textbf{Untested} & A working paper by a single team. & None yet \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
@@ -271,3 +272,23 @@ Read Sharpe ratios above three as research results, not as returns: they are hyp
 \begin{callout}
 \textbf{What Failed: the quant quake of August 2007.} In the first two weeks of August 2007, many quantitative equity funds suffered large, sudden losses, followed by a partial rebound. They held long--short portfolios built from similar characteristics such as value, momentum and quality, and Khandani and Lo (2011) traced the episode to the rapid sale of one or more large portfolios. The models were not wrong about average returns but about risk: funds that thought they held different strategies held nearly the same portfolio. A model that learns from the same public characteristics as everyone else may end up in the same crowded trades.
 \end{callout}
+
+% Key terms that this chapter uses without defining them, for readers new to finance.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Principal components.] See Chapter~\ref{ch:19}, Section~\ref{sec:20-models}, page~\pageref{sec:20-models}.
+\end{description}
+\end{keyterms}

@@ -11,20 +11,21 @@
 
 \chapter{Claim: Optimized Portfolios Beat an Equal Split Across Assets}
 \label{ch:09}
+\providecommand{\term}[1]{\emph{#1}}
 
 ``Don't put all your eggs in one basket'' is advice almost everyone has heard, and many savers follow it in the simplest possible way, by splitting their money evenly across the funds on offer. Finance has a far more sophisticated answer to the question of how to divide money among investments, and it won a Nobel Prize. This chapter asks whether the sophisticated answer actually beats the simple one.
 
-In 1952 Harry Markowitz\index{mean--variance optimization} showed that an investor should judge an asset not by its own risk but by what it adds to the risk of the whole portfolio, which depends on how the asset moves with the others. From that insight he built a method for choosing a portfolio by trading expected return\index{return!expected} against variance\index{variance}. Given each asset's expected return and the covariances between assets, mean--variance optimization finds the mix with the highest expected return for each level of risk. The insight founded modern portfolio theory, and it is the reason Markowitz shared the 1990 Nobel Prize in economics. 
+In 1952 Harry Markowitz\index{mean--variance optimization} showed that an investor should judge an asset not by its own risk but by what it adds to the risk of the whole portfolio, which depends on how the asset moves with the others. From that insight he built a method for choosing a portfolio by trading expected return\index{return!expected} against variance\index{variance}. Given each asset's expected return and the covariances between assets, \term{mean--variance optimization} finds the mix with the highest expected return for each level of risk. The insight founded modern portfolio theory, and it is the reason Markowitz shared the 1990 Nobel Prize in economics. 
 
 Using the method in practice, however, raised a difficulty that took decades to measure. The optimizer needs the true expected returns and covariances, and nobody knows them. They must be estimated from history, and the optimizer treats these estimates as exact, so it puts the most money into the assets that look best because their past returns were high or their past risks low.
 
 The question became pressing as optimization is applied to practice. Pension funds, endowments and later robo-advisers built portfolios with it, and they found that the portfolios it produced were often extreme: a few assets received most of the money, and others were sold short, that is, borrowed and sold in a bet that their prices would fall. Researchers proposed repairs that make the optimizer less sensitive to errors in its inputs. 
 
-Jagannathan and Ma (2003), puzzled that a constraint could help, showed that when inputs are estimated, simply forbidding short sales keeps the portfolio from betting heavily on estimates that are probably wrong. Because the optimizer seeks out extreme risk estimates that are mostly noise, Ledoit and Wolf (2004) showed how to pull them toward more ordinary values before using them. 
+Jagannathan and Ma (2003), puzzled that a \term{constraint} could help, showed that when inputs are estimated, simply forbidding short sales keeps the portfolio from betting heavily on estimates that are probably wrong. Because the optimizer seeks out extreme risk estimates that are mostly noise, Ledoit and Wolf (2004) showed how to pull them toward more ordinary values before using them. 
 
 DeMiguel, Garlappi and Uppal (2009) then put the whole approach to the test. They compared fourteen optimized strategies, several with such repairs built in, against the simplest rule there is: put an equal amount of money in every asset. None of the fourteen beat it consistently out of sample. Kirby and Ostdiek (2012) replied that simpler rules, which use fewer estimates and trade less, can beat equal weighting, and the debate between these two views runs through this chapter.
 
-The implications are large for anyone who builds portfolios. If optimization cannot beat equal weighting, the sophisticated models used in practice add estimation error rather than value, and an investor should prefer simple rules unless the inputs are unusually reliable. The claim on trial\index{claims-on-trial method} is: \textbf{optimized portfolio strategies achieve higher out-of-sample risk-adjusted returns than equal weighting ($1/N$).}
+The implications are large for anyone who builds portfolios. If optimization cannot beat equal weighting, the sophisticated models used in practice add \term{estimation error} rather than value, and an investor should prefer simple rules unless the inputs are unusually reliable. The claim on trial\index{claims-on-trial method} is: \textbf{optimized portfolio strategies achieve higher out-of-sample risk-adjusted returns than equal weighting ($1/N$).}
 
 The lab in Section~\ref{sec:12-lab} replicates the comparison of DeMiguel, Garlappi and Uppal (2009) on the free industry and size--value portfolios of the Kenneth R. French Data Library, in order to check whether optimization still loses to equal weighting, how long an estimation window it would need to win, and which repairs narrow the gap.
 
@@ -51,7 +52,7 @@ An investor who cares about both reward and risk must trade one against the othe
   \underbrace{\mathbf{w}'\boldsymbol{\mu}}_{\text{expected excess return}} \; - \; \frac{\gamma}{2}\,\underbrace{\mathbf{w}'\boldsymbol{\Sigma}\mathbf{w}}_{\text{variance}}
   \label{eq:12-mv-objective}
 \end{equation}
-The first term rewards the portfolio for its expected excess return, and the second term charges it for its risk. The number $\gamma$ measures the investor's \textbf{risk aversion}\index{risk aversion|textbf}, that is, how heavily the investor penalizes risk. An investor with a large $\gamma$ accepts only a little risk for a given reward, while an investor with a small $\gamma$ accepts much more. The factor $\tfrac{1}{2}$ is a convention that simplifies the answer.
+The first term rewards the portfolio for its expected excess return, and the second term charges it for its risk. The number $\gamma$ measures the investor's \term{risk aversion}\index{risk aversion|textbf}, that is, how heavily the investor penalizes risk. An investor with a large $\gamma$ accepts only a little risk for a given reward, while an investor with a small $\gamma$ accepts much more. The factor $\tfrac{1}{2}$ is a convention that simplifies the answer.
 
 The answer is easiest to see with a single risky asset that has expected excess return $\mu$ and variance $\sigma^2$. If the investor puts a fraction $w$ of wealth in the asset and the rest in Treasury bills, the score is $w\mu - \tfrac{\gamma}{2} w^2 \sigma^2$. Setting its derivative to zero gives
 \begin{equation}
@@ -70,7 +71,7 @@ The inverse covariance matrix $\boldsymbol{\Sigma}^{-1}$ plays the role of divid
 \subsection{The efficient frontier}
 \label{sec:12-frontier}
 
-Investors with different risk aversion choose different portfolios, but none of them would choose a portfolio that another portfolio beats on both counts, with a higher expected return and a lower variance. The portfolios that cannot be beaten in this way are those with the lowest variance for each target return, and together they form the \textbf{efficient frontier}\index{efficient frontier|textbf}. Every sensible investor would choose a portfolio on the frontier. When Treasury bills are also available, the best choices lie on the straight line through the tangency portfolio (Figure~\ref{fig:12-frontier}), and risk aversion decides only where on that line the investor sits.
+Investors with different risk aversion choose different portfolios, but none of them would choose a portfolio that another portfolio beats on both counts, with a higher expected return and a lower variance. The portfolios that cannot be beaten in this way are those with the lowest variance for each target return, and together they form the \term{efficient frontier}\index{efficient frontier|textbf}. Every sensible investor would choose a portfolio on the frontier. When Treasury bills are also available, the best choices lie on the straight line through the tangency portfolio (Figure~\ref{fig:12-frontier}), and risk aversion decides only where on that line the investor sits.
 
 \providecolor{fenavy}{HTML}{1B2A6B}
 \providecolor{fegray}{HTML}{4D4D4D}
@@ -151,12 +152,12 @@ As $w$ runs from 0 to 1, the portfolio moves from B to A. Its expected return ri
 Two portfolios on the frontier matter most, and both are marked in Figure~\ref{fig:12-frontier}:
 
 \begin{itemize}
-  \item The \textbf{tangency portfolio}\index{tangency portfolio|textbf} has the highest Sharpe ratio, equal to $\sqrt{\boldsymbol{\mu}'\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}}$. Every mean-variance investor holds it, levered up or down with cash:
+  \item The \term{tangency portfolio}\index{tangency portfolio|textbf} has the highest Sharpe ratio, equal to $\sqrt{\boldsymbol{\mu}'\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}}$. Every mean-variance investor holds it, levered up or down with cash:
   \begin{equation}
     \mathbf{w}_T = \frac{\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}}{\mathbf{1}'\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}}
     \label{eq:12-tangency}
   \end{equation}
-  \item The \textbf{global minimum-variance portfolio} has the lowest variance of any fully invested portfolio. It needs no expected returns at all:
+  \item The \term{global minimum-variance portfolio} has the lowest variance of any fully invested portfolio. It needs no expected returns at all:
   \begin{equation}
     \mathbf{w}_{MV} = \frac{\boldsymbol{\Sigma}^{-1}\mathbf{1}}{\mathbf{1}'\boldsymbol{\Sigma}^{-1}\mathbf{1}}
     \label{eq:12-minvar}
@@ -388,13 +389,13 @@ Repair & What it does & What it costs \\
 \endlastfoot
 Constrain the weights & Forbids short sales, so no extreme bets & Cannot hold short positions that would truly help \\*
 \addlinespace[3pt]
-Shrink the estimates & Pulls extreme estimates toward ordinary values & Some real information is pulled away too \\*
+Shrink the estimates & Pulls extreme estimates toward ordinary values & Some real information is pulled away too \\
 \addlinespace[3pt]
-Drop the expected returns & Uses only risks (minimum variance) & Still relies on estimated covariances; tilts toward low-risk assets \\*
+Drop the expected returns & Uses only risks (minimum variance) & Still relies on estimated covariances; tilts toward low-risk assets \\
 \addlinespace[3pt]
 Budget risk instead of return & Spreads risk evenly across assets & Ignores any real differences in expected return \\*
 \addlinespace[3pt]
-Trade less & Rebalances less often & Weights become stale \\*
+Trade less & Rebalances less often & Weights become stale \\
 \end{longtable}
 }
 
@@ -405,7 +406,7 @@ The simplest repair is to forbid short sales\index{short selling}, so that no we
 
 \subsection{Shrink the estimates}\index{shrinkage|textbf}
 
-A second repair is to distrust extreme estimates and pull them toward more ordinary values, the same idea as the penalized regressions\index{regularization} of Section~\ref{sec:20-shrinkage}. Ledoit and Wolf (2004) proposed a covariance\index{covariance shrinkage} estimate that is a weighted average of the sample covariances and a simple target, such as one in which all assets have the same variance and no correlation. The data determine how far the estimates are pulled. Black and Litterman (1992) apply the same idea to expected returns, pulling historical averages toward the returns implied by market equilibrium, which are the returns that would make investors content to hold the market as it is.
+A second repair is to distrust extreme estimates and pull them toward more ordinary values, the same idea as the \term{penalized regressions}\index{regularization} of Section~\ref{sec:20-shrinkage}. Ledoit and Wolf (2004) proposed a covariance\index{covariance shrinkage} estimate that is a weighted average of the sample covariances and a simple target, such as one in which all assets have the same variance and no correlation. The data determine how far the estimates are pulled. Black and Litterman (1992) apply the same idea to expected returns, pulling historical averages toward the returns implied by market equilibrium, which are the returns that would make investors content to hold the market as it is.
 
 \subsection{Drop the expected returns}
 
@@ -413,11 +414,11 @@ A minimum-variance portfolio ignores expected returns, the noisiest input, and f
 
 \subsection{Budget risk instead of return}
 
-Risk-based rules decide how much risk each asset should carry, not how much money, and need neither expected returns nor the full optimizer. \textbf{Equal risk contribution}\index{risk parity|textbf}\index{risk parity!risk contribution} gives every asset the same share of the portfolio's total risk (Maillard, Roncalli and Teiletche 2010). \textbf{Inverse-volatility weighting}\index{inverse-volatility weighting|textbf} is a simpler version that gives each asset a weight in proportion to one over its volatility, so riskier assets receive less money. \textbf{Hierarchical risk parity}\index{hierarchical risk parity|textbf} (L\'opez de Prado 2016) first groups similar assets together and then divides money between the groups and within them.
+Risk-based rules decide how much risk each asset should carry, not how much money, and need neither expected returns nor the full optimizer. \term{Equal risk contribution}\index{risk parity|textbf}\index{risk parity!risk contribution} gives every asset the same share of the portfolio's total risk (Maillard, Roncalli and Teiletche 2010). \term{Inverse-volatility weighting}\index{inverse-volatility weighting|textbf} is a simpler version that gives each asset a weight in proportion to one over its volatility, so riskier assets receive less money. \term{Hierarchical risk parity}\index{hierarchical risk parity|textbf} (L\'opez de Prado 2016) first groups similar assets together and then divides money between the groups and within them.
 
 \subsection{Trade less}
 
-Rebalancing\index{rebalancing} less often, or penalizing turnover\index{turnover}, reduces trading costs. The price is that the portfolio holds weights based on older information.
+Rebalancing\index{rebalancing} less often, or penalizing \term{turnover}\index{turnover}, reduces \term{trading costs}. The price is that the portfolio holds weights based on older information.
 
 
 \section{How allocation rules behave in rising and falling markets}
@@ -445,11 +446,11 @@ Rule & Strong market & Weak market & Turning point \\
 \endlastfoot
 Mean-variance (historical inputs) & Can do well if the same assets keep leading & Concentrated, often in the assets that fall most & Usually poor, because it holds yesterday's winners \\*
 \addlinespace[3pt]
-Minimum variance & Usually trails the market & Usually falls less than the market & Depends on whether low-risk assets lead \\*
+Minimum variance & Usually trails the market & Usually falls less than the market & Depends on whether low-risk assets lead \\
 \addlinespace[3pt]
 Risk parity & Moderate, limited by its large bond holdings & Good when bonds rise as stocks fall; poor when both fall & Sensitive to changes in the stock--bond correlation \\*
 \addlinespace[3pt]
-Equal weight (1/N) & Lags when a few large firms lead & Similar to the market & Often good in broad recoveries \\*
+Equal weight (1/N) & Lags when a few large firms lead & Similar to the market & Often good in broad recoveries \\
 \end{longtable}
 }
 \subsection{Mean-variance portfolios built from historical returns}
@@ -492,7 +493,7 @@ Each of these approaches accepts that the inputs are uncertain and builds a port
 \textbf{Claim.} Optimized portfolio strategies achieve higher out-of-sample risk-adjusted returns than equal weighting ($1/N$), which puts the same amount of money in every asset.
 \end{callout}
 
-The \textbf{strong form} says that classic mean--variance optimization, using estimates from past data, beats 1/N out of sample. The \textbf{weak form} says that some disciplined version of optimization, using constraints, shrinkage, risk budgeting or grouping similar assets, beats 1/N reliably after trading costs\index{transaction costs}. A result counts as evidence only if it uses data available when each portfolio was formed, reports the Sharpe ratio or certainty equivalent after realistic costs, shows an advantage larger than chance, and holds for more than one set of assets.
+The \textbf{strong form} says that classic mean--variance optimization, using estimates from past data, beats 1/N out of sample. The \textbf{weak form} says that some disciplined version of optimization, using constraints, \term{shrinkage}, risk budgeting or grouping similar assets, beats 1/N reliably after trading costs\index{transaction costs}. A result counts as evidence only if it uses data available when each portfolio was formed, reports the Sharpe ratio or \term{certainty equivalent} after realistic costs, shows an advantage larger than chance, and holds for more than one set of assets.
 
 \section{The original evidence}
 \label{sec:12-evidence}
@@ -501,18 +502,18 @@ The \textbf{strong form} says that classic mean--variance optimization, using es
 
 \textbf{The warnings (Michaud 1989; Black and Litterman 1992; Chopra and Ziemba 1993).} Practitioners found optimized portfolios concentrated, unstable and hard to explain to clients. Chopra and Ziemba showed that errors in expected returns do by far the most damage, which is why minimum-variance and risk-based rules were developed.
 
-\textbf{The repairs.} Jagannathan and Ma (2003) found that once short sales were ruled out, long-only minimum-variance portfolios built from simple monthly estimates did about as well as those built with factor models\index{factor model}, shrinkage or daily data. Ledoit and Wolf (2004) showed how much to shrink a covariance estimate so that it stays usable even with more assets than observations. L\'opez de Prado (2016) designed hierarchical risk parity to avoid the way an optimizer magnifies small errors, and reported lower out-of-sample risk than a minimum-variance optimizer, though on simulated data\index{Monte Carlo simulation} only.
+\textbf{The repairs.} Jagannathan and Ma (2003) found that once short sales were ruled out, long-only minimum-variance portfolios built from simple monthly estimates did about as well as those built with factor models\index{factor model}, shrinkage or daily data. Ledoit and Wolf (2004) showed how much to shrink a covariance estimate so that it stays usable even with more assets than observations. L\'opez de Prado (2016) designed \term{hierarchical risk parity} to avoid the way an optimizer magnifies small errors, and reported lower out-of-sample risk than a minimum-variance optimizer, though on simulated data\index{Monte Carlo simulation} only.
 
 \textbf{The challenge (DeMiguel, Garlappi and Uppal 2009).} DeMiguel, Garlappi and Uppal (DGU) compared fourteen optimized strategies, including constrained, Bayesian and mixed rules, with 1/N on seven data sets. None beat 1/N consistently. They estimated that sample mean--variance would need about 3,000 months of data to win with 25 assets and about 6,000 with 50, against only about 1,100 months of U.S. stock data.
 
-\textbf{The response (Kirby and Ostdiek 2012).} Kirby and Ostdiek argued that DGU's design favored 1/N. In their tests mean--variance often beat 1/N before costs, but heavy trading erased the gain. Two simpler rules did better even after high costs: \textbf{volatility timing}\index{volatility targeting|textbf}, with weights proportional to one over each asset's variance, and \textbf{reward-to-risk timing}, with weights proportional to average return divided by variance. Both ignore correlations and trade little.
+\textbf{The response (Kirby and Ostdiek 2012).} Kirby and Ostdiek argued that DGU's design favored 1/N. In their tests mean--variance often beat 1/N before costs, but heavy trading erased the gain. Two simpler rules did better even after high costs: \term{volatility timing}\index{volatility targeting|textbf}, with weights proportional to one over each asset's variance, and \term{reward-to-risk timing}, with weights proportional to average return divided by variance. Both ignore correlations and trade little.
 
 The literature therefore agrees that sample mean--variance loses to 1/N, and disagrees on the weak form, where the answer depends on costs, turnover and the assets used.
 
 \section{Lab~\thechapter: Replicating DeMiguel, Garlappi and Uppal (2009)}
 \label{sec:12-lab}
 
-\textbf{Claim on trial\index{claims-on-trial method}:} optimized portfolio strategies beat equal weighting ($1/N$) out of sample. The lab repeats DGU's test on the 10 and 30 industry portfolios and the 25 portfolios sorted on size and book-to-market\index{book-to-market ratio}, from the Kenneth R. French Data Library\index{Kenneth French data library}, using the walk-forward design of Chapter~\ref{ch:06}. Each month, every rule estimates what it needs from the previous 120 months of value-weighted\index{index weighting!value-weighted} excess returns, holds the portfolio for one month and records its return. The nine rules are 1/N, sample mean--variance with and without short sales, minimum variance in three versions (sample, long-only and Ledoit--Wolf), inverse-volatility risk parity, equal risk contribution and hierarchical risk parity. Each rule's out-of-sample returns (Section~\ref{sec:12-oos}) are summarized by the Sharpe ratio and by the certainty equivalent of Section~\ref{sec:09-accuracy}, $CE = \mu_p - \frac{\gamma}{2}\sigma_p^2$, and the \textbf{Jobson--Korkie test}\index{Jobson--Korkie test|textbf} (Jobson and Korkie 1981), with Memmel's (2003) correction, checks whether two Sharpe ratios differ by more than chance.
+\textbf{Claim on trial\index{claims-on-trial method}:} optimized portfolio strategies beat equal weighting ($1/N$) out of sample. The lab repeats DGU's test on the 10 and 30 industry portfolios and the 25 portfolios sorted on size and book-to-market\index{book-to-market ratio}, from the Kenneth R. French Data Library\index{Kenneth French data library}, using the walk-forward design of Chapter~\ref{ch:06}. Each month, every rule estimates what it needs from the previous 120 months of value-weighted\index{index weighting!value-weighted} excess returns, holds the portfolio for one month and records its return. The nine rules are 1/N, sample mean--variance with and without short sales, minimum variance in three versions (sample, long-only and \term{Ledoit--Wolf}), inverse-volatility risk parity, equal risk contribution and hierarchical risk parity. Each rule's out-of-sample returns (Section~\ref{sec:12-oos}) are summarized by the Sharpe ratio and by the certainty equivalent of Section~\ref{sec:09-accuracy}, $CE = \mu_p - \frac{\gamma}{2}\sigma_p^2$, and the \term{Jobson--Korkie test}\index{Jobson--Korkie test|textbf} (Jobson and Korkie 1981), with Memmel's (2003) correction, checks whether two Sharpe ratios differ by more than chance.
 
 \begin{itemize}
   \item \textbf{Part A} runs the nine rules on the 10 industries and reports each rule's Sharpe ratio, certainty equivalent, turnover, most extreme weights and maximum drawdown\index{maximum drawdown}, tested against 1/N (Lab Figures~\ref{ch:09}.1 and~\ref{ch:09}.2).
@@ -547,15 +548,15 @@ Situation & Holds? & Why & Evidence \\
 \endlastfoot
 Sample mean--variance against 1/N & \textbf{No} & Errors in expected returns outweigh the gain from optimizing; none of fourteen strategies beat 1/N consistently. & DeMiguel, Garlappi and Uppal (2009) \\*
 \addlinespace[3pt]
-Data needed for sample mean--variance to win & \textbf{No} & About 3,000 months for 25 assets, against about 1,100 months of U.S. stock data. & DeMiguel, Garlappi and Uppal (2009) \\*
+Data needed for sample mean--variance to win & \textbf{No} & About 3,000 months for 25 assets, against about 1,100 months of U.S. stock data. & DeMiguel, Garlappi and Uppal (2009) \\
 \addlinespace[3pt]
-Mean--variance with smaller estimation errors & \textbf{Partly} & Often beat 1/N before costs, but heavy trading erased the gain. & Kirby and Ostdiek (2012) \\*
+Mean--variance with smaller estimation errors & \textbf{Partly} & Often beat 1/N before costs, but heavy trading erased the gain. & Kirby and Ostdiek (2012) \\
 \addlinespace[3pt]
-Constrained and shrunk minimum variance & \textbf{Partly} & Reliably lower volatility, but not reliably a higher Sharpe ratio than 1/N. & Jagannathan and Ma (2003); Ledoit and Wolf (2004) \\*
+Constrained and shrunk minimum variance & \textbf{Partly} & Reliably lower volatility, but not reliably a higher Sharpe ratio than 1/N. & Jagannathan and Ma (2003); Ledoit and Wolf (2004) \\
 \addlinespace[3pt]
 Risk-based rules & \textbf{No} & Tend to tie with 1/N, which they resemble when assets have similar risks; the evidence for hierarchical risk parity is mainly simulated. & L\'opez de Prado (2016) \\*
 \addlinespace[3pt]
-Timing rules that ignore correlations & \textbf{Yes} & Beat 1/N even after high costs, because they trade little. & Kirby and Ostdiek (2012) \\*
+Timing rules that ignore correlations & \textbf{Yes} & Beat 1/N even after high costs, because they trade little. & Kirby and Ostdiek (2012) \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
@@ -573,3 +574,25 @@ Treat 1/N as the benchmark, and compare any optimized allocation with equal weig
 \begin{callout}
 \textbf{What Failed: the optimizer nobody would use.} In the early 1990s, Fischer Black and Robert Litterman of Goldman Sachs reported that investment professionals found asset-allocation models hard to use, because the portfolios they produced were ``badly behaved'': concentrated, extreme and sensitive to small changes in the inputs. Their solution was to start from the expected returns implied by market equilibrium and depart from them only where managers had confident views. The optimizer does exactly what it was designed to do; the problem is what it is fed.
 \end{callout}
+
+% Key terms that this chapter uses without defining them, for readers new to finance.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Certainty equivalent.] See Chapter~\ref{ch:06}, Section~\ref{sec:09-accuracy}, page~\pageref{sec:09-accuracy}.
+  \item[Estimation error.] Estimation error is the gap between an estimated quantity, such as an expected return, and its true value, caused by having only limited data.
+  \item[Turnover.] See Chapter~\ref{ch:13}, Section~\ref{sec:17-turnover}, page~\pageref{sec:17-turnover}.
+\end{description}
+\end{keyterms}

@@ -20,14 +20,15 @@
 
 \chapter{Claim: Past Winners Keep Winning}
 \label{ch:04}
+\providecommand{\term}[1]{\emph{#1}}
 
 Many ordinary investors buy the stocks that have been rising and in the news, and avoid those that have been falling, often without thinking of it as a strategy at all. Economists long treated this habit as a mistake. This chapter asks whether the data have proved them wrong.
 
 Do stocks that have risen keep rising? The idea is as old as the stock market, and it runs against one of the central ideas of finance. In an efficient market\index{efficient market hypothesis}, prices already reflect all available information, including the history of past prices, so past returns should not predict future returns (Section~\ref{sec:01-efficient-markets}). 
 
-By the late 1980s, however, researchers had found that past returns do predict future returns, though in different directions at different horizons. De Bondt and Thaler (1985) asked whether investors overweight dramatic recent news, as psychology experiments suggested, and found that stocks with the worst returns over the previous three to five years went on to beat the previous winners, and they read the pattern as investor overreaction, much like the overreaction of sports fans who pay too much for tickets to last season's champions and too little for last season's losers. Jegadeesh and Titman (1993) were puzzled that professional investors bought recent winners although the evidence on reversals suggested this should lose money. They looked at shorter horizons and found the opposite. Stocks with the highest returns over the past three to twelve months kept outperforming the past losers over the following months, by about one percentage point a month in their 1965--1989 sample, which is roughly 12 percentage points a year. This pattern is called \textbf{momentum}\index{momentum|textbf}. Stated so plainly, it sounds like a chart-reader's superstition, and for decades many economists had treated it as one.
+By the late 1980s, however, researchers had found that past returns do predict future returns, though in different directions at different horizons. De Bondt and Thaler (1985) asked whether investors overweight dramatic recent news, as psychology experiments suggested, and found that stocks with the worst returns over the previous three to five years went on to beat the previous \term{winners}, and they read the pattern as investor overreaction, much like the overreaction of sports fans who pay too much for tickets to last season's champions and too little for last season's losers. Jegadeesh and Titman (1993) were puzzled that professional investors bought recent winners although the evidence on reversals suggested this should lose money. They looked at shorter horizons and found the opposite. Stocks with the highest returns over the past three to twelve months kept outperforming the past losers over the following months, by about one percentage point a month in their 1965--1989 sample, which is roughly 12 percentage points a year. This pattern is called \term{momentum}\index{momentum|textbf}. Stated so plainly, it sounds like a chart-reader's superstition, and for decades many economists had treated it as one.
 
-The finding mattered because no accepted model of risk could explain it. Fama and French (1996) showed that their three-factor model, which absorbed most other anomalies, could not account for momentum\index{momentum}. Carhart (1997) suspected that persistent fund performance came partly from funds holding past winners, so he added a momentum factor to the model used to judge mutual funds, and found that it explained much of that persistence. To check that momentum was not simply a product of searching the data, Jegadeesh and Titman (2001) showed that the premium survived in the decade after their paper was published. Further,
+The finding mattered because no accepted model of risk could explain it. Fama and French (1996) showed that their three-\term{factor model}, which absorbed most other anomalies, could not account for momentum\index{momentum}. Carhart (1997) suspected that persistent fund performance came partly from funds holding past winners, so he added a momentum factor to the model used to judge mutual funds, and found that it explained much of that persistence. To check that momentum was not simply a product of searching the data, Jegadeesh and Titman (2001) showed that the premium survived in the decade after their paper was published. Further,
 Daniel and Moskowitz (2016), seeking to explain momentum's rare but enormous losses, showed that when the market suddenly rebounds, the past losers, which have fallen furthest, bounce back sharply. These rebounds produce momentum's rare but brutal losses: by their measures, the strategy lost about 92\% in two months in 1932 and about 73\% in three months in 2009.
 
 The implications reach from theory to practice. For theory, momentum is evidence that prices adjust slowly to news, or that investors bear a risk that the standard models miss. For practice, it shapes how fund managers are evaluated and how factor funds are built, and its crashes decide whether anyone can hold it long enough to collect the premium. 
@@ -52,7 +53,7 @@ By the end of the chapter you will be able to:
 
 \subsection{Measuring past performance}
 
-In words, a stock's return over several months is found by compounding its monthly returns, so that each month's gain or loss applies to the amount reached the month before. A stock's past return over a window is its cumulative return over those months: $(1 + R_1)(1 + R_2)\cdots(1 + R_k) - 1$. The standard momentum signal uses the return from twelve months ago to two months ago, written ``12--1'' or ``12--2'': it covers eleven months and \textbf{skips the most recent month}\index{momentum!skipping the most recent month|textbf} (Figure~\ref{fig:05-signal}). The skip exists because returns over a single month tend to reverse (Chapter~\ref{ch:13}'s short-term reversal\index{short-term reversal}); including that month would mix two opposite effects.
+In words, a stock's return over several months is found by compounding its monthly returns, so that each month's gain or loss applies to the amount reached the month before. A stock's past return over a window is its cumulative return over those months: $(1 + R_1)(1 + R_2)\cdots(1 + R_k) - 1$. The standard momentum signal uses the return from twelve months ago to two months ago, written ``12--1'' or ``12--2'': it covers eleven months and \textbf{skips the most recent month}\index{momentum!skipping the most recent month|textbf} (Figure~\ref{fig:05-signal}). The skip exists because returns over a single month tend to reverse (Chapter~\ref{ch:13}'s \term{short-term reversal}\index{short-term reversal}); including that month would mix two opposite effects.
 
 \begin{figure}[htbp]
 \centering
@@ -104,7 +105,7 @@ Because the stocks in each side of the portfolio change from month to month, the
 
 \subsection{Time-series momentum}
 
-\textbf{Time-series} or \textbf{absolute} momentum looks at each asset on its own: it holds the asset long if the asset's own past return is positive, and short if it is negative. It is also called \textbf{trend following}\index{trend following|textbf}, and it is what most \textbf{managed-futures funds}\index{managed futures|textbf}, funds that trade futures contracts across many markets, do. A futures contract is an agreement to buy or sell something, such as a stock index, a bond or a barrel of oil, at a set price on a future date, and it lets an investor bet on rising or falling prices without owning the asset. Unlike cross-sectional momentum\index{momentum!cross-sectional}, it can be \textbf{net long} or \textbf{net short} the market, holding more long than short positions or the reverse. It is usually applied across asset classes: stock indices, government bonds, currencies and commodities. Moskowitz, Ooi and Pedersen (2012), who documented the pattern in 58 futures markets, built the strategy in four steps:
+\textbf{Time-series} or \textbf{absolute} momentum looks at each asset on its own: it holds the asset long if the asset's own past return is positive, and short if it is negative. It is also called \term{trend following}\index{trend following|textbf}, and it is what most \term{managed-futures funds}\index{managed futures|textbf}, funds that trade futures contracts across many markets, do. A futures contract is an agreement to buy or sell something, such as a stock index, a bond or a barrel of oil, at a set price on a future date, and it lets an investor bet on rising or falling prices without owning the asset. Unlike \term{cross-sectional momentum}\index{momentum!cross-sectional}, it can be \term{net long} or \textbf{net short} the market, holding more long than short positions or the reverse. It is usually applied across asset classes: stock indices, government bonds, currencies and commodities. Moskowitz, Ooi and Pedersen (2012), who documented the pattern in 58 futures markets, built the strategy in four steps:
 
 \begin{itemize}
   \item \textbf{Measure each market's trend.} At the end of each month, compute each futures market's excess return over the past 12 months.
@@ -127,7 +128,7 @@ Chapter~\ref{ch:05} tests trend-following rules in detail.
 
 \subsection{Volatility scaling}
 
-\textbf{Volatility scaling}\index{volatility scaling|textbf} means sizing a position by how risky it currently is: holding more when markets are calm and less when they are turbulent. The rule is simple:
+\term{Volatility scaling}\index{volatility scaling|textbf} means sizing a position by how risky it currently is: holding more when markets are calm and less when they are turbulent. The rule is simple:
 \begin{equation}
   w = \frac{\sigma^*}{\hat\sigma}
   \label{eq:05-volscale}
@@ -148,11 +149,11 @@ Also, volatility scaling is the main tool for managing momentum's crashes. Momen
 \subsection{Underreaction and overreaction}
 \label{sec:05-behavior}
 
-\textbf{Behavioral finance}\index{behavioral finance|textbf} studies how investors' systematic errors affect prices. It starts from a different premise than the efficient market hypothesis. In an efficient market, investors may make mistakes, but the mistakes are random and cancel out, and any mispricing that remains is quickly traded away by well-informed investors. Behavioral finance argues instead that many investors make the \emph{same} mistakes at the same time, and that trading against them is risky and costly, so their errors can move prices for months or years. Two errors matter here.
+\term{Behavioral finance}\index{behavioral finance|textbf} studies how investors' systematic errors affect prices. It starts from a different premise than the efficient market hypothesis. In an efficient market, investors may make mistakes, but the mistakes are random and cancel out, and any mispricing that remains is quickly traded away by well-informed investors. Behavioral finance argues instead that many investors make the \emph{same} mistakes at the same time, and that trading against them is risky and costly, so their errors can move prices for months or years. Two errors matter here.
 
 \begin{itemize}
-  \item \textbf{Underreaction}\index{underreaction|textbf}: investors adjust too slowly to news, because of conservatism or limited attention, so prices drift in the direction of the news for months. News about a company spreads the way a rumor spreads through a town, reaching some investors at once and others weeks later.
-  \item \textbf{Overreaction}\index{overreaction|textbf}: investors extrapolate a run of good or bad news too far, pushing prices past their fair value, which later reverses.
+  \item \term{Underreaction}\index{underreaction|textbf}: investors adjust too slowly to news, because of conservatism or limited attention, so prices drift in the direction of the news for months. News about a company spreads the way a rumor spreads through a town, reaching some investors at once and others weeks later.
+  \item \term{Overreaction}\index{overreaction|textbf}: investors extrapolate a run of good or bad news too far, pushing prices past their fair value, which later reverses.
 \end{itemize}
 
 Momentum at horizons of a few months to a year fits underreaction or delayed overreaction; the long-run reversals documented by De Bondt and Thaler (1985) fit overreaction followed by correction.
@@ -167,7 +168,7 @@ Momentum at horizons of a few months to a year fits underreaction or delayed ove
 
 \begin{itemize}
   \item \textbf{Underreaction.}\index{underreaction|textbf} Investors update slowly. Good news about a firm is only partly reflected in its price at first, and the rest arrives over the following months. Hong and Stein (1999) model news diffusing gradually through the investor population; Barberis, Shleifer and Vishny (1998) model investors who are too conservative in updating their beliefs.
-  \item \textbf{Delayed overreaction.} Daniel, Hirshleifer and Subrahmanyam (1998) argue that overconfident\index{overconfidence} investors, seeing their views confirmed by early price moves, push prices further than fundamentals justify, producing momentum in the medium term and reversal later.
+  \item \textbf{Delayed overreaction.} Daniel, Hirshleifer and Subrahmanyam (1998) argue that \term{overconfident}\index{overconfidence} investors, seeing their views confirmed by early price moves, push prices further than fundamentals justify, producing momentum in the medium term and reversal later.
   \item \textbf{Risk.} Momentum's crashes are themselves a candidate explanation: a strategy that loses heavily in rare, sharp market rebounds may earn a premium for bearing that risk. Rational models in which expected returns\index{return!expected} vary with firms' growth options have also been proposed, though none has become standard.
 \end{itemize}
 
@@ -228,13 +229,13 @@ The last clause matters: a premium that is real on average but brings losses of 
 \section{The original evidence}
 \label{sec:05-evidence}
 
-\textbf{Jegadeesh and Titman (1993)}\index{Jegadeesh and Titman|textbf} sorted U.S. stocks from 1965 to 1989 on their past three- to twelve-month returns and found that buying winners and selling losers earned about 1\% a month, more than market risk could explain, with part of the profit reversing after a year. Their follow-up (Jegadeesh and Titman 2001) found a similar premium in the years after publication\index{anomaly!post-publication decay}, one of the earliest successful out-of-sample\index{in-sample versus out-of-sample} tests of an anomaly\index{anomaly}.
+\textbf{Jegadeesh and Titman (1993)}\index{Jegadeesh and Titman|textbf} sorted U.S. stocks from 1965 to 1989 on their past three- to twelve-month returns and found that buying winners and selling losers earned about 1\% a month, more than market risk could explain, with part of the profit reversing after a year. Their follow-up (Jegadeesh and Titman 2001) found a similar premium in the years after publication\index{anomaly!post-publication decay}, one of the earliest successful \term{out-of-sample}\index{in-sample versus out-of-sample} tests of an anomaly\index{anomaly}.
 
-\textbf{Carhart (1997)}\index{Carhart four-factor model|textbf} added a momentum factor to the Fama--French model to study mutual funds, and found that much of the apparent persistence\index{persistence} in fund returns was momentum exposure rather than skill. His four-factor model\index{factor model} became a standard benchmark.
+\term{Carhart (1997)}\index{Carhart four-factor model|textbf} added a momentum factor to the Fama--French model to study mutual funds, and found that much of the apparent persistence\index{persistence} in fund returns was momentum exposure rather than skill. His four-factor model\index{factor model} became a standard benchmark.
 
-\textbf{Breadth.} Rouwenhorst (1998) found momentum in twelve European markets, and Asness, Moskowitz and Pedersen (2013) found it in stocks across countries and in bonds, currencies and commodities. Moskowitz, Ooi and Pedersen (2012) documented \textbf{time-series momentum}\index{momentum!time-series|textbf}: in 58 futures and forward markets, an asset's own past twelve-month return predicted its next month's return. Japan is the notable exception, where Chui, Titman and Wei (2010) found momentum weak, consistent with their view that it is stronger in more individualistic cultures.
+\textbf{Breadth.} Rouwenhorst (1998) found momentum in twelve European markets, and Asness, Moskowitz and Pedersen (2013) found it in stocks across countries and in bonds, currencies and commodities. Moskowitz, Ooi and Pedersen (2012) documented \term{time-series momentum}\index{momentum!time-series|textbf}: in 58 futures and forward markets, an asset's own past twelve-month return predicted its next month's return. Japan is the notable exception, where Chui, Titman and Wei (2010) found momentum weak, consistent with their view that it is stronger in more individualistic cultures.
 
-\textbf{Crashes.} Daniel and Moskowitz (2016) showed that momentum's worst losses come when the market rebounds after a decline, as in 1932 and the spring of 2009, when battered past losers rose far more than past winners. These crashes give momentum negative skewness\index{skewness} and extreme drawdowns\index{drawdown}. Barroso and Santa-Clara (2015) showed that scaling by forecast volatility removed much of this risk in U.S. data.
+\textbf{Crashes.} Daniel and Moskowitz (2016) showed that momentum's worst losses come when the market rebounds after a decline, as in 1932 and the spring of 2009, when battered past losers rose far more than past winners. These crashes give momentum negative skewness\index{skewness} and extreme \term{drawdowns}\index{drawdown}. Barroso and Santa-Clara (2015) showed that scaling by forecast volatility removed much of this risk in U.S. data.
 
 \section{Lab~\thechapter: Replicating Jegadeesh and Titman (1993) and Daniel and Moskowitz (2016)}
 \label{sec:05-lab}
@@ -277,15 +278,15 @@ Situation & Holds? & Why & Evidence \\
 \endlastfoot
 A century of U.S. data & \textbf{Yes} & Past winners beat past losers by a large premium that the three-factor model cannot explain. & Jegadeesh and Titman (1993); Fama and French (1996) \\*
 \addlinespace[3pt]
-After publication & \textbf{Yes, weaker} & The premium continued through the 1990s but has been weaker and more volatile since 2000. & Jegadeesh and Titman (2001); Daniel and Moskowitz (2016) \\*
+After publication & \textbf{Yes, weaker} & The premium continued through the 1990s but has been weaker and more volatile since 2000. & Jegadeesh and Titman (2001); Daniel and Moskowitz (2016) \\
 \addlinespace[3pt]
-Other countries and asset classes & \textbf{Mostly} & Found in Europe, across countries and in bonds, currencies and commodities, but not in Japan. & Rouwenhorst (1998); Asness, Moskowitz and Pedersen (2013); Chui, Titman and Wei (2010) \\*
+Other countries and asset classes & \textbf{Mostly} & Found in Europe, across countries and in bonds, currencies and commodities, but not in Japan. & Rouwenhorst (1998); Asness, Moskowitz and Pedersen (2013); Chui, Titman and Wei (2010) \\
 \addlinespace[3pt]
-After trading costs & \textbf{Yes, smaller} & Costs are large but below the gross premium at institutional costs. & Novy-Marx and Velikov (2016) \\*
+After trading costs & \textbf{Yes, smaller} & Costs are large but below the gross premium at institutional costs. & Novy-Marx and Velikov (2016) \\
 \addlinespace[3pt]
 Through its crashes & \textbf{Partly} & Rare, severe losses come when beaten-down markets rebound, as in 1932 and 2009. & Grundy and Martin (2001); Daniel and Moskowitz (2016) \\*
 \addlinespace[3pt]
-With volatility scaling & \textbf{Partly} & Scaling reduced the crashes and raised the Sharpe ratio, but the improvement is itself a claim to test. & Barroso and Santa-Clara (2015) \\*
+With volatility scaling & \textbf{Partly} & Scaling reduced the crashes and raised the Sharpe ratio, but the improvement is itself a claim to test. & Barroso and Santa-Clara (2015) \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 \endgroup
@@ -303,3 +304,23 @@ Time-series momentum across asset classes, the core of managed-futures funds, ha
 \begin{callout}
 \textbf{What Failed: holding raw momentum through the 2009 rebound.} Through the financial crisis momentum did well, long defensive winners and short collapsing financial and cyclical stocks. When the market turned in March 2009, the most beaten-down stocks rebounded hardest, and within months the strategy lost much of a decade's gains (Daniel and Moskowitz 2016). The failure was treating momentum's average return as the whole story and sizing positions as if the risk were constant. The claim that momentum's return could be harvested without managing its crash risk \textbf{fails}.
 \end{callout}
+
+% Key terms that this chapter uses without defining them, for readers new to finance.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[In-sample versus out-of-sample.] See Chapter~\ref{ch:06}, Section~\ref{sec:09-insample}, page~\pageref{sec:09-insample}.
+\end{description}
+\end{keyterms}

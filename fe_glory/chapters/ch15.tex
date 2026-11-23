@@ -25,6 +25,7 @@
 
 \chapter{Claim: Most Published Anomalies Fail to Replicate}
 \label{ch:15}
+\providecommand{\term}[1]{\emph{#1}}
 
 News stories regularly report a new study showing that some simple rule, such as buying cheap stocks or stocks with rising profits, has beaten the market. Other sciences, such as psychology and medicine, have discovered in recent years that many published findings could not be repeated when others tried. This chapter asks whether finance has the same problem, and how a reader can tell a lasting discovery from a lucky one.
 
@@ -59,16 +60,16 @@ Section~\ref{sec:01-efficient-markets} also introduced the joint-hypothesis prob
 
 \subsection{Anomalies}
 
-An \textbf{anomaly}\index{anomaly|textbf} is a pattern in returns that a benchmark asset pricing model cannot explain. It is a characteristic, such as a valuation ratio or a past return, that predicts future returns after adjusting for the model's risk factors. Anomalies are usually found with portfolio sorts\index{portfolio sort} and long--short returns (Section~\ref{sec:05-foundations}). They are judged by the t-statistic\index{t-statistic} of the average return or of the alpha\index{alpha}.
+An \textbf{anomaly}\index{anomaly|textbf} is a pattern in returns that a benchmark asset pricing model cannot explain. It is a characteristic, such as a valuation ratio or a past return, that predicts future returns after adjusting for the model's risk factors. Anomalies are usually found with \term{portfolio sorts}\index{portfolio sort} and long--short returns (Section~\ref{sec:05-foundations}). They are judged by the t-statistic\index{t-statistic} of the average return or of the alpha\index{alpha}.
 
 \subsection{Replication, reproduction and robustness}
 
 Terms are used loosely, but a useful distinction is:
 
 \begin{itemize}
-  \item \textbf{Reproduction}\index{reproduction|textbf}: the same data and code give the same numbers. It checks for errors.
+  \item \term{Reproduction}\index{reproduction|textbf}: the same data and code give the same numbers. It checks for errors.
   \item \textbf{Pure replication}\index{replication!pure, scientific and out-of-sample|textbf}: the same method on the same kind of data, perhaps rebuilt independently, gives the same result. It checks that the finding is not an artifact of one implementation.
-  \item \textbf{Scientific replication} or \textbf{robustness}\index{robustness|textbf}: different but reasonable choices of method, sample or market give a similar result. It checks that the finding is about the world, not about the choices.
+  \item \textbf{Scientific replication} or \term{robustness}\index{robustness|textbf}: different but reasonable choices of method, sample or market give a similar result. It checks that the finding is about the world, not about the choices.
   \item \textbf{Out-of-sample replication}: the result holds in data not used to find it, such as later years or other countries.
 \end{itemize}
 
@@ -80,7 +81,7 @@ Journals are more likely to publish significant results. If only strong in-sampl
 
 \subsection{Shrinkage}
 
-Suppose many noisy estimates are made at once. Each one can be improved by pulling it toward the average of all of them. Noisy estimates are pulled more, and precise ones less. A very high estimate is more likely to be partly luck than a moderate one, so pulling it back makes it more accurate on average. This idea comes from \textbf{empirical Bayes}\index{empirical Bayes|textbf} statistics (Efron and Morris 1975). It is called ``empirical'' because the data themselves supply the average toward which the estimates are pulled. It is the basis of the defense's method.
+Suppose many noisy estimates are made at once. Each one can be improved by pulling it toward the average of all of them. Noisy estimates are pulled more, and precise ones less. A very high estimate is more likely to be partly luck than a moderate one, so pulling it back makes it more accurate on average. This idea comes from \term{empirical Bayes}\index{empirical Bayes|textbf} statistics (Efron and Morris 1975). It is called ``empirical'' because the data themselves supply the average toward which the estimates are pulled. It is the basis of the defense's method.
 
 \textbf{Worked example.} One hundred honest researchers each test a different trading signal, and none of the signals has any real predictive power. By chance, about five will find t-statistics beyond $\pm 1.96$, and those five publish (Figure~\ref{fig:19-pubbias}). Every published paper reports a significant result, yet none of the results is real. A reader who saw only the journals would find a literature with a 100\% success rate.
 
@@ -125,7 +126,7 @@ The problem is statistical as much as economic. Thousands of researchers test th
 
 \begin{itemize}
   \item Chen and Zimmermann's \textbf{Open Source Asset Pricing}\index{Open Source Asset Pricing|textbf} (2022) replicates more than 200 cross-sectional predictors from the original papers' descriptions and publishes their portfolio returns and code.
-  \item Jensen, Kelly and Pedersen (2023) built a \textbf{global factor database} of 153 factors across 93 countries, with harmonized definitions, meaning each factor is built the same way in every country.
+  \item Jensen, Kelly and Pedersen (2023) built a \term{global factor database} of 153 factors across 93 countries, with harmonized definitions, meaning each factor is built the same way in every country.
 \end{itemize}
 
 No table can list hundreds of predictors, but none needs to, because most of them are variations on a few ideas. Hou, Xue and Zhang\index{q-factor model} (2020) sort their 452 anomalies into six categories. Table~\ref{tab:19-zoo} shows two or three well-known predictors from each. The sign shows whether stocks with a high value of the predictor earned higher (+) or lower ($-$) average returns in the original study. The Open Source Asset Pricing and JKP documentation give the full lists, with definitions and code for every predictor. Jensen, Kelly and Pedersen (2023) group their 153 factors into 13 similar themes.
@@ -197,16 +198,16 @@ Choice & Options & Why it matters \\
 \bottomrule
 \endlastfoot
 Universe & All stocks, or excluding micro-caps (for example below the NYSE 20th size percentile) & Many anomalies are concentrated in tiny stocks that are costly to trade and hold little value \\*
-Weighting & Equal-weighted or value-weighted portfolios & Equal weighting gives micro-caps large influence \\*
-Breakpoints & Deciles, quintiles or terciles; NYSE or all-stock breakpoints & Extreme portfolios magnify signals and noise \\*
-Sample & The original paper's sample, or the longest available & Later years are out of sample \\*
+Weighting & Equal-weighted or value-weighted portfolios & Equal weighting gives micro-caps large influence \\
+Breakpoints & Deciles, quintiles or terciles; NYSE or all-stock breakpoints & Extreme portfolios magnify signals and noise \\
+Sample & The original paper's sample, or the longest available & Later years are out of sample \\
 Significance hurdle & $t > 1.96$, $t > 3$, a false-discovery-rate rule, or a Bayesian posterior & Determines what counts as a success \\*
-Benchmark & Raw returns, CAPM alpha, or alpha against a multifactor model & A factor explained by others may be real but redundant \\*
+Benchmark & Raw returns, CAPM alpha, or alpha against a multifactor model & A factor explained by others may be real but redundant \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 \endgroup
 
-\textbf{NYSE breakpoints}\index{NYSE breakpoints|textbf} set the cut-offs between groups using only stocks listed on the New York Stock Exchange. These stocks are larger on average, so the many tiny Nasdaq stocks do not crowd the extreme portfolios. A \textbf{Bayesian posterior}\index{Bayesian posterior|textbf} is the probability of a hypothesis after a prior belief has been combined with the data.
+\term{NYSE breakpoints}\index{NYSE breakpoints|textbf} set the cut-offs between groups using only stocks listed on the New York Stock Exchange. These stocks are larger on average, so the many tiny Nasdaq stocks do not crowd the extreme portfolios. A \term{Bayesian posterior}\index{Bayesian posterior|textbf} is the probability of a hypothesis after a prior belief has been combined with the data.
 
 \textbf{Pure and scientific replication again.} A replication that copies the original method tests whether the paper's numbers can be reproduced. One that changes the universe, weighting or hurdle tests whether the finding is robust. Both are valuable, but they answer different questions, and the debate in this chapter turns partly on that difference.
 
@@ -219,14 +220,14 @@ Stated so that it can fail:
 \textbf{Most published cross-sectional return predictors do not reflect a real, persistent relationship: they fail to replicate under reasonable standards, or their returns disappear outside the sample in which they were found.}
 \end{callout}
 
-``Reasonable standards'' is where the debate lies. The claim can be tested by \textbf{replication} within the original sample (which hurdle, and which portfolio construction?), \textbf{out of sample}\index{in-sample versus out-of-sample|textbf} (do returns persist after the sample ends and after publication?), and \textbf{statistical correction} (after allowing for the number of predictors tested and for publication bias, what share probably have a positive true return?).
+``Reasonable standards'' is where the debate lies. The claim can be tested by \textbf{replication} within the original sample (which hurdle, and which portfolio construction?), \textbf{out of sample}\index{in-sample versus out-of-sample|textbf} (do returns persist after the sample ends and after publication?), and \term{statistical correction} (after allowing for the number of predictors tested and for publication bias, what share probably have a positive true return?).
 
 \section{The prosecution}
 \label{sec:19-prosecution}
 
 \textbf{Harvey, Liu and Zhu (2016)} argued that because hundreds of factors have been tested, and many more never published, the usual hurdle of $t > 2$ lets through too many false discoveries. They proposed a hurdle of about 3 and concluded that many published factors were likely false.
 
-\textbf{Hou, Xue and Zhang (2020)}\index{q-factor model|textbf} rebuilt 452 anomalies with one method designed to limit the influence of micro-caps\index{micro-caps}: NYSE breakpoints and value-weighted\index{index weighting!value-weighted} returns. 65\% failed a t-statistic of 1.96, and 82\% failed a multiple-testing hurdle of 2.78. Anomalies based on \textbf{trading frictions}\index{trading frictions|textbf}, such as illiquidity\index{illiquidity} and \textbf{idiosyncratic risk}\index{risk!idiosyncratic|textbf} (the part of a stock's volatility\index{volatility} that the market and other factors do not explain), failed most often, 96\% of them. They concluded that most anomalies are false or confined to micro-caps too small and costly to matter.
+\textbf{Hou, Xue and Zhang (2020)}\index{q-factor model|textbf} rebuilt 452 anomalies with one method designed to limit the influence of micro-caps\index{micro-caps}: NYSE breakpoints and value-weighted\index{index weighting!value-weighted} returns. 65\% failed a t-statistic of 1.96, and 82\% failed a multiple-testing hurdle of 2.78. Anomalies based on \term{trading frictions}\index{trading frictions|textbf}, such as illiquidity\index{illiquidity} and \term{idiosyncratic risk}\index{risk!idiosyncratic|textbf} (the part of a stock's volatility\index{volatility} that the market and other factors do not explain), failed most often, 96\% of them. They concluded that most anomalies are false or confined to micro-caps too small and costly to matter.
 
 The prosecution rests on two premises: the hurdle should be high because many tests have been run, and portfolios should give little weight to the smallest stocks.
 
@@ -235,7 +236,7 @@ The prosecution rests on two premises: the hurdle should be high because many te
 
 \textbf{Jensen, Kelly and Pedersen (2023)} used a Bayesian model that shrinks each factor's noisy alpha toward the average of related factors, rather than judging it alone against a fixed hurdle. They found that most factors replicate, cluster into 13 themes that are mostly significant parts of the optimal portfolio, work out of sample in 93 countries, and are corroborated rather than weakened by their large number.
 
-\textbf{Chen and Zimmermann (2022)} found that almost all predictors whose original papers reported clear evidence can be reproduced with the original methods. \textbf{Chen and Zimmermann (2020)} estimated that, across 156 predictors, publication bias makes in-sample returns only about 12\% too large, and that a t-statistic hurdle of about 1.8 is enough for published predictors. \textbf{Chen (2021)} argued that published t-statistics are too large to be explained by \textbf{p-hacking}\index{p-hacking|textbf}, trying analyses until one crosses the significance line, alone.
+\textbf{Chen and Zimmermann (2022)} found that almost all predictors whose original papers reported clear evidence can be reproduced with the original methods. \textbf{Chen and Zimmermann (2020)} estimated that, across 156 predictors, publication bias makes in-sample returns only about 12\% too large, and that a t-statistic hurdle of about 1.8 is enough for published predictors. \textbf{Chen (2021)} argued that published t-statistics are too large to be explained by \term{p-hacking}\index{p-hacking|textbf}, trying analyses until one crosses the significance line, alone.
 
 The defense rests on two different premises: the question is whether the original findings are real, not whether they survive a method that plays down small stocks, and evidence should be pooled across related factors.
 
@@ -295,9 +296,9 @@ Choice & Prosecution (Hou, Xue and Zhang; Harvey, Liu and Zhu) & Defense (Jensen
 \bottomrule
 \endlastfoot
 Which stocks count & De-emphasize micro-caps: NYSE breakpoints, value weights & Replicate the original construction; micro-caps are part of the market \\*
-Hurdle & High: $t$ of about 3 or 2.78, for multiple testing & Lower, or a Bayesian posterior \\*
+Hurdle & High: $t$ of about 3 or 2.78, for multiple testing & Lower, or a Bayesian posterior \\
 Unit of evidence & Each factor judged on its own & Related factors pooled; corroboration strengthens the evidence \\*
-Kind of replication & Scientific: does it survive reasonable alternative choices? & Pure: are the original findings reproducible and real? \\*
+Kind of replication & Scientific: does it survive reasonable alternative choices? & Pure: are the original findings reproducible and real? \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 \endgroup
@@ -342,15 +343,15 @@ Situation & Holds? & Why & Evidence \\
 \endlastfoot
 Original construction, conventional hurdle & \textbf{No} & Almost all predictors with clear original evidence reproduce with the original methods. & Chen and Zimmermann (2022) \\*
 \addlinespace[3pt]
-Micro-caps de-emphasized, value-weighted & \textbf{Yes} & 65\% of 452 anomalies fail $t = 1.96$ and 82\% fail 2.78; 96\% of trading-frictions anomalies fail. & Hou, Xue and Zhang (2020) \\*
+Micro-caps de-emphasized, value-weighted & \textbf{Yes} & 65\% of 452 anomalies fail $t = 1.96$ and 82\% fail 2.78; 96\% of trading-frictions anomalies fail. & Hou, Xue and Zhang (2020) \\
 \addlinespace[3pt]
-The right hurdle for multiple testing & \textbf{Disputed} & About 3 on one side; about 1.8 for published predictors on the other. & Harvey, Liu and Zhu (2016); Chen and Zimmermann (2020) \\*
+The right hurdle for multiple testing & \textbf{Disputed} & About 3 on one side; about 1.8 for published predictors on the other. & Harvey, Liu and Zhu (2016); Chen and Zimmermann (2020) \\
 \addlinespace[3pt]
-Bayesian pooling across factors and countries & \textbf{No} & Most factors replicate, cluster into 13 themes and work out of sample in 93 countries. & Jensen, Kelly and Pedersen (2023) \\*
+Bayesian pooling across factors and countries & \textbf{No} & Most factors replicate, cluster into 13 themes and work out of sample in 93 countries. & Jensen, Kelly and Pedersen (2023) \\
 \addlinespace[3pt]
 Out of sample, after publication & \textbf{Partly} & Returns were 26\% lower after the samples and 58\% lower after publication, partly from selection. & McLean and Pontiff (2016); Part E of the lab \\*
 \addlinespace[3pt]
-After costs, for an investor & \textbf{Yes} & Little expected return remains for the average anomaly. & Chen and Velikov (2023); Chapter~\ref{ch:13} \\*
+After costs, for an investor & \textbf{Yes} & Little expected return remains for the average anomaly. & Chen and Velikov (2023); Chapter~\ref{ch:13} \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
@@ -370,3 +371,23 @@ To judge any new factor fund or signal, check whether the original t-statistic c
 \begin{callout}
 \textbf{What Failed: the trading-frictions anomalies.} Anomalies based on liquidity\index{liquidity}, idiosyncratic volatility\index{idiosyncratic volatility} and other trading frictions looked strong in the papers that introduced them. When Hou, Xue and Zhang played down micro-caps with NYSE breakpoints and value weights, 96\% of them failed to clear a t-statistic of 1.96, because their returns had come mostly from the smallest, least liquid stocks, where costs are largest. The claim that frictions-based anomalies offer returns an investor can capture \textbf{fails}.
 \end{callout}
+
+% Key terms that this chapter uses without defining them, for readers new to finance.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Portfolio sort.] See Chapter~\ref{ch:04}, Section~\ref{sec:05-foundations}, page~\pageref{sec:05-foundations}.
+\end{description}
+\end{keyterms}

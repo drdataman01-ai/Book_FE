@@ -25,6 +25,7 @@
 
 \chapter{Claim: A Profitable Backtest Is Profitable to Trade}
 \label{ch:13}
+\providecommand{\term}[1]{\emph{#1}}
 
 Many brokers now advertise commission-free trading, and it is easy to conclude that buying and selling shares costs nothing. It does not. Every purchase is made at a slightly higher price than every sale, and large orders push prices against the trader. These hidden costs are small on any one trade, but a strategy that trades often pays them again and again. This chapter asks how much of a strategy's backtested profit survives them.
 
@@ -34,7 +35,7 @@ The question became pressing in the early 2000s, when researchers began to work 
 
 This chapter opens Part VII, which returns to the classic findings with the tools of the last two decades. The answer matters for research and for practice. For research, it decides whether an anomaly is evidence against market efficiency, or only a pattern that no investor could exploit. For practice, it decides which published strategies are worth running, how much money each can manage, and whether a fund that offers them can deliver its backtest. The claim on trial\index{claims-on-trial method} is the assumption behind most published backtests\index{backtest}: \textbf{a strategy that is profitable in a backtest is profitable to trade.}
 
-The lab in Section~\ref{sec:17-lab} repeats the main calculations of Novy-Marx and Velikov (2016) and Frazzini, Israel and Moskowitz (2018). It uses three free long--short factors from the Kenneth R. French Data Library, value, momentum and short-term reversal, together with a simulated market of individual stocks. The goal is to find out which strategies stay profitable after costs, what level of costs would wipe out each one, and how much money each can manage.
+The lab in Section~\ref{sec:17-lab} repeats the main calculations of Novy-Marx and Velikov (2016) and Frazzini, Israel and Moskowitz (2018). It uses three free long--short factors from the \term{Kenneth R. French Data Library}, value, momentum and short-term reversal, together with a simulated market of individual stocks. The goal is to find out which strategies stay profitable after costs, what level of costs would wipe out each one, and how much money each can manage.
 
 By the end of the chapter you will be able to:
 
@@ -53,7 +54,7 @@ In the lab you will take three of the best-known long--short strategies, value, 
 
 \subsection{The order book}
 
-Most stocks trade on electronic exchanges that keep a \textbf{limit order book}\index{order book|textbf}. This is a list of standing offers to buy, called \textbf{bids}, and offers to sell, called \textbf{asks}, each at a stated price and quantity (Figure~\ref{fig:17-book}). The highest bid and the lowest ask are the \textbf{best quotes}. The gap between them is the \textbf{bid--ask spread}\index{bid--ask spread|textbf}, and their average is the \textbf{midpoint}\index{midpoint|textbf}. Spreads are quoted in \textbf{basis points}\index{basis point|textbf} of the midpoint. A basis point is a hundredth of a percent, so 100 basis points make 1\%.
+Most stocks trade on electronic exchanges that keep a \term{limit order book}\index{order book|textbf}. This is a list of standing offers to buy, called \textbf{bids}, and offers to sell, called \textbf{asks}, each at a stated price and quantity (Figure~\ref{fig:17-book}). The highest bid and the lowest ask are the \term{best quotes}. The gap between them is the \textbf{bid--ask spread}\index{bid--ask spread|textbf}, and their average is the \term{midpoint}\index{midpoint|textbf}. Spreads are quoted in \textbf{basis points}\index{basis point|textbf} of the midpoint. A basis point is a hundredth of a percent, so 100 basis points make 1\%.
 
 \providecolor{fenavy}{HTML}{1B2A6B}
 \providecolor{feorange}{HTML}{B8481C}
@@ -127,23 +128,23 @@ Most stocks trade on electronic exchanges that keep a \textbf{limit order book}\
 There are two basic ways to trade.
 
 \begin{itemize}
-  \item A \textbf{market order}\index{market order|textbf} trades immediately against the best available quotes: a buyer pays the ask, a seller receives the bid. Market orders \emph{demand} liquidity\index{liquidity} and pay the spread.
-  \item A \textbf{limit order}\index{limit order|textbf} sets a price and waits in the book until someone trades against it. Limit orders \emph{supply} liquidity and may earn the spread, but risk not being filled, or being filled just before the price moves against them.
+  \item A \term{market order}\index{market order|textbf} trades immediately against the best available quotes: a buyer pays the ask, a seller receives the bid. Market orders \emph{demand} liquidity\index{liquidity} and pay the spread.
+  \item A \term{limit order}\index{limit order|textbf} sets a price and waits in the book until someone trades against it. Limit orders \emph{supply} liquidity and may earn the spread, but risk not being filled, or being filled just before the price moves against them.
 \end{itemize}
 
 Large orders are usually broken into many small ones and executed over hours or days to limit their effect on prices.
 
 \subsection{Who provides liquidity}
 
-\textbf{Market makers}\index{market maker|textbf} and high-frequency traders post bids and asks continuously and earn the spread. In return they bear \textbf{inventory risk}, the risk that prices move while they hold shares they have bought but not yet sold, and the risk of trading with better-informed investors. Spreads are wider for small, volatile and thinly traded stocks because these risks are larger there.
+\term{Market makers}\index{market maker|textbf} and high-frequency traders post bids and asks continuously and earn the spread. In return they bear \term{inventory risk}, the risk that prices move while they hold shares they have bought but not yet sold, and the risk of trading with better-informed investors. Spreads are wider for small, volatile and thinly traded stocks because these risks are larger there.
 
 \subsection{Long and short positions}
 
-A \textbf{long} position owns a security and gains when its price rises. A \textbf{short} position borrows shares, sells them, and later buys them back to return them, so it gains when the price falls. The short seller pays any dividends to the lender. It also posts \textbf{collateral}\index{collateral|textbf}, cash or securities held as security for the loan, and pays a \textbf{borrowing fee}\index{borrowing fee|textbf} set in the securities-lending market. Most large stocks are cheap to borrow. A minority are hard to borrow and expensive. The lender can also \textbf{recall} the loan, which forces the short seller to buy the shares back.
+A \textbf{long} position owns a security and gains when its price rises. A \textbf{short} position borrows shares, sells them, and later buys them back to return them, so it gains when the price falls. The short seller pays any dividends to the lender. It also posts \term{collateral}\index{collateral|textbf}, cash or securities held as security for the loan, and pays a \term{borrowing fee}\index{borrowing fee|textbf} set in the securities-lending market. Most large stocks are cheap to borrow. A minority are hard to borrow and expensive. The lender can also \term{recall} the loan, which forces the short seller to buy the shares back.
 
 \subsection{Long--short portfolios}
 
-Academic factors such as HML\index{factor!HML (value)}, introduced in Section~\ref{sec:04-factors}, are \textbf{zero-investment} portfolios. They hold one dollar long and one dollar short, so the proceeds of the short sale pay for the long side. A factor's ``return'' is therefore the difference between the two sides, not a return on capital invested. A real long--short fund must hold collateral and capital against both sides, and it quotes its returns relative to that capital.
+Academic factors such as HML\index{factor!HML (value)}, introduced in Section~\ref{sec:04-factors}, are \term{zero-investment} portfolios. They hold one dollar long and one dollar short, so the proceeds of the short sale pay for the long side. A factor's ``return'' is therefore the difference between the two sides, not a return on capital invested. A real long--short fund must hold collateral and capital against both sides, and it quotes its returns relative to that capital.
 
 \subsection{Turnover}
 
@@ -157,7 +158,7 @@ Academic factors such as HML\index{factor!HML (value)}, introduced in Section~\r
 
 The factor returns in the Kenneth French Data Library\index{Kenneth French data library}, like most portfolio returns in academic research, are \textbf{paper returns}\index{return!paper versus implementable|textbf}. Each month the portfolio is rebuilt from the latest sorts, at closing prices, with no charge for trading. The construction is deliberately simple and transparent, which is why the data is so useful. But it answers the question ``what pattern exists in returns?'' rather than ``what could an investor have earned?''
 
-An \textbf{implementable return}, one an investor could actually have earned, differs in four ways:
+An \term{implementable return}, one an investor could actually have earned, differs in four ways:
 
 \begin{enumerate}
   \item \textbf{Trading costs.}\index{transaction costs|textbf} Every purchase pays above the midpoint price and every sale receives below it; large orders also move the price.
@@ -194,17 +195,17 @@ Component & What it is & How it scales \\
 \bottomrule
 \endlastfoot
 Commissions and fees & Payments to brokers and exchanges & Small for institutions today; roughly proportional to the amount traded \\*
-Bid--ask spread & Buying at the ask and selling at the bid, above and below the midpoint & Proportional to the amount traded; wider for small, volatile and illiquid stocks \\*
-Market impact & The price moving against an order while it is executed, because the order itself carries information or demands liquidity & Grows faster than the trade: roughly with the square root of the order's size relative to volume \\*
+Bid--ask spread & Buying at the ask and selling at the bid, above and below the midpoint & Proportional to the amount traded; wider for small, volatile and illiquid stocks \\
+Market impact & The price moving against an order while it is executed, because the order itself carries information or demands liquidity & Grows faster than the trade: roughly with the square root of the order's size relative to volume \\
 Delay and opportunity cost & Prices moving before the order is filled, or trades not made at all & Largest for fast signals \\*
-Short-selling costs & Fees to borrow shares, the risk of recall, rules that restrict shorting & Mostly small, very large for a minority of stocks \\*
+Short-selling costs & Fees to borrow shares, the risk of recall, rules that restrict shorting & Mostly small, very large for a minority of stocks \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 \endgroup
 
-The unit used throughout this chapter is the \textbf{one-way cost}\index{transaction costs!one-way and round-trip|textbf}: the cost of buying, or of selling, one dollar of stock, as a fraction of the dollar. For a small trade it is roughly half the bid--ask spread plus commissions. A \textbf{round trip}, buying and later selling, costs twice the one-way cost.
+The unit used throughout this chapter is the \term{one-way cost}\index{transaction costs!one-way and round-trip|textbf}: the cost of buying, or of selling, one dollar of stock, as a fraction of the dollar. For a small trade it is roughly half the bid--ask spread plus commissions. A \textbf{round trip}, buying and later selling, costs twice the one-way cost.
 
-\textbf{Costs have fallen, unevenly.} U.S. stock spreads narrowed sharply in 2001, when prices moved from fractions of a dollar to cents, a change called \textbf{decimalization}\index{decimalization|textbf}, and again as electronic trading spread. Large stocks now trade at spreads of a few basis points, but small, illiquid stocks still cost far more. This matters when reading long histories. A strategy tested from 1963 faced costs in its early decades several times higher than today's. Charging today's costs over the whole history therefore flatters the past, while charging the past's costs today understates what is now possible.
+\textbf{Costs have fallen, unevenly.} U.S. stock spreads narrowed sharply in 2001, when prices moved from fractions of a dollar to cents, a change called \term{decimalization}\index{decimalization|textbf}, and again as electronic trading spread. Large stocks now trade at spreads of a few basis points, but small, illiquid stocks still cost far more. This matters when reading long histories. A strategy tested from 1963 faced costs in its early decades several times higher than today's. Charging today's costs over the whole history therefore flatters the past, while charging the past's costs today understates what is now possible.
 
 \textbf{Short selling.}\index{short selling|textbf} A short seller borrows shares and pays the lender a fee. Using records from a large lender of shares, D'Avolio (2002) found that most U.S. stocks were cheap to borrow, but that a small group of ``special'' stocks carried high fees, and that these were often the very stocks with the strongest signals to sell short. The lender can also recall the shares at an awkward time, and regulators can ban short selling outright, as the U.S. Securities and Exchange Commission did for financial stocks in September 2008. Miller (1977) argued that when pessimists cannot sell short, prices reflect only the optimists' views, so overpricing can last. If so, anomalies should earn their profits mainly from overpriced stocks, and Stambaugh\index{Stambaugh bias}, Yu and Yuan (2012) found that many anomalies\index{anomaly} earn most of their profits on the short side, exactly where these obstacles bite. A long--short paper portfolio that ignores them overstates what an investor can achieve, sometimes by most of the premium.
 
@@ -214,13 +215,13 @@ The lab uses a single one-way cost and a single borrowing fee for transparency. 
 \section{Measuring costs from public data}
 \label{sec:17-measuring}
 
-The best measure of trading costs is a trader's own record. \textbf{Implementation shortfall}\index{implementation shortfall|textbf} (Perold 1988) compares the value of a paper portfolio at the prices when the decision was made with the value of the portfolio actually achieved, capturing spreads, impact, delay and trades never completed. Most researchers do not have such records, so the field relies on estimates.
+The best measure of trading costs is a trader's own record. \term{Implementation shortfall}\index{implementation shortfall|textbf} (Perold 1988) compares the value of a paper portfolio at the prices when the decision was made with the value of the portfolio actually achieved, capturing spreads, impact, delay and trades never completed. Most researchers do not have such records, so the field relies on estimates.
 
 \textbf{From quotes and trades.} With intraday data, such as the TAQ (Trade and Quote) database of every U.S. trade and quote, two spreads can be measured:
 
 \begin{itemize}
-  \item the \textbf{quoted spread}\index{bid--ask spread!quoted|textbf}, the gap between the best bid and ask;
-  \item the \textbf{effective spread}\index{bid--ask spread!effective|textbf}, twice the difference between the trade price and the midpoint at the time of the trade.
+  \item the \term{quoted spread}\index{bid--ask spread!quoted|textbf}, the gap between the best bid and ask;
+  \item the \term{effective spread}\index{bid--ask spread!effective|textbf}, twice the difference between the trade price and the midpoint at the time of the trade.
 \end{itemize}
 
 Effective spreads are usually smaller than quoted ones, because many trades execute inside the quotes.
@@ -231,11 +232,11 @@ Researchers without intraday data can still estimate spreads from daily prices, 
 \textbf{Technical note: estimating spreads from daily data.} Several estimators infer spreads from daily prices alone, which makes them available back to the 1920s:
 
 \begin{itemize}
-  \item \textbf{Roll (1984)}\index{bid--ask spread!estimators|textbf} infers the spread from \textbf{bid--ask bounce}\index{bid--ask bounce|textbf}: because trades alternate randomly between the bid and the ask, successive price changes are negatively correlated, and the size of that correlation\index{correlation} reveals the spread.
+  \item \textbf{Roll (1984)}\index{bid--ask spread!estimators|textbf} infers the spread from \term{bid--ask bounce}\index{bid--ask bounce|textbf}: because trades alternate randomly between the bid and the ask, successive price changes are negatively correlated, and the size of that correlation\index{correlation} reveals the spread.
   \item \textbf{Hasbrouck (2009)} estimates a similar model with a Bayesian Gibbs sampler, a simulation-based estimation method, which is more robust when the Roll estimator fails.
   \item \textbf{Corwin and Schultz (2012)} use daily high and low prices: highs are usually trades at the ask and lows at the bid, and the spread's share of the range can be separated from volatility\index{volatility} by comparing one-day and two-day ranges.
   \item \textbf{Abdi and Ranaldo (2017)} combine closing, high and low prices for a more precise estimator.
-  \item \textbf{Amihud (2002)}\index{illiquidity|textbf} measures \textbf{illiquidity} as the average absolute return per dollar of volume: a measure of price impact rather than a spread.
+  \item \textbf{Amihud (2002)}\index{illiquidity|textbf} measures \term{illiquidity} as the average absolute return per dollar of volume: a measure of price impact rather than a spread.
 \end{itemize}
 
 These estimators are noisy for any one stock and month, but useful averaged across portfolios, which is how Novy-Marx and Velikov (2016) used them to estimate the costs of dozens of anomalies.
@@ -254,7 +255,7 @@ What drives turnover is how fast the signal changes relative to how often the po
 
 \begin{itemize}
   \item \textbf{Value} sorts on book-to-market\index{book-to-market ratio} once a year. Book-to-market ratios are persistent, so most stocks stay on the same side from one year to the next.
-  \item \textbf{Momentum}\index{momentum|textbf} sorts monthly on the return from 12 months to 2 months ago. Each month's window shares ten of its eleven months with the last one, but enough stocks cross the \textbf{breakpoints}, the cut-offs between groups, to replace about a third of the portfolio each month.
+  \item \textbf{Momentum}\index{momentum|textbf} sorts monthly on the return from 12 months to 2 months ago. Each month's window shares ten of its eleven months with the last one, but enough stocks cross the \term{breakpoints}, the cut-offs between groups, to replace about a third of the portfolio each month.
   \item \textbf{Short-term reversal}\index{short-term reversal|textbf} sorts monthly on the previous month's return, which has almost no persistence\index{persistence}. Nearly the whole portfolio is replaced every month.
 \end{itemize}
 
@@ -264,7 +265,7 @@ What drives turnover is how fast the signal changes relative to how often the po
   \label{eq:17-net}
 \end{equation}
 
-The \textbf{break-even cost}\index{transaction costs!break-even|textbf} is the one-way cost at which the average net return is zero:
+The \term{break-even cost}\index{transaction costs!break-even|textbf} is the one-way cost at which the average net return is zero:
 \begin{equation}
   c^* = \frac{\text{average gross return} - \text{other costs}}{4T}
   \label{eq:17-breakeven}
@@ -369,14 +370,14 @@ A gross ranking by Sharpe ratio\index{Sharpe ratio} or t-statistic\index{t-stati
 \section{Market impact and capacity}
 \label{sec:17-capacity}
 
-Spreads are roughly a fixed cost per dollar traded. Market impact is not: the more a strategy trades relative to the market's volume, the more each dollar costs. This is what gives every strategy a \textbf{capacity}\index{capacity|textbf}, a size beyond which its net returns shrink toward zero.
+Spreads are roughly a fixed cost per dollar traded. \term{Market impact} is not: the more a strategy trades relative to the market's volume, the more each dollar costs. This is what gives every strategy a \term{capacity}\index{capacity|textbf}, a size beyond which its net returns shrink toward zero.
 
 \textbf{Why prices move.} Kyle (1985) described market makers who cannot tell orders from well-informed traders apart from other orders, so they move their prices in the direction of every order. Large orders are more likely to carry information and harder to absorb, so they move prices more. Studies of real institutional trades find that the price impact grows roughly with the square root of an order's size relative to the day's trading volume (Almgren, Thum, Hauptmann and Li 2005; T\'oth et al.\ 2011). A common working model is
 \begin{equation}
   \text{impact per dollar} \approx Y\,\sigma_{daily}\,\sqrt{\frac{Q}{V}}
   \label{eq:17-impact}
 \end{equation}
-Here $Q$ is the order size, $V$ is daily volume, $\sigma_{daily}$ is daily volatility and $Y$ is a constant close to one. The ratio $Q/V$ is the \textbf{participation rate}\index{participation rate|textbf}, the order's share of the day's trading. Trading 1\% of a day's volume in a stock with 2\% daily volatility costs about $2\% \times \sqrt{0.01} = 0.2\%$ in impact. Trading 10\% costs about $2\% \times \sqrt{0.10} \approx 0.6\%$ (Figure~\ref{fig:17-impact}).
+Here $Q$ is the order size, $V$ is daily volume, $\sigma_{daily}$ is daily volatility and $Y$ is a constant close to one. The ratio $Q/V$ is the \term{participation rate}\index{participation rate|textbf}, the order's share of the day's trading. Trading 1\% of a day's volume in a stock with 2\% daily volatility costs about $2\% \times \sqrt{0.01} = 0.2\%$ in impact. Trading 10\% costs about $2\% \times \sqrt{0.10} \approx 0.6\%$ (Figure~\ref{fig:17-impact}).
 
 \providecolor{fenavy}{HTML}{1B2A6B}
 
@@ -459,14 +460,14 @@ A paper portfolio is built as if trading were free, so it trades whenever the si
 \begin{itemize}
   \item \textbf{Buy/hold spreads (banding).} Buy a stock only when it enters the top 30\% on the signal, but keep holding it until it falls out of, say, the top 50\%. Stocks that wobble around the breakpoint no longer generate trades. Novy-Marx and Velikov (2016) found this the single most effective simple way to reduce costs.
   \item \textbf{Slower rebalancing\index{rebalancing}.} Rebuilding the portfolio quarterly rather than monthly cuts turnover for slow signals at little cost in signal. For fast signals it gives up most of the premium.
-  \item \textbf{Partial trading.} G\^arleanu and Pedersen (2013) showed that with predictable returns\index{return predictability} and \textbf{quadratic trading costs}\index{transaction costs!quadratic|textbf}, costs that rise with the square of the amount traded, the optimal policy trades only part of the way toward the target each period, and aims at a target that anticipates where the signal is heading.
+  \item \textbf{Partial trading.} G\^arleanu and Pedersen (2013) showed that with predictable returns\index{return predictability} and \term{quadratic trading costs}\index{transaction costs!quadratic|textbf}, costs that rise with the square of the amount traded, the optimal policy trades only part of the way toward the target each period, and aims at a target that anticipates where the signal is heading.
   \item \textbf{Netting and combining signals.} A multi-signal portfolio can cross trades internally: a stock that momentum wants to sell and value wants to buy need not be traded at all.
   \item \textbf{Liquidity screens.}\index{liquidity|textbf} Restricting the universe to larger, more liquid stocks raises capacity and lowers costs, usually at some cost in gross premium, since many anomalies are strongest in small stocks.
 \end{itemize}
 
 Each rule trades a little signal for a lot less trading. The trade-off depends on how fast the signal decays: banding costs little for momentum, whose ranks change gradually, and cannot rescue short-term reversal, whose signal is gone within a month.
 
-\textbf{Saving costs is also a search.} Every design choice, such as the width of a band, how often to rebalance or which stocks to exclude, can be tuned to make a backtest look better, so the warnings about selection and overfitting\index{overfitting} in Section~\ref{sec:01-backtests} apply in full. Chen and Velikov (2023) studied 204 anomalies, allowing for effective spreads, the decline in returns after publication\index{anomaly!post-publication decay} and modern trading technology. They found that the average anomaly's expected return, net of these effects, was about 4 basis points a month. Strategies that looked impressive after costs in their own samples, once cost-saving rules were added, did not escape that conclusion. A cost-saving design should therefore be fixed in advance and judged out of sample, like any other part of a strategy.
+\textbf{Saving costs is also a search.} Every design choice, such as the width of a band, how often to rebalance or which stocks to exclude, can be tuned to make a backtest look better, so the warnings about selection and \term{overfitting}\index{overfitting} in Section~\ref{sec:01-backtests} apply in full. Chen and Velikov (2023) studied 204 anomalies, allowing for effective spreads, the decline in returns after publication\index{anomaly!post-publication decay} and modern trading technology. They found that the average anomaly's expected return, net of these effects, was about 4 basis points a month. Strategies that looked impressive after costs in their own samples, once cost-saving rules were added, did not escape that conclusion. A cost-saving design should therefore be fixed in advance and judged out of sample, like any other part of a strategy.
 
 
 \begin{callout}
@@ -513,17 +514,17 @@ Situation & Holds? & Why & Evidence \\
 \endlastfoot
 Slow strategies, such as value & \textbf{Yes} & Turnover of about 3\% a month gives a break-even cost of about 4\% per trade. & Novy-Marx and Velikov (2016) \\*
 \addlinespace[3pt]
-Momentum & \textbf{Partly} & Survives one-way costs up to about 1\%, but its profits concentrate in costly stocks and shrink with size. & Novy-Marx and Velikov (2016); Lesmond, Schill and Zhou (2004); Korajczyk and Sadka (2004) \\*
+Momentum & \textbf{Partly} & Survives one-way costs up to about 1\%, but its profits concentrate in costly stocks and shrink with size. & Novy-Marx and Velikov (2016); Lesmond, Schill and Zhou (2004); Korajczyk and Sadka (2004) \\
 \addlinespace[3pt]
-Short-term reversal & \textbf{No} & Nearly full monthly turnover; costs exceed its gross return by more than a point a month. & Novy-Marx and Velikov (2016) \\*
+Short-term reversal & \textbf{No} & Nearly full monthly turnover; costs exceed its gross return by more than a point a month. & Novy-Marx and Velikov (2016) \\
 \addlinespace[3pt]
-High-turnover strategies in general & \textbf{No} & Most strategies trading over half their portfolio monthly lose significance after costs. & Novy-Marx and Velikov (2016) \\*
+High-turnover strategies in general & \textbf{No} & Most strategies trading over half their portfolio monthly lose significance after costs. & Novy-Marx and Velikov (2016) \\
 \addlinespace[3pt]
-For a large, patient institution & \textbf{More often} & Actual costs were an order of magnitude below academic estimates, but from one manager's trades. & Frazzini, Israel and Moskowitz (2018) \\*
+For a large, patient institution & \textbf{More often} & Actual costs were an order of magnitude below academic estimates, but from one manager's trades. & Frazzini, Israel and Moskowitz (2018) \\
 \addlinespace[3pt]
 Strategies that rely on the short side & \textbf{Often not} & Many anomalies earn most on the short side, where fees, recalls and bans bite. & D'Avolio (2002); Stambaugh, Yu and Yuan (2012) \\*
 \addlinespace[3pt]
-The average anomaly & \textbf{No} & After costs and post-publication decay, its expected return is about 4 basis points a month. & Chen and Velikov (2023) \\*
+The average anomaly & \textbf{No} & After costs and post-publication decay, its expected return is about 4 basis points a month. & Chen and Velikov (2023) \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
@@ -536,3 +537,24 @@ The claim holds only for strategies whose break-even costs sit well above what t
 \label{sec:17-investors}
 
 Before investing in any strategy, ask for its one-sided monthly turnover, its break-even cost compared with what you will pay, what the short side costs, and its net return at the planned size, with the impact assumptions stated. Ask also whether cost-saving rules such as bands and rebalancing schedules were fixed before the backtest, because they are parameters too. Costs change the ranking of strategies, not just their level: a modest, slow premium harvested cheaply may be worth more than a spectacular, fast one that cannot be. Chapters~\ref{ch:14} and~\ref{ch:15} test more anomalies, and report their evidence after costs as well as before.
+
+% Key terms that this chapter uses without defining them, for readers new to finance.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Kenneth R. French Data Library.] The Kenneth R. French Data Library is a free website that publishes the returns of standard factors and portfolios, such as value, size and momentum.
+  \item[Overfitting.] See Chapter~\ref{ch:19}, Section~\ref{sec:20-biasvar}, page~\pageref{sec:20-biasvar}.
+\end{description}
+\end{keyterms}
