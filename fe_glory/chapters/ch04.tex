@@ -239,41 +239,23 @@ The last clause matters: a premium that is real on average but brings losses of 
 \section{Lab~\thechapter: Replicating Jegadeesh and Titman (1993) and Daniel and Moskowitz (2016)}
 \label{sec:05-lab}
 
-\begin{callout}
-\textbf{Lab~\ref{ch:04} at a glance.} \emph{Papers replicated:} Jegadeesh and Titman (1993); the crash regressions of Daniel and Moskowitz (2016); the volatility scaling of Barroso and Santa-Clara (2015). \emph{The question:} has momentum earned a premium throughout a century of U.S. data, when do its crashes occur, and can volatility scaling make it holdable? \emph{Data:} Kenneth French\index{Kenneth French data library}'s library: the monthly and daily momentum factor from the 1920s, the market factor and risk-free rate\index{risk-free rate}, ten portfolios sorted on past returns (\emph{deciles}) and ten industry portfolios; optionally the Jensen--Kelly--Pedersen data for other countries. \emph{Code:} repository folder \texttt{ch09-momentum/}, with a guided notebook.
-\end{callout}
+The lab asks whether momentum has earned a premium throughout a century of U.S. data, when its crashes occur, and whether volatility scaling can make it holdable. It replicates Jegadeesh and Titman (1993), the crash regressions of Daniel and Moskowitz (2016) and the volatility scaling of Barroso and Santa-Clara (2015). The data come from Kenneth French\index{Kenneth French data library}'s library: the monthly and daily momentum factor from the 1920s, the market factor and risk-free rate\index{risk-free rate}, ten portfolios sorted on past returns and ten industry portfolios. The code is in the repository folder \texttt{ch09-momentum/}.
 
 \begin{itemize}
-  \item \textbf{Part A, replication\index{replication}.} Momentum's average return, t-statistic\index{t-statistic}, Sharpe ratio, skewness, worst month and \textbf{maximum drawdown}\index{maximum drawdown|textbf} (the largest fall from a previous peak), over the full sample, by decade and after publication, and the average returns of the ten deciles.
+  \item \textbf{Part A, replication\index{replication}.} Momentum's average return, t-statistic\index{t-statistic}, Sharpe ratio, skewness, worst month and \textbf{maximum drawdown}\index{maximum drawdown|textbf} (the largest fall from a previous peak), over the full sample, by decade and after publication.
   \item \textbf{Part B, crashes.} The ten worst months, and a regression of momentum on the market with extra terms for \textbf{bear markets} (when the market's past 24-month return is negative) and for bear-market months in which the market rises.
-  \item \textbf{Part C, volatility scaling.} Momentum scaled each month to a 12\% annual volatility target, using the past six months of daily returns, compared with raw momentum levered to the same average volatility, so the comparison is about timing, not leverage\index{leverage}.
-  \item \textbf{Part D, time-series momentum.} Ten industry portfolios and the market, each held long or short by the sign of its past twelve-month excess return\index{return!excess}: a narrow, equity-only version of Moskowitz, Ooi and Pedersen's test.
+  \item \textbf{Part C, volatility scaling.} Momentum scaled each month to a 12\% annual volatility target, compared with raw momentum levered to the same average volatility, so the comparison is about timing, not leverage\index{leverage}.
+  \item \textbf{Part D, time-series momentum.} Ten industry portfolios and the market, each held long or short by the sign of its past twelve-month excess return\index{return!excess}.
   \item \textbf{Part E, costs.} Net returns at one-way costs\index{transaction costs!one-way and round-trip} of 20 and 50 basis points\index{basis point}, with turnover\index{turnover} of about 35\% a month.
 \end{itemize}
 
-\textbf{What readers will find.} Lab Figure~\ref{ch:04}.1 marks the five worst months on a century of momentum's growth, and Lab Figure~\ref{ch:04}.3 shows that they come when beaten-down markets rebound. Lab Figure~\ref{ch:04}.4 compares raw and volatility-scaled momentum and their drawdowns.
-
-\subsection{Robustness checks}
 \label{sec:05-stress}
-
-\textbf{1. After publication.} Momentum's record since 1993 is one of the longest out-of-sample tests of any anomaly. The lab extends Jegadeesh and Titman's (2001) check to the present, through the 2009 crash.
-
-\textbf{2. Other countries and asset classes.} Momentum is strong in Europe and weak in Japan. The JKP data allow a country-by-country count, keeping in mind how many significant results chance alone produces (Section~\ref{sec:01-backtests}).
-
-\textbf{3. Costs.} With turnover of about 35\% a month, costs absorb roughly 3 percentage points of the annual premium at 20 basis points and about 8 at 50 (Equation~\eqref{eq:17-net}). Novy-Marx and Velikov (2016) estimated momentum's costs at about 0.65\% a month and still found a significant net premium (Chapter~\ref{ch:13}). The lab also charges for the extra trading that volatility scaling causes.
-
-\textbf{4. Predicting crashes.} A crash that only hindsight can predict is no help. The lab's signals, the past 24-month market return and past daily volatility, use only information available at the start of each month.
-
-\textbf{5. Overfitting the fix.} Volatility scaling is itself a claim that can be overfit\index{overfitting}. Barroso and Santa-Clara chose a six-month window and a 12\% target, and the lab lets you change both. Chapter~\ref{ch:07} asks whether volatility timing\index{volatility targeting} works in general.
-
-\subsection*{Your verdict}
-
-Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:05-verdict}. If your verdict differs, explain which of your results led you there.
+\textbf{Robustness checks.} Momentum's record since 1993 is one of the longest out-of-sample tests of any anomaly, and the lab extends it through the 2009 crash. With turnover of about 35\% a month, costs absorb roughly 3 percentage points of the annual premium at 20 basis points and about 8 at 50 (Equation~\eqref{eq:17-net}), while Novy-Marx and Velikov (2016) still found a significant net premium (Chapter~\ref{ch:13}). The crash signals use only information available at the start of each month, and volatility scaling is itself a claim that can be overfit\index{overfitting}, so the lab lets you change its six-month window and 12\% target. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:05-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:05-verdict}
 
-The published studies point to a clear pattern: \textbf{momentum has survived publication, appears in most markets and covers institutional trading costs, but its rare, severe crashes make it hard to hold without managing its risk.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
+The published studies point to a clear pattern: \textbf{momentum has survived publication, appears in most markets and covers institutional trading costs, but its rare, severe crashes make it hard to hold without managing its risk.} The table summarizes the evidence as of November 2026.
 
 \begin{center}
 \small
@@ -298,34 +280,14 @@ With volatility scaling & \textbf{Partly} & Scaling reduced the crashes and rais
 
 \textbf{What would change the picture.} The claim would hold fully if volatility scaling, fixed in advance and tested on new data, removed the crashes without removing the premium. It would weaken if the premium kept shrinking until it no longer covered realistic costs.
 
-\subsection{Open questions}
 \label{sec:05-open}
-
-\begin{itemize}
-  \item \textbf{Can momentum crashes be forecast in real time?} Do the bear-market and volatility signals work for an investor who adopts them today, after the multiple-testing\index{multiple testing} corrections of Chapter~\ref{ch:15}?
-  \item \textbf{Why not Japan?} Culture, investor behavior and market structure have all been proposed; none is settled.
-  \item \textbf{Risk or behavior?} If crashes are the risk that the premium pays for, managing them should reduce the premium. Does it?
-  \item \textbf{Momentum in factors.}\index{momentum|textbf} Ehsani and Linnainmaa (2022) argue that factor returns themselves have momentum. How does that relate to momentum in individual stocks?
-\end{itemize}
+\textbf{Open questions.} Can momentum crashes be forecast in real time, after the multiple-testing\index{multiple testing} corrections of Chapter~\ref{ch:15}? And if crashes are the risk that the premium pays for, does managing them reduce the premium?
 
 \section{What practitioners and investors can use}
 \label{sec:05-investors}
 
-\textbf{Trend rules for asset allocation.} Time-series momentum across asset classes, the core of managed-futures funds, has tended to do well in long market declines, which makes it a candidate \textbf{diversifier} for a stock-heavy portfolio. Its returns have been uneven, and its fees are often high.
-
-\textbf{Stock-picking momentum.} Cross-sectional momentum is best held alongside value, with which it is negatively correlated (Asness, Moskowitz and Pedersen 2013). On its own, its crashes make it hard to hold.
-
-\textbf{Manage the risk, not just the return.} Sizing a momentum allocation so that a 50\% loss in a few months is survivable matters more than any refinement of the signal.
-
-\textbf{Questions to ask a momentum or trend-following manager:}
-
-\begin{enumerate}
-  \item How did the strategy do from March to May 2009, and what would it do in a similar rebound?
-  \item Is the position sized by volatility, and was that rule fixed before the backtest\index{backtest}?
-  \item What turnover and costs were assumed, and how do they compare with your live costs?
-  \item How much of the return comes from small, illiquid stocks, and how long were its worst flat periods?
-\end{enumerate}
+Time-series momentum across asset classes, the core of managed-futures funds, has tended to do well in long market declines, which makes it a candidate \textbf{diversifier} for a stock-heavy portfolio. Cross-sectional momentum is best held alongside value, with which it is negatively correlated (Asness, Moskowitz and Pedersen 2013). Either way, sizing a momentum allocation so that a 50\% loss in a few months is survivable matters more than any refinement of the signal. Ask a momentum manager how the strategy did from March to May 2009, whether its volatility sizing was fixed before the backtest\index{backtest}, and what costs were assumed.
 
 \begin{callout}
-\textbf{What Failed: holding raw momentum through the 2009 rebound.} Through the financial crisis momentum did well, long defensive winners and short collapsing financial and cyclical stocks. When the market turned in March 2009, the most beaten-down stocks rebounded hardest, and within months the strategy lost much of a decade's gains (Daniel and Moskowitz 2016). Nothing about the crash was a mystery afterward: the strategy was short very high-beta stocks at the bottom of a bear market. The failure was treating momentum's average return as the whole story and sizing positions as if the risk were constant. The claim that momentum's return could be harvested without managing its crash risk \textbf{fails}.
+\textbf{What Failed: holding raw momentum through the 2009 rebound.} Through the financial crisis momentum did well, long defensive winners and short collapsing financial and cyclical stocks. When the market turned in March 2009, the most beaten-down stocks rebounded hardest, and within months the strategy lost much of a decade's gains (Daniel and Moskowitz 2016). The failure was treating momentum's average return as the whole story and sizing positions as if the risk were constant. The claim that momentum's return could be harvested without managing its crash risk \textbf{fails}.
 \end{callout}

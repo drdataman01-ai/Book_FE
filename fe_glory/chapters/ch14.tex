@@ -207,57 +207,23 @@ These explanations can all be partly true. Asness, Frazzini, Gormsen and Pederse
 \section{Lab~\thechapter: Replicating Black, Jensen and Scholes (1972) and Frazzini and Pedersen (2014)}
 \label{sec:18-lab}
 
-\begin{callout}
-\textbf{Lab~\ref{ch:14} at a glance.} \emph{Papers replicated:} Black, Jensen and Scholes (1972); Fama and MacBeth (1973); Frazzini and Pedersen (2014). \emph{Claim on trial\index{claims-on-trial method}:} low-risk stocks earn more than the CAPM predicts. \emph{Data:} ten portfolios formed on market beta, on total variance and on residual variance, each value- and equal-weighted\index{index weighting!equal-weighted}, from July 1963, from the Kenneth French\index{Kenneth French data library} library; the Fama--French and momentum factors; the 10-year Treasury yield from FRED\index{FRED}; optionally, AQR's published BAB factor. All are free. \emph{Code:} runs as a script (\texttt{python lab12.py}) or as a notebook with a prediction prompt before each step.
-\end{callout}
+\textbf{Claim on trial\index{claims-on-trial method}:} low-risk stocks earn more than the CAPM predicts. The lab replicates Black, Jensen and Scholes (1972), Fama and MacBeth (1973) and Frazzini and Pedersen (2014), using ten portfolios formed on market beta, on total variance and on residual variance, each value- and equal-weighted\index{index weighting!equal-weighted}, from July 1963, from the Kenneth French\index{Kenneth French data library} library, with the Fama--French and momentum factors and the 10-year Treasury yield from FRED\index{FRED}. Unlike Frazzini and Pedersen, who use individual stocks with rank weights, the lab uses published portfolios that anyone can reproduce, so expect the same pattern with smaller numbers.
 
 \textbf{Part A, the SML.} For each set of deciles, average excess return, realized beta, CAPM and four-factor alphas, and the slope of return on beta, plotted against the CAPM line (Lab Figure~\ref{ch:14}.1).
 
-\textbf{Part B, long-short portfolios.} Two constructions for each sort, with betas estimated from the previous 60 months (Lab Figure~\ref{ch:14}.2):
+\textbf{Part B, long-short portfolios.} A low-minus-high portfolio, long the three lowest-risk deciles and short the three highest, and a BAB-style portfolio that levers each leg to a beta of one, with betas estimated from the previous 60 months (Lab Figure~\ref{ch:14}.2).
 
-\begin{center}
-\small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.17\linewidth}@{}}
-\toprule
-Construction & Long & Short & Beta \\
-\midrule
-Low minus high & Three lowest-risk deciles & Three highest-risk deciles & Strongly negative \\
-BAB-style & Low leg $\times\, 1/\beta_L$ & High leg $\times\, 1/\beta_H$ & About zero \\
-\bottomrule
-\end{tabularx}
-\end{center}
-
-Unlike Frazzini and Pedersen, who use individual stocks with rank weights, the lab uses published portfolios that anyone can reproduce. Expect the same pattern with smaller numbers, partly because it does not tilt toward small stocks.
-
-\textbf{Part C, robustness checks.} Equal versus value weights, three subperiods (1963--1990, 1991--2009, from 2010), interest-rate exposure, returns in 2008, 2020 and 2022, and rolling ten-year alphas (Lab Figures~\ref{ch:14}.3 and~\ref{ch:14}.4).
+\textbf{Part C, robustness checks.} Equal versus value weights, three subperiods, interest-rate exposure, returns in 2008, 2020 and 2022, and rolling ten-year alphas (Lab Figures~\ref{ch:14}.3 and~\ref{ch:14}.4).
 
 \textbf{Part D, the investor's view.} The lowest-volatility and lowest-beta quintiles against the market: Sharpe ratio, alpha, drawdown\index{drawdown}, tracking error and the share of years they trailed (Lab Figure~\ref{ch:14}.5).
 
-\textbf{What the simulated run shows.} On data built with a flat SML, the slope across beta deciles is far below the market premium, the BAB-style portfolios have betas near zero and positive alphas, and the low-minus-high portfolio loses money despite its positive alpha, which shows why the construction matters. These results confirm that the code works. They say nothing about real markets.
-
-\subsection{Robustness checks}
 \label{sec:18-stress}
-
-\textbf{Micro-caps and weighting.}\index{micro-caps|textbf} Novy-Marx and Velikov (2022) found that AQR's BAB factor puts on average about \$1.05 of each dollar into the smallest 1\% of stocks by market capitalization\index{market capitalization}, which are expensive to trade (Chapter~\ref{ch:13}). It still earned positive returns after costs, partly from profitability and investment exposure. If the lab's effect is much stronger with equal than value weights\index{index weighting!value-weighted}, small stocks are doing much of the work (Section~\ref{sec:02-microcaps}).
-
-\textbf{Other factors.} The lab uses four factors, so its alphas probably overstate what the five-factor model leaves.
-
-\textbf{Interest rates.} The lab regresses the strategies on the market and on changes in the 10-year yield; a negative coefficient means losses when yields rise. 2022, when stocks and bonds fell together, is the natural out-of-sample\index{in-sample versus out-of-sample} test.
-
-\textbf{Crowding.}\index{crowding|textbf} If the anomaly is mispricing, inflows after 2011 should have raised returns at first and lowered them afterward. The post-2010 subperiod and rolling alphas show whether the premium has shrunk.
-
-\textbf{Drawdowns.}\index{drawdown|textbf} Low-risk portfolios should protect in 2008 and March 2020, but a beta-neutral BAB portfolio can lose heavily when high-beta stocks rebound, as in 2009 and later in 2020.
-
-\textbf{Estimation error in beta.}\index{estimation error|textbf} Stocks sorted into low past-beta portfolios tend to have higher true betas, and the reverse, which flattens the SML even if the CAPM holds. Portfolios reduce the problem, and Novy-Marx and Velikov (2022) showed that Frazzini and Pedersen's beta estimator adds biases of its own.
-
-\subsection*{Your verdict}
-
-Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:18-verdict}. If your verdict differs, explain which of your results led you there.
+\textbf{Robustness checks.} Novy-Marx and Velikov (2022) found that AQR's BAB factor puts on average about \$1.05 of each dollar into the smallest 1\% of stocks\index{micro-caps|textbf}, which are expensive to trade (Chapter~\ref{ch:13}), so if the lab's effect is much stronger with equal than value weights\index{index weighting!value-weighted}, small stocks are doing much of the work (Section~\ref{sec:02-microcaps}). The lab uses four factors, so its alphas probably overstate what the five-factor model leaves. 2022, when stocks and bonds fell together, is the natural out-of-sample\index{in-sample versus out-of-sample} test of interest-rate exposure, and the post-2010 subperiod shows whether crowding\index{crowding|textbf} has shrunk the premium. Finally, stocks sorted into low past-beta portfolios tend to have higher true betas, which flattens the SML even if the CAPM holds\index{estimation error|textbf}. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:18-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:18-verdict}
 
-The published studies point to a clear pattern: \textbf{the security market line is flatter than the CAPM predicts, one of the most robust findings in empirical finance. Whether low risk earns a separate premium that a beta-neutral portfolio can collect depends on how the portfolio is built, on small stocks and on overlap with other factors.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
+The published studies point to a clear pattern: \textbf{the security market line is flatter than the CAPM predicts, one of the most robust findings in empirical finance. Whether low risk earns a separate premium that a beta-neutral portfolio can collect depends on how the portfolio is built, on small stocks and on overlap with other factors.} The table summarizes the evidence as of November 2026.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.45\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -295,31 +261,14 @@ Low-volatility portfolios have delivered returns close to the market's with less
 
 \textbf{What would change the picture.} The strong form would gain support if a beta-neutral, value-weighted version kept a significant alpha against the five-factor model and interest-rate exposure out of sample. It would lose support if the post-2010 alphas proved to be inflow effects that reversed.
 
-\subsection{Open questions}
 \label{sec:18-open}
-
-\begin{itemize}
-  \item \textbf{How much is interest-rate exposure?} Is the alpha left after controlling for rates large enough to matter, and how did the strategy fare after 2021?
-  \item \textbf{Which risk measure is priced?} Leverage theories favor beta and lottery theories favor volatility. Which survives when the others are controlled for?
-  \item \textbf{Has crowding ended the premium?} Is the post-2010 evidence consistent with a temporary windfall followed by lower returns?
-  \item \textbf{Does it hold for large stocks after costs?} How large is the alpha of a value-weighted, beta-neutral portfolio of liquid stocks against the five-factor model?
-\end{itemize}
+\textbf{Open questions.} Which risk measure is priced, beta, as leverage theories suggest, or volatility, as lottery theories suggest? And how large is the alpha of a value-weighted, beta-neutral portfolio of liquid stocks against the five-factor model?
 
 \section{What practitioners and investors can use}
 \label{sec:18-investors}
 
-\textbf{Minimum-volatility funds}\index{minimum-volatility funds|textbf}, long-only portfolios chosen for low volatility, are the most common way to access the anomaly. Three things are worth knowing.
-
-\begin{itemize}
-  \item \textbf{They are low-beta, not market-neutral.} With a beta around 0.7 to 0.8, they usually trail strong bull markets and beat the market in crashes; the case for them is a better return per unit of risk, not higher returns.
-  \item \textbf{Tracking error is large.}\index{tracking error|textbf} They can lag the market for years (Part D), and investors who abandon them after a few bad years lose most of the benefit.
-  \item \textbf{Hidden exposures.} They tend to overweight interest-sensitive sectors such as utilities, consumer staples and real estate, and their valuations can rise with the strategy's popularity.
-\end{itemize}
-
-\textbf{BAB-style funds}\index{betting against beta (BAB)|textbf} are a different product: market-neutral, levered, exposed to the micro-cap issues above, and prone to sharp losses when high-beta stocks rebound.
-
-\textbf{Questions to ask a manager offering a defensive equity strategy:} Is the portfolio sorted on beta, on volatility or by an optimizer, and how much tracking error should I expect? What are its sector weights and interest-rate sensitivity, and how did it do in 2022? Does the backtest include micro-caps, and what is its five-factor alpha? How have low-volatility valuations changed since the strategy became popular?
+\textbf{Minimum-volatility funds}\index{minimum-volatility funds|textbf}, long-only portfolios chosen for low volatility, are the most common way to access the anomaly. With a beta around 0.7 to 0.8, they usually trail strong bull markets and beat the market in crashes, so the case for them is a better return per unit of risk, not higher returns. Their tracking error\index{tracking error|textbf} is large enough that they can lag the market for years, and they tend to overweight interest-sensitive sectors such as utilities and consumer staples. \textbf{BAB-style funds}\index{betting against beta (BAB)|textbf} are a different product: market-neutral, levered, exposed to the micro-cap issues above, and prone to sharp losses when high-beta stocks rebound.
 
 \begin{callout}
-\textbf{What Failed: the CAPM as a hurdle rate.} The CAPM's empirical problems have been known since the early 1970s, yet it remains the standard way to set the cost of equity: Graham and Harvey (2001) found that 73.5\% of 392 U.S. chief financial officers always or almost always used it. A flat SML means the CAPM overstates the cost of capital for high-beta projects and understates it for low-beta ones, so firms may reject good low-beta projects and accept poor high-beta ones. Beta remains a good measure of exposure to the market. The failure is treating a model of \emph{risk} as a reliable model of \emph{expected return} when the evidence has long said otherwise.
+\textbf{What Failed: the CAPM as a hurdle rate.} The CAPM's empirical problems have been known since the early 1970s, yet it remains the standard way to set the cost of equity: Graham and Harvey (2001) found that 73.5\% of 392 U.S. chief financial officers always or almost always used it. A flat SML means the CAPM overstates the cost of capital for high-beta projects and understates it for low-beta ones, so firms may reject good low-beta projects and accept poor high-beta ones. The failure is treating a model of \emph{risk} as a reliable model of \emph{expected return} when the evidence has long said otherwise.
 \end{callout}

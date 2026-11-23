@@ -199,63 +199,22 @@ The pattern is consistent: zero-shot foundation models beat naive forecasts easi
 \section{Lab~\thechapter: Replicating the zero-shot claim on six series}
 \label{sec:21-lab}
 
-\begin{callout}
-\textbf{Lab~\ref{ch:20} at a glance.} \emph{Papers replicated:} the zero-shot evaluations of Ansari et al.\ (2024) and Das et al.\ (2024), and the finance re-test of Rahimikia, Ni and Wang (2025). \emph{Claim on trial\index{claims-on-trial method}:} foundation models, used zero-shot, beat classical forecasts. \emph{Data:} the U.S. market's excess return and its log realized variance built from daily returns (Kenneth R. French Data Library\index{Kenneth French data library}); inflation, industrial production growth, and the changes in the unemployment rate and in the 10-year Treasury yield (FRED\index{FRED}). All are free. \emph{Code:} runs as a script (\texttt{python lab20.py -{}-models chronos-bolt-small timesfm}) or as a notebook (\texttt{lab20\_walkthrough.ipynb}) with a prediction prompt before each step.
-\end{callout}
-
-The lab forecasts the six series one month ahead from every month since January 2000, with each model seeing only data up to that month.
-
-\begin{center}
-\small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.38\linewidth}@{}}
-\toprule
-Model & Type \\
-\midrule
-Historical mean & Classical \\
-Naive (last value) & Classical \\
-AR, lags chosen by BIC on the last 30 years & Classical: \textbf{the benchmark} \\
-HAR-type: last value, 3-month and 12-month averages & Classical \\
-GARCH(1,1), realized variance only & Classical \\
-Chronos-Bolt (small and base) & Foundation model, zero-shot \\
-TimesFM & Foundation model, zero-shot \\
-\bottomrule
-\end{tabularx}
-\end{center}
-
-The foundation models are optional, because they need PyTorch and large downloads (\texttt{pip install chronos-forecasting timesfm}); without them the lab runs everything else.
+\textbf{Claim on trial\index{claims-on-trial method}:} foundation models, used zero-shot, beat classical forecasts. The lab replicates the zero-shot evaluations of Ansari et al.\ (2024) and Das et al.\ (2024) and the finance re-test of Rahimikia, Ni and Wang (2025). It forecasts six free series one month ahead from every month since January 2000, with each model seeing only data up to that month: the U.S. market's excess return and its log realized variance (Kenneth R. French Data Library\index{Kenneth French data library}), and inflation, industrial production growth, and the changes in the unemployment rate and in the 10-year Treasury yield (FRED\index{FRED}). The classical models are the historical mean, the last value, an AR model chosen by BIC, which is \textbf{the benchmark}, a HAR-type model and GARCH(1,1); the foundation models are Chronos-Bolt and TimesFM, which are optional because they need PyTorch and large downloads.
 
 \begin{itemize}
   \item \textbf{Part A} reports each model's MSE relative to AR and its $R^2$ against the historical mean (Lab Figures~\ref{ch:20}.1 and~\ref{ch:20}.5).
   \item \textbf{Part B} adds Diebold--Mariano tests, the share of months each model beats AR and the cumulative squared-error\index{cumulative squared-error plot} difference (Lab Figure~\ref{ch:20}.2).
-  \item \textbf{Part C} splits the evaluation at a cutoff date, by default January 2024, to be set to each model's training cutoff, alongside a deliberately contaminated ``memorizing'' model (Lab Figure~\ref{ch:20}.3).
+  \item \textbf{Part C} splits the evaluation at each model's training cutoff, alongside a deliberately contaminated ``memorizing'' model (Lab Figure~\ref{ch:20}.3).
   \item \textbf{Part D} checks whether 80\% forecast intervals contain the outcome 80\% of the time (Lab Figure~\ref{ch:20}.4).
 \end{itemize}
 
-The command \texttt{python lab20.py -{}-source sim -{}-models standin} tests the code.
-
-\textbf{What the simulated run shows.} So far the lab has run only on simulated data, with a labelled stand-in (the average of three classical forecasts) in place of the foundation models. For unpredictable simulated returns, the historical mean beat AR and the naive forecast doubled the error. For long-memory log realized variance, HAR and AR nearly tied, while GARCH on monthly returns was almost three times worse. The stand-in never beat AR significantly. The memorizing model had an MSE ratio of 0.16 before the cutoff and exactly 1.00 after it, which is what contamination looks like. The AR and HAR intervals were well calibrated, while the historical mean's covered realized variance only 53\% of the time.
-
-\subsection{Robustness checks}
 \label{sec:21-stress}
-
-\textbf{Benchmark strength.} Against the historical mean, AR and HAR rather than naive or untuned models, the gap narrows or disappears.
-
-\textbf{Contamination.}\index{contamination|textbf} Only data published after the training cutoff give a clean test, cutoffs are often approximate, and a year or two of monthly data gives tests little power.
-
-\textbf{Frequency and horizon.} Gains may appear at some horizons and not others, so report results by horizon.
-
-\textbf{Pooled versus per-series results.} A few series with large errors can decide a pooled comparison, as Brini found; per-series or scaled losses avoid this.
-
-\textbf{Model versions and context length.} Foundation models change often, so name the exact version; and giving them 64 rather than 512 months of history can change both forecast and interval.
-
-\subsection*{Your verdict}
-
-Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:21-verdict}. If your verdict differs, explain which of your results led you there.
+\textbf{Robustness checks.} Against the historical mean, AR and HAR rather than naive or untuned models, the gap narrows or disappears. Only data published after the training cutoff give a clean test\index{contamination|textbf}, and a year or two of monthly data gives tests little power. A few series with large errors can decide a pooled comparison, as Brini found, so report results per series and horizon, and name the exact model version and context length. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:21-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:21-verdict}
 
-The published studies point to an early picture: \textbf{zero-shot foundation models beat naive forecasts easily and sometimes match well-specified classical models, but they rarely beat them by a meaningful margin. The evidence is new and thin.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
+The published studies point to an early picture: \textbf{zero-shot foundation models beat naive forecasts easily and sometimes match well-specified classical models, but they rarely beat them by a meaningful margin. The evidence is new and thin.} The table summarizes the evidence as of November 2026.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.45\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -291,29 +250,14 @@ The evidence does not yet support the claim, but it is too new to reject it. Tha
 
 \textbf{What would change the picture.} The claim would gain support if a foundation model beat AR and HAR significantly on unseen data over several years, and lose it if successive generations kept falling short.
 
-\subsection{Open questions}
 \label{sec:21-open}
-
-\begin{itemize}
-  \item \textbf{Finance-specific pretraining.} Will models pretrained on financial data beat classical and tree-based benchmarks by enough to matter after costs?
-  \item \textbf{Clean evaluation.} Can the field agree on post-cutoff benchmarks so that each new model is tested on data it cannot have seen?
-  \item \textbf{Multivariate and conditional forecasts.} Can foundation models use related series, such as option-implied volatility\index{volatility!implied}, as classical models can?
-  \item \textbf{Language and numbers.} Does combining text from news and filings with time-series models improve forecasts?
-\end{itemize}
+\textbf{Open questions.} Will models pretrained on financial data beat classical benchmarks by enough to matter after costs, and can the field agree on post-cutoff benchmarks so that each new model is tested on data it cannot have seen?
 
 \section{What practitioners and investors can use}
 \label{sec:21-investors}
 
-\begin{itemize}
-  \item \textbf{Benchmark before you buy,} against the historical mean, an autoregression and HAR, on the same rolling origins.
-  \item \textbf{Use foundation models as a second opinion.} Averaging one with a classical model consistently beats either alone.
-  \item \textbf{Be strict about dates.} Treat any evaluation before the training cutoff as possibly contaminated.
-  \item \textbf{Value speed honestly.} Zero-shot models are quick to deploy, but so is an AR model, and convenience is not accuracy.
-  \item \textbf{Check the intervals.} Intervals that cover the outcome far less often than promised understate risk.
-\end{itemize}
-
-\textbf{Questions to ask a vendor proposing a foundation-model forecast:} Which classical benchmarks did you use, and were they tuned for each series? What is the training cutoff, and how does performance compare before and after it? Are results reported per series and horizon? Which exact model version produced them? How well calibrated are the intervals?
+Benchmark any foundation model against the historical mean, an autoregression and HAR, on the same rolling origins, and treat any evaluation before its training cutoff as possibly contaminated. Use foundation models as a second opinion, because averaging one with a classical model consistently beats either alone, and check that the intervals cover the outcome as often as they promise. Ask a vendor which classical benchmarks were used, what the training cutoff is, and how performance compares before and after it.
 
 \begin{callout}
-\textbf{What Failed: forecasting home prices at scale.} In 2018 Zillow began buying homes through Zillow Offers, relying on its price models to decide what to pay. In November 2021 it closed the business (Zillow Group 2021), wrote down its home inventory by \$304.4 million because it had paid more than it now expected to sell for, and cut about a quarter of its workforce, citing unpredictable home prices, capacity\index{capacity} constraints and other operational problems. A forecast that is accurate on average can still fail when acted on at scale, in a market that turns, against sellers who know more about the particular house. Test any new forecasting technology where the decision is made, not where the benchmark is easiest to beat.
+\textbf{What Failed: forecasting home prices at scale.} In 2018 Zillow began buying homes through Zillow Offers, relying on its price models to decide what to pay. In November 2021 it closed the business (Zillow Group 2021), wrote down its home inventory by \$304.4 million and cut about a quarter of its workforce, citing unpredictable home prices, capacity\index{capacity} constraints and other operational problems. A forecast that is accurate on average can still fail when acted on at scale, in a market that turns, against sellers who know more about the particular house.
 \end{callout}

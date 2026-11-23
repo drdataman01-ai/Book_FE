@@ -216,53 +216,22 @@ The evidence supports the statistical part for stocks, with caveats about measur
 \section{Lab~\thechapter: Replicating Longin and Solnik (2001) and Forbes and Rigobon (2002)}
 \label{sec:13-lab}
 
-\begin{callout}
-\textbf{Lab~\ref{ch:10} at a glance.} \emph{Papers replicated:} Longin and Solnik (2001); Forbes and Rigobon (2002); the stock--bond correlation of Campbell, Sunderam and Viceira (2017). \emph{Claim on trial\index{claims-on-trial method}:} diversification fails when it is needed most. \emph{Data:} U.S. market excess returns\index{return!excess} from 1926, international developed-market returns from 1990 and 10 industry portfolios, all from the Kenneth R. French Data Library\index{Kenneth French data library}; the 10-year Treasury yield (GS10, from 1953), consumer prices (CPIAUCSL) and the spot oil price (WTISPLC) from FRED\index{FRED}. All are free. \emph{Code:} runs as a script (\texttt{python lab19.py}) or as a notebook (\texttt{lab19\_walkthrough.ipynb}) with a prediction prompt before each step.
-\end{callout}
-
-Bond returns are built from yields: each month the lab buys a 10-year bond at par and sells it a month later at the new yield.
+\textbf{Claim on trial\index{claims-on-trial method}:} diversification fails when it is needed most. The lab replicates Longin and Solnik (2001), Forbes and Rigobon (2002) and the stock--bond correlation of Campbell, Sunderam and Viceira (2017). It uses U.S. market excess returns\index{return!excess} from 1926, international developed-market returns from 1990 and 10 industry portfolios from the Kenneth R. French Data Library\index{Kenneth French data library}, and the 10-year Treasury yield, consumer prices and the spot oil price from FRED\index{FRED}. Bond returns are built from yields: each month the lab buys a 10-year bond at par and sells it a month later at the new yield.
 
 \begin{itemize}
-  \item \textbf{Part A} measures the correlation of U.S. stocks with international stocks, bonds and oil, and among the ten industries, in calm months, in high-volatility months (the fifth with the highest past-year volatility), after the Forbes--Rigobon correction, and in the worst 10\% of U.S. months, with exceedance correlations against a normal benchmark (Lab Figures~\ref{ch:10}.1 and~\ref{ch:10}.2).
+  \item \textbf{Part A} measures the correlation of U.S. stocks with international stocks, bonds and oil, and among the ten industries, in calm months, in high-volatility months, after the Forbes--Rigobon correction, and in the worst 10\% of U.S. months (Lab Figures~\ref{ch:10}.1 and~\ref{ch:10}.2).
   \item \textbf{Part B} measures tail dependence in the worst 5\%, 10\% and 20\% of months against a normal distribution with the same correlation.
   \item \textbf{Part C} tracks the rolling 36-month stock--bond correlation by decade, by inflation regime and in 2022 (Lab Figure~\ref{ch:10}.3).
-  \item \textbf{Part D} compares 100\% stocks, a 60/40 stock--bond portfolio and an equal mix of U.S. stocks, international stocks, bonds and oil in the best and worst 5\% of months, in drawdowns\index{drawdown}, in five crises and by diversification ratio (Lab Figures~\ref{ch:10}.4 and~\ref{ch:10}.5).
+  \item \textbf{Part D} compares 100\% stocks, a 60/40 stock--bond portfolio and an equal mix of U.S. stocks, international stocks, bonds and oil in the worst months, in drawdowns\index{drawdown} and in five crises (Lab Figures~\ref{ch:10}.4 and~\ref{ch:10}.5).
 \end{itemize}
 
-The command \texttt{python lab19.py -{}-source sim} tests the code on simulated data.
-
-\textbf{What the simulated run shows.} The simulation builds in a true correlation between U.S. and international stocks that rises from 0.60 in calm periods to 0.75 in stress, and a stock--bond correlation that rises with inflation. The results test the code; they say nothing about real markets.
-
-\begin{itemize}
-  \item The raw stock correlation rose from 0.61 to 0.70 in high-volatility months, but the Forbes--Rigobon correction brought it to 0.47, below the calm level, despite the real increase: the correction goes too far when the link itself strengthens.
-  \item In the worst 10\% of U.S. months it was only 0.45, because selecting one market's tail lowers the correlation.
-  \item The stock--bond correlation was $-0.17$ when past-year inflation was below 3\% and $+0.17$ above it.
-  \item In the worst 5\% of months for stocks, when stocks lost 8.5\% on average, the 60/40 portfolio lost 5.0\% and the equal mix 4.7\%. The benefit of diversification shrank, but did not disappear.
-\end{itemize}
-
-\subsection{Robustness checks}
 \label{sec:13-stress}
-
-\textbf{What counts as a crisis.} Correlations in falling markets, as in Longin and Solnik, and in volatile markets, as in Forbes and Rigobon, answer different questions. The lab offers both.
-
-\textbf{The correction's assumption.} The Forbes--Rigobon correction assumes a fixed link between markets, so it removes part of any real strengthening. The raw and corrected correlations are best read as upper and lower bounds.
-
-\textbf{Data frequency.} Daily correlations in October 1987 and March 2020 were higher than monthly ones, but a long-term investor cares more about months and quarters than single days.
-
-\textbf{Sample period.} The stock--bond correlation depends on whether the sample includes high inflation: bonds look like strong protection from 2000 to 2021, but not in 1965--1985 or 2022.
-
-\textbf{How bond returns are built.} Constant-maturity returns built from yields miss details such as coupon timing, but capture the interest-rate sensitivity\index{duration} that dominated 2022.
-
-\textbf{Statistical power.}\index{statistical power|textbf} With about 70 high-volatility months for international stocks, a correlation of 0.7 has a standard error\index{standard error} of about 0.06, so differences of a few hundredths are noise.
-
-\subsection*{Your verdict}
-
-Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:13-verdict}. If your verdict differs, explain which of your results led you there.
+\textbf{Robustness checks.} Correlations in falling markets, as in Longin and Solnik, and in volatile markets, as in Forbes and Rigobon, answer different questions, and the lab offers both. The Forbes--Rigobon correction assumes a fixed link between markets, so it removes part of any real strengthening; the raw and corrected correlations are best read as upper and lower bounds. The stock--bond correlation depends on whether the sample includes high inflation: bonds look like strong protection from 2000 to 2021, but not in 1965--1985 or 2022. With about 70 high-volatility months, a correlation of 0.7 has a standard error\index{standard error} of about 0.06, so differences of a few hundredths are noise\index{statistical power|textbf}. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:13-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:13-verdict}
 
-The published studies point to a clear pattern: \textbf{correlations among stock markets and among industries rise in falling markets by more than the volatility bias explains, but diversification across asset classes has usually held up, and the protection that bonds give depends on inflation.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
+The published studies point to a clear pattern: \textbf{correlations among stock markets and among industries rise in falling markets by more than the volatility bias explains, but diversification across asset classes has usually held up, and the protection that bonds give depends on inflation.} The table summarizes the evidence as of November 2026.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.45\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -298,29 +267,14 @@ The claim is true for the diversification investors rely on least, across differ
 
 \textbf{What would change the picture.} The claim would gain support if bonds also failed to protect stocks in crises driven by news about growth. Its statistical part would weaken if stock correlations showed no gap between falling and rising markets after the correction.
 
-\subsection{Open questions}
 \label{sec:13-open}
-
-\begin{itemize}
-  \item \textbf{Which regime are we in?} Can the stock--bond correlation be forecast from inflation or trust in the central bank in time to adjust a portfolio?
-  \item \textbf{Better models of crisis correlations.} Do regime-switching models, copulas or time-varying correlation models forecast crisis behavior out of sample\index{in-sample versus out-of-sample}, or only describe it afterward?
-  \item \textbf{Private assets.} Smoothed valuations make private equity and real estate look like good diversifiers. How closely do they really move with public stocks in a crisis?
-  \item \textbf{New sources of protection.} Have trend-following\index{trend following}, long-volatility or tail-hedging strategies protected investors at an acceptable cost? Chapter~\ref{ch:18} looks at the same question from the seller's side.
-\end{itemize}
+\textbf{Open questions.} Can the stock--bond correlation be forecast from inflation in time to adjust a portfolio, and how closely do private assets, whose smoothed valuations make them look like good diversifiers, really move with public stocks in a crisis?
 
 \section{What practitioners and investors can use}
 \label{sec:13-investors}
 
-\begin{itemize}
-  \item \textbf{Plan with crisis correlations, not average ones.} For stocks, assume they will move closer together in a sell-off.
-  \item \textbf{Diversify across risks, not labels.} Ten stock funds in different regions are mostly one bet on global stocks. Real diversification needs assets driven by different forces, such as interest rates or inflation.
-  \item \textbf{Know what your protection protects against.} Long-term Treasuries protect against recessions and deflationary panics, not inflation shocks; cash, short-term and inflation-linked bonds and some commodities behave differently.
-  \item \textbf{Judge by portfolio losses,} not by whether correlations rose.
-  \item \textbf{Rebalance.}\index{rebalancing|textbf} Selling what held up and buying what fell helps in the recovery, even when diversification disappointed during the fall.
-\end{itemize}
-
-\textbf{Questions to ask a manager or adviser:} What did this portfolio lose in 2008, March 2020 and 2022? Which correlations do you use, and from which periods? Which holdings would rise if stocks fell 30\% in a recession, and which in an inflation shock? How much of the risk comes from the stock market as a whole? Are any correlations based on smoothed or appraisal-based prices?
+Plan with crisis correlations, not average ones, and diversify across risks rather than labels: ten stock funds in different regions are mostly one bet on global stocks. Know what your protection protects against, since long-term Treasuries protect against recessions and deflationary panics, not inflation shocks. Judge a portfolio by its losses rather than by whether correlations rose, and rebalance\index{rebalancing|textbf}, because selling what held up and buying what fell helps in the recovery. Ask a manager what the portfolio lost in 2008, March 2020 and 2022, and which holdings would rise if stocks fell 30\% in a recession or in an inflation shock.
 
 \begin{callout}
-\textbf{What Failed: bonds as protection in 2022.} For most of the two decades before 2022, Treasury bonds rose when stocks fell, and the 60/40 stock--bond portfolio became the standard choice. Then inflation reached a forty-year high and the Federal Reserve raised rates rapidly. In 2022 the S\&P 500 fell 18.1\% and the U.S. dollar bond market about 13\%. According to Dimensional Fund Advisors (2023), a 60/40 portfolio lost 11\% over the year and was down 19\% at its lowest point. The correlation had not been measured wrongly; it had been measured in a period of low, stable inflation, when news about growth dominated. When inflation became the main news, it changed sign. The negative stock--bond correlation belonged to one economic regime, not to all of them.
+\textbf{What Failed: bonds as protection in 2022.} For most of the two decades before 2022, Treasury bonds rose when stocks fell, and the 60/40 stock--bond portfolio became the standard choice. Then inflation reached a forty-year high and the Federal Reserve raised rates rapidly. In 2022 the S\&P 500 fell 18.1\% and the U.S. dollar bond market about 13\%, and according to Dimensional Fund Advisors (2023) a 60/40 portfolio lost 11\% over the year. The correlation had been measured in a period of low, stable inflation, when news about growth dominated. The negative stock--bond correlation belonged to one economic regime, not to all of them.
 \end{callout}

@@ -280,37 +280,23 @@ Even a correct model lands in the yellow zone about one year in nine and almost 
 \section{Lab~\thechapter: Replicating the Kupiec and Christoffersen backtests}
 \label{sec:11-lab}
 
-\begin{callout}
-\textbf{Lab~\ref{ch:08} at a glance.} \emph{Papers replicated:} Kupiec (1995); Christoffersen (1998). \emph{Claim on trial\index{claims-on-trial method}:} losses exceed a 99\% VaR on about 1\% of trading days, in calm markets and in crises alike. \emph{Data:} daily U.S. market returns (Mkt-RF + RF from the Kenneth French\index{Kenneth French data library} library) from 1930 to the present, about 24,000 trading days; free. \emph{Code:} runs as a script (\texttt{python lab13.py}) or as a notebook with a prediction prompt before each step.
-\end{callout}
+\textbf{Claim on trial\index{claims-on-trial method}:} losses exceed a 99\% VaR on about 1\% of trading days, in calm markets and in crises alike. The lab replicates the backtests of Kupiec (1995) and Christoffersen (1998) on daily U.S. market returns from the Kenneth French\index{Kenneth French data library} library, from 1930 to the present, about 24,000 trading days. It backtests the six models of Section~\ref{sec:11-how}, using only data available the day before and re-estimating the GARCH models yearly on the previous ten years. A single liquid stock-market position is the simplest setting for VaR, so if the models struggle here, they will not do better with a bank's options, credit and hard-to-value positions.
 
-The lab backtests the six models of Section~\ref{sec:11-how}, using only data available the day before and re-estimating the GARCH models yearly on the previous ten years.
-
-\textbf{Part A, the number of breaches.} Breaches of the 99\% VaR against the roughly 240 expected, with Kupiec's test, the average VaR, the worst loss as a multiple of VaR, and the share of years in the yellow or red zone (Lab Figures~\ref{ch:08}.1 and~\ref{ch:08}.2).
+\textbf{Part A, the number of breaches.} Breaches of the 99\% VaR against the roughly 240 expected, with Kupiec's test, the worst loss as a multiple of VaR, and the share of years in the yellow or red zone (Lab Figures~\ref{ch:08}.1 and~\ref{ch:08}.2).
 
 \textbf{Part B, the timing of breaches.} The chance of a breach after a breach, and Christoffersen's test (Lab Figure~\ref{ch:08}.3).
 
 \textbf{Part C, robustness checks.} The backtests under three harder conditions (Section~\ref{sec:11-stress}).
 
-\textbf{Part D, expected shortfall.} At 97.5\%, the average loss on breach days against the average ES forecast, where a ratio of 1 means ES was right on average, and the McNeil--Frey test (Lab Figure~\ref{ch:08}.5).
+\textbf{Part D, expected shortfall.} At 97.5\%, the average loss on breach days against the average ES forecast, and the McNeil--Frey test (Lab Figure~\ref{ch:08}.5).
 
-A single liquid stock-market position is the simplest setting for VaR. If the models struggle here, they will not do better with a bank's options, credit and hard-to-value positions.
-
-\textbf{What the simulated run shows.} On returns drawn from a GJR-GARCH model with Student-$t$ shocks, the true GJR-$t$ model passes every test: breached on 1.01\% of days, a 0.8\% chance of a breach after a breach, and an actual-to-forecast ES ratio of 1.00. Filtered historical simulation is nearly as good. The normal and historical-simulation models are breached about twice as often as they should be, their breaches bunch, and they understate ES. These results confirm that the code works, but they say nothing about real markets.
-
-\subsection{Robustness checks}
 \label{sec:11-stress}
-
-\textbf{In crises.} On October 19, 1987, the Dow fell 22.6\%, a loss no model built on the calm months before could have put inside a 99\% VaR. Part C counts breaches in 1930--32, October 1987, autumn 2008 and spring 2020, against about 0.2 expected in a 22-day month, and measures how quickly each model catches up.
-
-\textbf{Deeper in the tail.} Under the normal distribution, a 99.9\% loss is only 1.33 times a 99\% loss ($3.09/2.33$); in stock returns the ratio is larger, so a normal model that is slightly off at 95\% can be several times off at 99.9\% (Lab Figure~\ref{ch:08}.4). With only about 24 breaches expected in 95 years, the test is also weak there.
-
-\textbf{Window length.} Historical simulation with 250, 500 and 1,000 days trades speed against stability: 250 days estimates the worst 1\% of days from only two or three observations. No equal-weighted\index{index weighting!equal-weighted} window stops breaches from bunching, because none reacts to volatility as GARCH does.
+\textbf{Robustness checks.} On October 19, 1987, the Dow fell 22.6\%, a loss no model built on the calm months before could have put inside a 99\% VaR, so Part C counts breaches in 1930--32, October 1987, autumn 2008 and spring 2020 and measures how quickly each model catches up. Deeper in the tail, a normal model that is slightly off at 95\% can be several times off at 99.9\% (Lab Figure~\ref{ch:08}.4), and with only about 24 breaches expected in 95 years the test is also weak there. Finally, no equal-weighted\index{index weighting!equal-weighted} historical-simulation window stops breaches from bunching, because none reacts to volatility as GARCH does.
 
 \section{Where the evidence stands}
 \label{sec:11-verdict}
 
-The studies and records cited in this chapter point to a clear pattern: \textbf{VaR can measure risk reliably, but only with the right model, and not during a crisis.} The table summarizes the evidence as of November 2026. Lab~\ref{ch:08} lets you check it on real data.
+The studies and records cited in this chapter point to a clear pattern: \textbf{VaR can measure risk reliably, but only with the right model, and not during a crisis.} The table summarizes the evidence as of November 2026.
 
 \begin{center}
 \small
@@ -331,30 +317,9 @@ The size of the worst losses & \textbf{Not measured} & VaR\index{Value at Risk (
 \section{What practitioners and investors can use}
 \label{sec:11-investors}
 
-\textbf{For anyone measuring risk:}
+Anyone measuring risk should use a volatility forecast that reacts quickly, such as EWMA or a GARCH-type model, allow for fat tails, report ES alongside VaR, backtest\index{backtest|textbf} all the time, and run scenario tests such as a repeat of October 1987, 2008 or 2022. A fast-reacting VaR has one side effect: it raises capital requirements just as markets fall, so banks sell together and can deepen the crisis, a problem called \textbf{procyclicality}. Basel 2.5 (2009) therefore added a \textbf{stressed VaR}\index{Value at Risk (VaR)!stressed|textbf}, measured over a year of severe stress. Investors reading a bank's or fund's risk reports should ask how many breaches there were last year and when, and how large the stressed VaR is compared with the reported VaR.
 
-\begin{itemize}
-  \item \textbf{Use a volatility forecast that reacts quickly.} EWMA at minimum, GARCH-type models for better results; an equal-weighted one-year window is too slow.
-  \item \textbf{Allow for fat tails.} Use the actual distribution of past returns or a Student-$t$; filtered historical simulation does both and is easy to build.
-  \item \textbf{Report ES alongside VaR,} and look at the largest losses directly.
-  \item \textbf{Backtest all the time.}\index{backtest|textbf} Count the breaches and check whether they bunch.
-  \item \textbf{Run scenario tests.} A repeat of October 1987, 2008 or 2022 describes the days that threaten survival, which no backtest on recent data covers.
-\end{itemize}
+\textbf{What Failed: bank VaR in 2007--08.} By 2007, large banks measured trading risk mainly with VaR. UBS suffered the largest subprime losses of any European bank. The Swiss Federal Banking Commission found that UBS had judged its super-senior CDO tranches\index{tranches}, the supposedly safest slices of securities built from mortgage-related bonds, to be ``VaR neutral,'' so they ``were not reflected in key internal risk reports.'' By UBS's own account, these positions caused about half of its losses by the end of 2007. VaR was not calculated wrongly. It measured positions that looked safe in recent data and could not see the risk of a market that had never been stressed.
 
-\textbf{A side effect to watch.} A fast-reacting VaR raises capital requirements just as markets fall, so banks sell together and can deepen the crisis, a problem called \textbf{procyclicality}. A slow VaR avoids it but is breached in bunches. Basel 2.5 (2009) added a \textbf{stressed VaR}\index{Value at Risk (VaR)!stressed|textbf}, measured over a year of severe stress, so that capital does not fall too low after a calm period.
-
-\textbf{For investors reading a bank's or fund's risk reports, ask:} How is the VaR computed, and over what period? How many breaches were there last year, and when? How large is the stressed VaR or worst scenario loss compared with the reported VaR? Which positions are hard to value daily, and so may not appear in the VaR at all?
-
-\textbf{What Failed: bank VaR in 2007--08.} By 2007, large banks measured trading risk mainly with VaR. UBS suffered the largest subprime losses of any European bank. The Swiss Federal Banking Commission found that UBS had judged its super-senior CDO tranches\index{tranches}, the supposedly safest slices of securities built from mortgage-related bonds, to be ``VaR neutral,'' so they ``were not reflected in key internal risk reports.'' Rated AAA, they looked nearly safe to the models, which ``operated on the basis of overoptimistic assumptions'' while ``the real shocks proved to be far greater than any shocks anticipated.'' By UBS's own account, these positions caused about half of its losses by the end of 2007.
-
-VaR was not calculated wrongly. It measured positions that looked safe in recent data and could not see the risk of a market that had never been stressed. Regulators responded with stressed VaR and later expected shortfall. In March 2020 they faced the opposite problem: as breaches jumped, U.S. regulators decided not to count those from March 6 to March 27, judging that they reflected ``widespread and unusual volatility'' (Board of Governors of the Federal Reserve System 2021).
-
-\section{Open questions}
 \label{sec:11-open}
-
-\begin{itemize}
-  \item \textbf{Can intraday data catch the first day of a crisis?} Does realized volatility\index{volatility!realized} from intraday returns (Chapter~\ref{ch:07}) reduce the bunching of breaches when a crisis begins?
-  \item \textbf{How should ES be tested?} Which joint tests of VaR and ES are reliable with the few years of data a bank has?
-  \item \textbf{Can risk measures be accurate without deepening crises?} How should regulators balance accuracy against stability (Section~\ref{sec:11-investors})?
-  \item \textbf{What about portfolios VaR handles badly?} How much worse are backtests for options, credit and illiquid assets, and what should replace VaR there?
-\end{itemize}
+\textbf{Open questions.} Can realized volatility\index{volatility!realized} from intraday returns (Chapter~\ref{ch:07}) catch the first day of a crisis, and how should regulators balance the accuracy of risk measures against stability?

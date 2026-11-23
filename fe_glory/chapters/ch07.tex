@@ -451,62 +451,23 @@ Every parameter must be estimated only on data available at the forecast date, a
 \section{Lab~\thechapter: Replicating Andersen and Bollerslev (1998), Hansen and Lunde (2005) and Moreira and Muir (2017)}
 \label{sec:10-lab}
 
-\begin{callout}
-\textbf{Lab~\ref{ch:07} at a glance.} \emph{Papers replicated:} Andersen and Bollerslev (1998); Hansen and Lunde (2005); Moreira and Muir (2017). \emph{Claim on trial\index{claims-on-trial method}:} volatility is predictable. \emph{Data:} U.S. market returns since 1926, from the daily factors in the Kenneth French\index{Kenneth French data library} library, and, from 1990, the VIX from FRED\index{FRED}; both are free. \emph{Code:} runs as a script (\texttt{python lab11.py}) or as a notebook with a prediction prompt before each step.
-\end{callout}
+\textbf{Claim on trial\index{claims-on-trial method}:} volatility is predictable. The lab uses U.S. market returns since 1926 from the daily factors in the Kenneth French\index{Kenneth French data library} library and, from 1990, the VIX from FRED\index{FRED}; both are free.
 
 \textbf{Part A, stylized facts\index{stylized facts of returns}.} Autocorrelations of daily returns and absolute returns at lags 1 to 50, and the correlation\index{correlation} between today's return and tomorrow's absolute return (Lab Figure~\ref{ch:07}.1). Expect the first near zero, the second positive for months, and the third negative: the leverage effect.
 
-\textbf{Part B, forecast comparison.} Each trading day from 1990, seven methods forecast the market's variance over the next 1, 5 and 22 days:
-
-\begin{center}
-\small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.20\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.33\linewidth}@{}}
-\toprule
-Method & Forecast & Parameters \\
-\midrule
-Long-run average & Mean squared return to date & None \\
-Random walk & Last 22 days' variance continues & None \\
-EWMA & RiskMetrics, $\lambda = 0.94$ & Fixed \\
-GARCH(1,1) & Mean-reverting, normal likelihood & Re-estimated yearly on the past 20 years \\
-GJR-GARCH & GARCH with the leverage term & Re-estimated yearly \\
-HAR & Regression on 1-, 5- and 22-day averages & Re-estimated yearly by OLS \\
-VIX & $(\mathrm{VIX}/100)^2 \times h/252$ & None \\
-\bottomrule
-\end{tabularx}
-\end{center}
-
-Each is scored against the random walk with QLIKE and MSE, Diebold--Mariano tests and Mincer--Zarnowitz regressions. Lab Figure~\ref{ch:07}.2 plots one-month forecasts through 2007--2010 against the volatility that followed, and Lab Figure~\ref{ch:07}.3 ranks the methods at each horizon.
+\textbf{Part B, forecast comparison.} Each trading day from 1990, seven methods forecast the market's variance over the next 1, 5 and 22 days: the long-run average, a random walk, EWMA with $\lambda = 0.94$, GARCH(1,1), GJR-GARCH, HAR and the squared VIX. Each is scored against the random walk with QLIKE and MSE, Diebold--Mariano tests and Mincer--Zarnowitz regressions (Lab Figures~\ref{ch:07}.2 and~\ref{ch:07}.3). The proxy uses daily returns, because intraday data are not free back to 1926; this makes every model look worse but does not bias the ranking under QLIKE.
 
 \textbf{Part C, crises.} The same losses within 2008--09, 2020 and 2022 (Lab Figure~\ref{ch:07}.4).
 
-\textbf{Part D, use.} A \textbf{volatility-managed portfolio}\index{volatility targeting|textbf} holds the market with weight proportional to 1 / last month's realized variance, scaled to the market's volatility, as in Moreira and Muir (2017). The lab reports its Sharpe ratio, drawdown\index{drawdown} and alpha\index{alpha}, net of costs and with an optional leverage cap (Lab Figure~\ref{ch:07}.5).
+\textbf{Part D, use.} A \textbf{volatility-managed portfolio}\index{volatility targeting|textbf} holds the market with weight proportional to 1 / last month's realized variance, as in Moreira and Muir (2017). The lab reports its Sharpe ratio, drawdown\index{drawdown} and alpha\index{alpha}, net of costs and with an optional leverage cap (Lab Figure~\ref{ch:07}.5).
 
-Three design choices matter. The proxy uses daily returns, because intraday data are not free back to 1926; this makes every model look worse but does not bias the ranking under QLIKE. The HAR model uses squared daily returns, a noisier input than Corsi's realized variance, so expect it to do less well. And FRED's VIX series uses the post-2003 method throughout.
-
-\textbf{What the simulated run shows.} On simulated GJR-GARCH data, every dynamic model beats the long-run average by a wide margin, GJR, the true model, ranks first under QLIKE at every horizon, and the simulated VIX shows its built-in upward bias. These results confirm that the code works. They say nothing about real markets.
-
-\subsection{Robustness checks}
 \label{sec:10-stress}
-
-\textbf{Horizon.} Every GARCH forecast converges to the long-run level, so beyond a few months a constant is hard to beat. The lab measures how fast the advantage shrinks.
-
-\textbf{Crises.} In the first days of October 2008 and March 2020, every forecast built from past returns was far too low, the error QLIKE punishes most; the models then caught up and overpredicted as the crisis faded. The VIX, a market price, can react within the day, and Lab Figure~\ref{ch:07}.4 tests whether it did better.
-
-\textbf{The 2022 rate shock.} Stocks fell by about a fifth in 2022 while realized volatility stayed moderate. A good volatility forecast can still miss a large, slow decline, because volatility and losses are different things.
-
-\textbf{Estimation window.} Persistence near 1 means small parameter changes produce large changes in long-horizon forecasts. Rerun Part B with \texttt{-{}-window-years 10} and compare.
-
-\textbf{Proxy.} The daily proxy lowers every model's $R^2$ but, with a robust loss, does not change the ranking (Andersen and Bollerslev 1998). Liu, Patton and Sheppard (2015) found five-minute realized variance hard to beat among nearly 400 estimators, so students with intraday data can swap it in.
-
-\subsection*{Your verdict}
-
-Reach your own verdict on the claim from the numbers in your own run, using the scale of Section~\ref{sec:01-method}. Then compare it with the published evidence summarized in Section~\ref{sec:10-verdict}. If your verdict differs, explain which of your results led you there.
+\textbf{Robustness checks.} Every GARCH forecast converges to the long-run level, so beyond a few months a constant is hard to beat. In the first days of October 2008 and March 2020, every forecast built from past returns was far too low, while the VIX, a market price, could react within the day. In 2022 stocks fell by about a fifth while realized volatility stayed moderate, a reminder that volatility and losses are different things. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:10-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:10-verdict}
 
-The published studies point to a clear pattern: \textbf{volatility can be forecast well at horizons from one day to one month, but using the forecasts to time the market earns little once they are made in real time.} The table summarizes the evidence as of November 2026. The lab lets you check it with free data.
+The published studies point to a clear pattern: \textbf{volatility can be forecast well at horizons from one day to one month, but using the forecasts to time the market earns little once they are made in real time.} The table summarizes the evidence as of November 2026.
 
 \begin{center}
 \small
@@ -537,35 +498,16 @@ Forecastable volatility predicts risk, not returns, so it does not contradict ma
 
 \textbf{What would change the picture.} The claim about using the forecasts would gain support if volatility-managed portfolios built only with real-time information kept beating the market after costs and with realistic leverage. The forecasting claim would weaken only if simple models stopped beating the long-run average in new data, which no study so far has found.
 
-\subsection{Open questions}
 \label{sec:10-open}
-
-\begin{itemize}
-  \item \textbf{Does volatility timing pay after costs?} The evidence for the market is mixed. Does it hold for factors such as momentum, and in other countries?
-  \item \textbf{What is the right long-run level?} Average volatility seems to drift with the business cycle\index{business cycle}. Do models that allow for this, such as component GARCH and GARCH-MIDAS, forecast better at long horizons?
-  \item \textbf{Can machine learning\index{machine learning} beat HAR?} Do gains from news, macroeconomic data and other assets' volatilities survive the out-of-sample discipline of Chapter~\ref{ch:06}?
-  \item \textbf{What does the VIX know?} Can its forecast and its risk premium be separated well enough to improve the forecast?
-\end{itemize}
+\textbf{Open questions.} Does volatility timing pay after costs for factors such as momentum and in other countries, and can machine learning\index{machine learning} beat HAR under the out-of-sample discipline of Chapter~\ref{ch:06}?
 
 \section{What practitioners and investors can use}
 \label{sec:10-investors}
 
-\textbf{Risk forecasts, yes.} Anyone sizing positions, setting stop-losses (orders that sell automatically when a price falls to a set level) or computing margin should use a forecast that reacts to recent data, such as EWMA or GARCH, not a long-run average. This is the basis of Value at Risk (Chapter~\ref{ch:08}).
+\textbf{Risk forecasts, yes.} Anyone sizing positions, setting stop-losses or computing margin should use a forecast that reacts to recent data, such as EWMA or GARCH, not a long-run average. This is the basis of Value at Risk (Chapter~\ref{ch:08}).
 
-\textbf{Volatility timing for returns: be skeptical.} Moreira and Muir (2017) found that scaling market exposure inversely to last month's variance produced an alpha of about 4.9\% a year over 1926--2015. \textbf{Volatility-targeting}\index{volatility targeting|textbf} funds and \textbf{risk-parity}\index{risk parity|textbf} strategies, which allocate so that each asset contributes equal risk, apply versions of the idea. Three findings temper it.
-
-\begin{itemize}
-  \item \textbf{Real-time feasibility.} Cederburg, O'Doherty, Wang and Yan (2020) found that the alphas in \textbf{spanning regressions}\index{regression!spanning|textbf}, regressions of the managed portfolio on the original, needed weights estimated in sample. Out of sample, the managed versions generally did no better.
-  \item \textbf{Leverage.}\index{leverage|textbf} The managed portfolio's market weight often exceeds 1 in calm periods; in the lab's simulated run it averaged 1.4 and peaked near 10. A realistic cap reduces the gains.
-  \item \textbf{Costs and crowding\index{crowding}.} Turnover\index{turnover} is high when volatility changes quickly, and volatility-targeting funds all sell at once, which can deepen the declines they try to avoid.
-\end{itemize}
-
-The benefit is clearer for momentum\index{momentum}, where crashes follow high volatility (Barroso and Santa-Clara 2015; Chapter~\ref{ch:04}), than for the market.
-
-\textbf{Questions to ask a manager who uses volatility targeting:} What forecast do you use, and how quickly does it react? What is the maximum leverage, and what happens to turnover in a spike? Was the backtest\index{backtest} scaled with information available at the time? How did the strategy do in February 2018 and March 2020?
+\textbf{Volatility timing for returns: be skeptical.} Moreira and Muir (2017) found that scaling market exposure inversely to last month's variance produced an alpha of about 4.9\% a year over 1926--2015, and \textbf{volatility-targeting}\index{volatility targeting|textbf} funds and \textbf{risk-parity}\index{risk parity|textbf} strategies apply versions of the idea. Cederburg, O'Doherty, Wang and Yan (2020), however, found that out of sample the managed versions generally did no better. The managed portfolio also needs leverage\index{leverage} in calm periods, and volatility-targeting funds all sell at once in a spike, which can deepen the declines they try to avoid. The benefit is clearer for momentum\index{momentum}, where crashes follow high volatility (Barroso and Santa-Clara 2015; Chapter~\ref{ch:04}), than for the market.
 
 \begin{callout}
-\textbf{What Failed: selling volatility before February 5, 2018.} For years, products that bet against volatility were among the market's best performers. The VelocityShares Daily Inverse VIX Short-Term ETN (XIV), an exchange-traded note, a bank-issued security that trades like a stock, earned the variance risk premium by shorting VIX futures and held \$1.9 billion. On February 5, 2018, the VIX rose 115.6\%, its largest one-day increase ever. XIV lost 96.3\% that day, and Credit Suisse closed it within weeks.
-
-The episode does not contradict this chapter. Volatility forecasts are informative on average, but a forecast that volatility will stay low is weakest exactly at the onset of a spike. A strategy that earns a little most days and loses almost everything on one day can look excellent in any backtest that misses that day. Chapter~\ref{ch:08} returns to this problem.
+\textbf{What Failed: selling volatility before February 5, 2018.} For years, products that bet against volatility were among the market's best performers. The VelocityShares Daily Inverse VIX Short-Term ETN (XIV) earned the variance risk premium by shorting VIX futures and held \$1.9 billion. On February 5, 2018, the VIX rose 115.6\%, its largest one-day increase ever. XIV lost 96.3\% that day, and Credit Suisse closed it within weeks. Volatility forecasts are informative on average, but a forecast that volatility will stay low is weakest exactly at the onset of a spike, and a strategy that loses almost everything on one day can look excellent in any backtest that misses that day (Chapter~\ref{ch:08}).
 \end{callout}
