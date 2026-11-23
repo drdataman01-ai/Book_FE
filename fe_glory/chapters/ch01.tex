@@ -474,18 +474,30 @@ The starting point for any claim about beating the market is the efficient marke
 
 Fama distinguished three versions by the information set\index{forecasting!information set}:
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.180\linewidth}>{\raggedright\arraybackslash}p{0.234\linewidth}>{\raggedright\arraybackslash}X@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.180\linewidth}>{\raggedright\arraybackslash}p{0.234\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.180\linewidth-0.234\linewidth-4\tabcolsep\relax}@{}}
 \toprule
 Version & Prices reflect & Implication if true \\
 \midrule
-Weak form & Past prices and trading volume & Technical trading rules cannot earn abnormal returns \\
-Semi-strong form & All public information & Analysis of public news and accounting data cannot earn abnormal returns \\
-Strong form & All information, including private & Even insiders cannot earn abnormal returns \\
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Version & Prices reflect & Implication if true \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Weak form & Past prices and trading volume & Technical trading rules cannot earn abnormal returns \\*
+Semi-strong form & All public information & Analysis of public news and accounting data cannot earn abnormal returns \\*
+Strong form & All information, including private & Even insiders cannot earn abnormal returns \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 An \emph{abnormal return} in the table means a return above what the investment's risk would justify, which is the alpha of Section~\ref{sec:01-foundations}. Everyday examples make the three versions concrete. A trader who studies price charts to spot patterns is betting against the weak form. An investor who reads company earnings reports and news stories to pick stocks is betting against the semi-strong form. A company executive who buys shares before a merger is announced, using news the public does not yet have, is betting against the strong form, and in most countries that trade is illegal insider trading.
 
@@ -550,41 +562,64 @@ By the same reasoning, the standard error of an estimated annual Sharpe ratio is
   \label{eq:01-T}
 \end{equation}
 
-\begin{center}
+\begingroup
 \small
-\begin{tabular}{@{}ll@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}ll@{}}
 \toprule
 True Sharpe ratio & Years of data needed for the mean return to reach $t = 1.96$ \\
 \midrule
-0.25 & 61 \\
-0.50 & 15 \\
-0.75 & 7 \\
-1.00 & 4 \\
-1.50 & 2 \\
+\endfirsthead
+\multicolumn{2}{@{}l}{\emph{(continued)}} \\
+\toprule
+True Sharpe ratio & Years of data needed for the mean return to reach $t = 1.96$ \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabular}
-\end{center}
+\endlastfoot
+0.25 & 61 \\*
+0.50 & 15 \\*
+0.75 & 7 \\*
+1.00 & 4 \\*
+1.50 & 2 \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 A strategy as good as the stock market itself needs more than two decades of data before its record is statistically convincing. Most fund track records, and most backtests shown to investors, are far shorter.
 
 A natural question is whether daily data could shorten the wait, since a decade contains about 2,500 trading days but only 120 months. They cannot. The precision of an average return depends on the number of years in the record, not on how often returns are written down, although frequent data do help when the goal is to measure risk. The shaded box explains why.
 
-\begin{table}[htbp]
-\centering
+\begingroup
 \small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}lrrrrrr@{}}
 \caption{The same 16-year record measured annually, monthly and daily. The expected excess return is 10\% a year and the volatility is 20\% a year, so the annual Sharpe ratio is 0.5. The daily figures assume 252 trading days a year.}
-\label{tab:01-frequency}
-\begin{tabular}{@{}lrrrrrr@{}}
+\label{tab:01-frequency} \\
 \toprule
 Frequency & Observations & Mean per & Volatility per & Sharpe ratio & $\sqrt{N}$ & $t$ \\
  & $N$ & period (\%) & period (\%) & per period & & \\
 \midrule
-Annual  & 16    & 10.000 & 20.00 & 0.500  & 4.00  & 2.00 \\
-Monthly & 192   & 0.833  & 5.77  & 0.144  & 13.86 & 2.00 \\
-Daily   & 4{,}032 & 0.040 & 1.26  & 0.0315 & 63.50 & 2.00 \\
+\endfirsthead
+\multicolumn{7}{@{}l}{\emph{(continued)}} \\
+\toprule
+Frequency & Observations & Mean per & Volatility per & Sharpe ratio & $\sqrt{N}$ & $t$ \\
+ & $N$ & period (\%) & period (\%) & per period & & \\
+\midrule
+\endhead
+\midrule
+\multicolumn{7}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabular}
-\end{table}
+\endlastfoot
+Annual  & 16    & 10.000 & 20.00 & 0.500  & 4.00  & 2.00 \\*
+Monthly & 192   & 0.833  & 5.77  & 0.144  & 13.86 & 2.00 \\*
+Daily   & 4{,}032 & 0.040 & 1.26  & 0.0315 & 63.50 & 2.00 \\*
+\end{longtable}
+\endgroup
 
 \begin{technote}
 \textbf{Technical note: does the return frequency matter?} For the years-needed table above, it does not. Daily data give 252 observations a year instead of 12, but each daily return carries proportionally less information about the mean, so the years needed are the same. Table~\ref{tab:01-frequency} shows this for one strategy observed over the same 16 years at three frequencies. The strategy has an expected excess return of 10\% a year and a volatility of 20\%, so its Sharpe ratio is 0.5. The t-statistic is always the Sharpe ratio \emph{per period} times the square root of the \emph{number of periods}. Sampling more often multiplies the number of observations, but shrinks the Sharpe ratio of each one by the square root of that factor, and the two effects cancel.
@@ -730,19 +765,31 @@ The rest of this book applies one method to every claim. It is simple enough to 
 
 \textbf{The verdict scale}\index{verdict scale|textbf}
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.162\linewidth}>{\raggedright\arraybackslash}X@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.162\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.162\linewidth-2\tabcolsep\relax}@{}}
 \toprule
 Verdict & Meaning \\
 \midrule
-Survives & The result replicates, holds out of sample and in other markets, and remains economically meaningful after costs. \\
-Weakens & The result is real but smaller, less reliable, or narrower than claimed, for example only in small stocks or before publication. \\
-Fails & The result does not replicate, or disappears out of sample or after costs. \\
-Provisional & The evidence is too new or too mixed for a firm verdict. \\
+\endfirsthead
+\multicolumn{2}{@{}l}{\emph{(continued)}} \\
+\toprule
+Verdict & Meaning \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Survives & The result replicates, holds out of sample and in other markets, and remains economically meaningful after costs. \\*
+Weakens & The result is real but smaller, less reliable, or narrower than claimed, for example only in small stocks or before publication. \\*
+Fails & The result does not replicate, or disappears out of sample or after costs. \\*
+Provisional & The evidence is too new or too mixed for a firm verdict. \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 Two habits make the method work. First, \textbf{decide the test before seeing the result}. Write down the claim, the data and the pass criteria in advance, so that the test cannot be bent to fit the outcome. Second, \textbf{always ask ``compared to what?''} Every claim is judged against a simple benchmark, such as the market, the historical average\index{historical-mean benchmark} or a naive rule, and never against zero.
 
@@ -769,20 +816,32 @@ Because every strategy has zero skill, statistics tells us roughly what to expec
 
 The published studies point to a clear pattern: \textbf{a track record can reveal real skill, but only when it is long enough, clears a bar that allows for how many strategies were tried, and keeps working after it was chosen.} Most records do not meet these conditions, and genuine skill appears to be rare. The table summarizes the evidence as of November 2026.
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.22\linewidth}@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.19\linewidth-0.13\linewidth-0.22\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.22\linewidth}@{}}
 \toprule
 Situation & Holds? & Why & Evidence \\
 \midrule
-Mutual funds as a group, after fees & \textbf{No} & The average fund earns less than a cheap market fund with the same risk, and few funds beat what chance alone would produce. & Jensen (1968); Fama and French (2010) \\
-A minority of skilled managers & \textbf{Yes} & The best records of a small group of managers are hard to explain by luck, and differences in skill persist for many years. & Kosowski, Timmermann, Wermers and White (2006); Berk and van Binsbergen (2015) \\
-Records with an identifiable edge & \textbf{Yes} & Profits that trace back to better information or cheaper execution are evidence of skill, not only of luck. & Katona et al.\ (2025); Frazzini, Israel and Moskowitz (2018) \\
-Short records & \textbf{No} & A Sharpe ratio of 0.5 needs about 15 years of data to reach $t = 1.96$, and most records are far shorter. & Lo (2002); Section~\ref{sec:01-signal-noise} \\
-The best of many backtests & \textbf{No} & When many strategies are tried, the best one looks impressive by chance alone, so the usual bar of $t = 2$ is far too low. & Bailey et al.\ (2014); Harvey, Liu and Zhu (2016) \\
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Mutual funds as a group, after fees & \textbf{No} & The average fund earns less than a cheap market fund with the same risk, and few funds beat what chance alone would produce. & Jensen (1968); Fama and French (2010) \\*
+A minority of skilled managers & \textbf{Yes} & The best records of a small group of managers are hard to explain by luck, and differences in skill persist for many years. & Kosowski, Timmermann, Wermers and White (2006); Berk and van Binsbergen (2015) \\*
+Records with an identifiable edge & \textbf{Yes} & Profits that trace back to better information or cheaper execution are evidence of skill, not only of luck. & Katona et al.\ (2025); Frazzini, Israel and Moskowitz (2018) \\*
+Short records & \textbf{No} & A Sharpe ratio of 0.5 needs about 15 years of data to reach $t = 1.96$, and most records are far shorter. & Lo (2002); Section~\ref{sec:01-signal-noise} \\*
+The best of many backtests & \textbf{No} & When many strategies are tried, the best one looks impressive by chance alone, so the usual bar of $t = 2$ is far too low. & Bailey et al.\ (2014); Harvey, Liu and Zhu (2016) \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 A record therefore counts as evidence of skill only if it meets three conditions:
 

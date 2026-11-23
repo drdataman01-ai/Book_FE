@@ -95,21 +95,33 @@ The decision rule matters as much as the test. ``Support'' should require more t
 
 Most finance effects are small relative to the noise in returns, and samples are short. Power analysis answers two questions before a study begins: whether the sample could detect the effect if it exists, and what a non-significant result would mean.
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.17\linewidth-6\tabcolsep)/3\relax}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.17\linewidth-6\tabcolsep)/3\relax}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.17\linewidth-6\tabcolsep)/3\relax}@{}}
 \toprule
 True Sharpe ratio & Years for 80\% power at $t = 1.96$ & Years for 80\% power at $t = 3.0$ & Power with 20 years at $t = 1.96$ \\
 \midrule
-0.2 & 196 & 369 & 14\% \\
-0.3 & 87 & 164 & 27\% \\
-0.4 & 49 & 92 & 43\% \\
-0.5 & 31 & 59 & 61\% \\
-0.75 & 14 & 26 & 92\% \\
-1.0 & 8 & 15 & 99\% \\
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+True Sharpe ratio & Years for 80\% power at $t = 1.96$ & Years for 80\% power at $t = 3.0$ & Power with 20 years at $t = 1.96$ \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+0.2 & 196 & 369 & 14\% \\*
+0.3 & 87 & 164 & 27\% \\*
+0.4 & 49 & 92 & 43\% \\*
+0.5 & 31 & 59 & 61\% \\*
+0.75 & 14 & 26 & 92\% \\*
+1.0 & 8 & 15 & 99\% \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 The table, computed in Lab~\ref{ch:23}, makes three points:
 
@@ -468,12 +480,24 @@ The lab has five parts:
 
 \textbf{Creating a project.} \texttt{python lab24.py new} creates a replication project with a fixed structure:
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.44\linewidth}>{\raggedright\arraybackslash}X@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.44\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.44\linewidth-2\tabcolsep\relax}@{}}
 \toprule
 Path & Purpose \\
 \midrule
+\endfirsthead
+\multicolumn{2}{@{}l}{\emph{(continued)}} \\
+\toprule
+Path & Purpose \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
 \texttt{preregistration\_fields.json} $\rightarrow$ \texttt{preregistration.md} & The plan, frozen with a SHA-256 hash; \texttt{run.py freeze} refuses to overwrite it without an explicit override \\
 \texttt{original.json} & The original paper's statistics, with table and page references \\
 \texttt{config.json} & Original sample, post-publication start, costs, tolerances, data source \\
@@ -486,9 +510,9 @@ Path & Purpose \\
 \texttt{tests/} & A check that the pipeline runs and gives the same numbers twice \\
 \texttt{LICENSE}, \texttt{CITATION.cff}, \texttt{.gitignore} & Licence, citation metadata, raw data excluded from version control by default \\
 \texttt{fintest/} & A copy of the book's analysis module, now at version 1.0.0 \\
-\bottomrule
-\end{tabularx}
-\end{center}
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 Each statistic in \texttt{original.json} is compared with the replication on the original sample and labelled as in Figure~\ref{fig:24-status}: a match (within the tolerance, by default 15\%), same sign but different size, different sign, or not reproduced. The project as a whole is then labelled reproduced, partly reproduced or not reproduced.
 
@@ -501,22 +525,34 @@ Each statistic in \texttt{original.json} is compared with the replication on the
 
 The rubric rewards design and transparency as much as results. A careful replication that fails to reproduce a claim can earn full marks; a confirmation with a weak design cannot.
 
-\begin{center}
+\begingroup
 \footnotesize
-\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.14\linewidth}>{\raggedright\arraybackslash}p{0.07\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.14\linewidth}>{\raggedright\arraybackslash}p{0.07\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.95\linewidth-0.14\linewidth-0.07\linewidth-0.19\linewidth-0.17\linewidth-8\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}@{}}
 \toprule
 Criterion & Weight & Excellent & Adequate & Weak \\
 \midrule
-Claim and proposal & 10\% & Falsifiable claim, important paper, feasible data, power analysis & Clear claim, some gaps in feasibility or power & Vague claim or infeasible data \\
-Pre-registration & 10\% & Complete, frozen before analysis, decision rules stated & Complete but vague decision rules & Missing, or written after results \\
-Replication & 25\% & All main statistics reproduced or differences fully explained & Most reproduced, some differences unexplained & Few reproduced, little explanation \\
-Extensions & 20\% & Post-publication test, costs and a robustness grid, clearly interpreted & Some extensions, limited interpretation & None or poorly designed \\
-Report and verdict & 15\% & Clear, neutral, effect sizes in economic units, dated verdict with conditions for change & Clear but incomplete & Hard to follow, or verdict not supported \\
-Code and data & 10\% & One command reproduces everything; log, licence and citation present & Runs with some manual steps & Does not run \\
-Peer review & 10\% & Specific, constructive referee report that ran the code; complete response to referees & Generic report or partial response & Missing \\
+\endfirsthead
+\multicolumn{5}{@{}l}{\emph{(continued)}} \\
+\toprule
+Criterion & Weight & Excellent & Adequate & Weak \\
+\midrule
+\endhead
+\midrule
+\multicolumn{5}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Claim and proposal & 10\% & Falsifiable claim, important paper, feasible data, power analysis & Clear claim, some gaps in feasibility or power & Vague claim or infeasible data \\*
+Pre-registration & 10\% & Complete, frozen before analysis, decision rules stated & Complete but vague decision rules & Missing, or written after results \\*
+Replication & 25\% & All main statistics reproduced or differences fully explained & Most reproduced, some differences unexplained & Few reproduced, little explanation \\*
+Extensions & 20\% & Post-publication test, costs and a robustness grid, clearly interpreted & Some extensions, limited interpretation & None or poorly designed \\*
+Report and verdict & 15\% & Clear, neutral, effect sizes in economic units, dated verdict with conditions for change & Clear but incomplete & Hard to follow, or verdict not supported \\*
+Code and data & 10\% & One command reproduces everything; log, licence and citation present & Runs with some manual steps & Does not run \\*
+Peer review & 10\% & Specific, constructive referee report that ran the code; complete response to referees & Generic report or partial response & Missing \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 \textbf{Process.} Grade the proposal and pre-registration as early milestones, so problems are caught before the analysis. Check that the pre-registration's commit date precedes the first replication run in the log. Run each project's pipeline before grading the report.
 

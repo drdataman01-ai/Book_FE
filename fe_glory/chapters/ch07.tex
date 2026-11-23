@@ -469,30 +469,42 @@ Every parameter must be estimated only on data available at the forecast date, a
 
 The published studies point to a clear pattern: \textbf{volatility can be forecast well at horizons from one day to one month, but using the forecasts to time the market earns little once they are made in real time.} The table summarizes the evidence as of November 2026.
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.19\linewidth-0.13\linewidth-0.23\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
 \toprule
 Situation & Holds? & Why & Evidence \\
 \midrule
-Forecasts from one day to one month & \textbf{Yes} & Dynamic models beat the long-run average by a wide margin in real time. & Andersen and Bollerslev (1998); Hansen and Lunde (2005) \\
-\addlinespace[3pt]
-Across markets and decades & \textbf{Yes} & Volatility clusters in every liquid market studied, with persistence close to 1. & Bollerslev (1986); Poon and Granger (2003) \\
-\addlinespace[3pt]
-Judged with the right loss & \textbf{Yes} & Early doubts came from a noisy proxy and an unsuitable loss, both now removed. & Andersen and Bollerslev (1998); Patton (2011) \\
-\addlinespace[3pt]
-Complex models over simple ones & \textbf{Partly} & GARCH(1,1) is hard to beat; a leverage term helps for stock indices, and HAR helps most with intraday data. & Hansen and Lunde (2005); Andersen, Bollerslev, Diebold and Labys (2003); Corsi (2009) \\
-\addlinespace[3pt]
-Long horizons & \textbf{No} & Beyond a few months, forecasts converge to an uncertain long-run level. & GARCH mean reversion (Section~\ref{sec:10-garch}) \\
-\addlinespace[3pt]
-The onset of a crisis & \textbf{No} & Past returns cannot anticipate the first violent day, as in October 2008 and March 2020. & Section~\ref{sec:10-stress} \\
-\addlinespace[3pt]
-The VIX as a forecast & \textbf{Partly} & It forecasts well but overstates future volatility because of the variance risk premium. & Poon and Granger (2003); Section~\ref{sec:10-iv} \\
-\addlinespace[3pt]
-Using forecasts to time the market & \textbf{Weakly} & The gains from volatility-managed portfolios mostly disappear when the scaling is chosen in real time. & Moreira and Muir (2017); Cederburg, O'Doherty, Wang and Yan (2020) \\
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Forecasts from one day to one month & \textbf{Yes} & Dynamic models beat the long-run average by a wide margin in real time. & Andersen and Bollerslev (1998); Hansen and Lunde (2005) \\*
+\addlinespace[3pt]
+Across markets and decades & \textbf{Yes} & Volatility clusters in every liquid market studied, with persistence close to 1. & Bollerslev (1986); Poon and Granger (2003) \\*
+\addlinespace[3pt]
+Judged with the right loss & \textbf{Yes} & Early doubts came from a noisy proxy and an unsuitable loss, both now removed. & Andersen and Bollerslev (1998); Patton (2011) \\*
+\addlinespace[3pt]
+Complex models over simple ones & \textbf{Partly} & GARCH(1,1) is hard to beat; a leverage term helps for stock indices, and HAR helps most with intraday data. & Hansen and Lunde (2005); Andersen, Bollerslev, Diebold and Labys (2003); Corsi (2009) \\*
+\addlinespace[3pt]
+Long horizons & \textbf{No} & Beyond a few months, forecasts converge to an uncertain long-run level. & GARCH mean reversion (Section~\ref{sec:10-garch}) \\*
+\addlinespace[3pt]
+The onset of a crisis & \textbf{No} & Past returns cannot anticipate the first violent day, as in October 2008 and March 2020. & Section~\ref{sec:10-stress} \\*
+\addlinespace[3pt]
+The VIX as a forecast & \textbf{Partly} & It forecasts well but overstates future volatility because of the variance risk premium. & Poon and Granger (2003); Section~\ref{sec:10-iv} \\*
+\addlinespace[3pt]
+Using forecasts to time the market & \textbf{Weakly} & The gains from volatility-managed portfolios mostly disappear when the scaling is chosen in real time. & Moreira and Muir (2017); Cederburg, O'Doherty, Wang and Yan (2020) \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 Forecastable volatility predicts risk, not returns, so it does not contradict market efficiency.
 

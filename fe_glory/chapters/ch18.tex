@@ -28,31 +28,41 @@
 
 Large institutions pay to protect themselves against a volatile stock market. Pension funds, endowments and other long-term investors buy put options\index{option!put} on stock indices so that a stock market crash does not wipe out years of gains. Insurance companies that sell annuities with guaranteed minimum returns buy options to hedge the promises they have made to their customers.
 
-\begin{table}[htbp]
-\centering
+\begingroup
 \small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.08\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(\linewidth-0.08\linewidth-4\tabcolsep)/2\relax}>{\raggedright\arraybackslash}p{\dimexpr(\linewidth-0.08\linewidth-4\tabcolsep)/2\relax}@{}}
 \caption{Typical reasons to buy and to sell call and put options.}
-\label{tab:18-buy-sell}
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.08\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\label{tab:18-buy-sell} \\
 \toprule
  & Reasons to buy & Reasons to sell \\
 \midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+ & Reasons to buy & Reasons to sell \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
 Call &
 Bet on a sharp rise at a small, known cost.\par\smallskip
 Lock in a price for a purchase later.
 &
 Earn income on stocks already owned (a covered call).\par\smallskip
-Expect the price to stay below the strike. \\
+Expect the price to stay below the strike. \\*
 \addlinespace
 Put &
 Insure a portfolio against a fall.\par\smallskip
 Hedge a promise to limit losses, as pension funds and insurers do.
 &
 Collect an insurance premium (put-writing).\par\smallskip
-Buy the stock only if it falls to the strike. \\
-\bottomrule
-\end{tabularx}
-\end{table}
+Buy the stock only if it falls to the strike. \\*
+\end{longtable}
+\endgroup
 
 
 A put option\index{option!put} is insurance against a market fall. Its seller collects a premium up front and pays out when the market drops. If the insurance is priced above the expected claims, the seller earns a steady profit, with an occasional very bad year. Carr and Wu (2009) measured the \textbf{variance risk premium}\index{variance risk premium}, the gap between the volatility priced into options and the volatility that follows, and found it large and persistent. Figure~\ref{fig:18-vrp} shows the same pattern from 1990 to 2025: in almost every year, the volatility priced into index options was higher than the volatility the market then delivered, but in 2008 and 2020 the market moved far more than option prices had allowed for.
@@ -313,20 +323,21 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Implied above realized variance & \textbf{Yes} & Implied variance has been well above realized variance on average for the S\&P 500 and other indexes. & Carr and Wu (2009) \\
+Implied above realized variance & \textbf{Yes} & Implied variance has been well above realized variance on average for the S\&P 500 and other indexes. & Carr and Wu (2009) \\*
 \addlinespace[3pt]
-Option buyers pay for volatility & \textbf{Yes} & Zero-beta straddles lost about 3\% a week, and delta-hedged options lost money on average. & Coval and Shumway (2001); Bakshi and Kapadia (2003) \\
+Option buyers pay for volatility & \textbf{Yes} & Zero-beta straddles lost about 3\% a week, and delta-hedged options lost money on average. & Coval and Shumway (2001); Bakshi and Kapadia (2003) \\*
 \addlinespace[3pt]
-An economic reason for the premium & \textbf{Yes} & Demand for crash insurance raises option prices, and the premium predicts market returns. & Bollen and Whaley (2004); G\^arleanu, Pedersen and Poteshman (2009); Bollerslev, Tauchen and Zhou (2009) \\
+An economic reason for the premium & \textbf{Yes} & Demand for crash insurance raises option prices, and the premium predicts market returns. & Bollen and Whaley (2004); G\^arleanu, Pedersen and Poteshman (2009); Bollerslev, Tauchen and Zhou (2009) \\*
 \addlinespace[3pt]
-Covered calls against the index & \textbf{Partly} & The BuyWrite Index matched the S\&P 500's return with lower volatility from 1988 to 2006. & Whaley (2002); Callan Associates (2006) \\
+Covered calls against the index & \textbf{Partly} & The BuyWrite Index matched the S\&P 500's return with lower volatility from 1988 to 2006. & Whaley (2002); Callan Associates (2006) \\*
 \addlinespace[3pt]
-Covered calls after adjusting for beta & \textbf{Weakly} & Stock-market exposure drove most of the risk and return; the volatility bet was under 10\% of the risk. & Israelov and Nielsen (2015) \\
+Covered calls after adjusting for beta & \textbf{Weakly} & Stock-market exposure drove most of the risk and return; the volatility bet was under 10\% of the risk. & Israelov and Nielsen (2015) \\*
 \addlinespace[3pt]
-Risk adjustment that prices skewness & \textbf{Weakly} & Selling options can raise a Sharpe ratio without skill; measures that count crash losses show a smaller advantage. & Goetzmann, Ingersoll, Spiegel and Welch (2007) \\
+Risk adjustment that prices skewness & \textbf{Weakly} & Selling options can raise a Sharpe ratio without skill; measures that count crash losses show a smaller advantage. & Goetzmann, Ingersoll, Spiegel and Welch (2007) \\*
 \addlinespace[3pt]
-Mispricing, judged from put returns & \textbf{No} & Very negative, noisy put returns are expected in models with crashes, so they do not by themselves show mispricing. & Broadie, Chernov and Johannes (2009) \\
+Mispricing, judged from put returns & \textbf{No} & Very negative, noisy put returns are expected in models with crashes, so they do not by themselves show mispricing. & Broadie, Chernov and Johannes (2009) \\*
 \end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
 
 \textbf{What would change the picture.} The case for option-income strategies would strengthen if their alpha against a benchmark with the same beta stayed significant after skewness and costs over a full cycle of crises. It would weaken if costs and fees consistently ate up the premium.

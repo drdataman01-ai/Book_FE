@@ -415,18 +415,30 @@ Equivalently, the expected excess returns on bonds of every maturity do not chan
 
 The expectations hypothesis can be tested in three ways. They look different, but they ask the same question.
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.15\linewidth}>{\raggedright\arraybackslash}X@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.17\linewidth-0.15\linewidth-6\tabcolsep)/2\relax}>{\raggedright\arraybackslash}p{0.15\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.17\linewidth-0.15\linewidth-6\tabcolsep)/2\relax}@{}}
 \toprule
 Test & Regression & Expectations hypothesis & Alternative: time-varying term premium \\
 \midrule
-Fama--Bliss, excess returns & $rx(n)$ on $f(n) - y(1)$ & Slope 0 & Slope positive (1 if forward spreads are all premium) \\
-Fama--Bliss, short rates & $y(1)$ in $n-1$ years minus $y(1)$ today, on $f(n) - y(1)$ & Slope 1 & Slope below 1 \\
-Campbell--Shiller & Change in the long yield over a year, on the scaled yield spread & Slope 1 & Slope below 1, even negative \\
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Test & Regression & Expectations hypothesis & Alternative: time-varying term premium \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Fama--Bliss, excess returns & $rx(n)$ on $f(n) - y(1)$ & Slope 0 & Slope positive (1 if forward spreads are all premium) \\*
+Fama--Bliss, short rates & $y(1)$ in $n-1$ years minus $y(1)$ today, on $f(n) - y(1)$ & Slope 1 & Slope below 1 \\*
+Campbell--Shiller & Change in the long yield over a year, on the scaled yield spread & Slope 1 & Slope below 1, even negative \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 The first two tests are mirror images. The forward spread equals the expected change in short rates plus the expected excess return, so a spread that does not predict rising rates must predict excess returns. The Campbell--Shiller test asks the question through long yields. If the curve is steep because short rates are expected to rise, long yields should also rise as the years pass. If they fall instead, the steepness was a premium.
 
@@ -502,18 +514,19 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Forward spreads and excess returns & \textbf{No} & Forward spreads forecast excess returns on long bonds, which the hypothesis rules out. & Fama and Bliss (1987) \\
+Forward spreads and excess returns & \textbf{No} & Forward spreads forecast excess returns on long bonds, which the hypothesis rules out. & Fama and Bliss (1987) \\*
 \addlinespace[3pt]
-Long yields when the curve is steep & \textbf{No} & Long yields tended to fall, more so at longer maturities. & Campbell and Shiller (1991) \\
+Long yields when the curve is steep & \textbf{No} & Long yields tended to fall, more so at longer maturities. & Campbell and Shiller (1991) \\*
 \addlinespace[3pt]
-Forward rates at long horizons & \textbf{Partly} & They forecast short rates several years ahead, because rates mean-revert. & Fama and Bliss (1987) \\
+Forward rates at long horizons & \textbf{Partly} & They forecast short rates several years ahead, because rates mean-revert. & Fama and Bliss (1987) \\*
 \addlinespace[3pt]
-A constant term premium & \textbf{No} & One combination of forward rates forecast excess returns on all maturities and rose in bad times. & Cochrane and Piazzesi (2005) \\
+A constant term premium & \textbf{No} & One combination of forward rates forecast excess returns on all maturities and rose in bad times. & Cochrane and Piazzesi (2005) \\*
 \addlinespace[3pt]
-Strength of the forecasting evidence & \textbf{Disputed} & Robust tests weaken the evidence beyond level, slope and curvature. & Bauer and Hamilton (2018) \\
+Strength of the forecasting evidence & \textbf{Disputed} & Robust tests weaken the evidence beyond level, slope and curvature. & Bauer and Hamilton (2018) \\*
 \addlinespace[3pt]
-Value to an investor out of sample & \textbf{Partly} & Forecasts gave little economic value out of sample. & Thornton and Valente (2012) \\
+Value to an investor out of sample & \textbf{Partly} & Forecasts gave little economic value out of sample. & Thornton and Valente (2012) \\*
 \end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
 
 The evidence that the term premium changes is strong; the evidence that anyone can track it in real time is weaker. Neither rescues the expectations hypothesis, which needs the premium to be constant.

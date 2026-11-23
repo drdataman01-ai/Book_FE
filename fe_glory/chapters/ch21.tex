@@ -162,25 +162,35 @@ This working paper, ``Large and Deep Factor Models,'' shows that a deep SDF netw
 
 Kelly, Kuznetsov, Malamud and Xu\index{AI pricing model (AIPM)|textbf} used monthly U.S. returns from 1963 to 2022 from the open data of Jensen, Kelly and Pedersen (2023), also used in Chapter~\ref{ch:15}, with 132 characteristics, the tiniest stocks dropped and the 132 matching factors as test assets. Each model was estimated in rolling 60-month windows, giving out-of-sample returns from 1968 to 2022, and the neural models were averaged over ten random starts (Table~\ref{tab:22-aipm}).
 
-\begin{table}[htbp]
-\centering
+\begingroup
 \small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}lcc@{}}
 \caption{Out-of-sample performance of SDF models for U.S. stocks, 1968--2022, from Kelly, Kuznetsov, Malamud and Xu (2025), Table 1. The Sharpe ratio is annualized. The pricing error is the Hansen--Jagannathan distance on the 132 test factors; lower is better.}
-\label{tab:22-aipm}
-\begin{tabular}{@{}lcc@{}}
+\label{tab:22-aipm} \\
 \toprule
 Model & Sharpe ratio & Pricing error \\
 \midrule
-Fama--French six factors & 1.01 & 0.55 \\
-Hou--Xue--Zhang $q$-factors & 1.77 & 0.42 \\
-Linear in characteristics (no attention) & 3.60 & 0.15 \\
-Shallow random-feature network & 3.87 & 0.13 \\
-Linear attention & 3.89 & 0.14 \\
-Deep network without attention (MLP) & 4.31 & 0.13 \\
-Transformer (AIPM) & 4.57 & 0.09 \\
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Model & Sharpe ratio & Pricing error \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabular}
-\end{table}
+\endlastfoot
+Fama--French six factors & 1.01 & 0.55 \\*
+Hou--Xue--Zhang $q$-factors & 1.77 & 0.42 \\*
+Linear in characteristics (no attention) & 3.60 & 0.15 \\*
+Shallow random-feature network & 3.87 & 0.13 \\*
+Linear attention & 3.89 & 0.14 \\*
+Deep network without attention (MLP) & 4.31 & 0.13 \\*
+Transformer (AIPM) & 4.57 & 0.09 \\*
+\end{longtable}
+\endgroup
 
 The transformer had the highest Sharpe ratio and the smallest pricing error, about 30\% below the deep network without attention, with an alpha against it of about 1.9\% a year ($t = 8.4$). Its advantage held after 2002, with a Sharpe ratio of 3.37 against 3.07. More attention blocks helped, raising the Sharpe ratio from about 3.8 with one to about 4.6 with ten, while larger networks without attention did not. And it was best within each size group, though its Sharpe ratio was much lower among mega and large stocks than among small and micro stocks.
 
@@ -231,20 +241,21 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Against factor models & \textbf{Yes} & Far higher Sharpe ratio and smaller pricing errors than the Fama--French six and $q$-factors. & Kelly, Kuznetsov, Malamud and Xu (2025) \\
+Against factor models & \textbf{Yes} & Far higher Sharpe ratio and smaller pricing errors than the Fama--French six and $q$-factors. & Kelly, Kuznetsov, Malamud and Xu (2025) \\*
 \addlinespace[3pt]
-Against networks without attention & \textbf{Yes} & Pricing errors about 30\% smaller, with an alpha of about 1.9\% a year ($t = 8.4$). & Kelly, Kuznetsov, Malamud and Xu (2025) \\
+Against networks without attention & \textbf{Yes} & Pricing errors about 30\% smaller, with an alpha of about 1.9\% a year ($t = 8.4$). & Kelly, Kuznetsov, Malamud and Xu (2025) \\*
 \addlinespace[3pt]
-Deep SDFs in general & \textbf{Yes} & A network trained on the pricing condition beat its benchmarks, mostly through familiar characteristics. & Chen, Pelger and Zhu (2024) \\
+Deep SDFs in general & \textbf{Yes} & A network trained on the pricing condition beat its benchmarks, mostly through familiar characteristics. & Chen, Pelger and Zhu (2024) \\*
 \addlinespace[3pt]
-After 2002 & \textbf{Partly} & Smaller but still present: a Sharpe ratio of 3.37 against 3.07. & Kelly, Kuznetsov, Malamud and Xu (2025) \\
+After 2002 & \textbf{Partly} & Smaller but still present: a Sharpe ratio of 3.37 against 3.07. & Kelly, Kuznetsov, Malamud and Xu (2025) \\*
 \addlinespace[3pt]
-Large stocks & \textbf{Weakly} & Best within each size group, but much weaker among mega and large stocks. & Kelly, Kuznetsov, Malamud and Xu (2025) \\
+Large stocks & \textbf{Weakly} & Best within each size group, but much weaker among mega and large stocks. & Kelly, Kuznetsov, Malamud and Xu (2025) \\*
 \addlinespace[3pt]
-After trading costs & \textbf{Untested} & No costs were reported. & None yet \\
+After trading costs & \textbf{Untested} & No costs were reported. & None yet \\*
 \addlinespace[3pt]
-Independent replication & \textbf{Untested} & A working paper by a single team. & None yet \\
+Independent replication & \textbf{Untested} & A working paper by a single team. & None yet \\*
 \end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
 
 \textbf{What would change the picture.} The economic form would gain support if a cost-aware version kept its advantage among large stocks and an independent team reproduced it. It would lose support if a simple factor-timing rule explained the transformer's returns.

@@ -451,12 +451,12 @@ Table~\ref{tab:04-factor-zoo} represent some of the major ideas
 behind this large body of research. Understanding these broad
 categories makes the factor zoo easier to navigate.
 
-\begin{table}[htbp]
-\centering
-\caption{Selected Factors in Empirical Asset Pricing}
-\label{tab:04-factor-zoo}
+\begingroup
 \small
-\begin{tabularx}{\textwidth}{l l X l}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.08\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}p{\dimexpr \textwidth-0.08\linewidth-0.17\linewidth-0.22\linewidth-8\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.22\linewidth}}
+\caption{Selected Factors in Empirical Asset Pricing}
+\label{tab:04-factor-zoo} \\
 \hline
 \textbf{Factor} & \textbf{Name} & \textbf{Economic meaning} & \textbf{Key study} \\
 \hline
@@ -500,8 +500,8 @@ BAB & Betting Against Beta
 & Low-beta stocks tend to outperform high-beta stocks on a risk-adjusted basis.
 & Frazzini and Pedersen (2014) \\
 \hline
-\end{tabularx}
-\end{table}
+\end{longtable}
+\endgroup
 
 A few entries in the table use specialist terms. \emph{Accruals} are the part of a company's reported profit that has not yet arrived as cash, such as sales made on credit, so a firm with high accruals reports profits that are less backed by money in the bank. \emph{Liquidity risk} is the danger that a stock becomes hard to sell without pushing its price down, usually just when many investors want out. \emph{Idiosyncratic volatility} is the part of a stock's ups and downs that has nothing to do with the market as a whole.
 
@@ -741,26 +741,38 @@ The lab ends by asking you to reach your own verdict on the scale of Section~\re
 
 The published studies point to a clear pattern: \textbf{adding size and value to the market explains differences in portfolio returns that beta alone cannot, but many of the factors proposed since are likely to be false discoveries, so a new factor must clear a higher bar.} The table summarizes the evidence as of November 2026.
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.19\linewidth-0.13\linewidth-0.23\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
 \toprule
 Situation & Holds? & Why & Evidence \\
 \midrule
-Beta alone & \textbf{No} & Average returns rise with beta less steeply than the CAPM predicts, and once size and book-to-market are included, beta adds almost nothing. & Black, Jensen and Scholes (1972); Fama and French (1992) \\
-\addlinespace[3pt]
-Size and value across the 25 portfolios & \textbf{Yes} & Adding SMB and HML raises the $R^2$ above 90\% for most portfolios and shrinks their alphas toward zero. & Fama and French (1993) \\
-\addlinespace[3pt]
-Value alongside profitability and investment & \textbf{Partly} & Once profitability and investment factors are added, the value factor adds little explanatory power. & Fama and French (2015) \\
-\addlinespace[3pt]
-Why size and value earn a premium & \textbf{Disputed} & One reading treats the premiums as payment for risk, the other as the result of investors' mistakes, and value stocks did not do worse in recessions. & Fama and French (1993); Lakonishok, Shleifer and Vishny (1994) \\
-\addlinespace[3pt]
-Apparent skill of fund managers & \textbf{Yes} & Much of what looked like skill under the CAPM is exposure to factors, and few funds cover their costs. & Carhart (1997); Fama and French (2010) \\
-\addlinespace[3pt]
-Hundreds of new factors judged at $t > 2$ & \textbf{No} & So many factors have been tested on the same data that many are false discoveries, and a new factor should clear a $t$ of about 3. & Cochrane (2011); Harvey, Liu and Zhu (2016) \\
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Beta alone & \textbf{No} & Average returns rise with beta less steeply than the CAPM predicts, and once size and book-to-market are included, beta adds almost nothing. & Black, Jensen and Scholes (1972); Fama and French (1992) \\*
+\addlinespace[3pt]
+Size and value across the 25 portfolios & \textbf{Yes} & Adding SMB and HML raises the $R^2$ above 90\% for most portfolios and shrinks their alphas toward zero. & Fama and French (1993) \\*
+\addlinespace[3pt]
+Value alongside profitability and investment & \textbf{Partly} & Once profitability and investment factors are added, the value factor adds little explanatory power. & Fama and French (2015) \\*
+\addlinespace[3pt]
+Why size and value earn a premium & \textbf{Disputed} & One reading treats the premiums as payment for risk, the other as the result of investors' mistakes, and value stocks did not do worse in recessions. & Fama and French (1993); Lakonishok, Shleifer and Vishny (1994) \\*
+\addlinespace[3pt]
+Apparent skill of fund managers & \textbf{Yes} & Much of what looked like skill under the CAPM is exposure to factors, and few funds cover their costs. & Carhart (1997); Fama and French (2010) \\*
+\addlinespace[3pt]
+Hundreds of new factors judged at $t > 2$ & \textbf{No} & So many factors have been tested on the same data that many are false discoveries, and a new factor should clear a $t$ of about 3. & Cochrane (2011); Harvey, Liu and Zhu (2016) \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 A factor should therefore meet three conditions before it is accepted:
 

@@ -89,20 +89,30 @@ A walk-forward evaluation pretends to stand at each date in history in turn, bui
   \item Advance to $t+1$, update the training window, and repeat until the sample end.
 \end{enumerate}
 
-\begin{table}[htbp]
-\centering
+\begingroup
 \small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.18\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.95\linewidth-0.18\linewidth-0.24\linewidth-0.24\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.24\linewidth}>{\raggedright\arraybackslash}p{0.24\linewidth}@{}}
 \caption{Expanding vs. Rolling Window Architectures}
-\label{tab:09-windows}
-\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.18\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.24\linewidth}>{\raggedright\arraybackslash}p{0.24\linewidth}@{}}
+\label{tab:09-windows} \\
 \toprule
 Window Type & Training Data Used at Date $t$ & Key Advantage & Primary Limitation \\
 \midrule
-\textbf{Expanding} & All observations from start to $t$ & Uses maximum data; minimizes parameter estimation noise. & Adapts slowly if underlying data-generating process changes. \\
-\textbf{Rolling} & Fixed window of most recent $w$ observations & Adapts quickly to structural shifts. & Subject to higher parameter estimation error; sensitive to choice of $w$. \\
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Window Type & Training Data Used at Date $t$ & Key Advantage & Primary Limitation \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{table}
+\endlastfoot
+\textbf{Expanding} & All observations from start to $t$ & Uses maximum data; minimizes parameter estimation noise. & Adapts slowly if underlying data-generating process changes. \\*
+\textbf{Rolling} & Fixed window of most recent $w$ observations & Adapts quickly to structural shifts. & Subject to higher parameter estimation error; sensitive to choice of $w$. \\*
+\end{longtable}
+\endgroup
 
 In words, the out-of-sample $R^2$ asks how much smaller the model's forecast errors are than the errors of simply expecting the average past return. Out-of-sample forecast accuracy is evaluated using the Campbell and Thompson (2008) out-of-sample $R^2$:
 \begin{equation}
@@ -135,23 +145,33 @@ Data leakage is any way in which information from the future sneaks into a test 
 \section{Benchmarks That Are Hard to Beat}
 \label{sec:09-benchmarks}
 
-\begin{table}[htbp]
-\centering
+\begingroup
 \small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.30\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.95\linewidth-0.22\linewidth-0.30\linewidth-4\tabcolsep\relax}@{}}
 \caption{Natural Hard-to-Beat Forecasting Benchmarks}
-\label{tab:09-benchmarks}
-\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.30\linewidth}>{\raggedright\arraybackslash}X@{}}
+\label{tab:09-benchmarks} \\
 \toprule
 Target Quantity & Natural Benchmark & Rationale \\
 \midrule
-Equity Premium & Historical mean return ($\bar{r}_t$) & Minimal estimation noise; avoids unstable parameter fits. \\
-Exchange Rates / Prices & Random Walk ($y_{t+1} = y_t$) & Meese and Rogoff (1983) empirical result. \\
-Interest Rates / Yields & Random Walk or Forward Rate & Yields are highly persistent. \\
-Volatility & Realized Volatility / EWMA & Volatility exhibits strong clustering. \\
-Macroeconomic Variables & Survey Consensus / Last Value & Professional surveys aggregate public information efficiently. \\
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Target Quantity & Natural Benchmark & Rationale \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{table}
+\endlastfoot
+Equity Premium & Historical mean return ($\bar{r}_t$) & Minimal estimation noise; avoids unstable parameter fits. \\*
+Exchange Rates / Prices & Random Walk ($y_{t+1} = y_t$) & Meese and Rogoff (1983) empirical result. \\*
+Interest Rates / Yields & Random Walk or Forward Rate & Yields are highly persistent. \\*
+Volatility & Realized Volatility / EWMA & Volatility exhibits strong clustering. \\*
+Macroeconomic Variables & Survey Consensus / Last Value & Professional surveys aggregate public information efficiently. \\*
+\end{longtable}
+\endgroup
 
 A random walk forecast simply says that tomorrow's value will equal today's. It sounds naive, but it is remarkably hard to beat. Meese and Rogoff (1983) found that the economic models of exchange rates used by professionals could not forecast better than this naive guess, a result that has proved durable. The lesson for any forecasting claim is to ask first what the simplest sensible forecast would have achieved.
 
@@ -251,28 +271,40 @@ The lab ends by asking you to reach your own verdict on the scale of Section~\re
 
 The published studies point to a clear pattern: \textbf{statistical significance in sample rarely carries over to forecasting out of sample, and most single predictors fail to beat the historical mean, although economic restrictions and combined forecasts recover a modest gain.} The table summarizes the evidence as of November 2026.
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.19\linewidth-0.13\linewidth-0.23\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
 \toprule
 Situation & Holds? & Why & Evidence \\
 \midrule
-In-sample predictability & \textbf{Yes} & The dividend--price ratio and other variables predict the equity premium in regressions fitted to the whole history. & Fama and French (1988); Campbell and Shiller (1988) \\
-\addlinespace[3pt]
-Single predictors out of sample & \textbf{No} & Most predictors fail to beat the historical mean in real time, and several do worse. & Goyal and Welch (2008); Goyal, Welch and Zafirov (2024) \\
-\addlinespace[3pt]
-Forecasts with economic restrictions & \textbf{Partly} & Ruling out wrong-signed slopes and negative premium forecasts recovers a modest but useful predictability. & Campbell and Thompson (2008) \\
-\addlinespace[3pt]
-Combined forecasts & \textbf{Partly} & An equal-weighted average of many weak forecasts beats each one by reducing the variance of the forecast. & Rapach, Strauss and Zhou (2010) \\
-\addlinespace[3pt]
-The dividend yield after 1990 & \textbf{No} & Low dividend yields signalled poor returns throughout one of the largest bull markets in history. & Lettau and Van Nieuwerburgh (2008); Goyal and Welch (2008) \\
-\addlinespace[3pt]
-The best of many rules & \textbf{No} & Once the search across thousands of rules is accounted for, the best rule is indistinguishable from chance. & Sullivan, Timmermann and White (1999); White (2000) \\
-\addlinespace[3pt]
-Published return patterns in general & \textbf{Weaker} & Returns fall by about a quarter out of sample and by more than half after publication. & McLean and Pontiff (2016) \\
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+In-sample predictability & \textbf{Yes} & The dividend--price ratio and other variables predict the equity premium in regressions fitted to the whole history. & Fama and French (1988); Campbell and Shiller (1988) \\*
+\addlinespace[3pt]
+Single predictors out of sample & \textbf{No} & Most predictors fail to beat the historical mean in real time, and several do worse. & Goyal and Welch (2008); Goyal, Welch and Zafirov (2024) \\*
+\addlinespace[3pt]
+Forecasts with economic restrictions & \textbf{Partly} & Ruling out wrong-signed slopes and negative premium forecasts recovers a modest but useful predictability. & Campbell and Thompson (2008) \\*
+\addlinespace[3pt]
+Combined forecasts & \textbf{Partly} & An equal-weighted average of many weak forecasts beats each one by reducing the variance of the forecast. & Rapach, Strauss and Zhou (2010) \\*
+\addlinespace[3pt]
+The dividend yield after 1990 & \textbf{No} & Low dividend yields signalled poor returns throughout one of the largest bull markets in history. & Lettau and Van Nieuwerburgh (2008); Goyal and Welch (2008) \\*
+\addlinespace[3pt]
+The best of many rules & \textbf{No} & Once the search across thousands of rules is accounted for, the best rule is indistinguishable from chance. & Sullivan, Timmermann and White (1999); White (2000) \\*
+\addlinespace[3pt]
+Published return patterns in general & \textbf{Weaker} & Returns fall by about a quarter out of sample and by more than half after publication. & McLean and Pontiff (2016) \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 \textbf{What would change the picture.} The claim would gain support if a predictor chosen in advance kept beating the historical mean after publication, by enough to raise an investor's certainty-equivalent return after costs, and would weaken further if the modest gains from restrictions and combinations disappeared in new data.
 

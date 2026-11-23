@@ -104,12 +104,13 @@ Source & What it holds & Access \\
 \endfoot
 \bottomrule
 \endlastfoot
-CRSP (Center for Research in Security Prices) & Daily and monthly returns, prices, shares and delisting information for U.S. stocks since 1926, including companies that no longer exist & Subscription, usually through WRDS \\
-Compustat & Company accounting data: balance sheets, income statements, cash flows & Subscription \\
-Kenneth R. French Data Library & Factor returns and sorted portfolio returns built from CRSP and Compustat & Free \\
-FRED (Federal Reserve Bank of St.\ Louis) & Interest rates, inflation, macroeconomic series; ALFRED holds earlier vintages & Free \\
-Exchange and vendor feeds (Yahoo Finance and others) & Recent prices and adjusted prices for currently listed securities & Free or commercial; coverage and adjustment methods vary \\
+CRSP (Center for Research in Security Prices) & Daily and monthly returns, prices, shares and delisting information for U.S. stocks since 1926, including companies that no longer exist & Subscription, usually through WRDS \\*
+Compustat & Company accounting data: balance sheets, income statements, cash flows & Subscription \\*
+Kenneth R. French Data Library & Factor returns and sorted portfolio returns built from CRSP and Compustat & Free \\*
+FRED (Federal Reserve Bank of St.\ Louis) & Interest rates, inflation, macroeconomic series; ALFRED holds earlier vintages & Free \\*
+Exchange and vendor feeds (Yahoo Finance and others) & Recent prices and adjusted prices for currently listed securities & Free or commercial; coverage and adjustment methods vary \\*
 \end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 \endgroup
 
 Most universities access CRSP\index{CRSP} and Compustat\index{Compustat} through WRDS (Wharton Research Data Services), a subscription platform.
@@ -235,20 +236,32 @@ Most published research on U.S. stocks rests on CRSP and Compustat, the two comm
 
 Many universities subscribe to these databases, but many readers will not have access to them. The labs in this book therefore use free sources that are either built from these databases or comparable to them:
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.26\linewidth}@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.22\linewidth-0.26\linewidth-4\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.26\linewidth}@{}}
 \toprule
 Free source & What it offers & Main limitation \\
 \midrule
-Kenneth R. French Data Library & Factor returns and portfolios sorted on size, value, momentum and more, built from CRSP and Compustat, since 1926 & Portfolio-level only; no individual stocks \\
-FRED (Federal Reserve Bank of St.\ Louis) & Interest rates and economic series; its ALFRED archive keeps past vintages of revised data & Economic series, not stock-level data \\
-Open Source Asset Pricing (Chen and Zimmermann) & Portfolio returns for over 200 published predictors & Full firm-level signals require WRDS \\
-Jensen--Kelly--Pedersen global factors & 153 factors across 93 countries & Factor-level only \\
-Yahoo Finance and similar & Daily prices for current stocks, ETFs and indexes & Mostly survivors only; adjustments not always documented; unofficial access methods can break \\
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Free source & What it offers & Main limitation \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Kenneth R. French Data Library & Factor returns and portfolios sorted on size, value, momentum and more, built from CRSP and Compustat, since 1926 & Portfolio-level only; no individual stocks \\*
+FRED (Federal Reserve Bank of St.\ Louis) & Interest rates and economic series; its ALFRED archive keeps past vintages of revised data & Economic series, not stock-level data \\*
+Open Source Asset Pricing (Chen and Zimmermann) & Portfolio returns for over 200 published predictors & Full firm-level signals require WRDS \\*
+Jensen--Kelly--Pedersen global factors & 153 factors across 93 countries & Factor-level only \\*
+Yahoo Finance and similar & Daily prices for current stocks, ETFs and indexes & Mostly survivors only; adjustments not always documented; unofficial access methods can break \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 A \textbf{predictor}, also called a \textbf{signal}, is a variable that a study uses to forecast returns, such as a valuation ratio or a past return. An ETF, or exchange-traded fund, is a fund whose shares trade on an exchange like a stock, and many ETFs simply track an index. The last row of the table deserves particular attention. Free stock-price sites are convenient, but they mostly cover companies that still exist today. A backtest that downloads today's stocks from such a site and runs them through the past therefore has survivorship bias built into it, which is the problem that Section~\ref{sec:02-survivorship} describes.
 
@@ -349,21 +362,33 @@ A backtest is honest only if every decision in it uses information that was avai
 
 The table below lists the common sources of look-ahead bias and the standard treatment against each.
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{0.9\linewidth}{@{}r>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.32\linewidth}@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedleft\arraybackslash}p{0.03\linewidth}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.03\linewidth-0.16\linewidth-0.32\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.32\linewidth}@{}}
 \toprule
  & Source & What goes wrong & Standard treatment \\
 \midrule
-1 & Same-period execution & A signal computed from today's closing price is used to trade at that same close & Trade on the next period's return: lag every signal by at least one period \\
-2 & Accounting publication lags & Annual results for a December fiscal year are used in January, though they are published weeks or months later & Lag accounting data; Fama and French (1993) use fiscal-year data only from the following June \\
-3 & Revised economic data & GDP or employment figures are used as revised years later, not as first reported & Use real-time vintages, such as FRED's ALFRED archive \\
-4 & Index membership & Today's index members are used for the past & Use historical membership lists \\
-5 & Full-sample choices & Parameters, thresholds or variable definitions are chosen using the whole sample, then ``tested'' on it & Choose using only data available at each date (walk-forward; Chapter~\ref{ch:06}) \\
-6 & Full-sample scaling & Signals are standardized with means and volatilities computed over the whole sample & Use expanding or rolling estimates \\
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+ & Source & What goes wrong & Standard treatment \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+1 & Same-period execution & A signal computed from today's closing price is used to trade at that same close & Trade on the next period's return: lag every signal by at least one period \\*
+2 & Accounting publication lags & Annual results for a December fiscal year are used in January, though they are published weeks or months later & Lag accounting data; Fama and French (1993) use fiscal-year data only from the following June \\*
+3 & Revised economic data & GDP or employment figures are used as revised years later, not as first reported & Use real-time vintages, such as FRED's ALFRED archive \\*
+4 & Index membership & Today's index members are used for the past & Use historical membership lists \\*
+5 & Full-sample choices & Parameters, thresholds or variable definitions are chosen using the whole sample, then ``tested'' on it & Choose using only data available at each date (walk-forward; Chapter~\ref{ch:06}) \\*
+6 & Full-sample scaling & Signals are standardized with means and volatilities computed over the whole sample & Use expanding or rolling estimates \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 
 Three terms in the table need explaining. To \textbf{lag} a signal is to use it only from a later period, so that it was already known before the trade. A \textbf{walk-forward}\index{walk-forward evaluation|textbf} test chooses its settings at each date using only the data available before that date, just as an investor in real time would have to. An \textbf{expanding} estimate uses all the data up to each date, whereas a \textbf{rolling} estimate uses a window of fixed length, such as the past five years. GDP, or gross domestic product, is the total value of goods and services an economy produces, and its first estimate is often revised substantially in later years. To \textbf{standardize} a signal is to rescale it so that it has an average of zero and a typical swing of one, which requires knowing its average and volatility.
@@ -468,18 +493,30 @@ Three defenses work, and later chapters use all of them.
 
 \textbf{Part B: Survivorship bias in a market where the truth is known.} Following Brown and colleagues (1992), the lab simulates about 2,000 listed companies over 30 years, all with the \textbf{same expected return}, so no stock or strategy has a real advantage. Following Shumway (1997), a company whose price falls below 20\% of its listing price is delisted with a final return of $-30$\%. From this one history the lab builds three datasets: the full data, the same data without the final delisting month, and the survivors only. On each, it measures the equal-weighted market return and a strategy that buys the most volatile fifth of stocks and sells the least volatile fifth (Lab Figure~\ref{ch:02}.2). With the default settings (seed 2026):
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}r@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.22\linewidth-0.22\linewidth-0.12\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedleft\arraybackslash}p{0.12\linewidth}@{}}
 \toprule
 Dataset & Equal-weighted compound return & Volatile minus calm, per year & t-statistic \\
 \midrule
-Full data & 9.3\% & $-1.2$\% & $-2.2$ \\
-Missing delisting returns & 10.7\% & $+2.0$\% & 3.5 \\
-Survivors only & 14.0\% & $+12.0$\% & 14.7 \\
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Dataset & Equal-weighted compound return & Volatile minus calm, per year & t-statistic \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Full data & 9.3\% & $-1.2$\% & $-2.2$ \\*
+Missing delisting returns & 10.7\% & $+2.0$\% & 3.5 \\*
+Survivors only & 14.0\% & $+12.0$\% & 14.7 \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 Leaving out only the delisting returns flips the strategy's loss into a gain, and keeping only the survivors adds almost five points a year to the market's return and creates a ``volatility premium'' of 12\% a year with a t-statistic of 14.7. None of it is real.
 
@@ -496,26 +533,38 @@ The lab ends by asking you to write one sentence for each problem, reach your ow
 
 The published studies point to a clear pattern: \textbf{free, public data can support a reliable backtest, but only when the data include failed companies and the backtest avoids hindsight and checks how its portfolios are weighted.} The table summarizes the evidence as of November 2026.
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.19\linewidth-0.13\linewidth-0.23\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
 \toprule
 Situation & Holds? & Why & Evidence \\
 \midrule
-Portfolio data from the French library and similar sources & \textbf{Yes} & These data are built from CRSP, so they include companies that later failed, together with their delisting returns. & Kenneth R. French Data Library; Chen and Zimmermann; Jensen, Kelly and Pedersen \\
-\addlinespace[3pt]
-Today's stocks from a free price site & \textbf{No} & The companies that failed are missing, so returns are overstated and false patterns can appear. & Brown, Goetzmann, Ibbotson and Ross (1992); Elton, Gruber and Blake (1996) \\
-\addlinespace[3pt]
-Data with missing delisting returns & \textbf{No} & The final losses of failing companies, about $-30$\% on average and more on Nasdaq, are left out. & Shumway (1997); Shumway and Warther (1999) \\
-\addlinespace[3pt]
-Signals or settings chosen with hindsight & \textbf{No} & Using figures before they were published, or choosing a rule's settings over the whole sample, makes results look better than any investor could have achieved. & Fama and French (1993); Sullivan, Timmermann and White (1999) \\
-\addlinespace[3pt]
-Equal-weighted results & \textbf{Partly} & Micro-caps are about 60\% of listed stocks but only 3\% of market value, and many anomalies disappear without them. & Fama and French (2008); Hou, Xue and Zhang (2020) \\
-\addlinespace[3pt]
-Findings tested only on the data where they were found & \textbf{Partly} & The whole field has searched the same data, and effects such as size weakened after they were published. & Lo and MacKinlay (1990); Schwert (2003); Harvey, Liu and Zhu (2016) \\
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Portfolio data from the French library and similar sources & \textbf{Yes} & These data are built from CRSP, so they include companies that later failed, together with their delisting returns. & Kenneth R. French Data Library; Chen and Zimmermann; Jensen, Kelly and Pedersen \\*
+\addlinespace[3pt]
+Today's stocks from a free price site & \textbf{No} & The companies that failed are missing, so returns are overstated and false patterns can appear. & Brown, Goetzmann, Ibbotson and Ross (1992); Elton, Gruber and Blake (1996) \\*
+\addlinespace[3pt]
+Data with missing delisting returns & \textbf{No} & The final losses of failing companies, about $-30$\% on average and more on Nasdaq, are left out. & Shumway (1997); Shumway and Warther (1999) \\*
+\addlinespace[3pt]
+Signals or settings chosen with hindsight & \textbf{No} & Using figures before they were published, or choosing a rule's settings over the whole sample, makes results look better than any investor could have achieved. & Fama and French (1993); Sullivan, Timmermann and White (1999) \\*
+\addlinespace[3pt]
+Equal-weighted results & \textbf{Partly} & Micro-caps are about 60\% of listed stocks but only 3\% of market value, and many anomalies disappear without them. & Fama and French (2008); Hou, Xue and Zhang (2020) \\*
+\addlinespace[3pt]
+Findings tested only on the data where they were found & \textbf{Partly} & The whole field has searched the same data, and effects such as size weakened after they were published. & Lo and MacKinlay (1990); Schwert (2003); Harvey, Liu and Zhu (2016) \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 A backtest built on free data can therefore be trusted only if it uses the right returns, includes the failures, uses only what was known at the time and checks its weighting. The checklist in Section~\ref{sec:02-checklist} turns these conditions into questions.
 

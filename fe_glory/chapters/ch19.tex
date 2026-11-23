@@ -523,25 +523,35 @@ A linear regression multiplies each predictor by a coefficient, adds the results
 
 Most of a network's vocabulary is new only in name. Table~\ref{tab:20-nnterms} translates it. One term needs care: in network language, the constant is called the \emph{bias}. This is simply the intercept, and it has nothing to do with the bias of the bias--variance trade-off.
 
-\begin{table}[htbp]
-\centering
+\begingroup
 \small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.38\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.85\linewidth-0.38\linewidth-2\tabcolsep\relax}@{}}
 \caption{Regression terms and their neural-network names.}
-\label{tab:20-nnterms}
-\begin{tabularx}{0.85\linewidth}{@{}>{\raggedright\arraybackslash}p{0.38\linewidth}>{\raggedright\arraybackslash}X@{}}
+\label{tab:20-nnterms} \\
 \toprule
 Regression & Neural network \\
 \midrule
-Predictors $x_1, \dots, x_p$ & Inputs (the input layer) \\
-Coefficients $\beta_1, \dots, \beta_p$ & Weights \\
-Intercept $\alpha$ & Bias \\
-Linear predictor $\alpha + \beta^{\top}x$ & A neuron's weighted sum \\
-Link function, such as the logistic & Activation function \\
-Fitted value & Output \\
-Estimation (least squares, maximum likelihood) & Training (gradient descent) \\
+\endfirsthead
+\multicolumn{2}{@{}l}{\emph{(continued)}} \\
+\toprule
+Regression & Neural network \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{table}
+\endlastfoot
+Predictors $x_1, \dots, x_p$ & Inputs (the input layer) \\*
+Coefficients $\beta_1, \dots, \beta_p$ & Weights \\*
+Intercept $\alpha$ & Bias \\*
+Linear predictor $\alpha + \beta^{\top}x$ & A neuron's weighted sum \\*
+Link function, such as the logistic & Activation function \\*
+Fitted value & Output \\*
+Estimation (least squares, maximum likelihood) & Training (gradient descent) \\*
+\end{longtable}
+\endgroup
 
 \subsection{Logistic regression is a network too}
 
@@ -692,46 +702,66 @@ Because the two statistics use different benchmarks, they cannot be compared dir
 
 Return prediction is the most publicized use of machine learning in finance, but it is far from the only one, and it is among the hardest. Before putting the claim on trial, it helps to see where the methods succeed and where they struggle, because the contrast explains why return prediction is such a demanding test. Table~\ref{tab:20-applications} lists the main applications and where this book treats them.
 
-\begin{table}[htbp]
-\centering
+\begingroup
 \small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.21\linewidth}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.95\linewidth-0.21\linewidth-0.25\linewidth-4\tabcolsep\relax}@{}}
 \caption{Applications of machine learning in finance.}
-\label{tab:20-applications}
-\begin{tabularx}{0.95\linewidth}{@{}>{\raggedright\arraybackslash}p{0.21\linewidth}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}X@{}}
+\label{tab:20-applications} \\
 \toprule
 Application & Target & Typical methods and where the book treats it \\
 \midrule
-Cross-section of stock returns & next month's return relative to other stocks & penalized regression, boosted trees, neural networks; this chapter \\
-Asset pricing models & factors and stocks' exposures to them & principal components, IPCA, autoencoders; this section \\
-Bond and currency premia & excess returns on bonds or currencies & penalized regression and neural networks on yields and macroeconomic data; Chapters~\ref{ch:12} and~\ref{ch:11} \\
-Volatility and risk & next period's realized volatility or tail loss & tree ensembles and networks against HAR and GARCH; Chapters~\ref{ch:07} and~\ref{ch:08} \\
-Credit risk & whether a borrower defaults & gradient boosting, random forests \\
-Fraud and anomaly detection & whether a transaction or trade is unusual & isolation forests, autoencoders (often unsupervised); Kuo (2024a) \\
-Text and news & sentiment, or the return after a news item & dictionaries, embeddings, language models \\
-Portfolio construction & portfolio weights directly & shrinkage, hierarchical clustering; Chapter~\ref{ch:09} \\
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Application & Target & Typical methods and where the book treats it \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{table}
+\endlastfoot
+Cross-section of stock returns & next month's return relative to other stocks & penalized regression, boosted trees, neural networks; this chapter \\*
+Asset pricing models & factors and stocks' exposures to them & principal components, IPCA, autoencoders; this section \\*
+Bond and currency premia & excess returns on bonds or currencies & penalized regression and neural networks on yields and macroeconomic data; Chapters~\ref{ch:12} and~\ref{ch:11} \\*
+Volatility and risk & next period's realized volatility or tail loss & tree ensembles and networks against HAR and GARCH; Chapters~\ref{ch:07} and~\ref{ch:08} \\*
+Credit risk & whether a borrower defaults & gradient boosting, random forests \\*
+Fraud and anomaly detection & whether a transaction or trade is unusual & isolation forests, autoencoders (often unsupervised); Kuo (2024a) \\*
+Text and news & sentiment, or the return after a news item & dictionaries, embeddings, language models \\*
+Portfolio construction & portfolio weights directly & shrinkage, hierarchical clustering; Chapter~\ref{ch:09} \\*
+\end{longtable}
+\endgroup
 
 \subsection{Why success varies}
 
 Machine learning has excelled where three conditions hold: there is a great deal of data, the signal is strong, and the relationship stays the same once it is learned. Israel, Kelly and Moskowitz (2020) pointed out that return prediction fails all three (Table~\ref{tab:20-conditions}).
 
-\begin{table}[htbp]
-\centering
+\begingroup
 \small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.2\linewidth-4\tabcolsep)/2\relax}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.2\linewidth-4\tabcolsep)/2\relax}@{}}
 \caption{Why return prediction is harder than other machine-learning tasks.}
-\label{tab:20-conditions}
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\label{tab:20-conditions} \\
 \toprule
 Condition & Image recognition, credit scoring & Return prediction \\
 \midrule
-Amount of data & millions of labeled examples & a few hundred independent months \\
-Strength of signal & strong: the label is usually clear & faint: most of the return is noise \\
-Stability & stable: images and borrowers do not change because a model exists & unstable: investors trade away any pattern that becomes known \\
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Condition & Image recognition, credit scoring & Return prediction \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{table}
+\endlastfoot
+Amount of data & millions of labeled examples & a few hundred independent months \\*
+Strength of signal & strong: the label is usually clear & faint: most of the return is noise \\*
+Stability & stable: images and borrowers do not change because a model exists & unstable: investors trade away any pattern that becomes known \\*
+\end{longtable}
+\endgroup
 
 Credit scoring\index{credit scoring} shows the favorable case. Khandani, Kim and Lo (2010) trained models on the transaction and credit-bureau data of a large bank's customers. Their forecasts of consumer delinquencies were good enough to reduce losses substantially, and lenders now use gradient-boosted trees routinely. Return prediction is the unfavorable case. In the terms of Figure~\ref{fig:09-biasvar}, little data and a faint signal push the best model far toward the simple end. The flexibility that makes machine learning powerful elsewhere becomes a source of variance here. This is why the claim on trial is the hardest test the methods face in finance.
 
@@ -755,24 +785,34 @@ The claim has three parts, each of which can fail on its own. The \textbf{statis
 
 Gu, Kelly and Xiu\index{Gu, Kelly and Xiu (2020)|textbf} used monthly CRSP\index{CRSP} returns for almost 30,000 U.S. stocks from 1957 to 2016, with 94 characteristics, 8 macroeconomic predictors and 74 industry indicators, about 920 inputs in all once interacted. Models were trained on 1957--1974, validated on 1975--1986 and tested on 1987--2016 (Table~\ref{tab:20-gkx}).
 
-\begin{table}[htbp]
-\centering
+\begingroup
 \small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{\dimexpr 0.8\linewidth-0.3\linewidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.3\linewidth}@{}}
 \caption{Monthly out-of-sample $R^2$ for individual U.S. stocks, 1987--2016, from Gu, Kelly and Xiu (2020).}
-\label{tab:20-gkx}
-\begin{tabularx}{0.8\linewidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.3\linewidth}@{}}
+\label{tab:20-gkx} \\
 \toprule
 Model & Out-of-sample $R^2$ (\%) \\
 \midrule
-OLS, all inputs & $-3.46$ \\
-OLS-3 (size, book-to-market, momentum) & 0.16 \\
-Elastic net & 0.11 \\
-Random forest & 0.33 \\
-Gradient-boosted trees & 0.34 \\
-Neural networks (one to five layers) & 0.33 to 0.40 \\
+\endfirsthead
+\multicolumn{2}{@{}l}{\emph{(continued)}} \\
+\toprule
+Model & Out-of-sample $R^2$ (\%) \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{table}
+\endlastfoot
+OLS, all inputs & $-3.46$ \\*
+OLS-3 (size, book-to-market, momentum) & 0.16 \\*
+Elastic net & 0.11 \\*
+Random forest & 0.33 \\*
+Gradient-boosted trees & 0.34 \\*
+Neural networks (one to five layers) & 0.33 to 0.40 \\*
+\end{longtable}
+\endgroup
 
 A long--short portfolio of the top and bottom deciles of neural-network forecasts earned an annualized Sharpe ratio\index{Sharpe ratio} of 1.35 value-weighted and 2.45 equal-weighted\index{index weighting!equal-weighted}, against 0.61 and 0.83 for OLS-3. All the methods relied on the same signals: price trends (momentum and short-term reversal\index{short-term reversal}), liquidity\index{liquidity} (size, volume and the bid--ask spread\index{bid--ask spread}) and risk (volatility\index{idiosyncratic volatility} and beta\index{beta}), and the networks' edge came mainly from interactions among them. OLS with all inputs was a disaster, so regularization is essential, and the gap between equal- and value-weighted results suggests that much of the profit comes from small stocks.
 
@@ -881,18 +921,19 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Out-of-sample forecasts in broad samples & \textbf{Yes} & Networks and trees roughly doubled the performance of leading regression strategies; unregularized OLS did worst. & Gu, Kelly and Xiu (2020) \\
+Out-of-sample forecasts in broad samples & \textbf{Yes} & Networks and trees roughly doubled the performance of leading regression strategies; unregularized OLS did worst. & Gu, Kelly and Xiu (2020) \\*
 \addlinespace[3pt]
-Hidden structure & \textbf{Weakly} & The gain comes mainly from interactions among familiar signals. & Gu, Kelly and Xiu (2020) \\
+Hidden structure & \textbf{Weakly} & The gain comes mainly from interactions among familiar signals. & Gu, Kelly and Xiu (2020) \\*
 \addlinespace[3pt]
-Value-weighted portfolios & \textbf{Partly} & Sharpe ratio of 1.35 value-weighted, against 2.45 equal-weighted. & Gu, Kelly and Xiu (2020) \\
+Value-weighted portfolios & \textbf{Partly} & Sharpe ratio of 1.35 value-weighted, against 2.45 equal-weighted. & Gu, Kelly and Xiu (2020) \\*
 \addlinespace[3pt]
-Hard-to-arbitrage stocks excluded, after costs & \textbf{Weakly} & Excluding micro-caps, distressed firms or volatile periods cut profits, and turnover eroded them further. & Avramov, Cheng and Metzker (2023) \\
+Hard-to-arbitrage stocks excluded, after costs & \textbf{Weakly} & Excluding micro-caps, distressed firms or volatile periods cut profits, and turnover eroded them further. & Avramov, Cheng and Metzker (2023) \\*
 \addlinespace[3pt]
-A retail-dominated market & \textbf{Yes} & Stronger predictability in China, concentrated in small stocks and significant after costs. & Leippold, Wang and Zhou (2022) \\
+A retail-dominated market & \textbf{Yes} & Stronger predictability in China, concentrated in small stocks and significant after costs. & Leippold, Wang and Zhou (2022) \\*
 \addlinespace[3pt]
-Very large models for market timing & \textbf{Disputed} & Timing improved with thousands of random features, but may be volatility-timed momentum in disguise. & Kelly, Malamud and Zhou (2024); Nagel (2025) \\
+Very large models for market timing & \textbf{Disputed} & Timing improved with thousands of random features, but may be volatility-timed momentum in disguise. & Kelly, Malamud and Zhou (2024); Nagel (2025) \\*
 \end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
 
 Machine learning is a better tool for an old job, not a source of hidden alpha.

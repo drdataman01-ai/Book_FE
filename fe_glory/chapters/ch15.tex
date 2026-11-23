@@ -130,16 +130,29 @@ The problem is statistical as much as economic. Thousands of researchers test th
 
 No table can list hundreds of predictors, but none needs to, because most of them are variations on a few ideas. Hou, Xue and Zhang\index{q-factor model} (2020) sort their 452 anomalies into six categories. Table~\ref{tab:19-zoo} shows two or three well-known predictors from each. The sign shows whether stocks with a high value of the predictor earned higher (+) or lower ($-$) average returns in the original study. The Open Source Asset Pricing and JKP documentation give the full lists, with definitions and code for every predictor. Jensen, Kelly and Pedersen (2023) group their 153 factors into 13 similar themes.
 
-\begin{table}[htbp]
-\centering
+\begingroup
 \small
-\caption{A map of the factor zoo: representative predictors in the six categories of Hou, Xue and Zhang (2020).}
-\label{tab:19-zoo}
+
+
 \renewcommand{\arraystretch}{1.15}
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.21\linewidth}c@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.13\linewidth-0.17\linewidth-0.21\linewidth-0.05\linewidth-8\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.21\linewidth}>{\centering\arraybackslash}p{0.05\linewidth}@{}}
+\caption{A map of the factor zoo: representative predictors in the six categories of Hou, Xue and Zhang (2020).}
+\label{tab:19-zoo} \\
 \toprule
 Category & Predictor & What it measures & Original study & Sign \\
 \midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\emph{(continued)}} \\
+\toprule
+Category & Predictor & What it measures & Original study & Sign \\
+\midrule
+\endhead
+\midrule
+\multicolumn{5}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
 Momentum & Price momentum & Return over the past 12 months, skipping the most recent month & Jegadeesh and Titman (1993) & $+$ \\
  & Earnings surprise & Change in quarterly earnings from a year earlier, scaled by its volatility & Bernard and Thomas (1989) & $+$ \\
  & Short-term reversal & Return over the past month & Jegadeesh (1990) & $-$ \\
@@ -160,27 +173,38 @@ Trading frictions & Size & Market value of equity & Banz (1981) & $-$ \\
  & Idiosyncratic volatility & Volatility of returns not explained by the Fama--French factors & Ang, Hodrick, Xing and Zhang (2006) & $-$ \\
  & Illiquidity & Average absolute daily return per dollar of trading volume & Amihud (2002) & $+$ \\
  & Maximum daily return & Largest daily return in the past month & Bali, Cakici and Whitelaw (2011) & $-$ \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\end{longtable}
+\endgroup
 
 \textbf{Design choices in a replication\index{replication}.} A replication of an anomaly must make many choices, each defensible, that can change the result:
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.34\linewidth}@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.17\linewidth-0.34\linewidth-4\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.34\linewidth}@{}}
 \toprule
 Choice & Options & Why it matters \\
 \midrule
-Universe & All stocks, or excluding micro-caps (for example below the NYSE 20th size percentile) & Many anomalies are concentrated in tiny stocks that are costly to trade and hold little value \\
-Weighting & Equal-weighted or value-weighted portfolios & Equal weighting gives micro-caps large influence \\
-Breakpoints & Deciles, quintiles or terciles; NYSE or all-stock breakpoints & Extreme portfolios magnify signals and noise \\
-Sample & The original paper's sample, or the longest available & Later years are out of sample \\
-Significance hurdle & $t > 1.96$, $t > 3$, a false-discovery-rate rule, or a Bayesian posterior & Determines what counts as a success \\
-Benchmark & Raw returns, CAPM alpha, or alpha against a multifactor model & A factor explained by others may be real but redundant \\
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Choice & Options & Why it matters \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Universe & All stocks, or excluding micro-caps (for example below the NYSE 20th size percentile) & Many anomalies are concentrated in tiny stocks that are costly to trade and hold little value \\*
+Weighting & Equal-weighted or value-weighted portfolios & Equal weighting gives micro-caps large influence \\*
+Breakpoints & Deciles, quintiles or terciles; NYSE or all-stock breakpoints & Extreme portfolios magnify signals and noise \\*
+Sample & The original paper's sample, or the longest available & Later years are out of sample \\*
+Significance hurdle & $t > 1.96$, $t > 3$, a false-discovery-rate rule, or a Bayesian posterior & Determines what counts as a success \\*
+Benchmark & Raw returns, CAPM alpha, or alpha against a multifactor model & A factor explained by others may be real but redundant \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 \textbf{NYSE breakpoints}\index{NYSE breakpoints|textbf} set the cut-offs between groups using only stocks listed on the New York Stock Exchange. These stocks are larger on average, so the many tiny Nasdaq stocks do not crowd the extreme portfolios. A \textbf{Bayesian posterior}\index{Bayesian posterior|textbf} is the probability of a hypothesis after a prior belief has been combined with the data.
 
@@ -252,19 +276,31 @@ The lab adds a check the original study could not make: a simulated literature i
 
 The two sides agree on most facts. They disagree on four choices.
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.17\linewidth-4\tabcolsep)/2\relax}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.17\linewidth-4\tabcolsep)/2\relax}@{}}
 \toprule
 Choice & Prosecution (Hou, Xue and Zhang; Harvey, Liu and Zhu) & Defense (Jensen, Kelly and Pedersen; Chen and Zimmermann) \\
 \midrule
-Which stocks count & De-emphasize micro-caps: NYSE breakpoints, value weights & Replicate the original construction; micro-caps are part of the market \\
-Hurdle & High: $t$ of about 3 or 2.78, for multiple testing & Lower, or a Bayesian posterior \\
-Unit of evidence & Each factor judged on its own & Related factors pooled; corroboration strengthens the evidence \\
-Kind of replication & Scientific: does it survive reasonable alternative choices? & Pure: are the original findings reproducible and real? \\
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Choice & Prosecution (Hou, Xue and Zhang; Harvey, Liu and Zhu) & Defense (Jensen, Kelly and Pedersen; Chen and Zimmermann) \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Which stocks count & De-emphasize micro-caps: NYSE breakpoints, value weights & Replicate the original construction; micro-caps are part of the market \\*
+Hurdle & High: $t$ of about 3 or 2.78, for multiple testing & Lower, or a Bayesian posterior \\*
+Unit of evidence & Each factor judged on its own & Related factors pooled; corroboration strengthens the evidence \\*
+Kind of replication & Scientific: does it survive reasonable alternative choices? & Pure: are the original findings reproducible and real? \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 Neither side is wrong on its own terms. A factor found only among micro-caps may be real but irrelevant to an investor who cannot trade them; pooling related factors is more accurate if its assumptions hold, but misleading if a whole theme was mined together. ``Does this anomaly replicate?'' is not well posed until the purpose is stated: pure replication and pooled evidence suit the question of how markets price risk, while value-weighted, liquid, out-of-sample, after-cost evidence suits the question of what to invest in.
 
@@ -304,18 +340,19 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Original construction, conventional hurdle & \textbf{No} & Almost all predictors with clear original evidence reproduce with the original methods. & Chen and Zimmermann (2022) \\
+Original construction, conventional hurdle & \textbf{No} & Almost all predictors with clear original evidence reproduce with the original methods. & Chen and Zimmermann (2022) \\*
 \addlinespace[3pt]
-Micro-caps de-emphasized, value-weighted & \textbf{Yes} & 65\% of 452 anomalies fail $t = 1.96$ and 82\% fail 2.78; 96\% of trading-frictions anomalies fail. & Hou, Xue and Zhang (2020) \\
+Micro-caps de-emphasized, value-weighted & \textbf{Yes} & 65\% of 452 anomalies fail $t = 1.96$ and 82\% fail 2.78; 96\% of trading-frictions anomalies fail. & Hou, Xue and Zhang (2020) \\*
 \addlinespace[3pt]
-The right hurdle for multiple testing & \textbf{Disputed} & About 3 on one side; about 1.8 for published predictors on the other. & Harvey, Liu and Zhu (2016); Chen and Zimmermann (2020) \\
+The right hurdle for multiple testing & \textbf{Disputed} & About 3 on one side; about 1.8 for published predictors on the other. & Harvey, Liu and Zhu (2016); Chen and Zimmermann (2020) \\*
 \addlinespace[3pt]
-Bayesian pooling across factors and countries & \textbf{No} & Most factors replicate, cluster into 13 themes and work out of sample in 93 countries. & Jensen, Kelly and Pedersen (2023) \\
+Bayesian pooling across factors and countries & \textbf{No} & Most factors replicate, cluster into 13 themes and work out of sample in 93 countries. & Jensen, Kelly and Pedersen (2023) \\*
 \addlinespace[3pt]
-Out of sample, after publication & \textbf{Partly} & Returns were 26\% lower after the samples and 58\% lower after publication, partly from selection. & McLean and Pontiff (2016); Part E of the lab \\
+Out of sample, after publication & \textbf{Partly} & Returns were 26\% lower after the samples and 58\% lower after publication, partly from selection. & McLean and Pontiff (2016); Part E of the lab \\*
 \addlinespace[3pt]
-After costs, for an investor & \textbf{Yes} & Little expected return remains for the average anomaly. & Chen and Velikov (2023); Chapter~\ref{ch:13} \\
+After costs, for an investor & \textbf{Yes} & Little expected return remains for the average anomaly. & Chen and Velikov (2023); Chapter~\ref{ch:13} \\*
 \end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
 
 Whether this makes most anomalies ``false'' depends on whether the question is scientific or practical, so a verdict on this claim is a choice of standard as much as a reading of the data (Section~\ref{sec:19-why}).

@@ -146,19 +146,31 @@ Diversification\index{diversification} should never make a portfolio riskier, so
 
 Here is an example. Two bonds each have a 4\% chance of default, and each loses 100 if it defaults. If both are held, the chance that at least one defaults is $1 - 0.96^2 = 7.84\%$.
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}p{0.18\linewidth}>{\raggedright\arraybackslash}X@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}p{0.18\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.28\linewidth-0.18\linewidth-4\tabcolsep\relax}@{}}
 \toprule
 Position & Chance of a loss & 95\% VaR \\
 \midrule
-Bond A alone & 4\% & 0, because 4\% is below 5\% \\
-Bond B alone & 4\% & 0, for the same reason \\
-Sum of the two & & 0 \\
-Both bonds together & 7.84\% & 100, because 7.84\% is above 5\% \\
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Position & Chance of a loss & 95\% VaR \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Bond A alone & 4\% & 0, because 4\% is below 5\% \\*
+Bond B alone & 4\% & 0, for the same reason \\*
+Sum of the two & & 0 \\*
+Both bonds together & 7.84\% & 100, because 7.84\% is above 5\% \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 Held separately, the bonds report no risk. Held together, they report a VaR of 100, so diversifying has \emph{increased} the measured risk.
 
@@ -169,17 +181,29 @@ To see why, imagine the trader's results over 10,000 trading days. On 50 of thos
 
 VaR reports almost no risk, while ES reveals it. This blind spot is one reason regulators replaced VaR with ES. It is the same trap as the put-selling trader of Chapter~\ref{ch:01}, who looks like a genius until the rare disaster arrives.
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.14\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.14\linewidth}>{\raggedright\arraybackslash}X@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.14\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.14\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.14\linewidth-0.22\linewidth-0.14\linewidth-6\tabcolsep\relax}@{}}
 \toprule
 Measure & What it reports & Result & Why \\
 \midrule
-99\% VaR & The loss on the 100th worst day & About \$0 & The 100th worst day is an ordinary day \\
-99\% ES & The average loss on the 100 worst days & \$50 million & Half of the 100 days lose \$100 million \\
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Measure & What it reports & Result & Why \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+99\% VaR & The loss on the 100th worst day & About \$0 & The 100th worst day is an ordinary day \\*
+99\% ES & The average loss on the 100 worst days & \$50 million & Half of the 100 days lose \$100 million \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 
 \section{Six ways to compute VaR}
@@ -187,21 +211,33 @@ Measure & What it reports & Result & Why \\
 
 Every VaR model must answer two questions: how volatile will tomorrow be, and how fat is the tail of losses? The six models tested in this chapter combine different answers.
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.28\linewidth-4\tabcolsep)/2\relax}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.28\linewidth-4\tabcolsep)/2\relax}@{}}
 \toprule
 Model & Volatility & Tail shape \\
 \midrule
-Normal, rolling window & Equal-weighted past window (here 250 days) & Normal \\
-Historical simulation (HS) & Implicit in the window & Empirical quantile of past returns \\
-EWMA (RiskMetrics) & Exponentially weighted, $\lambda = 0.94$ & Normal \\
-GARCH & Estimated, mean-reverting & Normal \\
-GJR-GARCH with Student-$t$ shocks & Estimated, with leverage effect & Student-$t$, estimated \\
-Filtered historical simulation (FHS) & GJR-GARCH & Empirical quantile of past \emph{standardized} returns \\
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Model & Volatility & Tail shape \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Normal, rolling window & Equal-weighted past window (here 250 days) & Normal \\*
+Historical simulation (HS) & Implicit in the window & Empirical quantile of past returns \\*
+EWMA (RiskMetrics) & Exponentially weighted, $\lambda = 0.94$ & Normal \\*
+GARCH & Estimated, mean-reverting & Normal \\*
+GJR-GARCH with Student-$t$ shocks & Estimated, with leverage effect & Student-$t$, estimated \\*
+Filtered historical simulation (FHS) & GJR-GARCH & Empirical quantile of past \emph{standardized} returns \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 \textbf{Historical simulation}\index{Value at Risk (VaR)!historical simulation|textbf} ranks the returns of a past window from worst to best and reads off the VaR directly. With 500 days of history, for example, the 99\% VaR is the loss between the 5th and 6th worst days. It is the most popular method at banks (P\'erignon and Smith 2010), because it assumes no distribution and handles options by revaluing the portfolio under each past day's market moves. Its weakness is that it reacts slowly. A 250-day window gives a crash eleven months ago the same weight as yesterday's, so when volatility jumps, the VaR rises only as new large losses enter the window, and it drops abruptly when they leave.
 
@@ -258,18 +294,30 @@ compares how likely the breaches are at the promised rate and at the observed ra
 
 \textbf{The Basel traffic light.}\index{Basel framework|textbf}\index{Basel traffic light} Regulators count breaches of a bank's 99\% one-day VaR over the last 250 days. More breaches mean more capital, as a multiple of VaR:
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.12\linewidth}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}X@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.12\linewidth}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.12\linewidth-0.16\linewidth-0.22\linewidth-6\tabcolsep\relax}@{}}
 \toprule
 Zone & Breaches & Capital multiplier & Chance that a correct model has this many or fewer \\
 \midrule
-Green & 0--4 & 3.0 & 89.2\% \\
-Yellow & 5--9 & 3.40 to 3.85 & 99.99\% at 9 \\
-Red & 10 or more & 4.0 & n/a \\
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Zone & Breaches & Capital multiplier & Chance that a correct model has this many or fewer \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Green & 0--4 & 3.0 & 89.2\% \\*
+Yellow & 5--9 & 3.40 to 3.85 & 99.99\% at 9 \\*
+Red & 10 or more & 4.0 & n/a \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 % --- keep the traffic-light figure (fig:11-traffic) here, unchanged ---
 
@@ -298,21 +346,33 @@ Even a correct model lands in the yellow zone about one year in nine and almost 
 
 The studies and records cited in this chapter point to a clear pattern: \textbf{VaR can measure risk reliably, but only with the right model, and not during a crisis.} The table summarizes the evidence as of November 2026.
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.22\linewidth}@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.17\linewidth-0.13\linewidth-0.22\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.22\linewidth}@{}}
 \toprule
 Situation & Does the claim hold? & Why & Evidence \\
 \midrule
-The best models in normal times & \textbf{Yes} & GARCH-type models with fat tails are breached on close to 1\% of days, with little bunching. & Kuester, Mittnik and Paolella (2006); Berkowitz and O'Brien (2002) \\
-Spotting bad models & \textbf{Yes} & Backtests catch models with too many or bunched breaches. & Kupiec (1995); Christoffersen (1998) \\
-The models most banks use & \textbf{No} & Historical simulation reacts slowly, so its breaches bunch when losses matter most. & P\'erignon and Smith (2010); Berkowitz and O'Brien (2002) \\
-The first days of a crisis & \textbf{No} & No model built on past data foresees a crash. & Berkowitz and O'Brien (2002) on 1998; the UBS investigation on 2007--08; Federal Reserve (2021) on 2020 \\
-Deep in the tail (99.9\%) & \textbf{No} & Fat tails make normal models fail more the further out they go, and too few breaches are expected to test well. & Fat tails (Chapter~\ref{ch:07}); Section~\ref{sec:11-stress} \\
-The size of the worst losses & \textbf{Not measured} & VaR\index{Value at Risk (VaR)!backtesting} shows where the bad days begin, not how bad they are. & Artzner et al.\ (1999); Basel's move to ES (2016) \\
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Does the claim hold? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+The best models in normal times & \textbf{Yes} & GARCH-type models with fat tails are breached on close to 1\% of days, with little bunching. & Kuester, Mittnik and Paolella (2006); Berkowitz and O'Brien (2002) \\*
+Spotting bad models & \textbf{Yes} & Backtests catch models with too many or bunched breaches. & Kupiec (1995); Christoffersen (1998) \\*
+The models most banks use & \textbf{No} & Historical simulation reacts slowly, so its breaches bunch when losses matter most. & P\'erignon and Smith (2010); Berkowitz and O'Brien (2002) \\*
+The first days of a crisis & \textbf{No} & No model built on past data foresees a crash. & Berkowitz and O'Brien (2002) on 1998; the UBS investigation on 2007--08; Federal Reserve (2021) on 2020 \\*
+Deep in the tail (99.9\%) & \textbf{No} & Fat tails make normal models fail more the further out they go, and too few breaches are expected to test well. & Fat tails (Chapter~\ref{ch:07}); Section~\ref{sec:11-stress} \\*
+The size of the worst losses & \textbf{Not measured} & VaR\index{Value at Risk (VaR)!backtesting} shows where the bad days begin, not how bad they are. & Artzner et al.\ (1999); Basel's move to ES (2016) \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 \section{What practitioners and investors can use}
 \label{sec:11-investors}

@@ -487,19 +487,31 @@ There are a few reasons.
 
 A corporate bond's spread over a Treasury can be split into four pieces:
 
-\begin{center}
+\begingroup
 \small
-\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.2\linewidth-4\tabcolsep)/2\relax}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.2\linewidth-4\tabcolsep)/2\relax}@{}}
 \toprule
 Component & What it pays for & How to measure it \\
 \midrule
-Expected default loss & The average loss from defaults & Historical default rates $\times$ loss given default \\
-Default risk premium & Bearing default losses that cluster in bad times & Residual after expected loss; models of default \\
-Liquidity premium & Costs and delays of trading corporate bonds & Bid--ask spreads, trading volume, bond-specific measures \\
-Tax premium & State taxes on corporate interest & Tax rates applied to the yield \\
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Component & What it pays for & How to measure it \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
 \bottomrule
-\end{tabularx}
-\end{center}
+\endlastfoot
+Expected default loss & The average loss from defaults & Historical default rates $\times$ loss given default \\*
+Default risk premium & Bearing default losses that cluster in bad times & Residual after expected loss; models of default \\*
+Liquidity premium & Costs and delays of trading corporate bonds & Bid--ask spreads, trading volume, bond-specific measures \\*
+Tax premium & State taxes on corporate interest & Tax rates applied to the yield \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
 The claim is that the first piece dominates. The test has two steps. First, estimate expected losses from historical default and recovery data, and compare them with actual spreads. If they explain most of the spread, the claim survives. Second, examine what is left over\index{regression!residuals}. If the remainder is small and stable, it might be liquidity or measurement error. If it is large, rises in recessions and predicts economic activity, it behaves like a risk premium.
 
@@ -563,18 +575,19 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Investment-grade spreads & \textbf{No} & Expected losses explained only a small part; taxes and a risk premium made up much of the rest. & Elton, Gruber, Agrawal and Mann (2001) \\
+Investment-grade spreads & \textbf{No} & Expected losses explained only a small part; taxes and a risk premium made up much of the rest. & Elton, Gruber, Agrawal and Mann (2001) \\*
 \addlinespace[3pt]
-Default models calibrated to defaults & \textbf{No} & Credit risk explains a small share of investment-grade spreads, smaller still at short maturities. & Huang and Huang (2012) \\
+Default models calibrated to defaults & \textbf{No} & Credit risk explains a small share of investment-grade spreads, smaller still at short maturities. & Huang and Huang (2012) \\*
 \addlinespace[3pt]
-High-yield spreads & \textbf{Largely} & Credit risk accounts for a much larger share. & Huang and Huang (2012) \\
+High-yield spreads & \textbf{Largely} & Credit risk accounts for a much larger share. & Huang and Huang (2012) \\*
 \addlinespace[3pt]
-Changes in spreads & \textbf{No} & Default-risk variables explain about a quarter; a common factor drives most of the rest. & Collin-Dufresne, Goldstein and Martin (2001) \\
+Changes in spreads & \textbf{No} & Default-risk variables explain about a quarter; a common factor drives most of the rest. & Collin-Dufresne, Goldstein and Martin (2001) \\*
 \addlinespace[3pt]
-The residual and the economy & \textbf{No} & The excess bond premium, not the default component, predicts lower output and employment. & Gilchrist and Zakraj\v{s}ek (2012) \\
+The residual and the economy & \textbf{No} & The excess bond premium, not the default component, predicts lower output and employment. & Gilchrist and Zakraj\v{s}ek (2012) \\*
 \addlinespace[3pt]
-Ranking of spreads by rating & \textbf{Yes} & Ratings rank spreads correctly, though they do not explain their level. & Moody's Investors Service (2007) \\
+Ranking of spreads by rating & \textbf{Yes} & Ratings rank spreads correctly, though they do not explain their level. & Moody's Investors Service (2007) \\*
 \end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
 
 \textbf{What would change the picture.} The claim would gain support if a liquidity measure explained most of the remainder and that premium did not change with economic conditions. So far, both rise in bad times.
