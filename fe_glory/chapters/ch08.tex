@@ -30,6 +30,7 @@ In the early 1990s large banks needed a single number that summarized the market
 The question matters beyond banks. Every investor who sets a risk limit, a stop-loss or a leverage ratio from a model is relying on the same kind of forecast. A day on which the loss is larger than the VaR is called a \term{breach}\index{VaR exceedance}. If a bank's 99\% VaR is \$50 million, a breach is a day on which it loses more than \$50 million, and a good model should produce about one such day in every hundred. The timing matters as well as the count. The breaches should be scattered randomly through the years, not bunched together in a few bad weeks, because a model whose breaches all arrive during a crisis fails exactly when it is needed most.
 \begin{figure}[htbp]
 \centering
+\scalebox{0.9}{%
 \begin{tikzpicture}
 \begin{axis}[
   width=0.75\linewidth, height=0.38\linewidth,
@@ -53,7 +54,8 @@ The question matters beyond banks. Every investor who sets a risk limit, a stop-
   \node[feorange, font=\footnotesize] at (axis cs:125,-84)
     {3 breaches in 250 days, against about 2.5 expected};
 \end{axis}
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{What a 99\% one-day VaR of \$50 million means. Each bar is one day's profit or loss for a hypothetical trading book over one year, simulated from a normal distribution. The VaR line sits where losses are expected to fall below it on about 1 day in 100. Over 250 trading days the loss exceeds the VaR on 3 days, shown in orange, close to the 2.5 a correct model would produce.}
 \label{fig:11-var-intro}
 \end{figure}
@@ -101,6 +103,7 @@ For a normal distribution\index{distribution!normal}, $\mathrm{ES} = \sigma\,\ph
 
 \begin{figure}[htbp]
 \centering
+\scalebox{0.9}{%
 \begin{tikzpicture}[declare function={npdf(\x) = exp(-\x*\x/2)/sqrt(2*pi);}]
 \begin{axis}[
   width=0.66\linewidth, height=0.36\linewidth,
@@ -127,7 +130,8 @@ For a normal distribution\index{distribution!normal}, $\mathrm{ES} = \sigma\,\ph
   \node[anchor=east, align=right, font=\small] at (axis cs:-2.75,0.13)
     {\textbf{99\% ES = 2.67 s.d.}\\average loss\\on those days};
 \end{axis}
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{VaR marks where the worst days begin, and expected shortfall measures how bad they are. VaR and expected shortfall for normal returns. The shaded tail holds the worst 1\% of days. The 99\% VaR, 2.33 standard deviations below zero, marks where that tail begins. The 99\% ES, 2.67 standard deviations, is the average loss on the days in the tail, so it is always larger than the VaR.}
 \label{fig:11-var-es}
 \end{figure}

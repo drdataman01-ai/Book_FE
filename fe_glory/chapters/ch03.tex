@@ -76,6 +76,7 @@ Figure~\ref{fig:04-moments} shows what each moment changes, by comparing the nor
 
 \begin{figure}[htbp]
 \centering
+\scalebox{0.9}{%
 \begin{tikzpicture}[font=\small]
 \pgfplotsset{
   panel/.style={width=6.6cm, height=5cm, axis lines=left, xmin=-6, xmax=6, ymin=0,
@@ -134,7 +135,8 @@ Figure~\ref{fig:04-moments} shows what each moment changes, by comparing the nor
 \node[anchor=north] at ($(c.south)!0.5!(d.south)+(0,-1.45cm)$) {%
   \tikz{\draw[fenavy, thick] (0,0) -- (0.6,0);} Normal distribution\qquad
   \tikz{\draw[fegray, thick, dashed] (0,0) -- (0.6,0);} Comparison distribution};
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 
   \caption{Two investments can share the same average and volatility yet differ in how often they crash. The four moments of a distribution. Each panel compares the standard normal distribution (solid) with one that differs in a single respect. (a)~The mean sets the center. (b)~The variance sets the spread. (c)~Negative skewness lengthens the left tail, so large losses are more likely than large gains of the same size. (d)~Higher kurtosis puts more weight in the tails: the normal distribution has kurtosis 3, the fat-tailed one shown has kurtosis 9. Panels (c) and (d) keep the mean and variance of the normal distribution.}
   \label{fig:04-moments}
@@ -194,7 +196,8 @@ This is Equation~\eqref{eq:04-ols} with the asset's excess return as $y$ and the
 
 \begin{figure}[!htbp]
   \centering
-  \begin{tikzpicture}[
+  \scalebox{0.9}{%
+\begin{tikzpicture}[
     % Fitted regression: strategy = 1.16 + 1.15 * market
     declare function={fit(\x) = 1.16 + 1.15*\x;  zero(\x) = 1.15*\x;}
   ]
@@ -247,7 +250,8 @@ This is Equation~\eqref{eq:04-ols} with the asset's excess return as $y$ and the
     \node[fenavy, anchor=north west, align=left, font=\footnotesize] at (axis cs:5.6,-2.6)
       {alpha $= 1.16$: the fitted line's\\value when the market return is 0};
   \end{axis}
-  \end{tikzpicture}
+  \end{tikzpicture}%
+}
 \caption{Beta measures how strongly a strategy follows the market, and alpha measures what it earns beyond that. Beta and alpha in a regression of a strategy's monthly excess returns on the market's. Beta is the slope of the fitted line; alpha is its height where the market's excess return is zero, the gap between the fitted line and a line with the same slope through the origin. Simulated data, with an alpha larger than any real strategy's so that it is visible.}
 \label{fig:04-alpha}
 \end{figure}
@@ -271,7 +275,8 @@ The decomposition gives the regression's $R^2$ a direct economic meaning. The sh
 
 \begin{figure}[!htbp]
   \centering
-  \begin{tikzpicture}[x=1cm, y=0.05cm]
+  \scalebox{0.9}{%
+\begin{tikzpicture}[x=1cm, y=0.05cm]
     % Vertical axis: share of total variance, 0 to 100 percent
     \draw[-stealth, thin] (0,0) -- (0,108);
     \foreach \vdY in {0,50,100} {
@@ -297,7 +302,8 @@ The decomposition gives the regression's $R^2$ a direct economic meaning. The sh
     \draw[fenavy, thin] (5.6,99) -- (6.0,104);
     \node[fenavy, anchor=west, font=\footnotesize] at (6.0,104) {idiosyncratic 2\%};
     \node[anchor=north, font=\small, align=center] at (4.7,-2) {Portfolio of\\100 stocks};
-  \end{tikzpicture}
+  \end{tikzpicture}%
+}
   \caption{Diversification removes a company's own risk but not the market's. Splitting total variance into systematic and idiosyncratic parts with Equation~\eqref{eq:04-vardec-capm}. Each stock has a market beta of 1.2 and a residual standard deviation of 8\% a month, and the market's standard deviation is 4.5\% a month. Diversification leaves the systematic variance unchanged but divides the idiosyncratic variance by 100, so the systematic share, which equals the regression's $R^2$, rises from about 31\% to about 98\%. The numbers are illustrative.}
   \label{fig:04-vardec}
 \end{figure}
@@ -319,7 +325,8 @@ Later research found that the stocks the CAPM could not explain were not random.
 
 \begin{figure}[!htbp]
   \centering
-  \begin{tikzpicture}[
+  \scalebox{0.9}{%
+\begin{tikzpicture}[
     % CAPM security market line: E[R^e] = 8 * beta (% a year)
     % Illustrative empirical line, flatter: 3 + 3.5 * beta
     declare function={sml(\b) = 8*\b; emp(\b) = 3 + 3.5*\b;}
@@ -360,7 +367,8 @@ Later research found that the stocks the CAPM could not explain were not random.
     \node[anchor=west, font=\footnotesize, align=left] at (axis cs:1.63,11.8)
       {high-beta stocks earn\\less than predicted};
   \end{axis}
-  \end{tikzpicture}
+  \end{tikzpicture}%
+}
   \caption{In practice, riskier stocks have been rewarded less than the CAPM promises. The security market line. The CAPM predicts that average excess returns rise in a straight line with beta, passing through zero at a beta of zero and through the market's excess return at a beta of one (solid line). Tests that sort stocks into portfolios by beta typically find a flatter line with a positive intercept (dashed line and dots), so low-beta stocks earn more than predicted and high-beta stocks earn less (Black, Jensen and Scholes 1972). The numbers are illustrative.}
   \label{fig:04-sml}
 \end{figure}

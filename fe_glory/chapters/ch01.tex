@@ -116,7 +116,8 @@ The same arithmetic, applied to the \term{Sharpe ratio} rather than the average 
 
 \begin{figure}[!htbp]
   \centering
-  \begin{tikzpicture}[
+  \scalebox{0.9}{%
+\begin{tikzpicture}[
     % One-year excess return ~ Normal(mean 7%, s.d. 20%)
     declare function={
       mu = 7; sd = 20;
@@ -160,7 +161,8 @@ The same arithmetic, applied to the \term{Sharpe ratio} rather than the average 
     \node[fenavy, anchor=west] at (axis cs:25,0.0165)
       {$\pm 1\sigma$: $-13\%$ to $27\%$};
   \end{axis}
-  \end{tikzpicture}
+  \end{tikzpicture}%
+}
   \caption{A single year says little about how good the stock market is, because ordinary years range from large losses to large gains. The curve shows one year's excess return on the stock market, assuming an expected excess return of 7\% and volatility of 20\%. The blue band covers the middle two-thirds of years, from $-13$\% to 27\%; the gray area is the 36\% of years with a negative excess return.}
   \label{fig:01-oneyear}
 \end{figure}
@@ -196,7 +198,8 @@ The Sharpe ratio works much like a car's fuel economy. Miles per gallon tells yo
 
 \begin{figure}[!htbp]
   \centering
-  \begin{tikzpicture}
+  \scalebox{0.9}{%
+\begin{tikzpicture}
   \begin{axis}[
     width=0.8\linewidth, height=0.42\linewidth,
     axis lines=left,
@@ -226,7 +229,8 @@ The Sharpe ratio works much like a car's fuel economy. Miles per gallon tells yo
     % Risk-free asset at the origin
     \node[anchor=east] at (axis cs:-0.6,1.6) {$R_f$};
   \end{axis}
-  \end{tikzpicture}
+  \end{tikzpicture}%
+}
   \caption{Borrowing can make any strategy earn more, but only by taking more risk, so the fair comparison is return per unit of risk. The Sharpe ratio is the slope of a line from the risk-free rate. Leverage moves a portfolio along its line, raising or lowering both excess return and volatility, but does not change the slope. A better strategy lies on a steeper line.}
   \label{fig:01-sharpe-slope}
 \end{figure}
@@ -427,7 +431,8 @@ needs about 15 years of data before the t-statistic of its mean return reaches 1
 
 \begin{figure}[!htbp]
   \centering
-  \begin{tikzpicture}
+  \scalebox{0.9}{%
+\begin{tikzpicture}
   \begin{axis}[
     width=0.78\linewidth, height=0.4\linewidth,
     axis lines=left,
@@ -459,7 +464,8 @@ needs about 15 years of data before the t-statistic of its mean return reaches 1
     \node[anchor=south] at (axis cs:4,2.08) {4};
     \node[fenavy, anchor=south] at (axis cs:16,2.08) {16};
   \end{axis}
-  \end{tikzpicture}
+  \end{tikzpicture}%
+}
   \caption{The weaker a strategy's edge, the longer its record must be before luck can be ruled out. The curves show how many years of return data are needed before a strategy's track record becomes statistically significant. The years count the length of the history being analyzed, not how long the strategy must trade or hold its positions. With a true Sharpe ratio of 0.5, about 15 years of data are needed to reach $t = 1.96$. With a Sharpe ratio of 0.25, about 61 years are needed.}
   \label{fig:01-years}
 \end{figure}
@@ -667,7 +673,8 @@ Figure~\ref{fig:01-ten-year} draws the two cases side by side. The curves overla
 
 \begin{figure}[!htbp]
   \centering
-  \begin{tikzpicture}[
+  \scalebox{0.9}{%
+\begin{tikzpicture}[
     % Estimated Sharpe ratio from a 10-year record: s.e. = 1/sqrt(10)
     declare function={
       se = 1/sqrt(10);
@@ -715,7 +722,8 @@ Figure~\ref{fig:01-ten-year} draws the two cases side by side. The curves overla
     \node[fenavy, anchor=north] at (axis cs:0.5,-0.36)
       {95\% of decades: $-0.1$ to $1.1$};
   \end{axis}
-  \end{tikzpicture}
+  \end{tikzpicture}%
+}
   \caption{What a 10-year record can show. Even a decade of results cannot reliably tell a good strategy from a useless one, because the two ranges of outcomes overlap heavily. The gray curve is the range of Sharpe ratios a strategy with no skill produces over different decades, and the blue curve is the same for a strategy with a true Sharpe ratio of 0.5. The shaded tail is the 6\% of decades in which the useless strategy beats 0.5 by luck.}
   \label{fig:01-ten-year}
 \end{figure}

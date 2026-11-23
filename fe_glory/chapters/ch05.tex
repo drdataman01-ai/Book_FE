@@ -35,6 +35,7 @@ Across 26 versions of these rules, the days that followed a buy signal earned mu
 \providecolor{feorange}{HTML}{B8481C}
 \begin{figure}[htbp]
 \centering
+\scalebox{0.9}{%
 \begin{tikzpicture}[font=\small]
 \begin{axis}[width=0.75\linewidth, height=0.36\linewidth, axis lines=left, xmin=0, xmax=600, ymin=70, ymax=210, ylabel={Price}, every tick label/.style={font=\small}, clip=false, title style={font=\small}, legend style={draw=none, fill=none, font=\footnotesize, at={(0.5,-0.32)}, anchor=north, legend columns=-1, /tikz/every even column/.append style={column sep=0.8em}}, legend cell align=left, xlabel={Trading day}]
 \fill[fenavy!8] (axis cs:0,70) rectangle (axis cs:221,210);
@@ -50,13 +51,15 @@ Across 26 versions of these rules, the days that followed a buy signal earned mu
 \fill[fenavy] (axis cs:406,117.48) circle (2.2pt);
 \draw[fenavy, thin] (axis cs:406,117.48) -- (axis cs:431,103.5) node[anchor=north west, inner sep=1pt, font=\footnotesize] {buy: short crosses above long};
 \end{axis}
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{A moving-average rule stays invested while the trend is up and steps aside when it turns down, but always a little late. The moving-average rule applied to a simulated price. The rule holds the asset (shaded) while a short average of the price (5 days) is above a long one (150 days). It rides the long rise and avoids most of the fall, but it acts only after each turn has begun.}
 \label{fig:06-ma-rule}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
+\scalebox{0.9}{%
 \begin{tikzpicture}[font=\small]
 \begin{axis}[width=0.75\linewidth, height=0.36\linewidth, axis lines=left, xmin=0, xmax=600, ymin=70, ymax=210, ylabel={Price}, every tick label/.style={font=\small}, clip=false, title style={font=\small}, legend style={draw=none, fill=none, font=\footnotesize, at={(0.5,-0.32)}, anchor=north, legend columns=-1, /tikz/every even column/.append style={column sep=0.8em}}, legend cell align=left, xlabel={Trading day}]
 \fill[fenavy!8] (axis cs:0,70) rectangle (axis cs:180,210);
@@ -72,7 +75,8 @@ Across 26 versions of these rules, the days that followed a buy signal earned mu
 \fill[fenavy] (axis cs:368,115.74) circle (2.2pt);
 \draw[fenavy, thin] (axis cs:368,115.74) -- (axis cs:393,93.7) node[anchor=north west, inner sep=1pt, font=\footnotesize] {buy: breaks above 50-day high};
 \end{axis}
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{A breakout rule buys new highs and sells new lows. The breakout rule applied to the same simulated price as in Figure~\ref{fig:06-ma-rule}. The rule buys when the price rises above its highest level of the previous 50 days and sells when it falls below its lowest level; shaded periods are the days it holds the asset. Like the moving-average rule, it acts only after each turn has begun, but in this example it reacts sooner.}
 \label{fig:06-breakout-rule}
 \end{figure}

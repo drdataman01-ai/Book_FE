@@ -35,6 +35,7 @@ Every option has two sides. The \textbf{buyer}\index{option!buyer|textbf} pays t
 % Figure: profit at expiration of the four basic option positions
 \begin{figure}[htbp]
 \centering
+\scalebox{0.9}{%
 \begin{tikzpicture}[
   dot/.style={only marks, mark=*, mark size=1.7pt},
   val/.style={font=\scriptsize},
@@ -83,7 +84,8 @@ Every option has two sides. The \textbf{buyer}\index{option!buyer|textbf} pays t
 \node[val, red!60!black, anchor=south] at (axis cs:120,4.5) {+\$3.50};
 \node[note, anchor=north east] at (axis cs:129,-10) {loss grows\\with a fall};
 \end{groupplot}
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{Profit at expiration of the four basic option positions. The stock trades at \$100 today, every option has a strike price of \$100 and three months to expiry, the call costs \$4.50 and the put \$3.50. The dots mark three outcomes: the stock falls to \$90, stays at \$100 or rises to \$120. Buyers (navy, left) pay the premium, risk only that amount and gain from a large move. Sellers (red, right) receive the premium, gain at most that amount and bear the loss from a large move. Each seller's line is the mirror image of the buyer's, because the buyer's gain is the seller's loss. The fund manager in the story is in the top-left panel, and the bank that sold her the call is in the top-right panel.}
 \label{fig:14-four-payoffs}
 \end{figure}
@@ -307,6 +309,7 @@ Because the option can be copied, its price must equal the cost of the copy. If 
 
 \begin{figure}[htbp]
 \centering
+\scalebox{0.9}{%
 \begin{tikzpicture}
 \begin{axis}[
   width=0.87\linewidth, height=0.6\linewidth,
@@ -356,7 +359,8 @@ Because the option can be copied, its price must equal the cost of the copy. If 
     at (axis cs:105.5,0.3) {\textbf{theta}: two months passing lowers\\the price from \$4.49 to \$2.47};
   \draw[thin] (axis cs:105.5,1.4) -- (axis cs:100.7,3.2);
 \end{axis}
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{An option's value curve bends, which is why its hedge must keep changing. The Greeks of the call in the story, with a strike of \$100 and a 4\% interest rate. The solid navy curve is the option's Black--Scholes value with 20\% volatility and three months to expiry. Delta is its slope, 0.56 at a stock price of \$100, and gamma is how fast that slope changes: the curve bends, so delta rises from 0.18 at \$90 to 0.87 at \$110. Vega is how much the curve rises when volatility rises: at 30\% volatility, the dotted curve, the price at \$100 is \$1.97 higher. Theta is how much the curve falls as time passes: with one month left, the gray curve, the price at \$100 is \$2.02 lower. As expiry approaches, the curve falls toward the payoff at expiry.}
 \label{fig:14-bs}
 \end{figure}
@@ -494,7 +498,7 @@ On a quiet day the bank earns \$0.022, the time decay of the previous example le
 
 \begin{figure}[htbp]
 \centering
-\scalebox{0.8}{%
+\scalebox{0.9}{%
 \begin{tikzpicture}[
   % One-day hedged P&L of the bank in the story, Equation (14-pnl):
   % 197 x (0.0001096 - (move/100)^2) = 0.0216 - 0.0197 x move^2,
@@ -544,7 +548,7 @@ where vega\index{Greeks!vega} is measured per unit of $\sigma$. For a one-month 
 
 \begin{figure}[htbp]
 \centering
-\scalebox{0.8}{%
+\scalebox{0.9}{%
 \begin{tikzpicture}[
   % Kamal--Derman: hedging error ~ 0.82 / sqrt(N) of the premium
   declare function={err(\n) = 82/sqrt(\n);}
