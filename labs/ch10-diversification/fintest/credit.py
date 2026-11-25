@@ -1,4 +1,4 @@
-"""Credit-spread tools (Chapter 16).
+"""Credit-spread tools (Chapter 17).
 
 * Expected-loss spreads from default probabilities and recovery rates
 * The default rate implied if a whole spread were expected loss (break-even)

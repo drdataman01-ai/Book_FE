@@ -1,0 +1,568 @@
+% Chapter 7 -- Claim: Forward Rates Predict Future Interest Rates
+% Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
+% Defines the callout box only if the preamble has not.
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+\@ifundefined{callout}{%
+  \newtcolorbox{callout}{breakable, enhanced,
+    colback=white, colframe=gray!70, boxrule=0.5pt, arc=1mm,
+    borderline west={2.5pt}{0pt}{gray!70},
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
+\chapter{Claim: Forward Rates Predict Future Interest Rates}
+\label{ch:12}
+\providecommand{\term}[1]{\emph{#1}}
+
+Anyone who has compared a one-year and a five-year savings certificate, or a variable and a fixed mortgage, has faced the question behind this chapter: is it better to lock in today's long-term rate or to wait and see what short-term rates do? News reports add a related question whenever long-term interest rates fall below short-term ones, an ``\term{inverted yield curve}'' that is often read as a warning of rate cuts and recession. Both questions turn on whether today's interest rates contain a reliable forecast of tomorrow's.
+
+Forward rates predict future interest rates. Chapter~\ref{ch:11} tested a version of this claim in the currency market, where uncovered interest parity says that the forward exchange rate is an unbiased forecast of the future spot rate. The Fama regression rejected it, because high-interest currencies tended to rise rather than fall. This chapter puts the same claim on trial in the \textbf{bond market.}
+
+The \term{yield curve}\index{yield curve|textbf} plots the interest rates on government bonds against their maturities, from a few months to thirty years. Today's curve also implies a \textbf{forward rate}\index{forward rate} for each future period, which is the interest rate that an investor can lock in today for borrowing or lending over that period. The \term{expectations hypothesis}\index{expectations hypothesis|textbf}, the oldest theory of interest rates, says that each forward rate equals the short-term rate that investors expect for that period. A long-term rate is then the average of the short-term rates expected over the bond's life. A curve that slopes upward forecasts rising rates, and an \textbf{inverted} curve, on which long rates are below short rates, forecasts falling ones. Figure~\ref{fig:07-long-short} shows that both shapes have occurred since 2000. Its top panel plots a long-term and a short-term interest rate, and its bottom panel plots the \textbf{term spread}\index{term spread|textbf}, the difference between them, which is positive when the curve slopes upward and negative when it is inverted. The hypothesis also implies that a long bond earns the same expected return\index{return!expected} as \term{rolling over} short bonds, which means buying a short bond and reinvesting the proceeds in a new one each time it matures.
+
+\pgfplotstableread[row sep=\\]{
+  year  long  short  spread \\
+  2000  6.03  5.82   0.21 \\
+  2001  5.02  3.40   1.62 \\
+  2002  4.61  1.61   3.00 \\
+  2003  4.01  1.01   3.00 \\
+  2004  4.27  1.37   2.90 \\
+  2005  4.29  3.15   1.14 \\
+  2006  4.80  4.73   0.07 \\
+  2007  4.63  4.36   0.27 \\
+  2008  3.66  1.37   2.29 \\
+  2009  3.26  0.15   3.11 \\
+  2010  3.22  0.14   3.08 \\
+  2011  2.78  0.05   2.73 \\
+  2012  1.80  0.09   1.71 \\
+  2013  2.35  0.06   2.29 \\
+  2014  2.54  0.03   2.51 \\
+  2015  2.14  0.05   2.09 \\
+  2016  1.84  0.32   1.52 \\
+  2017  2.33  0.93   1.40 \\
+  2018  2.91  1.94   0.97 \\
+  2019  2.14  2.06   0.08 \\
+  2020  0.89  0.37   0.52 \\
+  2021  1.45  0.04   1.41 \\
+  2022  2.95  2.02   0.93 \\
+  2023  3.96  5.07  -1.11 \\
+  2024  4.21  4.97  -0.76 \\
+  2025  4.30  4.15   0.15 \\
+}\ratesdata
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.9}{%
+\begin{tikzpicture}
+% ---------- Top panel: long and short rates ----------
+\begin{axis}[
+  name=rates,
+  width=0.75\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=2000, xmax=2026, ymin=0, ymax=7,
+  xtick={2000,2005,...,2025}, xticklabels={},
+  ytick={0,2,4,6},
+  ylabel={Interest rate (\%)},
+  clip=false,
+  legend style={at={(0.5,1.03)}, anchor=south, legend columns=2,
+                draw=none, font=\footnotesize, column sep=1em},
+]
+  % Recessions (NBER): 2001, 2007-09, 2020
+  \fill[gray!15] (axis cs:2001.17,0) rectangle (axis cs:2001.92,7);
+  \fill[gray!15] (axis cs:2007.92,0) rectangle (axis cs:2009.50,7);
+  \fill[gray!15] (axis cs:2020.08,0) rectangle (axis cs:2020.33,7);
+
+  % Annual averages (approximate), FRED series GS10 and TB3MS
+  \addplot[fenavy, very thick, mark=none] table[x=year, y=long] {\ratesdata};
+  \addlegendentry{long-term rate (10-year Treasury)}
+  \addplot[fegray, very thick, dashed, mark=none] table[x=year, y=short] {\ratesdata};
+  \addlegendentry{short-term rate (3-month Treasury bill)}
+\end{axis}
+
+% ---------- Bottom panel: term spread ----------
+\begin{axis}[
+  at={(rates.below south west)}, anchor=above north west,
+  width=0.75\linewidth, height=0.24\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=2000, xmax=2026, ymin=-2, ymax=4.5,
+  xtick={2000,2005,...,2025},
+  xticklabel style={/pgf/number format/1000 sep={}},
+  ytick={-2,0,2,4},
+  ylabel={Term spread (\%)},
+  clip=false,
+  ybar, bar width=6pt, bar shift=0pt,
+]
+  % Recessions
+  \fill[gray!15] (axis cs:2001.17,-2) rectangle (axis cs:2001.92,4.5);
+  \fill[gray!15] (axis cs:2007.92,-2) rectangle (axis cs:2009.50,4.5);
+  \fill[gray!15] (axis cs:2020.08,-2) rectangle (axis cs:2020.33,4.5);
+
+  % Term spread = long rate minus short rate; positive and negative bars
+  \addplot[draw=none, fill=fenavy!70,
+           y filter/.expression={y<0 ? nan : y}]
+    table[x=year, y=spread] {\ratesdata};
+  \addplot[draw=none, fill=red!60!black,
+           y filter/.expression={y<0 ? y : nan}]
+    table[x=year, y=spread] {\ratesdata};
+  \draw[gray] (axis cs:2000,0) -- (axis cs:2026,0);
+
+  \node[anchor=south, align=center, font=\footnotesize]
+    at (axis cs:2011.5,3.3) {steep: long rate far above short rate};
+  \node[anchor=north, font=\footnotesize, red!60!black]
+    at (axis cs:2023.5,3) {inverted};
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{Long-term rates are usually above short-term rates, and the rare exceptions draw headlines. Long-term and short-term interest rates in the United States, 2000--2025 (top), and the term spread (bottom), defined as $i^{\mathrm{long}} - i^{\mathrm{short}}$, where $i^{\mathrm{long}}$ is the 10-year Treasury yield and $i^{\mathrm{short}}$ is the 3-month Treasury bill rate. The data are annual averages, and the shaded bands are recessions. The term spread was large in the early 2010s, when short rates were near zero, and it turned negative in 2023 and 2024, when short rates rose above long rates.}
+\label{fig:07-long-short}
+\end{figure}
+
+In the 1980s, new databases of prices for \term{zero-coupon bonds}\index{zero-coupon bond|textbf}, which pay a single amount at maturity and no interest along the way, made the theory testable with precision. Fama and Bliss (1987) asked what forward rates actually forecast, and found that the gap between a forward rate and the current short rate predicts the extra return on long bonds over the next year, and predicts changes in short rates only several years ahead. Campbell and Shiller (1991) tested the theory's prediction that long yields rise when the curve is steep, and found instead that when the curve is steep, long yields tend to fall, which is the opposite of what the theory requires. 
+
+Both results point to a \term{term premium}\index{term premium|textbf}, an extra return that investors demand for bearing the risk of long bonds. The premium changes over time and pushes forward rates above the short rates that investors actually expect. Cochrane and Piazzesi (2005) showed that a single combination of forward rates predicts this extra return well, which made the term premium something that could be measured. Figure~\ref{fig:07-forward2} gives a first look at the evidence. Panel~(a) shows the forward rate implied by the 1-year and 2-year yields, and panel~(b) compares each forward rate with the 1-year rate that actually came a year later. The forward rate was usually too high, which is the pattern that a term premium would produce.
+
+% Requires pgfplots; does not need pgfplotstable.
+% Annual averages (approximate) of the 1-year and 2-year Treasury yields,
+% FRED series GS1 and GS2. Replace with exact data before publication.
+% fwd = one-year forward rate one year ahead, (1+y2)^2/(1+y1) - 1.
+\pgfplotstableread[row sep=\\]{
+  year  y1    y2    fwd  \\
+  2000  6.11  6.26  6.41 \\
+  2001  3.49  3.83  4.17 \\
+  2002  2.00  2.64  3.28 \\
+  2003  1.24  1.65  2.06 \\
+  2004  1.89  2.38  2.87 \\
+  2005  3.62  3.85  4.08 \\
+  2006  4.94  4.82  4.70 \\
+  2007  4.53  4.36  4.19 \\
+  2008  1.83  2.01  2.19 \\
+  2009  0.47  0.96  1.45 \\
+  2010  0.32  0.70  1.08 \\
+  2011  0.18  0.45  0.72 \\
+  2012  0.17  0.28  0.39 \\
+  2013  0.13  0.31  0.49 \\
+  2014  0.12  0.46  0.80 \\
+  2015  0.32  0.69  1.06 \\
+  2016  0.61  0.83  1.05 \\
+  2017  1.20  1.40  1.60 \\
+  2018  2.33  2.53  2.73 \\
+  2019  2.05  1.97  1.89 \\
+  2020  0.37  0.39  0.41 \\
+  2021  0.10  0.27  0.44 \\
+  2022  2.80  2.99  3.18 \\
+  2023  5.07  4.59  4.11 \\
+  2024  4.68  4.37  4.06 \\
+  2025  3.95  3.80  3.65 \\
+}\fwddata
+
+% Forecast test: the forward rate made in the previous year
+% against the 1-year rate that actually prevailed in the target year.
+\pgfplotstableread[row sep=\\]{
+  target  fcast  real \\
+  2001    6.41   3.49 \\
+  2002    4.17   2.00 \\
+  2003    3.28   1.24 \\
+  2004    2.06   1.89 \\
+  2005    2.87   3.62 \\
+  2006    4.08   4.94 \\
+  2007    4.70   4.53 \\
+  2008    4.19   1.83 \\
+  2009    2.19   0.47 \\
+  2010    1.45   0.32 \\
+  2011    1.08   0.18 \\
+  2012    0.72   0.17 \\
+  2013    0.39   0.13 \\
+  2014    0.49   0.12 \\
+  2015    0.80   0.32 \\
+  2016    1.06   0.61 \\
+  2017    1.05   1.20 \\
+  2018    1.60   2.33 \\
+  2019    2.73   2.05 \\
+  2020    1.89   0.37 \\
+  2021    0.41   0.10 \\
+  2022    0.44   2.80 \\
+  2023    3.18   5.07 \\
+  2024    4.11   4.68 \\
+  2025    4.06   3.95 \\
+}\fcastdata
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.9}{%
+\begin{tikzpicture}
+% ---------- Top panel: yields and the forward rate they imply ----------
+\begin{axis}[
+  name=fwdtop,
+  width=0.75\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=2000, xmax=2026, ymin=0, ymax=7,
+  xtick={2000,2005,...,2025}, xticklabels={},
+  ytick={0,2,4,6},
+  ylabel={Rate (\%)},
+  clip=false,
+  legend style={at={(0.5,1.03)}, anchor=south, legend columns=3,
+                draw=none, font=\footnotesize, column sep=1em},
+]
+  \addplot[fegray, very thick, dashed, mark=none] table[x=year, y=y1] {\fwddata};
+  \addlegendentry{1-year yield}
+  \addplot[fegray, thick, mark=none] table[x=year, y=y2] {\fwddata};
+  \addlegendentry{2-year yield}
+  \addplot[fenavy, very thick, mark=none] table[x=year, y=fwd] {\fwddata};
+  \addlegendentry{forward rate for next year}
+  \node[anchor=west, font=\footnotesize] at (rel axis cs:0.01,0.95) {(a)};
+\end{axis}
+
+% ---------- Bottom panel: the forward rate as a forecast ----------
+\begin{axis}[
+  at={(fwdtop.below south west)}, anchor=above north west,
+  width=0.75\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=2000, xmax=2026, ymin=0, ymax=7,
+  xtick={2000,2005,...,2025},
+  xticklabel style={/pgf/number format/1000 sep={}},
+  ytick={0,2,4,6},
+  ylabel={Rate (\%)},
+  clip=false,
+  legend style={at={(0.5,-0.18)}, anchor=north, legend columns=2,
+                draw=none, font=\footnotesize, column sep=1em},
+]
+  \addplot[fenavy, very thick, mark=none] table[x=target, y=fcast] {\fcastdata};
+  \addlegendentry{forward rate set a year earlier}
+  \addplot[fegray, very thick, dashed, mark=none] table[x=target, y=real] {\fcastdata};
+  \addlegendentry{1-year yield that actually came}
+  \node[anchor=west, font=\footnotesize] at (rel axis cs:0.01,0.95) {(b)};
+
+  \node[anchor=south, align=center, font=\footnotesize]
+    at (axis cs:2013,2.5) {forward rates\\predicted rises\\that never came};
+  \draw[-stealth, thin] (axis cs:2012.2,2.5) -- (axis cs:2011.2,1.15);
+
+  \node[anchor=east, align=right, font=\footnotesize]
+    at (axis cs:2021.6,4.0) {rates rose far\\more than forward\\rates predicted};
+  \draw[-stealth, thin] (axis cs:2021.7,3.6) -- (axis cs:2022,1.8);
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{Forward rates have usually predicted higher interest rates than actually arrived. Forward rates and the yield curve in the United States, 2000--2025. Panel~(a) shows the 1-year and 2-year Treasury yields and the forward rate they imply for the following year, $f = (1 + y^{(2)})^2 / (1 + y^{(1)}) - 1$, where $y^{(n)}$ is the $n$-year yield. When the 2-year yield is above the 1-year yield, the forward rate is above both. Panel~(b) compares each forward rate with the 1-year yield that actually prevailed a year later. If forward rates were unbiased forecasts, the two lines would differ only by random errors. Instead, the forward rate was usually too high, most visibly from 2009 to 2015, when it kept predicting rises that did not come, and it badly missed the rapid rise in 2022. The data are approximate annual averages.}
+\label{fig:07-forward2}
+\end{figure}
+
+
+
+The question matters because markets and central banks read the yield curve every day. Commentators treat an inverted curve as a forecast of rate cuts and recession. Central banks extract \term{market-implied} paths for their policy rates, which are the future rates that today's forward rates would imply if they were pure forecasts. Bond investors choose maturities based on what the curve seems to promise. If the term premium is real, a forecaster who reads the curve as a pure forecast will be wrong in a predictable way, an investor can favor long bonds when the expected premium is high, and a central bank must remove the premium before it can read the market's view of future policy.
+
+The claim on trial\index{claims-on-trial method} is therefore the expectations hypothesis: \textbf{apart from a constant, each forward rate is an unbiased forecast of the future one-year interest rate, so a long-term bond earns, on average, the same return as a series of one-year bonds plus at most a constant premium.}
+
+The lab in Section~\ref{sec:07-lab} repeats the tests of Fama and Bliss (1987), Campbell and Shiller (1991) and Cochrane and Piazzesi (2005). In place of the commercial bond data that the original papers used, it uses the Federal Reserve's free zero-coupon Treasury yield curve since 1961, to check whether the hypothesis fails as clearly today as it did in the original samples.
+
+By the end of the chapter you will be able to:
+
+\begin{itemize}
+  \item compute zero-coupon\index{yield curve!zero-coupon} yields, forward rates and the excess return\index{return!excess}\index{return!holding-period} on a bond, and use duration\index{duration} to measure its sensitivity to rates;
+  \item explain the expectations hypothesis, the term premium\index{term premium}, and the three classic tests of them\index{Fama--Bliss regression}\index{Campbell--Shiller decomposition}\index{Cochrane--Piazzesi factor};
+  \item summarize the evidence, including doubts about how well the premium can be forecast out of sample\index{in-sample versus out-of-sample};
+  \item read a market-implied rate path as a forecast plus a premium, and judge a bond strategy built on carry and roll-down\index{roll-down}.
+\end{itemize}
+
+
+\section{Foundations: yields, forward rates and the term premium}
+\label{sec:07-foundations}
+
+\subsection{Zero-coupon yields}
+
+This chapter needs precise measures of bond yields, the yield curve and the term spread\index{term spread}, and these are best built from zero-coupon bonds. A zero-coupon bond pays \$1 at maturity, $n$ years from now, and nothing before. Its price $P(n)$ defines its yield $y(n)$. With continuous \term{compounding}\index{compounding}, $P(n) = e^{-n\,y(n)}$, so the log price is
+\begin{equation}
+  p(n) = -n\,y(n)
+  \label{eq:07-logprice}
+\end{equation}
+Any bond that pays coupons is a bundle of zero-coupon bonds, so the \term{zero-coupon yield curve}\index{yield curve!zero-coupon|textbf}, which plots yield against maturity, summarizes all Treasury prices. The Federal Reserve publishes a fitted curve back to 1961 (G\"urkaynak, Sack and Wright 2007).
+
+
+\begin{callout}
+\textbf{How zero-coupon bonds work.} A \textbf{zero-coupon bond}\index{zero-coupon bond} pays a single amount, its face value, on its maturity date and nothing before then. Because it pays no interest along the way, it sells today for less than its face value, and the investor's return is the difference between the price paid and the face value received. A bond that pays \$100 in $n$ years and has a yield of $y^{(n)}$ per year has the price
+\begin{equation}
+  P^{(n)} = \frac{100}{\bigl(1 + y^{(n)}\bigr)^{n}}.
+  \label{eq:07-zero-price}
+\end{equation}
+For example, a five-year zero-coupon bond that sells for \$78.35 has a yield of $(100/78.35)^{1/5} - 1 \approx 5\%$ per year, because \$78.35 growing at 5\% a year for five years becomes \$100.
+
+Zero-coupon bonds are useful for testing the expectations hypothesis because each one has a single yield for a single maturity. An ordinary coupon bond pays interest every six months and the principal at the end, so its yield is an average over many payment dates. With zero-coupon yields, forward rates follow directly. An investor who wants money in two years can buy a two-year zero, or she can buy a one-year zero and lock in the forward rate $f$ for the second year. Both plans are free of risk, so they must cost the same:
+\begin{equation}
+  \bigl(1 + y^{(2)}\bigr)^{2} = \bigl(1 + y^{(1)}\bigr)(1 + f).
+  \label{eq:07-zero-forward}
+\end{equation}
+If the one-year yield is 4\% and the two-year yield is 5\%, the forward rate for the second year is $1.05^{2}/1.04 - 1 \approx 6.0\%$. The expectations hypothesis says that this 6\% is the market's forecast of the one-year rate a year from now.
+
+The U.S. Treasury issues few zero-coupon bonds of its own, so researchers usually estimate zero-coupon yields from the prices of coupon bonds. The Federal Reserve's zero-coupon yield curve, which the lab uses, is built this way.
+\end{callout}
+
+\subsection{Forward rates}
+
+Suppose an investor will have \$100 to invest three years from now and wants to invest it for a fourth year, but she worries that interest rates will fall before then. She can lock in today the rate for that fourth year with two trades:
+\begin{enumerate}
+  \item She sells a bond that matures in three years, receiving cash today and owing \$100 in three years.
+  \item She uses that cash to buy a bond that matures in four years.
+\end{enumerate}
+The trades cost her nothing today, because the first pays for the second. In three years she pays \$100, and in four years the four-year bond pays her back a little more than \$100. In effect, she has agreed today to lend \$100 for one year, starting three years from now, and the interest rate on that loan is the forward rate.
+
+A forward rate is therefore not just a number computed from the yield curve, but a rate that investors can actually lock in, and this is what makes the expectations hypothesis testable. If forward rates were reliably too high, locking them in would reliably beat waiting, and investors would earn a predictable extra return that the hypothesis rules out.
+
+In practice, pension funds, insurers, banks and companies lock in future rates more cheaply with derivatives such as interest-rate futures and swaps, contracts in which two parties exchange fixed interest payments for payments that float with market rates. The bond trade still matters for two reasons. Dealers and hedge funds trade zero-coupon Treasury bonds of different maturities, called \term{STRIPS}\index{STRIPS}, whenever bond and derivative prices drift apart, and this keeps derivative prices tied to the forward rate. In addition, every choice of maturity carries the same bet: an investor who buys a five-year bond instead of rolling over one-year bonds has in effect locked in the forward rates for years two through five.
+
+Buying an $n$-year zero and selling an $(n-1)$-year zero locks in today the rate of return for the year from $n-1$ to $n$. That rate is the \textbf{forward rate}\index{forward rate|textbf} (Figure~\ref{fig:07-forward-diagram}):
+\begin{equation}
+  f(n) = p(n-1) - p(n) = n\,y(n) - (n-1)\,y(n-1)
+  \label{eq:07-forward}
+\end{equation}
+When the yield curve rises with maturity, forward rates are above current yields.
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.9}{%
+\begin{tikzpicture}[x=3.2cm, y=1cm]
+  % Bars: 1-year zero (0-1), 2-year zero (0-2), forward (1-2)
+  \fill[gray!45] (0,0.6) rectangle (1,1.15);
+  \node at (0.5,0.875) {1-year zero: 4\%};
+  \fill[gray!22] (0,1.55) rectangle (2,2.1);
+  \node at (1,1.825) {2-year zero: 5\% a year};
+  \fill[fenavy] (1,2.5) rectangle (2,3.05);
+  \node[white] at (1.5,2.775) {forward: 6\%};
+
+  \node[anchor=north west, align=left] at (2.12,3.2)
+    {$f(2) = 2 \times 5\% - 1 \times 4\% = 6\%$:\\the rate locked in today\\for the second year};
+
+  % Time axis
+  \draw[-stealth] (0,0) -- (2.35,0) node[anchor=west] {years};
+  \foreach \wfT in {0,1,2} {
+    \draw (\wfT,0.08) -- (\wfT,-0.08);
+    \node[anchor=north] at (\wfT,-0.1) {\wfT};
+  }
+\end{tikzpicture}%
+}
+\caption{A forward rate from the worked example. A two-year yield of 5\% is equivalent to earning the one-year yield of 4\% in the first year and a rate locked in today, the forward rate of 6\%, in the second.}
+\label{fig:07-forward-diagram}
+\end{figure}
+
+
+\subsection{Holding-period returns}
+
+An investor who buys an $n$-year bond and sells it a year later, when it has become an $(n-1)$-year bond, earns the log return\index{return!log}
+\begin{equation}
+  r_{t+1}(n) = p_{t+1}(n-1) - p_t(n)
+  \label{eq:07-hpr}
+\end{equation}
+As with stocks (Section~\ref{sec:01-rf}), the excess return $rx_{t+1}(n)$ subtracts the return on the safe alternative. Here that is the one-year yield $y_t(1)$, the return on a one-year bond held to maturity.
+
+\subsection{Duration}
+
+For a small change in its yield, a bond's price changes by about $-D \times \Delta y$ percent, where $D$ is its \term{duration}\index{duration|textbf}. For a zero-coupon bond, the duration equals the maturity. Long bonds are therefore more sensitive to interest rates, and their returns are more volatile.
+
+\subsection{The expectations hypothesis (EH)}
+
+\textbf{The expectations hypothesis (EH)}\index{expectations hypothesis|textbf} states that each forward rate equals the one-year rate expected at that future date, plus at most a constant:
+\begin{equation}
+  f_t(n) = E_t\!\left[y_{t+n-1}(1)\right] + \text{constant}
+  \label{eq:07-eh}
+\end{equation}
+Equivalently, the expected excess returns on bonds of every maturity do not change over time. The \textbf{term premium}\index{term premium|textbf} is the gap between a forward rate and the short rate expected for that period, or between a long yield and the average short rate expected over its life. The EH says that this premium never changes.
+
+\textbf{Worked example.} The one-year zero yields 4\% and the two-year zero yields 5\%, both continuously compounded.
+
+\begin{itemize}
+  \item The log prices are $p(1) = -0.04$ and $p(2) = -0.10$, so the forward rate for the second year is $f(2) = -0.04 + 0.10 = 6\%$.
+  \item Under the EH, the market expects the one-year rate to be 6\% next year. If it is, the two-year bond, sold next year as a one-year bond, returns $-0.06 + 0.10 = 4\%$. That is the same as the one-year bond, so the excess return is zero.
+  \item If instead the one-year rate stays at 4\%, the two-year bond returns $-0.04 + 0.10 = 6\%$, an excess return of 2\%.
+  \item A steep curve can therefore mean that short rates will rise (the EH), that long bonds will earn more (a term premium), or a mix of both (Figure~\ref{fig:07-readings}). The tests in this chapter measure the mix.
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.9}{%
+\begin{tikzpicture}[
+  trbox/.style={draw=fenavy, thick, rounded corners=2pt, align=center,
+                minimum width=4.2cm, minimum height=1.15cm, inner sep=4pt},
+  trarr/.style={-stealth, thick},
+]
+  \node[trbox, fill=fenavy!12] (top) at (0,0)
+    {Steep yield curve:\\forward rates above short rates};
+  \node[trbox] (eh) at (-3.4,-2.4)
+    {short rates will rise\\(expectations hypothesis)};
+  \node[trbox] (tp) at (3.4,-2.4)
+    {long bonds will earn\\more (term premium)};
+  \draw[trarr] (top.south) ++(-0.8,0) -- (eh.north);
+  \draw[trarr] (top.south) ++(0.8,0) -- (tp.north);
+  \node at (0,-3.7) {the regressions in this chapter measure the mix};
+\end{tikzpicture}%
+}
+\caption{A steep yield curve can be a forecast of rising rates, extra pay for holding long bonds, or both. Two readings of a steep yield curve. Forward rates above short rates can mean that short rates will rise, as the expectations hypothesis says, or that long bonds will earn more than short ones, a term premium. The tests in this chapter measure how much of each.}
+\label{fig:07-readings}
+\end{figure}
+
+
+\section{How it works}
+\label{sec:07-how}
+
+The expectations hypothesis can be tested in three ways. They look different, but they ask the same question.
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.17\linewidth-0.15\linewidth-6\tabcolsep)/2\relax}>{\raggedright\arraybackslash}p{0.15\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.17\linewidth-0.15\linewidth-6\tabcolsep)/2\relax}@{}}
+\toprule
+Test & Regression & Expectations hypothesis & Alternative: time-varying term premium \\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Test & Regression & Expectations hypothesis & Alternative: time-varying term premium \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Fama--Bliss, excess returns & $rx(n)$ on $f(n) - y(1)$ & Slope 0 & Slope positive (1 if forward spreads are all premium) \\*
+Fama--Bliss, short rates & $y(1)$ in $n-1$ years minus $y(1)$ today, on $f(n) - y(1)$ & Slope 1 & Slope below 1 \\*
+Campbell--Shiller & Change in the long yield over a year, on the scaled yield spread & Slope 1 & Slope below 1, even negative \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
+
+The first two tests are mirror images. The forward spread equals the expected change in short rates plus the expected excess return, so a spread that does not predict rising rates must predict excess returns. The Campbell--Shiller test asks the question through long yields. If the curve is steep because short rates are expected to rise, long yields should also rise as the years pass. If they fall instead, the steepness was a premium.
+
+\textbf{Why the premium might change.} Bonds lose value when inflation\index{inflation} or interest rates rise unexpectedly. Investors demand compensation for that risk, and the amount can change. It tends to be higher in recessions, when investors are more risk-averse\index{risk aversion}, and when inflation is uncertain. Supply and demand matter too: when pension funds and central banks buy long bonds, they push the term premium down. Any of these makes the EH fail.
+
+The tests are statistically delicate, for reasons the shaded box explains.
+
+\begin{technote}
+\textbf{Technical note: why the tests are hard.} Interest rates change slowly, and annual returns measured every month \term{overlap} by eleven months. Both problems make $t$-statistics\index{t-statistic} look larger than they should if they are not handled carefully (Chapter~\ref{ch:03}). The lab therefore uses Newey--West\index{standard error!Newey--West (HAC)} standard errors with 18 lags and adds out-of-sample tests (Chapter~\ref{ch:06}).
+\end{technote}
+
+
+\section{The claim}
+\label{sec:07-claim}
+
+\begin{callout}
+\textbf{Claim (the expectations hypothesis).} Apart from a constant, each forward rate is an unbiased forecast of the future one-year interest rate. A long-term bond therefore earns, on average, the same return as a series of one-year bonds plus at most a constant premium, and a steep yield curve predicts rising one-year rates, not higher returns on long-term bonds.
+\end{callout}
+
+To test it, three points need to be settled:
+
+\begin{itemize}
+  \item \textbf{Up to a constant.} Long bonds have earned more than short ones on average, so the version tested here allows a constant term premium and denies only that the premium \emph{changes}.
+  \item \textbf{Which horizon.} One-year holding periods, the standard in the literature.
+  \item \textbf{What would count against it.} Forward spreads that predict excess bond returns (a Fama--Bliss slope significantly above 0) or predict short rates less than one for one, or long yields that fail to rise when the curve is steep (a Campbell--Shiller slope significantly below 1), especially out of sample.
+\end{itemize}
+
+\section{The original evidence}
+\label{sec:07-evidence}
+
+\textbf{Fama and Bliss (1987).} Using zero-coupon prices built from CRSP\index{CRSP} Treasury data, Fama and Bliss found that the spread between the $n$-year forward rate and the one-year rate predicted the next year's excess return on $n$-year bonds, contrary to the EH, but did little to predict changes in the one-year rate. Its power to predict short rates grew with the horizon, because rates drift back toward their average.
+
+\textbf{Campbell and Shiller (1991).} For maturities from a few months to ten years, a steep curve predicted that long yields would \emph{fall}, the opposite of what the EH requires, and more strongly at longer maturities. Falling yields mean rising prices, so a steep curve predicted high returns on long bonds.
+
+\textbf{Cochrane and Piazzesi (2005).} A single tent-shaped combination of all the forward rates predicted one-year excess returns on bonds of every maturity, with $R^2$\index{regression!R-squared@$R^2$} of up to 43\%. It was largely unrelated to the level, slope and curvature of the yield curve, and it rose in bad times, consistent with a \term{risk premium}\index{risk premium} that is high in recessions.
+
+\textbf{The skeptics.} That the EH fails is widely accepted; how strongly bond returns can be predicted is not. Bauer and Hamilton (2018) showed that standard tests are badly distorted when predictors move slowly and returns overlap\index{overlapping observations}, and with robust tests the evidence that anything beyond level, slope and curvature predicts returns, including the \term{Cochrane--Piazzesi factor}, became much weaker. Thornton and Valente (2012) found that forecasts from forward rates gave an investor little economic value out of sample.
+
+\section{Lab~\thechapter: Replicating Fama and Bliss (1987), Campbell and Shiller (1991) and Cochrane and Piazzesi (2005)}
+\label{sec:07-lab}
+
+\textbf{Claim on trial\index{claims-on-trial method}:} forward rates are unbiased forecasts of future short rates. The lab uses the Federal Reserve's zero-coupon Treasury yield curve (G\"urkaynak, Sack and Wright 2007), month-end yields for maturities of one to ten years, which is free and updated regularly. The curve is fitted to bond prices, unlike the CRSP data of the classic studies, so results will be similar in spirit but not identical.
+
+\textbf{Part A, the classic tests.} \term{Fama--Bliss regressions} of excess returns, and of future changes in short rates, on forward spreads, and \term{Campbell--Shiller regressions}, for maturities of 2 to 10 years, with Newey--West standard errors\index{standard error} for the overlapping data (Lab Figures~\ref{ch:12}.2 and~\ref{ch:12}.3).
+
+\textbf{Part B, Cochrane--Piazzesi.} The average excess return on 2- to 5-year bonds regressed on the one-year yield and four forward rates, with out-of-sample forecasts from 1985 using only data available at each date\index{walk-forward evaluation!expanding window}, compared with the historical mean\index{historical-mean benchmark} (Lab Figure~\ref{ch:12}.4).
+
+\textbf{Part C, subperiods.} Key slopes and the Cochrane--Piazzesi $R^2$ before 1985, in 1985--2007, in 2008--2015 (near-zero short rates) and from 2016.
+
+\textbf{Part D, the investor's view.} Average excess returns by maturity, and returns after steep and flat curves defined with past information only (Lab Figure~\ref{ch:12}.5).
+
+\label{sec:07-stress}
+\textbf{Robustness checks.} The sample spans the 1970s inflation, the Volcker disinflation, the long fall in rates, near-zero rates after 2008 and the rapid rises of 2022--23, so Part C shows whether the rejection comes from one era. Slow-moving predictors and overlapping returns inflate in-sample $R^2$, so a negative out-of-sample $R^2$\index{out-of-sample $R^2$} would mean the historical mean did better\index{in-sample versus out-of-sample|textbf}. Standard errors can also badly understate the uncertainty in these regressions (Bauer and Hamilton 2018), so treat $t$-statistics near 2 with suspicion. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:07-verdict}.
+
+\section{Where the evidence stands}
+\label{sec:07-verdict}
+
+The published studies point to a clear pattern: \textbf{forward rates contain information about future short rates but are biased forecasts of them, because a term premium that changes over time drives much of the slope of the yield curve. How well that premium can be forecast in real time is disputed.} The table summarizes the evidence as of November 2026.
+
+{\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.45\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Forward spreads and excess returns & \textbf{No} & Forward spreads forecast excess returns on long bonds, which the hypothesis rules out. & Fama and Bliss (1987) \\*
+\addlinespace[3pt]
+Long yields when the curve is steep & \textbf{No} & Long yields tended to fall, more so at longer maturities. & Campbell and Shiller (1991) \\
+\addlinespace[3pt]
+Forward rates at long horizons & \textbf{Partly} & They forecast short rates several years ahead, because rates mean-revert. & Fama and Bliss (1987) \\
+\addlinespace[3pt]
+A constant term premium & \textbf{No} & One combination of forward rates forecast excess returns on all maturities and rose in bad times. & Cochrane and Piazzesi (2005) \\
+\addlinespace[3pt]
+Strength of the forecasting evidence & \textbf{Disputed} & Robust tests weaken the evidence beyond level, slope and curvature. & Bauer and Hamilton (2018) \\*
+\addlinespace[3pt]
+Value to an investor out of sample & \textbf{Partly} & Forecasts gave little economic value out of sample. & Thornton and Valente (2012) \\
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+}
+
+The evidence that the term premium changes is strong; the evidence that anyone can track it in real time is weaker. Neither rescues the expectations hypothesis, which needs the premium to be constant.
+
+\textbf{What would change the picture.} The claim would gain support if its rejection came from one monetary regime and disappeared in the others.
+
+\label{sec:07-open}
+\textbf{Open questions.} Did central-bank bond buying after 2008 and in 2020 change how the term premium behaves, and does the Cochrane--Piazzesi factor hold up in other countries and after 2003?
+
+\section{What practitioners and investors can use}
+\label{sec:07-investors}
+
+Read forward rates as a forecast plus a premium: a rate path read from forward rates or futures overstates expected rate rises when the premium is positive, and published term-premium estimates, such as the Federal Reserve Bank of New York's based on Adrian, Crump and Moench (2013), help separate the two. When the curve is steep, a bond earns its extra yield, \textbf{carry}, and a price gain as its yield falls toward those of shorter maturities, \term{roll-down}\index{roll-down|textbf}. The evidence says rising rates have not cancelled both on average, so carry and roll-down are a reasonable, though not guaranteed, guide to expected excess returns. Duration\index{duration|textbf} remains a bet, as the record losses on long Treasuries in 2022 showed.
+
+\begin{callout}
+\textbf{What Failed: reading the yield curve as a pure forecast of policy.} Between June 2004 and June 2006, the Federal Reserve raised its policy rate from 1\% to 5.25\%. Under the expectations hypothesis long yields should have risen; instead they fell during the first year and ended little higher. In February 2005, Chairman Alan Greenspan called this a ``conundrum'' (Greenspan 2005). It was a puzzle only if long yields were pure forecasts of short rates; term-premium models attributed much of the fall to a shrinking premium. The same mistake recurs whenever a change in the term premium is taken for a change in expected policy.
+\end{callout}
+
+% Key terms that this chapter uses without defining them, for readers new to finance.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Compounding.] Compounding means earning returns on earlier returns, so that money grows faster than with simple interest; continuous compounding is the limit in which this happens at every instant.
+  \item[Risk premium.] A risk premium is the extra expected return that investors demand for holding a risky asset instead of a safe one.
+\end{description}
+\end{keyterms}

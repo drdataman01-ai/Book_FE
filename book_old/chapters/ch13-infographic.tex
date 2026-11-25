@@ -1,0 +1,39 @@
+% Chapter 13 infographic -- use right after \label{ch:13}: \input{chapters/ch13-infographic}
+\ifcsname FEinfoLoaded\endcsname\else\input{common/fe-infographic}\fi
+\begin{FEinfographic}{ch:13}{a strategy that is profitable in a backtest is profitable to trade}
+
+\infopanel{1}{Three costs a backtest leaves out}{%
+\infocards
+  {Turnover}{Every trade pays half the bid--ask spread, and fast strategies trade most of their portfolio each month.}
+  {Market impact}{Large trades move prices against the trader, and the cost grows with the size of the fund.}
+  {The short side}{Borrowing fees, recalls and bans make many anomalies costly to short.}}
+
+\infopanel{2}{Evidence scoreboard}{%
+\begin{infoscore}
+\scoreitem{y}{Yes}{Slow strategies, such as value}
+\scoreitem{p}{Partly}{Momentum}
+\scoreitem{n}{No}{Short-term reversal}
+\scoreitem{n}{No}{High-turnover strategies in general}
+\scoreitem{y}{More often}{For a large, patient institution}
+\scoreitem{n}{Often not}{Strategies that rely on the short side}
+\scoreitem{n}{No}{The average anomaly}
+\end{infoscore}}
+
+\infopanel{3}{Monthly turnover and what it costs}{%
+\infonumbers
+  {2\%}{monthly turnover of value}
+  {25\%}{monthly turnover of momentum}
+  {76\%}{monthly turnover of short-term reversal}
+  {4 bp}{a month: the average anomaly after costs and decay}}
+
+\infopanel{4}{Lab: replicating Novy-Marx and Velikov (2016)}{%
+\begin{infolab}
+\item \textbf{A.} Gross returns of value, momentum and short-term reversal. \textbf{B.} Turnover in a simulated universe.
+\item \textbf{C.} Net returns and break-even costs from 0 to 100 basis points.
+\item \textbf{D.} Capacity as assets grow to \$1 trillion. \textbf{E.} Buy/hold bands that cut momentum's turnover in half.
+\end{infolab}}
+
+\infoverdict
+  {Whether a profitable backtest is profitable to trade depends on how much the strategy trades, what it trades and how much money is behind it: slow strategies in liquid stocks survive realistic costs, while fast strategies in small stocks often do not.}
+  {Ask for turnover, the break-even cost against what you will pay, the cost of the short side and the net return at your planned size.}
+\end{FEinfographic}

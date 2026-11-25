@@ -1,0 +1,243 @@
+% Preface -- Financial Engineering and the Evidence
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+\markboth{Preface}{Preface}
+
+\emph{Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims}
+
+
+\textbf{Asset pricing}\index{asset pricing|textbf} is the study of why financial assets are worth what they are worth. An asset, such as a stock, a bond or an option, is a claim to uncertain payments in the future, and its price today must reflect both when those payments arrive and how risky they are. Asset pricing explains how markets translate future payoffs into present prices, why some assets earn higher average returns than others, and how those returns compensate investors for bearing risk. 
+
+\section*{A natural way to learn}
+
+For a long time I have been thinking about how people learn a technical subject, and how that learning could be more active and more inspiring.
+
+Many textbooks follow a familiar pattern: a model is presented, its formulas are derived, a few examples are worked, and exercises follow at the end of the chapter. This is a time-tested way to pass on knowledge.
+
+But it may not make a reader research-oriented, and it may not build the judgment a working quant needs most: knowing whether a result can be trusted. When I turn the question around and ask, ``Does this actually work? Let's find out,'' the classroom comes alive. Students make predictions, argue about what the data will show, run the numbers, and remember what they found, often because it was not what they expected.
+
+I believe this is the natural way people learn, even in the age of AI. This book is built on that conviction. Its subtitle, \emph{Active Learning by Verifying Famous Claims}, describes the method. You will not be asked to accept the results of quantitative finance on authority. Instead, you will be invited to test those results for yourself while learning the techniques of financial engineering.
+
+\section*{Why this approach, and why now}
+
+Three developments make this the right moment for a book like this.
+
+First, the evidence behind many famous claims is live and unresolved. For example, Hou, Xue and Zhang (2020) asked how many published anomalies survive when micro-caps are given little weight, and found that about 65 percent of 452 anomalies fail a basic significance test. Jensen, Kelly and Pedersen (2023) asked whether a verdict that uses the evidence from all factors at once would be kinder, and, using a Bayesian method and data from 93 countries, concluded that most factors do replicate. Goyal, Welch and Zafirov (2024) checked whether the return predictors proposed since 2008 still work, and found that many have lost their power. When leading researchers disagree, students need to be able to work through the disagreement themselves. This book is designed to bring students into such debates rather than only report their conclusions. In Chapter~\ref{ch:15}, for example, students replicate both sides of the anomaly debate and form their own view.
+
+Second, the data to do so is now free. Kenneth French's data library, FRED, Goyal and Welch's predictor file, the Jensen--Kelly--Pedersen global factors and Chen and Zimmermann's Open Source Asset Pricing portfolios let any student rebuild published results without a paid database.
+
+Third, new methods are entering finance faster than they are being tested. Machine learning and time series foundation models promise much, but the finance-specific evidence is mixed. Students need to learn where these tools help and where they do not, and the only way to know is to test them.
+
+Courses that teach the replication debate usually do it through journal articles, while their textbooks present results rather than ask students to re-test them. This book is written to fill that gap.
+
+\section*{Putting famous claims on trial}
+
+Finance is full of famous claims. Value beats growth. Momentum works. Stock returns are predictable. Optimized portfolios beat naive ones. Machine learning finds hidden alpha.
+
+Practitioners act on these claims, products are sold on them, and many are taught as if they were settled. They are also exactly the kind of question an active learner can answer with data.
+
+In this book, every such claim is put on trial, and you are the one who tries it. Each claim chapter follows the same cycle:
+
+\begin{enumerate}
+  \item \textbf{Claim.} State what is asserted, in one testable sentence.
+  \item \textbf{Understand.} Learn how the idea works and how the original evidence was produced.
+  \item \textbf{Verify.} Rebuild the result in a Python lab on open data, then stress-test it out of sample, in other markets and after costs.
+  \item \textbf{Judge.} Reach a dated verdict: survives, weakens, fails or provisional.
+  \item \textbf{Apply.} Take away what investors and practitioners can use, and what remains open.
+\end{enumerate}
+
+This order is the heart of the active approach. Because the question comes first, every method is learned at the moment it is needed, to settle something you actually want to know. Newey--West errors, false-discovery rates and walk-forward evaluation stop being abstract tools and become the instruments that decide a case. Each lab also asks you to write down what you expect before you run a step. When the data disagree with your prediction, the surprise is visible, and it stays with you.
+
+The verdicts are not foregone conclusions. Some claims largely survive, such as the predictability of volatility. Some survive only in weakened form, such as value and momentum. The goal is to follow the evidence wherever it leads, and on some questions, such as whether most published anomalies are false, serious researchers still disagree. There you will replicate both sides and write your own verdict.
+
+Repeated across twenty-two claims, the cycle becomes a habit. That habit, more than any single verdict, is what I hope you take from this book: before believing a result, ask ``compared to what, out of sample, and after costs?''
+
+\section*{How the book is organized}
+
+The book has nine parts, twenty-two claim chapters and four appendices. Every chapter puts a famous claim on trial, and the chapters are ordered by two rules. Methods climb from simple to complex, so no chapter needs a method taught later. Within that ladder, the chapters follow the dates of the papers that started each claim, so the book moves from the performance tests of the 1960s to the foundation models of 2025 in roughly the order the field itself did. The one exception is Part VIII, on derivatives and credit, which comes after Part VII even though its founding papers are older. It is the most technical part of the book, and no later chapter depends on it.
+Table~\ref{tab:pref-parts} lists the chapters in each part.
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.07\linewidth}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedleft\arraybackslash}p{0.04\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.56\linewidth-6\tabcolsep\relax}@{}}
+\caption{The nine parts of the book and their chapters.}
+\label{tab:pref-parts} \\
+\toprule
+Part & Theme & Ch. & Title \\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\footnotesize\itshape Table~\ref{tab:pref-parts}, continued} \\
+\toprule
+Part & Theme & Ch. & Title \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+I & Returns, luck and data & \ref{ch:01} & A Strong Track Record Proves Skill \\
+ &  & \ref{ch:02} & Historical Data Show What a Strategy Would Have Earned \\
+\addlinespace
+II & The classical cross-section & \ref{ch:03} & Size and Value Explain Returns That Beta Cannot \\
+ &  & \ref{ch:04} & Past Winners Keep Winning \\
+\addlinespace
+III & Predictability through time & \ref{ch:05} & Simple Trading Rules Beat Buy-and-Hold \\
+ &  & \ref{ch:06} & Valuations Predict the Equity Premium Out of Sample \\
+\addlinespace
+IV & Volatility and risk & \ref{ch:07} & Volatility Is Predictable \\
+ &  & \ref{ch:08} & Value-at-Risk Models Measure Risk Reliably \\
+\addlinespace
+V & Portfolios and dependence & \ref{ch:09} & Optimized Portfolios Beat an Equal Split Across Assets \\
+ &  & \ref{ch:10} & Diversification Fails When You Need It Most \\
+\addlinespace
+VI & Currencies and interest rates & \ref{ch:11} & High-Interest Currencies Depreciate Enough to Offset Their Yield \\
+ &  & \ref{ch:12} & Forward Rates Predict Future Interest Rates \\
+\addlinespace
+VII & The reckoning: costs, low risk and replication & \ref{ch:13} & A Profitable Backtest Is Profitable to Trade \\
+ &  & \ref{ch:14} & Low-Risk Stocks Beat High-Risk Stocks \\
+ &  & \ref{ch:15} & Most Published Anomalies Fail to Replicate \\
+\addlinespace
+VIII & Derivatives and credit & \ref{ch:16} & Credit Spreads Mainly Reflect Expected Defaults \\
+ &  & \ref{ch:17} & Delta Hedging Removes Option Risk \\
+ &  & \ref{ch:18} & Selling Options Earns a Reliable Premium \\
+\addlinespace
+IX & Machine learning and foundation models & \ref{ch:19} & Machine Learning Predicts Returns Better Than Linear Models \\
+ &  & \ref{ch:20} & Foundation Models Forecast Better Than Classical Methods \\
+ &  & \ref{ch:21} & Transformers Price Stocks Better Than Factor Models \\
+ &  & \ref{ch:22} & Foundation Models Trained on Market Data Beat GARCH \\
+\end{longtable}
+\endgroup
+
+
+Testing the claims takes you through the standard financial engineering curriculum. Each claim rests on a core model, and each chapter teaches that model in a self-contained Foundations section before testing the claim. You learn the same material as in a conventional course, but you meet each model where it makes a prediction the data can contradict.
+
+The book can therefore stand alone or sit beside the classics. Hull, Cochrane, and Campbell, Lo and MacKinlay teach how the models are built, while this book asks whether their predictions hold.
+
+Every chapter has a Python lab that replicates the papers behind its claim. All labs use free data, such as the Kenneth French library, FRED and Goyal and Welch's predictor file. Where an original study used a paid database, the lab explains how the free substitute differs.
+
+
+\section*{Why these claims}
+
+Each of the twenty-two claims, in Chapters~\ref{ch:01} to~\ref{ch:22}, was chosen to do two jobs at once: to settle a question that matters, and to teach a core model. The table shows how the claims map onto the standard curriculum. 
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}l>{\raggedright\arraybackslash}p{0.198\linewidth}>{\raggedright\arraybackslash}p{0.288\linewidth}>{\raggedright\arraybackslash}p{0.297\linewidth}@{}}
+\toprule
+Ch. & Core area & Model or tool & Claim on trial \\
+\midrule
+\endfirsthead
+\toprule
+Ch. & Core area & Model or tool & Claim on trial \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+\ref{ch:01} & Statistics of returns & Returns, Sharpe ratio, t-statistics, luck by simulation & A strong track record proves skill \\
+\ref{ch:02} & Financial data & Adjusted prices; survivorship, look-ahead and micro-cap biases & Historical data show what a strategy would have earned \\
+\ref{ch:03} & Asset pricing and factors & OLS, the CAPM, factor models & Size and value explain returns that beta cannot \\
+\ref{ch:04} & Market efficiency and behavior & Portfolio sorts, cross-sectional momentum, crash risk & Past winners keep winning \\
+\ref{ch:05} & Technical analysis & Trading rules, time-series momentum, the Reality Check & Simple trading rules beat buy-and-hold \\
+\ref{ch:06} & Forecasting and the equity premium & Walk-forward evaluation, out-of-sample $R^2$, forecast tests & Valuations predict the equity premium out of sample \\
+\ref{ch:07} & Volatility modelling & ARCH/GARCH, realized and implied volatility, HAR & Volatility is predictable \\
+\ref{ch:08} & Risk management & VaR, expected shortfall, backtesting, Basel & VaR models measure risk reliably \\
+\ref{ch:09} & Portfolio construction & Mean--variance, efficient frontier, covariance estimation & Optimized portfolios beat an equal split across assets \\
+\ref{ch:10} & Diversification and dependence & Correlation dynamics, tail dependence & Diversification fails when you need it most \\
+\ref{ch:11} & International finance & Covered and uncovered interest parity, carry & High-interest currencies depreciate enough to offset their yield \\
+\ref{ch:12} & Fixed income & Yield curves, forward rates, duration, expectations hypothesis & Forward rates predict future rates \\
+\ref{ch:13} & Trading and implementation & Spreads, turnover, break-even costs, capacity & A profitable backtest is profitable to trade \\
+\ref{ch:14} & CAPM and leverage & Security market line, Fama--MacBeth, leverage constraints & Low-risk stocks beat high-risk stocks \\
+\ref{ch:15} & Econometrics of finance & Multiple testing, shrinkage, post-publication tests & Most published anomalies fail to replicate \\
+\ref{ch:16} & Credit & Default, recovery, spreads, the expected-loss spread & Credit spreads mainly reflect expected defaults \\
+\ref{ch:17} & Derivative pricing and hedging & Options, Black--Scholes, the Greeks, dynamic hedging & Delta hedging removes option risk \\
+\ref{ch:18} & Options and volatility premia & Implied volatility, the VIX, the variance risk premium & Selling options earns a reliable premium \\
+\ref{ch:19} & Machine learning & Regularization, trees, neural nets, cross-validation & Machine learning predicts returns better than linear models \\
+\ref{ch:20} & Forecasting & ARIMA, exponential smoothing, zero-shot foundation models & Foundation models forecast better than classical methods \\
+\ref{ch:21} & Asset-pricing theory & Stochastic discount factor, IPCA, attention & Transformers price stocks better than factor models \\
+\ref{ch:22} & Financial time series and AI & Range-based volatility, fine-tuning, synthetic data & Foundation models trained on market data beat GARCH \\
+\end{longtable}
+\endgroup
+
+Every claim had to pass five tests before it earned a chapter.
+
+\begin{enumerate}
+  \item \textbf{Anchored in a core model.} Testing it requires you to learn a model that belongs in any financial engineering course.
+  \item \textbf{Famous and consequential.} Practitioners act on it, products are sold on it, or it shaped the research literature.
+  \item \textbf{Testable with free data.} Any student can replicate the founding paper with the French library, FRED and similar public sources.
+  \item \textbf{Still debated.} Recent papers disagree, so the verdict is not a foregone conclusion and your own test adds information.
+  \item \textbf{A spread of verdicts.} Some claims largely survive (volatility is predictable), some survive only in weakened form (value, momentum, the option premium), and some largely fail (forward rates as forecasts, optimized portfolios beating an equal-weighted one). The method does not always say no.
+\end{enumerate}
+
+The claims do not cover everything. This is not a full treatment of stochastic calculus, exotic derivatives, term-structure models beyond the basics, corporate finance, or market microstructure at the level of the order book. 
+
+\section*{Foundations sections by chapter}
+
+The Foundations section in every claim chapter is part of what each chapter expects you to learn. 
+The table below lists the standard texts that treat its topic in depth. You do not need the books in the Further reading column to follow this one. They are listed for readers who want a deeper treatment of a topic.
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}r>{\raggedright\arraybackslash}p{0.468\linewidth}>{\raggedright\arraybackslash}p{0.364\linewidth}@{}}
+\toprule
+Ch. & Foundations covers & Further reading \\
+\midrule
+\endfirsthead
+\toprule
+Ch. & Foundations covers & Further reading \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+\ref{ch:01} & Simple, log and excess returns; the risk-free rate; expected return and volatility; the Sharpe ratio; standard errors and t-statistics & Bodie, Kane and Marcus (2024); Campbell, Lo and MacKinlay (1997) \\
+\ref{ch:02} & Corporate actions and adjusted prices; index weighting; CRSP, Compustat, FRED and the French library; delisting; point-in-time data & Bodie, Kane and Marcus (2024); Bali, Engle and Murray (2016) \\
+\ref{ch:03} & Describing a distribution; linear regression and the OLS assumptions & Wooldridge (2025); Bodie, Kane and Marcus (2024); Cochrane (2005) \\
+\ref{ch:04} & Measuring past performance; cross-sectional and time-series momentum; volatility scaling; underreaction and overreaction & Bodie, Kane and Marcus (2024); Ilmanen (2011) \\
+\ref{ch:05} & Moving-average and breakout rules; time-series versus cross-sectional momentum; volatility targeting; rule universes and the SPA test & Campbell, Lo and MacKinlay (1997); Tsay (2010) \\
+\ref{ch:06} & Information sets; training, validation and test splits; why in-sample $R^2$ flatters & Hyndman and Athanasopoulos (2021); L\'opez de Prado (2018) \\
+\ref{ch:07} & Volatility and variance; historical volatility and EWMA; ARCH and GARCH(1,1); realized and implied volatility & Hull (2022); Tsay (2010) \\
+\ref{ch:08} & Value at Risk and expected shortfall; scaling one-day VaR to ten days; when diversification raises VaR & Hull (2022, 2023) \\
+\ref{ch:09} & The investor's problem; the efficient frontier; equal weighting (1/N); why the test must be out of sample & Bodie, Kane and Marcus (2024); Luenberger (2014) \\
+\ref{ch:10} & Correlation and diversification; why measured correlation rises with volatility; the Forbes--Rigobon correction; tail correlation and tail dependence; the stock--bond correlation & Bodie, Kane and Marcus (2024); Ang (2014) \\
+\ref{ch:11} & Spot and forward exchange rates; covered and uncovered interest parity; the carry trade & Hull (2022); Bodie, Kane and Marcus (2024) \\
+\ref{ch:12} & Zero-coupon yields; forward rates; holding-period returns; duration; the expectations hypothesis & Hull (2022); Tuckman and Serrat (2022) \\
+\ref{ch:13} & The order book; market and limit orders; who provides liquidity; long and short positions; long--short portfolios; turnover & Harris (2003); Bodie, Kane and Marcus (2024); Hull (2022) \\
+\ref{ch:14} & Beta, the CAPM and the security market line; alpha & Bodie, Kane and Marcus (2024); Ang (2014) \\
+\ref{ch:15} & The efficient market hypothesis; the joint-hypothesis problem; anomalies; replication, reproduction and robustness; publication bias; shrinkage & Bodie, Kane and Marcus (2024); Bali, Engle and Murray (2016) \\
+\ref{ch:16} & Credit spreads; default probability and recovery; the expected-loss spread; why spreads can exceed expected losses & Hull (2022) \\
+\ref{ch:17} & Payoffs and put--call parity; the Black--Scholes--Merton model; the Greeks; implied volatility; delta hedging and its profit and loss; discrete hedging; the volatility smile & Hull (2022); Shreve (2004) \\
+\ref{ch:18} & The VIX; the option seller's payoff & Hull (2022) \\
+\ref{ch:19} & Time-series and cross-sectional questions; a simple factor model; why not use every predictor; overfitting and the bias--variance trade-off & James, Witten, Hastie and Tibshirani (2021); Hastie, Tibshirani and Friedman (2009); L\'opez de Prado (2018) \\
+\ref{ch:20} & Classical benchmarks; foundation models; contamination; fair evaluation & Hyndman and Athanasopoulos (2021) \\
+\ref{ch:21} & The stochastic discount factor and the tangency portfolio; shrinkage SDFs and IPCA; deep SDFs; attention and the transformer & Cochrane (2005); Bali, Engle and Murray (2016) \\
+\ref{ch:22} & OHLCV bars; range-based volatility; tokenizing bars; fine-tuning; synthetic market data; the Giacomini--White test & Hull (2022); Tsay (2010) \\
+\end{longtable}
+\endgroup
+
+Full references for these books are listed alphabetically under Further Reading at the end of the book (page~\pageref{furtherreading}).
+
+
+\section*{Who this book is for}
+
+This book is for anyone who builds, buys or studies quantitative strategies and needs to judge whether the evidence behind them holds up.
+Students in financial engineering, quantitative finance and financial data science will use the whole book, labs included, as will quantitative analysts and researchers at asset managers, banks and fintech firms.
+PhD students can use it as a companion for the replication debate. Portfolio managers, allocators and serious individual investors can read the principles and verdicts and skim the labs.
+
+You will need to possess basic Python, and to know introductory statistics, regression and the elements of investments. Everything else is taught along the way.
+
+\section*{How to use this book}
+
+The book covers a wide range of financial engineering. 
+A one-semester course can follow Parts I to VII and Part IX in order. Instructors can treat Part VIII, on derivatives and credit, as optional. 
+
+\section*{An invitation}
+
+Learning by verifying is slower at first than learning by reading. You will make predictions that turn out wrong, and you will spend time on results that do not hold. But you will understand each method because you needed it, and you will remember each verdict because you reached it yourself.
+
+I wrote this book in the hope that it makes learning financial engineering more active and more enjoyable. Pick a claim, write down what you expect, and let the evidence decide.
+
+\bigskip
+\begin{flushright}
+\emph{Chris Kuo}\\
+\emph{January 2027}
+\end{flushright}

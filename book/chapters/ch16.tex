@@ -1,4 +1,4 @@
-% Chapter 15 -- Claim: Credit Spreads Mainly Reflect Expected Defaults
+% Chapter 19 -- Claim: Most Published Anomalies Fail to Replicate
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -23,486 +23,173 @@
 }{}
 \makeatother
 
-\chapter{Claim: Credit Spreads Mainly Reflect Expected Defaults}
+\chapter{Claim: Most Published Anomalies Fail to Replicate}
 \label{ch:16}
 \providecommand{\term}[1]{\emph{#1}}
 
-This chapter opens Part VIII, on derivatives and credit. The part is optional: no later chapter depends on it, so you can skip it on a first reading or return to it after the rest of the book.
+News stories regularly report a new study showing that some simple rule, such as buying cheap stocks or stocks with rising profits, has beaten the market. Other sciences, such as psychology and medicine, have discovered in recent years that many published findings could not be repeated when others tried. This chapter asks whether finance has the same problem, and how a reader can tell a lasting discovery from a lucky one.
 
-Investors hold bonds to earn interest, and the credit spread\index{credit spread} decides how much more interest a \term{corporate bond} pays than a Treasury bond. Most corporate bonds are not held by individual savers directly. The largest investors are institutions that need steady income over long horizons. \textbf{Life insurance} companies\index{insurance companies} buy corporate bonds to pay policyholders many years in the future, and \textbf{pension funds}\index{pension funds} buy them to pay retirees. \textbf{Mutual funds and exchange-traded funds}\index{bond funds} hold them on behalf of individual savers, and foreign investors and banks hold a large share as well.
+By the 2010s academic finance had published hundreds of variables said to predict which stocks would earn more than others. Harvey, Liu and Zhu (2016) counted more than 300. They argued that, because so many had been tried, a new factor should clear a $t$-statistic of about 3 rather than 2. The worry was not new. Chapter~\ref{ch:01} showed how searching produces records that luck alone can explain. What was new was that the worry now applied to a whole literature. McLean and Pontiff (2016) took a different approach. Pure data mining predicts that returns vanish once the original sample ends, while mispricing predicts that they shrink after publication, as investors trade on them. They followed 97 predictors after their original samples ended and after they were published. Average returns were about 26\% lower after the sample ended, and 58\% lower after publication.
 
-For all of these investors, the credit spread is the main reason to choose corporate bonds over Treasuries, because it is the extra income they earn in return for taking on corporate risk. Companies watch the spread from the other side, since it sets how much more they must pay than the government when they borrow.
+Two large replication studies sharpened the debate. Hou, Xue and Zhang (2020) asked how many anomalies survive when tiny stocks count for little, and rebuilt 452 anomalies. They weighted stocks by market value and set group cut-offs using NYSE stocks only, two choices that limit the influence of the tiniest stocks, called micro-caps. About two thirds of the anomalies then failed even the conventional test. Jensen, Kelly and Pedersen (2023) asked whether a verdict that uses the evidence from all factors at once would be kinder, and rebuilt 153 factors in 93 countries. They used a Bayesian method that pulls each factor's estimate toward what similar factors suggest, and concluded that most factors do replicate. Because much of the disagreement lay in each study's code, Chen and Zimmermann (2022) published open code and data for more than 200 predictors, so that anyone could check. Respected researchers using largely the same data reached opposite conclusions, because they asked slightly different questions and applied different standards.
 
+At stake is the credibility of a whole field. If most anomalies are false, much of the factor-investing industry rests on noise. If most are real but fade after publication, investors are learning from research and trading the patterns away. The verdict depends less on the data than on the rules of evidence, so this chapter asks the reader to choose those rules and defend them. The claim on trial\index{claims-on-trial method} is: \textbf{most published cross-sectional return predictors do not replicate once micro-caps, multiple testing and publication are accounted for.}
 
-%% Requires in the preamble:
-%%   \usepackage{pgfplots}
-%%   \usepgfplotslibrary{groupplots}
-%%   \pgfplotsset{compat=1.16}
-%% Data: approximate annual averages (percent).
-%% Columns: year, Moody's Aaa yield, Treasury yield, Aaa minus Treasury.
-%% Treasury = long-term government bond yield before 1953, 10-year after.
-\begin{figure}[htbp]
-\centering
-\pgfplotstableread{
-  year aaa tsy spread
-  1919.5 5.5 4.7 0.8
-  1920.5 6.1 5.3 0.8
-  1921.5 6.0 5.1 0.9
-  1922.5 5.1 4.3 0.8
-  1923.5 5.1 4.4 0.7
-  1924.5 5.0 4.1 0.9
-  1925.5 4.9 3.9 1.0
-  1926.5 4.7 3.7 1.0
-  1927.5 4.6 3.3 1.3
-  1928.5 4.6 3.3 1.3
-  1929.5 4.7 3.6 1.1
-  1930.5 4.6 3.3 1.3
-  1931.5 4.6 3.3 1.3
-  1932.5 5.0 3.7 1.3
-  1933.5 4.5 3.3 1.2
-  1934.5 4.0 3.1 0.9
-  1935.5 3.6 2.8 0.8
-  1936.5 3.2 2.7 0.5
-  1937.5 3.3 2.7 0.6
-  1938.5 3.2 2.6 0.6
-  1939.5 3.0 2.4 0.6
-  1940.5 2.8 2.2 0.6
-  1941.5 2.8 2.0 0.8
-  1942.5 2.8 2.5 0.3
-  1943.5 2.7 2.5 0.2
-  1944.5 2.7 2.5 0.2
-  1945.5 2.6 2.4 0.2
-  1946.5 2.5 2.2 0.3
-  1947.5 2.6 2.3 0.3
-  1948.5 2.8 2.4 0.4
-  1949.5 2.7 2.3 0.4
-  1950.5 2.6 2.3 0.3
-  1951.5 2.9 2.6 0.3
-  1952.5 3.0 2.7 0.3
-  1953.5 3.2 2.9 0.3
-  1954.5 2.9 2.4 0.5
-  1955.5 3.1 2.8 0.3
-  1956.5 3.4 3.2 0.2
-  1957.5 3.9 3.6 0.3
-  1958.5 3.8 3.3 0.5
-  1959.5 4.4 4.3 0.1
-  1960.5 4.4 4.1 0.3
-  1961.5 4.4 3.9 0.5
-  1962.5 4.3 3.9 0.4
-  1963.5 4.3 4.0 0.3
-  1964.5 4.4 4.2 0.2
-  1965.5 4.5 4.3 0.2
-  1966.5 5.1 4.9 0.2
-  1967.5 5.5 5.1 0.4
-  1968.5 6.2 5.6 0.6
-  1969.5 7.0 6.7 0.3
-  1970.5 8.0 7.4 0.6
-  1971.5 7.4 6.2 1.2
-  1972.5 7.2 6.2 1.0
-  1973.5 7.4 6.8 0.6
-  1974.5 8.6 7.6 1.0
-  1975.5 8.8 8.0 0.8
-  1976.5 8.4 7.6 0.8
-  1977.5 8.0 7.4 0.6
-  1978.5 8.7 8.4 0.3
-  1979.5 9.6 9.4 0.2
-  1980.5 11.9 11.4 0.5
-  1981.5 14.2 13.9 0.3
-  1982.5 13.8 13.0 0.8
-  1983.5 12.0 11.1 0.9
-  1984.5 12.7 12.4 0.3
-  1985.5 11.4 10.6 0.8
-  1986.5 9.0 7.7 1.3
-  1987.5 9.4 8.4 1.0
-  1988.5 9.7 8.9 0.8
-  1989.5 9.3 8.5 0.8
-  1990.5 9.3 8.6 0.7
-  1991.5 8.8 7.9 0.9
-  1992.5 8.1 7.0 1.1
-  1993.5 7.2 5.9 1.3
-  1994.5 8.0 7.1 0.9
-  1995.5 7.6 6.6 1.0
-  1996.5 7.4 6.4 1.0
-  1997.5 7.3 6.4 0.9
-  1998.5 6.5 5.3 1.2
-  1999.5 7.0 5.6 1.4
-  2000.5 7.6 6.0 1.6
-  2001.5 7.1 5.0 2.1
-  2002.5 6.5 4.6 1.9
-  2003.5 5.7 4.0 1.7
-  2004.5 5.6 4.3 1.3
-  2005.5 5.2 4.3 0.9
-  2006.5 5.6 4.8 0.8
-  2007.5 5.6 4.6 1.0
-  2008.5 5.6 3.7 1.9
-  2009.5 5.3 3.3 2.0
-  2010.5 4.9 3.2 1.7
-  2011.5 4.6 2.8 1.8
-  2012.5 3.7 1.8 1.9
-  2013.5 4.2 2.4 1.8
-  2014.5 4.2 2.5 1.7
-  2015.5 3.9 2.1 1.8
-  2016.5 3.7 1.8 1.9
-  2017.5 3.7 2.3 1.4
-  2018.5 3.9 2.9 1.0
-  2019.5 3.4 2.1 1.3
-  2020.5 2.5 0.9 1.6
-  2021.5 2.7 1.5 1.2
-  2022.5 4.1 3.0 1.1
-  2023.5 4.8 4.0 0.8
-  2024.5 5.1 4.2 0.9
-  2025.5 5.3 4.3 1.0
-}\spreaddata
-\scalebox{0.9}{%
-\begin{tikzpicture}
-\definecolor{aaacol}{HTML}{D08C2B}
-\definecolor{tsycol}{HTML}{1F4E79}
-\begin{groupplot}[
-  group style={group size=1 by 2, vertical sep=1.5cm, xlabels at=edge bottom},
-  scale only axis, width=0.86\textwidth,
-  xmin=1919, xmax=2026,
-  xtick={1920,1940,...,2020},
-  x tick label style={/pgf/number format/1000 sep={}},
-  axis x line*=bottom, axis y line*=left,
-  axis on top,
-  tick label style={font=\small},
-  label style={font=\small},
-  title style={font=\small, at={(0,1)}, anchor=south west},
-  every axis plot/.append style={line width=0.9pt},
-]
-%% ---------------- Panel (a): yields ----------------
-\nextgroupplot[
-  height=5.0cm, ymin=0, ymax=16, ylabel={Yield (percent)},
-  title={(a) Yields},
-  legend style={draw=none, fill=none, font=\footnotesize, at={(0.02,0.98)}, anchor=north west},
-  legend cell align=left,
-]
-\foreach \a/\b in {1920.0/1921.6,1923.4/1924.6,1926.8/1927.9,1929.6/1933.2,1937.4/1938.5,1945.1/1945.8,1948.9/1949.8,1953.5/1954.4,1957.6/1958.3,1960.3/1961.1,1969.9/1970.9,1973.9/1975.2,1980.0/1980.5,1981.5/1982.9,1990.5/1991.2,2001.2/2001.9,2007.9/2009.5,2020.1/2020.3}{
-  \edef\temp{\noexpand\fill[black!12] (axis cs:\a,0) rectangle (axis cs:\b,16);}\temp
-}
-\draw[black!45, densely dotted] (axis cs:1953,0) -- (axis cs:1953,16);
-\node[font=\scriptsize, text=black!55, anchor=south west] at (axis cs:1953.6,0.2) {long-term bond $\to$ 10-year};
-\addplot[aaacol] table[x=year, y=aaa]{\spreaddata};
-\addlegendentry{Moody's Aaa corporate}
-\addplot[tsycol] table[x=year, y=tsy]{\spreaddata};
-\addlegendentry{Treasury}
-\addlegendimage{area legend, fill=black!12, draw=black!12}
-\addlegendentry{Recession (NBER)}
-%% ---------------- Panel (b): spread ----------------
-\nextgroupplot[
-  height=3.8cm, ymin=0, ymax=3, ylabel={Aaa $-$ Treasury (pp)},
-  title={(b) Credit spread},
-]
-\foreach \a/\b in {1920.0/1921.6,1923.4/1924.6,1926.8/1927.9,1929.6/1933.2,1937.4/1938.5,1945.1/1945.8,1948.9/1949.8,1953.5/1954.4,1957.6/1958.3,1960.3/1961.1,1969.9/1970.9,1973.9/1975.2,1980.0/1980.5,1981.5/1982.9,1990.5/1991.2,2001.2/2001.9,2007.9/2009.5,2020.1/2020.3}{
-  \edef\temp{\noexpand\fill[black!12] (axis cs:\a,0) rectangle (axis cs:\b,3);}\temp
-}
-\draw[black!45, densely dotted] (axis cs:1953,0) -- (axis cs:1953,3);
-\draw[black!60, dashed, line width=0.6pt] (axis cs:1919,0.87) -- (axis cs:2026,0.87);
-\node[font=\scriptsize, text=black!60, anchor=south west] at (axis cs:1950,0.87) {mean $\approx$ 0.9 pp};
-\addplot[black!85] table[x=year, y=spread]{\spreaddata};
-%% Recession labels
-\node[font=\scriptsize, text=black!65, align=center, anchor=north] at (axis cs:1931.4,2.97) {Great\\Depression};
-\node[font=\scriptsize, text=black!65, align=center, anchor=north] at (axis cs:1940.0,2.97) {1937--38};
-\node[font=\scriptsize, text=black!65, align=center, anchor=north] at (axis cs:1974.5,2.97) {Oil\\shock};
-\node[font=\scriptsize, text=black!65, align=center, anchor=north] at (axis cs:1982.2,2.97) {Volcker\\recession};
-\node[font=\scriptsize, text=black!65, align=center, anchor=north] at (axis cs:2000.0,2.97) {Dot-com};
-\node[font=\scriptsize, text=black!65, align=center, anchor=north] at (axis cs:2010.0,2.97) {Financial\\crisis};
-\node[font=\scriptsize, text=black!65, align=center, anchor=north] at (axis cs:2020.2,2.97) {COVID-19};
-\end{groupplot}
-\end{tikzpicture}%
-}
-\caption{Moody's Aaa corporate bond yield and the Treasury yield, 1919--2025 (approximate annual averages). Panel~(a) shows the two yields, and panel~(b) shows the credit spread $s_t^{\text{credit}} = y_t^{\text{Aaa}} - y_t^{\text{Tsy}}$. The Treasury yield is the long-term government bond yield before 1953 and the 10-year constant-maturity yield afterward. Shaded areas are recessions dated by the National Bureau of Economic Research (NBER).}
-\label{fig:aaa-treasury-spread}
-\end{figure}
-
-Figure~\ref{fig:aaa-treasury-spread} shows two interest rates over more than a century. The upper line in panel~(a) is the yield on corporate bonds rated Aaa by Moody's, which are issued by the most creditworthy companies in the United States. The lower line is the yield on Treasury bonds, which are issued by the U.S. government. The corporate yield stays above the Treasury yield in every year. The gap between them is the credit spread, shown in panel~(b). It has averaged a little under one percentage point, and it tends to widen during the recessions marked by the shaded areas.
-
-The usual explanation for this gap is \textbf{credit risk}\index{credit risk}, which is the risk that a borrower fails to pay interest or repay principal in full. The U.S. government is treated as free of credit risk, but a company can default, and it does so when the value of its assets falls below what it owes. A simple calculation shows how much this risk should be worth. Suppose a bond has a 1\% 
-chance of defaulting in a given year, and investors lose half of their money when it does\index{loss given default}. On average, investors then lose $0.01 \times 0.5 = 0.005$, or half a percentage point, each year. 
-
-Many investors think about credit risk this way, and credit ratings\index{credit rating} are designed around it, since they rank bonds by their expected losses from default.
-\textbf{If the credit spread\index{credit spread} is only compensation for credit risk, it should be close to this expected loss\index{credit spread!expected-loss component}, much like an insurance premium that just covers the expected claims. Is that the case?}
-
-
-The view can be tested, because a century of default data shows how often bonds of each rating have defaulted and how much investors got back. When researchers ran the test, the numbers did not add up. Elton, Gruber, Agrawal and Mann (2001) checked whether expected default losses account for most of the spread, and found that they explain only a small part of corporate spreads, with taxes and a risk premium making up much of the rest. Collin-Dufresne, Goldstein and Martin (2001) tested whether spreads move with each firm's own finances, as models of default predict, and found that changes in spreads are driven mostly by a common force that has little to do with the default risk of individual firms. Huang and Huang (2012) showed that even models of default risk carefully fitted to actual default rates explain only a small fraction of investment-grade spreads, the spreads on bonds that rating agencies judge relatively safe (rated Baa or BBB and above). This gap became known as the \term{credit spread puzzle}\index{credit spread puzzle}. Gilchrist and Zakraj\v{s}ek (2012), suspecting that the rest of the spread reflects investors' appetite for risk, then split the spread into a part that reflects default risk and a remainder, the excess bond premium, and found that the remainder predicts recessions.
-
-The answer bears on what credit investors are really paid for, why spreads widen in recessions, and why highly rated structured securities proved so dangerous in 2007--08, when products designed around expected losses met a collapse in investors' appetite for risk. The claim on trial\index{claims-on-trial method} is: \textbf{the extra yield on corporate bonds over Treasuries is mostly payment for expected default losses.}
-
-The lab in Section~\ref{sec:15-lab} repeats the analysis of Elton et al.\ (2001) on a century of Moody's corporate bond yields from FRED, using published default and recovery rates. It adds the excess bond premium of Gilchrist and Zakraj\v{s}ek (2012), which the Federal Reserve publishes free, to check how much of the spread reflects expected defaults and what the rest pays for.
+The lab in Section~\ref{sec:19-lab} uses the free Open Source Asset Pricing data of Chen and Zimmermann. It applies the standards of Hou, Xue and Zhang (2020) and of Jensen, Kelly and Pedersen (2023) to the same predictors, and it measures the decay found by McLean and Pontiff (2016). The goal is to see why careful researchers reached opposite conclusions, and which choices drive the difference.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item define default probabilities, recovery rates\index{recovery rate} and \term{loss given default}, and compute the spread that expected losses justify;
-  \item explain why the timing of defaults matters for the spread, and summarize the evidence on the credit spread puzzle\index{credit spread puzzle}\index{excess bond premium};
-  \item judge what a credit investor is paid for, and when reaching for yield is likely to disappoint.
+  \item explain market efficiency\index{efficient market hypothesis}, the joint-hypothesis problem\index{joint-hypothesis problem}, and the kinds of replication, from reproduction\index{reproduction} to pure, scientific and out-of-sample replication\index{replication!pure, scientific and out-of-sample};
+  \item explain how publication bias\index{publication bias} inflates published results, and how empirical Bayes\index{empirical Bayes} shrinkage\index{shrinkage} corrects noisy estimates;
+  \item set out the prosecution's and the defense's cases, and the design choices that lead them to opposite verdicts;
+  \item separate post-publication\index{anomaly!post-publication decay} decay caused by selection from decay caused by investors' learning, and defend your own verdict.
 \end{itemize}
 
-\begin{callout}{\term{Percentage points and basis points}}
 
-A \textbf{percentage point}\index{percentage point} is the plain difference between two rates: if Treasuries yield 4\% and Aaa bonds yield 5\%, the spread is 1 percentage point, not 1 percent, since 5\% is 25\% higher than 4\%. A \textbf{basis point}\index{basis point} (bp) is one hundredth of a percentage point, so the average Aaa--Treasury spread of 0.87 percentage points in Figure~\ref{fig:aaa-treasury-spread} is 87 basis points. Traders quote spreads in basis points because the changes are usually small.
-\end{callout}
+\section{Foundations: market efficiency, anomalies and replication}
+\label{sec:19-foundations}
 
-\section{Foundations: spreads, default and recovery}
-\label{sec:15-foundations}
+\subsection{The efficient market hypothesis}
 
-\subsection{Credit spread}
+Section~\ref{sec:01-efficient-markets} introduced the efficient market hypothesis and Fama's (1970) three forms, weak, semi-strong and strong. The debate in this chapter concerns the semi-strong form\index{efficient market hypothesis!semi-strong form}: whether publicly available characteristics of firms, such as their valuation ratios or past returns, predict returns beyond what risk justifies.
 
-The credit spread on a corporate bond, as shown in Figure \ref{fig:aaa-treasury-spread}, is
-\begin{equation}
-  s_t^{\text{credit}} = y_t^{\text{corp}}(T) - y_t^{\text{Tsy}}(T),
-  \label{eq:credit-spread}
-\end{equation}
-where $y_t^{\text{corp}}(T)$ is the yield at time $t$ on a corporate bond with maturity $T$, and $y_t^{\text{Tsy}}(T)$ is the yield on a Treasury bond of similar maturity.
+\subsection{The joint-hypothesis problem}
 
-The Baa--Aaa spread replaces the Treasury yield with the Aaa corporate yield:
-\begin{equation}
-  s_t^{\text{Baa--Aaa}} = y_t^{\text{Baa}} - y_t^{\text{Aaa}},
-  \label{eq:baa-aaa-spread}
-\end{equation}
-where $y_t^{\text{Baa}}$ and $y_t^{\text{Aaa}}$ are Moody's seasoned Baa and Aaa corporate bond yields in month $t$.
+Section~\ref{sec:01-efficient-markets} also introduced the joint-hypothesis problem. A strategy that beats a model such as the CAPM\index{capital asset pricing model (CAPM)} shows either that the market is inefficient or that the model is wrong, and the two cannot be separated (Fama 1970). For anomalies this has a direct consequence. One researcher can read the same evidence as mispricing\index{mispricing}, and another as a reward for a risk the model leaves out.
 
+\subsection{Anomalies}
 
+An \textbf{anomaly}\index{anomaly|textbf} is a pattern in returns that a benchmark asset pricing model cannot explain. It is a characteristic, such as a valuation ratio or a past return, that predicts future returns after adjusting for the model's risk factors. Anomalies are usually found with \term{portfolio sorts}\index{portfolio sort} and long--short returns (Section~\ref{sec:05-foundations}). They are judged by the t-statistic\index{t-statistic} of the average return or of the alpha\index{alpha}.
 
-\subsection{Default probability (PD)}
+\subsection{Replication, reproduction and robustness}
 
-The \term{default probability (PD)} is the chance that the issuer fails to pay in a given year. Rating agencies publish historical default rates for each rating. Over 1920--2006, Moody's reported average annual default rates of 0.27\% 
-for Baa issuers, essentially zero for Aaa, and about 1\% for Ba, 
-the highest rating below \term{investment grade} (Moody's Investors Service 2007). A corporate bond rated Ba or lower is considered \term{speculative grade}\index{speculative grade}, and such bonds are also called \textbf{high-yield} or \textbf{junk bonds.} Figure \ref{fig:default-rates-time} shows the annual default rates.
+Terms are used loosely, but a useful distinction is:
 
-\begin{callout}{\textbf{Who holds junk bonds?}}
+\begin{itemize}
+  \item \term{Reproduction}\index{reproduction|textbf}: the same data and code give the same numbers. It checks for errors.
+  \item \textbf{Pure replication}\index{replication!pure, scientific and out-of-sample|textbf}: the same method on the same kind of data, perhaps rebuilt independently, gives the same result. It checks that the finding is not an artifact of one implementation.
+  \item \textbf{Scientific replication} or \term{robustness}\index{robustness|textbf}: different but reasonable choices of method, sample or market give a similar result. It checks that the finding is about the world, not about the choices.
+  \item \textbf{Out-of-sample replication}: the result holds in data not used to find it, such as later years or other countries.
+\end{itemize}
 
-Institutions hold fewer junk bonds than investment-grade bonds. Insurers\index{insurance companies} face much higher capital charges on them, and many pension funds\index{pension funds} may hold only investment-grade bonds. The largest holders are high-yield mutual funds and ETFs\index{bond funds}. When a bond falls from Baa to Ba, it becomes a \term{fallen angel}\index{fallen angel}, and investors limited to investment grade must sell it at once. Its spread then rises by more than its default risk alone would justify.
-\end{callout}
+The two sides of this chapter's debate differ largely in which of these they demand.
 
-%% Requires in the preamble:
-%%   \usepackage{pgfplots}
-%%   \pgfplotsset{compat=1.16}
-%% Data: approximate Moody's issuer-weighted annual default rates (percent).
-%% Columns: year, investment grade, speculative grade.
-\pgfplotstableread{
-  year ig sg
-  1920.5 0.30 2.5
-  1921.5 0.40 3.2
-  1922.5 0.30 3.0
-  1923.5 0.20 2.0
-  1924.5 0.30 2.4
-  1925.5 0.20 1.8
-  1926.5 0.20 1.4
-  1927.5 0.20 1.6
-  1928.5 0.10 1.0
-  1929.5 0.20 1.1
-  1930.5 0.30 2.0
-  1931.5 0.60 6.0
-  1932.5 1.00 10.5
-  1933.5 1.60 15.4
-  1934.5 0.80 7.5
-  1935.5 0.70 7.0
-  1936.5 0.40 3.6
-  1937.5 0.30 2.5
-  1938.5 0.60 6.0
-  1939.5 0.30 3.5
-  1940.5 0.40 3.4
-  1941.5 0.20 2.0
-  1942.5 0.10 1.3
-  1943.5 0.00 0.9
-  1944.5 0.00 0.6
-  1945.5 0.00 0.4
-  1946.5 0.00 0.3
-  1947.5 0.00 0.3
-  1948.5 0.00 0.3
-  1949.5 0.00 0.5
-  1950.5 0.00 0.4
-  1951.5 0.00 0.3
-  1952.5 0.00 0.3
-  1953.5 0.00 0.4
-  1954.5 0.00 0.5
-  1955.5 0.00 0.3
-  1956.5 0.00 0.3
-  1957.5 0.00 0.4
-  1958.5 0.00 0.6
-  1959.5 0.00 0.3
-  1960.5 0.00 0.6
-  1961.5 0.00 0.8
-  1962.5 0.00 0.9
-  1963.5 0.00 0.5
-  1964.5 0.00 0.3
-  1965.5 0.00 0.4
-  1966.5 0.00 0.3
-  1967.5 0.00 0.6
-  1968.5 0.00 0.6
-  1969.5 0.00 0.7
-  1970.5 0.30 8.8
-  1971.5 0.00 1.1
-  1972.5 0.00 1.9
-  1973.5 0.20 1.3
-  1974.5 0.00 1.3
-  1975.5 0.00 1.7
-  1976.5 0.00 0.9
-  1977.5 0.00 1.3
-  1978.5 0.00 1.0
-  1979.5 0.00 0.4
-  1980.5 0.00 1.6
-  1981.5 0.00 0.7
-  1982.5 0.20 3.5
-  1983.5 0.05 3.6
-  1984.5 0.05 3.6
-  1985.5 0.05 3.6
-  1986.5 0.20 5.6
-  1987.5 0.05 4.2
-  1988.5 0.05 3.6
-  1989.5 0.30 5.8
-  1990.5 0.10 9.9
-  1991.5 0.10 10.4
-  1992.5 0.05 5.0
-  1993.5 0.05 3.1
-  1994.5 0.05 2.0
-  1995.5 0.05 3.1
-  1996.5 0.05 1.6
-  1997.5 0.05 1.9
-  1998.5 0.05 3.3
-  1999.5 0.05 5.4
-  2000.5 0.05 6.3
-  2001.5 0.20 10.0
-  2002.5 0.40 8.0
-  2003.5 0.05 5.0
-  2004.5 0.05 2.3
-  2005.5 0.05 1.7
-  2006.5 0.05 1.7
-  2007.5 0.05 0.9
-  2008.5 0.50 4.1
-  2009.5 0.30 13.0
-  2010.5 0.05 3.2
-  2011.5 0.05 1.9
-  2012.5 0.05 2.6
-  2013.5 0.05 2.8
-  2014.5 0.05 2.0
-  2015.5 0.05 3.4
-  2016.5 0.05 4.4
-  2017.5 0.05 2.9
-  2018.5 0.05 2.1
-  2019.5 0.05 3.2
-  2020.5 0.05 6.7
-  2021.5 0.05 1.7
-  2022.5 0.05 2.6
-  2023.5 0.05 4.8
-  2024.5 0.05 4.6
-  2025.5 0.05 4.1
-}\defaultdata
+\subsection{Publication bias}
+
+Journals are more likely to publish significant results. If only strong in-sample\index{in-sample versus out-of-sample} results are published, the published estimates are too high on average, even if every study was done honestly. The reason is that the published set has been selected for luck as well as for truth. Part E of this chapter's lab measures how large this effect can be.
+
+\subsection{Shrinkage}
+
+Suppose many noisy estimates are made at once. Each one can be improved by pulling it toward the average of all of them. Noisy estimates are pulled more, and precise ones less. A very high estimate is more likely to be partly luck than a moderate one, so pulling it back makes it more accurate on average. This idea comes from \term{empirical Bayes}\index{empirical Bayes|textbf} statistics (Efron and Morris 1975). It is called ``empirical'' because the data themselves supply the average toward which the estimates are pulled. It is the basis of the defense's method.
+
+\textbf{Worked example.} One hundred honest researchers each test a different trading signal, and none of the signals has any real predictive power. By chance, about five will find t-statistics beyond $\pm 1.96$, and those five publish (Figure~\ref{fig:19-pubbias}). Every published paper reports a significant result, yet none of the results is real. A reader who saw only the journals would find a literature with a 100\% success rate.
+
 \begin{figure}[htbp]
 \centering
 \scalebox{0.9}{%
-\begin{tikzpicture}
-\definecolor{sgcol}{HTML}{B03A2E}
-\definecolor{igcol}{HTML}{1F4E79}
+\begin{tikzpicture}[declare function={npdf(\x) = exp(-\x*\x/2)/sqrt(2*pi);}]
 \begin{axis}[
-  scale only axis, width=0.86\textwidth, height=5.2cm,
-  xmin=1919, xmax=2026, ymin=0, ymax=20, ytick={0,5,...,15},
-  xtick={1920,1940,...,2020},
-  x tick label style={/pgf/number format/1000 sep={}},
-  axis x line*=bottom, axis y line*=left, axis on top,
-  tick label style={font=\small}, label style={font=\small},
-  ylabel={Annual default rate (percent)},
-  legend style={draw=none, fill=none, font=\footnotesize, at={(0.98,0.98)}, anchor=north east},
-  legend cell align=left,
-  every axis plot/.append style={line width=0.9pt},
+  width=0.68\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=-4, xmax=4.1, ymin=0, ymax=0.66,
+  xtick={-1.96,0,1.96}, xticklabels={$-1.96$,$0$,$1.96$},
+  ytick=\empty,
+  xlabel={t-statistic of a signal with no true power},
+  ylabel={Share of signals},
+  samples=200, domain=-4:4, clip=false,
 ]
-\fill[black!12] (axis cs:1920.0,0) rectangle (axis cs:1921.6,20);
-\fill[black!12] (axis cs:1923.4,0) rectangle (axis cs:1924.6,20);
-\fill[black!12] (axis cs:1926.8,0) rectangle (axis cs:1927.9,20);
-\fill[black!12] (axis cs:1929.6,0) rectangle (axis cs:1933.2,20);
-\fill[black!12] (axis cs:1937.4,0) rectangle (axis cs:1938.5,20);
-\fill[black!12] (axis cs:1945.1,0) rectangle (axis cs:1945.8,20);
-\fill[black!12] (axis cs:1948.9,0) rectangle (axis cs:1949.8,20);
-\fill[black!12] (axis cs:1953.5,0) rectangle (axis cs:1954.4,20);
-\fill[black!12] (axis cs:1957.6,0) rectangle (axis cs:1958.3,20);
-\fill[black!12] (axis cs:1960.3,0) rectangle (axis cs:1961.1,20);
-\fill[black!12] (axis cs:1969.9,0) rectangle (axis cs:1970.9,20);
-\fill[black!12] (axis cs:1973.9,0) rectangle (axis cs:1975.2,20);
-\fill[black!12] (axis cs:1980.0,0) rectangle (axis cs:1980.5,20);
-\fill[black!12] (axis cs:1981.5,0) rectangle (axis cs:1982.9,20);
-\fill[black!12] (axis cs:1990.5,0) rectangle (axis cs:1991.2,20);
-\fill[black!12] (axis cs:2001.2,0) rectangle (axis cs:2001.9,20);
-\fill[black!12] (axis cs:2007.9,0) rectangle (axis cs:2009.5,20);
-\fill[black!12] (axis cs:2020.1,0) rectangle (axis cs:2020.3,20);
-\addplot[sgcol] table[x=year, y=sg]{\defaultdata};
-\addlegendentry{Speculative grade (Ba and below)}
-\addplot[igcol] table[x=year, y=ig]{\defaultdata};
-\addlegendentry{Investment grade (Aaa to Baa)}
-\addlegendimage{area legend, fill=black!12, draw=black!12}
-\addlegendentry{Recession (NBER)}
-\node[font=\scriptsize, text=black!65, anchor=west] at (axis cs:1934.5,15.4) {Great Depression};
-\node[font=\scriptsize, text=black!65, anchor=south] at (axis cs:1970.5,8.9) {Penn Central 1970};
-\node[font=\scriptsize, text=black!65, anchor=south] at (axis cs:1991,10.5) {1990--91};
-\node[font=\scriptsize, text=black!65, anchor=south] at (axis cs:2001.5,10.1) {2001};
-\node[font=\scriptsize, text=black!65, anchor=south] at (axis cs:2009.5,13.1) {2009};
-\node[font=\scriptsize, text=black!65, anchor=south] at (axis cs:2020.5,6.8) {2020};
+  \addplot[name path=curve, draw=none] {npdf(x)};
+  \path[name path=base] (axis cs:-4,0) -- (axis cs:4,0);
+  \addplot[fenavy] fill between[of=curve and base, soft clip={domain=-4:-1.96}];
+  \addplot[fenavy] fill between[of=curve and base, soft clip={domain=1.96:4}];
+  \addplot[fegray, thick] {npdf(x)};
+
+  \node[align=center] at (axis cs:0,0.56) {about 95 signals: not significant,\\never published};
+  \node[fenavy, align=center, font=\footnotesize, anchor=south] (L) at (axis cs:-2.75,0.13) {about 2.5 signals:\\``significant,''\\published};
+  \node[fenavy, align=center, font=\footnotesize, anchor=south] (R) at (axis cs:2.75,0.13) {about 2.5 signals:\\``significant,''\\published};
+  \draw[-stealth, fenavy] (axis cs:-2.7,0.12) -- (axis cs:-2.3,0.03);
+  \draw[-stealth, fenavy] (axis cs:2.7,0.12) -- (axis cs:2.3,0.03);
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Annual default rates of Moody's-rated corporate issuers, 1920--2025 (approximate). Speculative-grade issuers default in waves that coincide with recessions and financial crises, while investment-grade defaults stay close to zero in almost every year. Shaded areas are recessions dated by the National Bureau of Economic Research (NBER). Source: approximated from Moody's annual default studies.}
-\label{fig:default-rates-time}
+\caption{If only significant results are published, the journals show only the lucky draws. Publication bias. One hundred signals with no true power produce t-statistics spread around zero. Only the few in the shaded tails, about 2.5 on each side, look significant and get published. The published record shows only the tails.}
+\label{fig:19-pubbias}
 \end{figure}
 
+\section{How it works: the factor zoo and how replications are designed}
+\label{sec:19-how}
 
-\subsection{Expected-loss spread}
+\textbf{The zoo.} For decades, finance explained why some stocks earn more than others with a single factor, the market, as in the CAPM. Later it used a handful, such as size, value and momentum\index{momentum}. By 2011 the literature had produced so many candidate predictors that John Cochrane, in his presidential address to the American Finance Association, called it a ``zoo of new factors'' (Cochrane 2011). He argued that the field needed to sort out which factors were truly independent, which were redundant, and which were simply noise. Harvey, Liu and Zhu (2016) counted 316 factors published in leading journals, and the count has kept growing.
 
-Consider an investor who cares only about the average payoff of a bond and not about its risk. Such an investor asks for just enough extra yield to make up for the money expected to be lost through default, and no more. 
-
-Suppose a bond promises to repay \$1 in one year. With probability PD the issuer defaults, and the investor recovers only a fraction $R$ of the \$1, called the \term{recovery rate}\index{recovery rate}, so the share lost is $1-R$. On average, the investor therefore receives $1 - \text{PD}(1-R)$ instead of \$1. 
-
-
-
-With continuous compounding, the extra yield that makes up for this shortfall is called the \term{expected-loss spread}\index{credit spread!expected-loss component}:
-\begin{equation}
-  s^{\text{EL}} = -\ln\bigl[1 - \text{PD}(1-R)\bigr] \approx \text{PD}\,(1-R).
-  \label{eq:expected-loss-spread}
-\end{equation}
-
-The credit spread\index{credit spread} introduced in Eq. \ref{eq:credit-spread} is the spread that we actually observe in the market. It is usually larger than the expected-loss spread. The difference,
-\begin{equation}
-  s - s^{\text{EL}},
-  \label{eq:credit-risk-premium}
-\end{equation}
-is the \term{credit risk premium}\index{credit risk premium}. 
-
-\subsection{Why credit spreads can exceed expected losses}
-
-There are a few reasons.
+The problem is statistical as much as economic. Thousands of researchers test thousands of variables on the same U.S. stock data, so some variables will look significant by luck alone. At the usual cut-off of a t-statistic near 2, about one useless variable in twenty passes, and journals mostly publish the ones that pass (Section~\ref{sec:19-foundations}). The published zoo is therefore a mixture of real effects and false discoveries, much as a stack of winning lottery tickets says little about whether anyone has a winning system. Many of its members are also the same idea measured in slightly different ways, such as several versions of the finding that cheap stocks beat expensive ones. Since Harvey, Liu and Zhu's count, two open data projects have made it possible to rebuild most of the zoo:
 
 \begin{itemize}
-  \item \textbf{A credit risk premium.}\index{risk premium|textbf} Defaults cluster in recessions, when investors' other wealth is also falling. Investors who dislike risk\index{risk aversion} demand extra pay for losses that arrive at bad times.
-  \item \textbf{Liquidity.}\index{liquidity|textbf} Corporate bonds trade less often than Treasuries, and at wider bid--ask spreads\index{bid--ask spread}.
-  \item \textbf{Taxes.}\index{taxes|textbf} In the United States, interest on corporate bonds is subject to state income tax, while interest on Treasuries is not.
+  \item Chen and Zimmermann's \textbf{Open Source Asset Pricing}\index{Open Source Asset Pricing|textbf} (2022) replicates more than 200 cross-sectional predictors from the original papers' descriptions and publishes their portfolio returns and code.
+  \item Jensen, Kelly and Pedersen (2023) built a \term{global factor database} of 153 factors across 93 countries, with harmonized definitions, meaning each factor is built the same way in every country.
 \end{itemize}
 
-\textbf{Worked example.} A 10-year Baa bond yields 6\% and a 10-year Treasury yields 4\%, a spread of 2\%.
+No table can list hundreds of predictors, but none needs to, because most of them are variations on a few ideas. Hou, Xue and Zhang\index{q-factor model} (2020) sort their 452 anomalies into six categories. Table~\ref{tab:19-zoo} shows two or three well-known predictors from each. The sign shows whether stocks with a high value of the predictor earned higher (+) or lower ($-$) average returns in the original study. The Open Source Asset Pricing and JKP documentation give the full lists, with definitions and code for every predictor. Jensen, Kelly and Pedersen (2023) group their 153 factors into 13 similar themes.
 
-\begin{itemize}
-  \item With $\mathrm{PD} = 0.27\%$ and $R = 38\%$, the expected-loss spread is $-\ln(1 - 0.0027 \times 0.62) \approx 0.17\%$. Expected losses explain only about 8\% of the spread.
-  \item For expected losses to explain the whole 2\%, the annual default rate would have to be about $(1 - e^{-0.02})/0.62 \approx 3.2\%$. That is roughly twelve times the historical Baa average, and well above the long-run average for Ba bonds.
-  \item Even pessimistic assumptions, $\mathrm{PD} = 1\%$ and $R = 20\%$, explain only 0.8 percentage points of the 2\% spread.
-\end{itemize}
+\begingroup
+\small
 
 
+\renewcommand{\arraystretch}{1.15}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.13\linewidth-0.17\linewidth-0.21\linewidth-0.05\linewidth-8\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.21\linewidth}>{\centering\arraybackslash}p{0.05\linewidth}@{}}
+\caption{A map of the factor zoo: representative predictors in the six categories of Hou, Xue and Zhang (2020).}
+\label{tab:19-zoo} \\
+\toprule
+Category & Predictor & What it measures & Original study & Sign \\
+\midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\emph{(continued)}} \\
+\toprule
+Category & Predictor & What it measures & Original study & Sign \\
+\midrule
+\endhead
+\midrule
+\multicolumn{5}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Momentum & Price momentum & Return over the past 12 months, skipping the most recent month & Jegadeesh and Titman (1993) & $+$ \\
+ & Earnings surprise & Change in quarterly earnings from a year earlier, scaled by its volatility & Bernard and Thomas (1989) & $+$ \\
+ & Short-term reversal & Return over the past month & Jegadeesh (1990) & $-$ \\
+\addlinespace
+Value versus growth & Book-to-market & Book value of equity divided by market value & Rosenberg, Reid and Lanstein (1985); Fama and French (1992) & $+$ \\
+ & Earnings-to-price & Earnings divided by market value & Basu (1977) & $+$ \\
+\addlinespace
+Investment & Asset growth & Annual percentage growth in total assets & Cooper, Gulen and Schill (2008) & $-$ \\
+ & Net share issuance & Annual change in shares outstanding & Pontiff and Woodgate (2008) & $-$ \\
+ & Accruals & Earnings minus operating cash flow, scaled by assets & Sloan (1996) & $-$ \\
+\addlinespace
+Profitability & Gross profitability & Revenue minus cost of goods sold, divided by assets & Novy-Marx (2013) & $+$ \\
+ & F-score & Sum of nine accounting signals of financial strength & Piotroski (2000) & $+$ \\
+\addlinespace
+Intangibles & R\&D intensity & Research and development spending divided by market value & Chan, Lakonishok and Sougiannis (2001) & $+$ \\
+\addlinespace
+Trading frictions & Size & Market value of equity & Banz (1981) & $-$ \\
+ & Idiosyncratic volatility & Volatility of returns not explained by the Fama--French factors & Ang, Hodrick, Xing and Zhang (2006) & $-$ \\
+ & Illiquidity & Average absolute daily return per dollar of trading volume & Amihud (2002) & $+$ \\
+ & Maximum daily return & Largest daily return in the past month & Bali, Cakici and Whitelaw (2011) & $-$ \\
+\end{longtable}
+\endgroup
 
-
-\section{How it works}
-\label{sec:15-how}
-
-A corporate bond's spread over a Treasury can be split into four pieces:
+\textbf{Design choices in a replication\index{replication}.} A replication of an anomaly must make many choices, each defensible, that can change the result:
 
 \begingroup
 \small
 \setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
-\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.2\linewidth-4\tabcolsep)/2\relax}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.2\linewidth-4\tabcolsep)/2\relax}@{}}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.17\linewidth-0.34\linewidth-4\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.34\linewidth}@{}}
 \toprule
-Component & What it pays for & How to measure it \\
+Choice & Options & Why it matters \\
 \midrule
 \endfirsthead
 \multicolumn{3}{@{}l}{\emph{(continued)}} \\
 \toprule
-Component & What it pays for & How to measure it \\
+Choice & Options & Why it matters \\
 \midrule
 \endhead
 \midrule
@@ -510,59 +197,133 @@ Component & What it pays for & How to measure it \\
 \endfoot
 \bottomrule
 \endlastfoot
-Expected default loss & The average loss from defaults & Historical default rates $\times$ loss given default \\*
-Default risk premium & Bearing default losses that cluster in bad times & Residual after expected loss; models of default \\
-Liquidity premium & Costs and delays of trading corporate bonds & Bid--ask spreads, trading volume, bond-specific measures \\*
-Tax premium & State taxes on corporate interest & Tax rates applied to the yield \\
+Universe & All stocks, or excluding micro-caps (for example below the NYSE 20th size percentile) & Many anomalies are concentrated in tiny stocks that are costly to trade and hold little value \\*
+Weighting & Equal-weighted or value-weighted portfolios & Equal weighting gives micro-caps large influence \\
+Breakpoints & Deciles, quintiles or terciles; NYSE or all-stock breakpoints & Extreme portfolios magnify signals and noise \\
+Sample & The original paper's sample, or the longest available & Later years are out of sample \\
+Significance hurdle & $t > 1.96$, $t > 3$, a false-discovery-rate rule, or a Bayesian posterior & Determines what counts as a success \\*
+Benchmark & Raw returns, CAPM alpha, or alpha against a multifactor model & A factor explained by others may be real but redundant \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 \endgroup
 
-The claim is that the first piece dominates. The test has two steps. First, estimate expected losses from historical default and recovery data, and compare them with actual spreads. If they explain most of the spread, the claim survives. Second, examine what is left over\index{regression!residuals}. If the remainder is small and stable, it might be liquidity or measurement error. If it is large, rises in recessions and predicts economic activity, it behaves like a risk premium.
+\term{NYSE breakpoints}\index{NYSE breakpoints|textbf} set the cut-offs between groups using only stocks listed on the New York Stock Exchange. These stocks are larger on average, so the many tiny Nasdaq stocks do not crowd the extreme portfolios. A \term{Bayesian posterior}\index{Bayesian posterior|textbf} is the probability of a hypothesis after a prior belief has been combined with the data.
 
-\textbf{Why the timing of defaults matters.} Two bonds with the same expected loss can deserve very different spreads. A bond whose defaults happen at random times adds little risk to a diversified\index{diversification} portfolio. A bond whose defaults all arrive in recessions, when stocks are falling and jobs are at risk, is much less attractive and should pay more. Defaults on investment-grade bonds are rare in normal times and concentrated in severe downturns, which is exactly the pattern that should demand a large premium.
-
+\textbf{Pure and scientific replication again.} A replication that copies the original method tests whether the paper's numbers can be reproduced. One that changes the universe, weighting or hurdle tests whether the finding is robust. Both are valuable, but they answer different questions, and the debate in this chapter turns partly on that difference.
 
 \section{The claim}
-\label{sec:15-claim}
+\label{sec:19-claim}
+
+Stated so that it can fail:
 
 \begin{callout}
-\textbf{Claim.} The extra yield on corporate bonds over Treasuries mostly reflects the losses investors expect from default. Under reasonable assumptions about default and recovery rates, expected losses account for most of the average spread.
+\textbf{Most published cross-sectional return predictors do not reflect a real, persistent relationship: they fail to replicate under reasonable standards, or their returns disappear outside the sample in which they were found.}
 \end{callout}
 
-To test it, three points need to be settled:
+``Reasonable standards'' is where the debate lies. The claim can be tested by \textbf{replication} within the original sample (which hurdle, and which portfolio construction?), \textbf{out of sample}\index{in-sample versus out-of-sample|textbf} (do returns persist after the sample ends and after publication?), and \term{statistical correction} (after allowing for the number of predictors tested and for publication bias, what share probably have a positive true return?).
+
+\section{The prosecution}
+\label{sec:19-prosecution}
+
+\textbf{Harvey, Liu and Zhu (2016)} argued that because hundreds of factors have been tested, and many more never published, the usual hurdle of $t > 2$ lets through too many false discoveries. They proposed a hurdle of about 3 and concluded that many published factors were likely false.
+
+\textbf{Hou, Xue and Zhang (2020)}\index{q-factor model|textbf} rebuilt 452 anomalies with one method designed to limit the influence of micro-caps\index{micro-caps}: NYSE breakpoints and value-weighted\index{index weighting!value-weighted} returns. 65\% failed a t-statistic of 1.96, and 82\% failed a multiple-testing hurdle of 2.78. Anomalies based on \term{trading frictions}\index{trading frictions|textbf}, such as illiquidity\index{illiquidity} and \term{idiosyncratic risk}\index{risk!idiosyncratic|textbf} (the part of a stock's volatility\index{volatility} that the market and other factors do not explain), failed most often, 96\% of them. They concluded that most anomalies are false or confined to micro-caps too small and costly to matter.
+
+The prosecution rests on two premises: the hurdle should be high because many tests have been run, and portfolios should give little weight to the smallest stocks.
+
+\section{The defense}
+\label{sec:19-defense}
+
+\textbf{Jensen, Kelly and Pedersen (2023)} used a Bayesian model that shrinks each factor's noisy alpha toward the average of related factors, rather than judging it alone against a fixed hurdle. They found that most factors replicate, cluster into 13 themes that are mostly significant parts of the optimal portfolio, work out of sample in 93 countries, and are corroborated rather than weakened by their large number.
+
+\textbf{Chen and Zimmermann (2022)} found that almost all predictors whose original papers reported clear evidence can be reproduced with the original methods. \textbf{Chen and Zimmermann (2020)} estimated that, across 156 predictors, publication bias makes in-sample returns only about 12\% too large, and that a t-statistic hurdle of about 1.8 is enough for published predictors. \textbf{Chen (2021)} argued that published t-statistics are too large to be explained by \term{p-hacking}\index{p-hacking|textbf}, trying analyses until one crosses the significance line, alone.
+
+The defense rests on two different premises: the question is whether the original findings are real, not whether they survive a method that plays down small stocks, and evidence should be pooled across related factors.
+
+\section{Post-publication decay}
+\label{sec:19-decay}
+
+\textbf{McLean and Pontiff (2016)}\index{anomaly!post-publication decay|textbf} followed 97 predictors and found returns 26\% lower after the original sample ended and 58\% lower after publication (Figure~\ref{fig:19-decay}). Nothing changed when a sample ended except that researchers stopped looking, so the first figure is an upper bound on data mining\index{data mining}. The further decline after publication reflects investors trading on the results, which suggests the original findings were real. Both forces matter, and the publication effect is the larger.
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.9}{%
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.8\linewidth, height=0.34\linewidth,
+  ybar, bar width=0.68cm,
+  axis lines=left, axis line style={-stealth},
+  ymin=0, ymax=118, ytick={0,50,100},
+  ylabel={Return (in sample $= 100$)},
+  symbolic x coords={A,B,C},
+  xtick=data,
+  xticklabels={In sample, {After sample,\\before\\publication}, {After\\publication}},
+  xticklabel style={align=center, text width=2.3cm, font=\small},
+  enlarge x limits=0.25,
+  nodes near coords,
+]
+  \addplot[fill=fenavy, draw=none] coordinates {(A,100) (B,74) (C,42)};
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{Published patterns lost more than half of their returns after publication. Post-publication decay in McLean and Pontiff (2016). With in-sample returns set to 100, the average predictor earned 74 between the end of its original sample and publication, and 42 after publication.}
+\label{fig:19-decay}
+\end{figure}
+
+The lab adds a check the original study could not make: a simulated literature in which the truth is known. If only significant results are published, returns appear to fall after the sample ends even when nothing changes, which gives a benchmark for how much of the observed decay is selection.
+
+\section{Why the two sides disagree}
+\label{sec:19-why}
+
+The two sides agree on most facts. They disagree on four choices.
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.17\linewidth-4\tabcolsep)/2\relax}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.17\linewidth-4\tabcolsep)/2\relax}@{}}
+\toprule
+Choice & Prosecution (Hou, Xue and Zhang; Harvey, Liu and Zhu) & Defense (Jensen, Kelly and Pedersen; Chen and Zimmermann) \\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Choice & Prosecution (Hou, Xue and Zhang; Harvey, Liu and Zhu) & Defense (Jensen, Kelly and Pedersen; Chen and Zimmermann) \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Which stocks count & De-emphasize micro-caps: NYSE breakpoints, value weights & Replicate the original construction; micro-caps are part of the market \\*
+Hurdle & High: $t$ of about 3 or 2.78, for multiple testing & Lower, or a Bayesian posterior \\
+Unit of evidence & Each factor judged on its own & Related factors pooled; corroboration strengthens the evidence \\*
+Kind of replication & Scientific: does it survive reasonable alternative choices? & Pure: are the original findings reproducible and real? \\
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
+
+Neither side is wrong on its own terms. A factor found only among micro-caps may be real but irrelevant to an investor who cannot trade them; pooling related factors is more accurate if its assumptions hold, but misleading if a whole theme was mined together. ``Does this anomaly replicate?'' is not well posed until the purpose is stated: pure replication and pooled evidence suit the question of how markets price risk, while value-weighted, liquid, out-of-sample, after-cost evidence suits the question of what to invest in.
+
+\section{Lab~\thechapter: Replicating both sides of the anomaly debate}
+\label{sec:19-lab}
+
+The lab replicates Hou, Xue and Zhang (2020), Jensen, Kelly and Pedersen (2023) and McLean and Pontiff (2016). It asks what share of published predictors survive when each side's standards are applied to the same data, and how much of their return remains after their samples end and after publication. The data are the Open Source Asset Pricing monthly long--short returns for more than 200 predictors as constructed in the original papers, with each paper's sample period and publication year, and the code is in the repository folder \texttt{ch16-anomalies/}.
 
 \begin{itemize}
-  \item \textbf{What ``mostly'' means.} More than half of the average spread on investment-grade bonds. The claim could hold for junk bonds and fail for investment-grade bonds, or the reverse.
-  \item \textbf{Reasonable assumptions.} Long-run default and recovery rates from the rating agencies, and how far they would have to be stretched to rescue the claim.
-  \item \textbf{What would count against it.} Expected losses explaining less than half of investment-grade spreads under any plausible assumptions, with a remainder that rises in recessions and predicts weaker economic activity, like a payment for risk.
+  \item \textbf{Part A, replication.} Each predictor's t-statistic over its original sample, and the share clearing $t > 1.96$, $t > 3$\index{t-statistic!$t>3$ hurdle} and a Benjamini--Hochberg test.
+  \item \textbf{Part B, decay.} Average returns in sample, after the sample and after publication, with a \textbf{pooled regression}\index{regression!pooled|textbf} across all predictors in the style of McLean and Pontiff, with errors clustered by\index{standard error!clustered} month.
+  \item \textbf{Part C, methodology.} The same statistics for an alternative construction, if supplied, the core of the disagreement.
+  \item \textbf{Part D, shrinkage.} Empirical Bayes estimates of each predictor's true mean, and whether shrunk estimates predict post-publication returns better than raw ones.
+  \item \textbf{Part E, known truth.} A simulated literature that publishes only signals with in-sample $t > 2$. With \textbf{no} true change after publication, it still shows returns about 54\% lower after publication, purely from publishing lucky results.
 \end{itemize}
 
-\section{The original evidence}
-\label{sec:15-evidence}
-
-\textbf{Elton, Gruber, Agrawal and Mann (2001)} found that expected default losses explained only a small part of corporate spreads; state taxes explained a large part, and the rest moved with the risk factors that explain stock returns. \textbf{Collin-Dufresne, Goldstein and Martin (2001)} found that a firm's borrowing, asset volatility and interest rates explained only about a quarter of changes in spreads, with most of the rest driven by one force common to all bonds. \textbf{Huang and Huang (2012)} found that default models fitted to historical losses explained only a small share of investment-grade spreads, though much more of high-yield spreads, a gap known as the \term{credit spread puzzle}\index{credit spread puzzle|textbf}. \textbf{Gilchrist and Zakraj\v{s}ek (2012)} called the part of spreads not explained by expected default the \term{excess bond premium}\index{excess bond premium|textbf}, and found that a rise in it predicted lower output and employment, suggesting it measures investors' appetite for risk.
-
-\section{Lab~\thechapter: Replicating the Elton et al.\ (2001) spread decomposition}
-\label{sec:15-lab}
-
-\textbf{Claim on trial\index{claims-on-trial method}:} credit spreads mainly reflect expected default losses. The lab replicates the spread decomposition of Elton, Gruber, Agrawal and Mann (2001) and the excess bond premium of Gilchrist and Zakraj\v{s}ek (2012), using free monthly data from FRED\index{FRED}: Moody's yields on Aaa and Baa bonds from 1919, the 10-year Treasury yield from 1953, the NBER recession indicator and industrial production. Because Moody's yields are for long bonds and state taxes\index{taxes|textbf} widen corporate--Treasury spreads, the Baa--Aaa spread is the cleanest measure.
-
-\textbf{Part A, spreads.} The Baa--Aaa, Baa--Treasury and Aaa--Treasury spreads, overall, by decade, and in recessions and expansions (Lab Figure~\ref{ch:16}.1).
-
-\textbf{Part B, decomposition.} The expected-loss spread under assumptions you can change, by default Moody's long-run averages of 0.27\% a year for Baa, zero for Aaa and a 38\% recovery rate, and the share of each spread it explains (Lab Figures~\ref{ch:16}.2 and~\ref{ch:16}.3).
-
-\textbf{Part C, the remainder as a risk premium.} Next-year industrial production growth regressed on each spread and on the excess bond premium (Lab Figure~\ref{ch:16}.4).
-
-\textbf{Part D, robustness checks.} A grid of default rates from 0.1\% to 2\% and recovery rates from 20\% to 60\% (Lab Figure~\ref{ch:16}.5), spread peaks in six crises, and subperiod averages.
-
-\label{sec:15-stress}
-\textbf{Robustness checks.} To explain most of a spread of one to two percentage points, Baa bonds would have to default at well over 1\% a year with low recoveries, the long-run record of Ba bonds, not Baa. Expected losses explain much more of the spread in the 1930s, but the claim must also explain the many decades with almost no defaults, and in 2008--09 and 2020 investment-grade defaults stayed far below what peak spreads implied. Part of the remainder pays for the difficulty of trading corporate bonds\index{liquidity|textbf}, which also rises in crises. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:15-verdict}.
+The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method}, state the standard of evidence you apply, and compare your verdict with Section~\ref{sec:19-verdict}.
 
 \section{Where the evidence stands}
-\label{sec:15-verdict}
+\label{sec:19-verdict}
 
-The published studies point to a clear pattern: \textbf{for investment-grade bonds, expected default losses explain only a minority of the spread, and the rest behaves like a premium for risk that rises in bad times. For high-yield bonds, expected losses are a much larger share.}
+The published studies point to a split picture: \textbf{most published anomalies are not pure statistical flukes. But most are smaller than reported, concentrated in small stocks, partly traded away, and not profitable to trade after costs.} The table summarizes the evidence as of November 2026.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.45\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -580,33 +341,35 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Investment-grade spreads & \textbf{No} & Expected losses explained only a small part; taxes and a risk premium made up much of the rest. & Elton, Gruber, Agrawal and Mann (2001) \\*
+Original construction, conventional hurdle & \textbf{No} & Almost all predictors with clear original evidence reproduce with the original methods. & Chen and Zimmermann (2022) \\*
 \addlinespace[3pt]
-Default models calibrated to defaults & \textbf{No} & Credit risk explains a small share of investment-grade spreads, smaller still at short maturities. & Huang and Huang (2012) \\
+Micro-caps de-emphasized, value-weighted & \textbf{Yes} & 65\% of 452 anomalies fail $t = 1.96$ and 82\% fail 2.78; 96\% of trading-frictions anomalies fail. & Hou, Xue and Zhang (2020) \\
 \addlinespace[3pt]
-High-yield spreads & \textbf{Largely} & Credit risk accounts for a much larger share. & Huang and Huang (2012) \\
+The right hurdle for multiple testing & \textbf{Disputed} & About 3 on one side; about 1.8 for published predictors on the other. & Harvey, Liu and Zhu (2016); Chen and Zimmermann (2020) \\
 \addlinespace[3pt]
-Changes in spreads & \textbf{No} & Default-risk variables explain about a quarter; a common factor drives most of the rest. & Collin-Dufresne, Goldstein and Martin (2001) \\
+Bayesian pooling across factors and countries & \textbf{No} & Most factors replicate, cluster into 13 themes and work out of sample in 93 countries. & Jensen, Kelly and Pedersen (2023) \\
 \addlinespace[3pt]
-The residual and the economy & \textbf{No} & The excess bond premium, not the default component, predicts lower output and employment. & Gilchrist and Zakraj\v{s}ek (2012) \\*
+Out of sample, after publication & \textbf{Partly} & Returns were 26\% lower after the samples and 58\% lower after publication, partly from selection. & McLean and Pontiff (2016); Part E of the lab \\*
 \addlinespace[3pt]
-Ranking of spreads by rating & \textbf{Yes} & Ratings rank spreads correctly, though they do not explain their level. & Moody's Investors Service (2007) \\
+After costs, for an investor & \textbf{Yes} & Little expected return remains for the average anomaly. & Chen and Velikov (2023); Chapter~\ref{ch:14} \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
 
-\textbf{What would change the picture.} The claim would gain support if a liquidity measure explained most of the remainder and that premium did not change with economic conditions. So far, both rise in bad times.
+Whether this makes most anomalies ``false'' depends on whether the question is scientific or practical, so a verdict on this claim is a choice of standard as much as a reading of the data (Section~\ref{sec:19-why}).
 
-\label{sec:15-open}
-\textbf{Open questions.} How much of the remainder is liquidity rather than risk, and how much of the premium is the price of dealers' limited capacity\index{capacity}, given how sharply spreads fell when the Fed announced corporate bond purchases in 2020?
+\textbf{What would change the picture.} A shared standard, such as pre-registered\index{pre-registration} hurdles fixed before the data are examined, or value-weighted, micro-cap-robust results reported alongside the original construction, would narrow the disagreement more than any new data set.
+
+\label{sec:19-open}
+\textbf{Open questions.} How many signals were tested but never published? The unknown size of this \textbf{file drawer}\index{publication bias|textbf} limits every multiple-testing correction. And is post-publication decay learning or selection, a question Part E answers in simulation but not yet in real data?
 
 \section{What practitioners and investors can use}
-\label{sec:15-investors}
+\label{sec:19-investors}
 
-Investment-grade bonds earn a spread well above expected losses, but as pay for losses that arrive together with stock-market losses and recessions, so corporate bonds are no substitute for Treasuries as protection. Moving into lower-rated or longer-dated bonds for extra yield means bearing more of the same recession risk, and a rating ranks how likely a bond is to default, not whether losses will arrive in a recession. Ask a credit manager how much of the extra yield would be lost in a recession with 2009-style defaults, and how closely returns move with stocks in bad months.
+To judge any new factor fund or signal, check whether the original t-statistic clears about 3, whether the effect holds among large, liquid stocks with value weights, and whether it belongs to a theme that works, such as value, momentum, profitability or low risk. Expect roughly half the backtest\index{backtest} after publication at best, ask for turnover\index{turnover} and net returns at realistic costs (Chapter~\ref{ch:14}), and ask how many signals were tested before this one.
 
 \begin{callout}
-\textbf{What Failed: highly rated structured credit before 2008.} Issuers pooled mortgages and other loans and sliced each pool into \textbf{tranches}\index{tranches|textbf}, claims with different priority on the pool's losses. By 2007 roughly 60\% of global structured products were rated AAA, against less than 1\% of corporate bonds (Coval, Jurek and Stafford 2009), and they were priced with similar spreads. But senior tranches lose money only when many loans default together in a severe recession, so they deserved much larger risk premiums. In 2007 Moody's downgraded 31\% of the asset-backed CDO tranches it rated, including 14\% of those first rated AAA.
+\textbf{What Failed: the trading-frictions anomalies.} Anomalies based on liquidity\index{liquidity}, idiosyncratic volatility\index{idiosyncratic volatility} and other trading frictions looked strong in the papers that introduced them. When Hou, Xue and Zhang played down micro-caps with NYSE breakpoints and value weights, 96\% of them failed to clear a t-statistic of 1.96, because their returns had come mostly from the smallest, least liquid stocks, where costs are largest. The claim that frictions-based anomalies offer returns an investor can capture \textbf{fails}.
 \end{callout}
 
 % Key terms that this chapter uses without defining them, for readers new to finance.
@@ -625,7 +388,6 @@ Investment-grade bonds earn a spread well above expected losses, but as pay for 
 \begin{keyterms}
 \small
 \begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
-  \item[Corporate bond.] A corporate bond is a loan to a company that pays interest and repays the amount borrowed on a fixed date.
-  \item[Loss given default.] Loss given default is the share of the money owed that lenders lose when a borrower defaults, equal to one minus the recovery rate.
+  \item[Portfolio sort.] See Chapter~\ref{ch:04}, Section~\ref{sec:05-foundations}, page~\pageref{sec:05-foundations}.
 \end{description}
 \end{keyterms}

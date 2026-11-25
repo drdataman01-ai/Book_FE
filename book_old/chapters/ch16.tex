@@ -1,0 +1,631 @@
+% Chapter 15 -- Claim: Credit Spreads Mainly Reflect Expected Defaults
+% Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
+% Defines the callout box only if the preamble has not.
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+\@ifundefined{callout}{%
+  \newtcolorbox{callout}{breakable, enhanced,
+    colback=white, colframe=gray!70, boxrule=0.5pt, arc=1mm,
+    borderline west={2.5pt}{0pt}{gray!70},
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
+\chapter{Claim: Credit Spreads Mainly Reflect Expected Defaults}
+\label{ch:16}
+\providecommand{\term}[1]{\emph{#1}}
+
+This chapter opens Part VIII, on derivatives and credit. The part is optional: no later chapter depends on it, so you can skip it on a first reading or return to it after the rest of the book.
+
+Investors hold bonds to earn interest, and the credit spread\index{credit spread} decides how much more interest a \term{corporate bond} pays than a Treasury bond. Most corporate bonds are not held by individual savers directly. The largest investors are institutions that need steady income over long horizons. \textbf{Life insurance} companies\index{insurance companies} buy corporate bonds to pay policyholders many years in the future, and \textbf{pension funds}\index{pension funds} buy them to pay retirees. \textbf{Mutual funds and exchange-traded funds}\index{bond funds} hold them on behalf of individual savers, and foreign investors and banks hold a large share as well.
+
+For all of these investors, the credit spread is the main reason to choose corporate bonds over Treasuries, because it is the extra income they earn in return for taking on corporate risk. Companies watch the spread from the other side, since it sets how much more they must pay than the government when they borrow.
+
+
+%% Requires in the preamble:
+%%   \usepackage{pgfplots}
+%%   \usepgfplotslibrary{groupplots}
+%%   \pgfplotsset{compat=1.16}
+%% Data: approximate annual averages (percent).
+%% Columns: year, Moody's Aaa yield, Treasury yield, Aaa minus Treasury.
+%% Treasury = long-term government bond yield before 1953, 10-year after.
+\begin{figure}[htbp]
+\centering
+\pgfplotstableread{
+  year aaa tsy spread
+  1919.5 5.5 4.7 0.8
+  1920.5 6.1 5.3 0.8
+  1921.5 6.0 5.1 0.9
+  1922.5 5.1 4.3 0.8
+  1923.5 5.1 4.4 0.7
+  1924.5 5.0 4.1 0.9
+  1925.5 4.9 3.9 1.0
+  1926.5 4.7 3.7 1.0
+  1927.5 4.6 3.3 1.3
+  1928.5 4.6 3.3 1.3
+  1929.5 4.7 3.6 1.1
+  1930.5 4.6 3.3 1.3
+  1931.5 4.6 3.3 1.3
+  1932.5 5.0 3.7 1.3
+  1933.5 4.5 3.3 1.2
+  1934.5 4.0 3.1 0.9
+  1935.5 3.6 2.8 0.8
+  1936.5 3.2 2.7 0.5
+  1937.5 3.3 2.7 0.6
+  1938.5 3.2 2.6 0.6
+  1939.5 3.0 2.4 0.6
+  1940.5 2.8 2.2 0.6
+  1941.5 2.8 2.0 0.8
+  1942.5 2.8 2.5 0.3
+  1943.5 2.7 2.5 0.2
+  1944.5 2.7 2.5 0.2
+  1945.5 2.6 2.4 0.2
+  1946.5 2.5 2.2 0.3
+  1947.5 2.6 2.3 0.3
+  1948.5 2.8 2.4 0.4
+  1949.5 2.7 2.3 0.4
+  1950.5 2.6 2.3 0.3
+  1951.5 2.9 2.6 0.3
+  1952.5 3.0 2.7 0.3
+  1953.5 3.2 2.9 0.3
+  1954.5 2.9 2.4 0.5
+  1955.5 3.1 2.8 0.3
+  1956.5 3.4 3.2 0.2
+  1957.5 3.9 3.6 0.3
+  1958.5 3.8 3.3 0.5
+  1959.5 4.4 4.3 0.1
+  1960.5 4.4 4.1 0.3
+  1961.5 4.4 3.9 0.5
+  1962.5 4.3 3.9 0.4
+  1963.5 4.3 4.0 0.3
+  1964.5 4.4 4.2 0.2
+  1965.5 4.5 4.3 0.2
+  1966.5 5.1 4.9 0.2
+  1967.5 5.5 5.1 0.4
+  1968.5 6.2 5.6 0.6
+  1969.5 7.0 6.7 0.3
+  1970.5 8.0 7.4 0.6
+  1971.5 7.4 6.2 1.2
+  1972.5 7.2 6.2 1.0
+  1973.5 7.4 6.8 0.6
+  1974.5 8.6 7.6 1.0
+  1975.5 8.8 8.0 0.8
+  1976.5 8.4 7.6 0.8
+  1977.5 8.0 7.4 0.6
+  1978.5 8.7 8.4 0.3
+  1979.5 9.6 9.4 0.2
+  1980.5 11.9 11.4 0.5
+  1981.5 14.2 13.9 0.3
+  1982.5 13.8 13.0 0.8
+  1983.5 12.0 11.1 0.9
+  1984.5 12.7 12.4 0.3
+  1985.5 11.4 10.6 0.8
+  1986.5 9.0 7.7 1.3
+  1987.5 9.4 8.4 1.0
+  1988.5 9.7 8.9 0.8
+  1989.5 9.3 8.5 0.8
+  1990.5 9.3 8.6 0.7
+  1991.5 8.8 7.9 0.9
+  1992.5 8.1 7.0 1.1
+  1993.5 7.2 5.9 1.3
+  1994.5 8.0 7.1 0.9
+  1995.5 7.6 6.6 1.0
+  1996.5 7.4 6.4 1.0
+  1997.5 7.3 6.4 0.9
+  1998.5 6.5 5.3 1.2
+  1999.5 7.0 5.6 1.4
+  2000.5 7.6 6.0 1.6
+  2001.5 7.1 5.0 2.1
+  2002.5 6.5 4.6 1.9
+  2003.5 5.7 4.0 1.7
+  2004.5 5.6 4.3 1.3
+  2005.5 5.2 4.3 0.9
+  2006.5 5.6 4.8 0.8
+  2007.5 5.6 4.6 1.0
+  2008.5 5.6 3.7 1.9
+  2009.5 5.3 3.3 2.0
+  2010.5 4.9 3.2 1.7
+  2011.5 4.6 2.8 1.8
+  2012.5 3.7 1.8 1.9
+  2013.5 4.2 2.4 1.8
+  2014.5 4.2 2.5 1.7
+  2015.5 3.9 2.1 1.8
+  2016.5 3.7 1.8 1.9
+  2017.5 3.7 2.3 1.4
+  2018.5 3.9 2.9 1.0
+  2019.5 3.4 2.1 1.3
+  2020.5 2.5 0.9 1.6
+  2021.5 2.7 1.5 1.2
+  2022.5 4.1 3.0 1.1
+  2023.5 4.8 4.0 0.8
+  2024.5 5.1 4.2 0.9
+  2025.5 5.3 4.3 1.0
+}\spreaddata
+\scalebox{0.9}{%
+\begin{tikzpicture}
+\definecolor{aaacol}{HTML}{D08C2B}
+\definecolor{tsycol}{HTML}{1F4E79}
+\begin{groupplot}[
+  group style={group size=1 by 2, vertical sep=1.5cm, xlabels at=edge bottom},
+  scale only axis, width=0.86\textwidth,
+  xmin=1919, xmax=2026,
+  xtick={1920,1940,...,2020},
+  x tick label style={/pgf/number format/1000 sep={}},
+  axis x line*=bottom, axis y line*=left,
+  axis on top,
+  tick label style={font=\small},
+  label style={font=\small},
+  title style={font=\small, at={(0,1)}, anchor=south west},
+  every axis plot/.append style={line width=0.9pt},
+]
+%% ---------------- Panel (a): yields ----------------
+\nextgroupplot[
+  height=5.0cm, ymin=0, ymax=16, ylabel={Yield (percent)},
+  title={(a) Yields},
+  legend style={draw=none, fill=none, font=\footnotesize, at={(0.02,0.98)}, anchor=north west},
+  legend cell align=left,
+]
+\foreach \a/\b in {1920.0/1921.6,1923.4/1924.6,1926.8/1927.9,1929.6/1933.2,1937.4/1938.5,1945.1/1945.8,1948.9/1949.8,1953.5/1954.4,1957.6/1958.3,1960.3/1961.1,1969.9/1970.9,1973.9/1975.2,1980.0/1980.5,1981.5/1982.9,1990.5/1991.2,2001.2/2001.9,2007.9/2009.5,2020.1/2020.3}{
+  \edef\temp{\noexpand\fill[black!12] (axis cs:\a,0) rectangle (axis cs:\b,16);}\temp
+}
+\draw[black!45, densely dotted] (axis cs:1953,0) -- (axis cs:1953,16);
+\node[font=\scriptsize, text=black!55, anchor=south west] at (axis cs:1953.6,0.2) {long-term bond $\to$ 10-year};
+\addplot[aaacol] table[x=year, y=aaa]{\spreaddata};
+\addlegendentry{Moody's Aaa corporate}
+\addplot[tsycol] table[x=year, y=tsy]{\spreaddata};
+\addlegendentry{Treasury}
+\addlegendimage{area legend, fill=black!12, draw=black!12}
+\addlegendentry{Recession (NBER)}
+%% ---------------- Panel (b): spread ----------------
+\nextgroupplot[
+  height=3.8cm, ymin=0, ymax=3, ylabel={Aaa $-$ Treasury (pp)},
+  title={(b) Credit spread},
+]
+\foreach \a/\b in {1920.0/1921.6,1923.4/1924.6,1926.8/1927.9,1929.6/1933.2,1937.4/1938.5,1945.1/1945.8,1948.9/1949.8,1953.5/1954.4,1957.6/1958.3,1960.3/1961.1,1969.9/1970.9,1973.9/1975.2,1980.0/1980.5,1981.5/1982.9,1990.5/1991.2,2001.2/2001.9,2007.9/2009.5,2020.1/2020.3}{
+  \edef\temp{\noexpand\fill[black!12] (axis cs:\a,0) rectangle (axis cs:\b,3);}\temp
+}
+\draw[black!45, densely dotted] (axis cs:1953,0) -- (axis cs:1953,3);
+\draw[black!60, dashed, line width=0.6pt] (axis cs:1919,0.87) -- (axis cs:2026,0.87);
+\node[font=\scriptsize, text=black!60, anchor=south west] at (axis cs:1950,0.87) {mean $\approx$ 0.9 pp};
+\addplot[black!85] table[x=year, y=spread]{\spreaddata};
+%% Recession labels
+\node[font=\scriptsize, text=black!65, align=center, anchor=north] at (axis cs:1931.4,2.97) {Great\\Depression};
+\node[font=\scriptsize, text=black!65, align=center, anchor=north] at (axis cs:1940.0,2.97) {1937--38};
+\node[font=\scriptsize, text=black!65, align=center, anchor=north] at (axis cs:1974.5,2.97) {Oil\\shock};
+\node[font=\scriptsize, text=black!65, align=center, anchor=north] at (axis cs:1982.2,2.97) {Volcker\\recession};
+\node[font=\scriptsize, text=black!65, align=center, anchor=north] at (axis cs:2000.0,2.97) {Dot-com};
+\node[font=\scriptsize, text=black!65, align=center, anchor=north] at (axis cs:2010.0,2.97) {Financial\\crisis};
+\node[font=\scriptsize, text=black!65, align=center, anchor=north] at (axis cs:2020.2,2.97) {COVID-19};
+\end{groupplot}
+\end{tikzpicture}%
+}
+\caption{Moody's Aaa corporate bond yield and the Treasury yield, 1919--2025 (approximate annual averages). Panel~(a) shows the two yields, and panel~(b) shows the credit spread $s_t^{\text{credit}} = y_t^{\text{Aaa}} - y_t^{\text{Tsy}}$. The Treasury yield is the long-term government bond yield before 1953 and the 10-year constant-maturity yield afterward. Shaded areas are recessions dated by the National Bureau of Economic Research (NBER).}
+\label{fig:aaa-treasury-spread}
+\end{figure}
+
+Figure~\ref{fig:aaa-treasury-spread} shows two interest rates over more than a century. The upper line in panel~(a) is the yield on corporate bonds rated Aaa by Moody's, which are issued by the most creditworthy companies in the United States. The lower line is the yield on Treasury bonds, which are issued by the U.S. government. The corporate yield stays above the Treasury yield in every year. The gap between them is the credit spread, shown in panel~(b). It has averaged a little under one percentage point, and it tends to widen during the recessions marked by the shaded areas.
+
+The usual explanation for this gap is \textbf{credit risk}\index{credit risk}, which is the risk that a borrower fails to pay interest or repay principal in full. The U.S. government is treated as free of credit risk, but a company can default, and it does so when the value of its assets falls below what it owes. A simple calculation shows how much this risk should be worth. Suppose a bond has a 1\% 
+chance of defaulting in a given year, and investors lose half of their money when it does\index{loss given default}. On average, investors then lose $0.01 \times 0.5 = 0.005$, or half a percentage point, each year. 
+
+Many investors think about credit risk this way, and credit ratings\index{credit rating} are designed around it, since they rank bonds by their expected losses from default.
+\textbf{If the credit spread\index{credit spread} is only compensation for credit risk, it should be close to this expected loss\index{credit spread!expected-loss component}, much like an insurance premium that just covers the expected claims. Is that the case?}
+
+
+The view can be tested, because a century of default data shows how often bonds of each rating have defaulted and how much investors got back. When researchers ran the test, the numbers did not add up. Elton, Gruber, Agrawal and Mann (2001) checked whether expected default losses account for most of the spread, and found that they explain only a small part of corporate spreads, with taxes and a risk premium making up much of the rest. Collin-Dufresne, Goldstein and Martin (2001) tested whether spreads move with each firm's own finances, as models of default predict, and found that changes in spreads are driven mostly by a common force that has little to do with the default risk of individual firms. Huang and Huang (2012) showed that even models of default risk carefully fitted to actual default rates explain only a small fraction of investment-grade spreads, the spreads on bonds that rating agencies judge relatively safe (rated Baa or BBB and above). This gap became known as the \term{credit spread puzzle}\index{credit spread puzzle}. Gilchrist and Zakraj\v{s}ek (2012), suspecting that the rest of the spread reflects investors' appetite for risk, then split the spread into a part that reflects default risk and a remainder, the excess bond premium, and found that the remainder predicts recessions.
+
+The answer bears on what credit investors are really paid for, why spreads widen in recessions, and why highly rated structured securities proved so dangerous in 2007--08, when products designed around expected losses met a collapse in investors' appetite for risk. The claim on trial\index{claims-on-trial method} is: \textbf{the extra yield on corporate bonds over Treasuries is mostly payment for expected default losses.}
+
+The lab in Section~\ref{sec:15-lab} repeats the analysis of Elton et al.\ (2001) on a century of Moody's corporate bond yields from FRED, using published default and recovery rates. It adds the excess bond premium of Gilchrist and Zakraj\v{s}ek (2012), which the Federal Reserve publishes free, to check how much of the spread reflects expected defaults and what the rest pays for.
+
+By the end of the chapter you will be able to:
+
+\begin{itemize}
+  \item define default probabilities, recovery rates\index{recovery rate} and \term{loss given default}, and compute the spread that expected losses justify;
+  \item explain why the timing of defaults matters for the spread, and summarize the evidence on the credit spread puzzle\index{credit spread puzzle}\index{excess bond premium};
+  \item judge what a credit investor is paid for, and when reaching for yield is likely to disappoint.
+\end{itemize}
+
+\begin{callout}{\term{Percentage points and basis points}}
+
+A \textbf{percentage point}\index{percentage point} is the plain difference between two rates: if Treasuries yield 4\% and Aaa bonds yield 5\%, the spread is 1 percentage point, not 1 percent, since 5\% is 25\% higher than 4\%. A \textbf{basis point}\index{basis point} (bp) is one hundredth of a percentage point, so the average Aaa--Treasury spread of 0.87 percentage points in Figure~\ref{fig:aaa-treasury-spread} is 87 basis points. Traders quote spreads in basis points because the changes are usually small.
+\end{callout}
+
+\section{Foundations: spreads, default and recovery}
+\label{sec:15-foundations}
+
+\subsection{Credit spread}
+
+The credit spread on a corporate bond, as shown in Figure \ref{fig:aaa-treasury-spread}, is
+\begin{equation}
+  s_t^{\text{credit}} = y_t^{\text{corp}}(T) - y_t^{\text{Tsy}}(T),
+  \label{eq:credit-spread}
+\end{equation}
+where $y_t^{\text{corp}}(T)$ is the yield at time $t$ on a corporate bond with maturity $T$, and $y_t^{\text{Tsy}}(T)$ is the yield on a Treasury bond of similar maturity.
+
+The Baa--Aaa spread replaces the Treasury yield with the Aaa corporate yield:
+\begin{equation}
+  s_t^{\text{Baa--Aaa}} = y_t^{\text{Baa}} - y_t^{\text{Aaa}},
+  \label{eq:baa-aaa-spread}
+\end{equation}
+where $y_t^{\text{Baa}}$ and $y_t^{\text{Aaa}}$ are Moody's seasoned Baa and Aaa corporate bond yields in month $t$.
+
+
+
+\subsection{Default probability (PD)}
+
+The \term{default probability (PD)} is the chance that the issuer fails to pay in a given year. Rating agencies publish historical default rates for each rating. Over 1920--2006, Moody's reported average annual default rates of 0.27\% 
+for Baa issuers, essentially zero for Aaa, and about 1\% for Ba, 
+the highest rating below \term{investment grade} (Moody's Investors Service 2007). A corporate bond rated Ba or lower is considered \term{speculative grade}\index{speculative grade}, and such bonds are also called \textbf{high-yield} or \textbf{junk bonds.} Figure \ref{fig:default-rates-time} shows the annual default rates.
+
+\begin{callout}{\textbf{Who holds junk bonds?}}
+
+Institutions hold fewer junk bonds than investment-grade bonds. Insurers\index{insurance companies} face much higher capital charges on them, and many pension funds\index{pension funds} may hold only investment-grade bonds. The largest holders are high-yield mutual funds and ETFs\index{bond funds}. When a bond falls from Baa to Ba, it becomes a \term{fallen angel}\index{fallen angel}, and investors limited to investment grade must sell it at once. Its spread then rises by more than its default risk alone would justify.
+\end{callout}
+
+%% Requires in the preamble:
+%%   \usepackage{pgfplots}
+%%   \pgfplotsset{compat=1.16}
+%% Data: approximate Moody's issuer-weighted annual default rates (percent).
+%% Columns: year, investment grade, speculative grade.
+\pgfplotstableread{
+  year ig sg
+  1920.5 0.30 2.5
+  1921.5 0.40 3.2
+  1922.5 0.30 3.0
+  1923.5 0.20 2.0
+  1924.5 0.30 2.4
+  1925.5 0.20 1.8
+  1926.5 0.20 1.4
+  1927.5 0.20 1.6
+  1928.5 0.10 1.0
+  1929.5 0.20 1.1
+  1930.5 0.30 2.0
+  1931.5 0.60 6.0
+  1932.5 1.00 10.5
+  1933.5 1.60 15.4
+  1934.5 0.80 7.5
+  1935.5 0.70 7.0
+  1936.5 0.40 3.6
+  1937.5 0.30 2.5
+  1938.5 0.60 6.0
+  1939.5 0.30 3.5
+  1940.5 0.40 3.4
+  1941.5 0.20 2.0
+  1942.5 0.10 1.3
+  1943.5 0.00 0.9
+  1944.5 0.00 0.6
+  1945.5 0.00 0.4
+  1946.5 0.00 0.3
+  1947.5 0.00 0.3
+  1948.5 0.00 0.3
+  1949.5 0.00 0.5
+  1950.5 0.00 0.4
+  1951.5 0.00 0.3
+  1952.5 0.00 0.3
+  1953.5 0.00 0.4
+  1954.5 0.00 0.5
+  1955.5 0.00 0.3
+  1956.5 0.00 0.3
+  1957.5 0.00 0.4
+  1958.5 0.00 0.6
+  1959.5 0.00 0.3
+  1960.5 0.00 0.6
+  1961.5 0.00 0.8
+  1962.5 0.00 0.9
+  1963.5 0.00 0.5
+  1964.5 0.00 0.3
+  1965.5 0.00 0.4
+  1966.5 0.00 0.3
+  1967.5 0.00 0.6
+  1968.5 0.00 0.6
+  1969.5 0.00 0.7
+  1970.5 0.30 8.8
+  1971.5 0.00 1.1
+  1972.5 0.00 1.9
+  1973.5 0.20 1.3
+  1974.5 0.00 1.3
+  1975.5 0.00 1.7
+  1976.5 0.00 0.9
+  1977.5 0.00 1.3
+  1978.5 0.00 1.0
+  1979.5 0.00 0.4
+  1980.5 0.00 1.6
+  1981.5 0.00 0.7
+  1982.5 0.20 3.5
+  1983.5 0.05 3.6
+  1984.5 0.05 3.6
+  1985.5 0.05 3.6
+  1986.5 0.20 5.6
+  1987.5 0.05 4.2
+  1988.5 0.05 3.6
+  1989.5 0.30 5.8
+  1990.5 0.10 9.9
+  1991.5 0.10 10.4
+  1992.5 0.05 5.0
+  1993.5 0.05 3.1
+  1994.5 0.05 2.0
+  1995.5 0.05 3.1
+  1996.5 0.05 1.6
+  1997.5 0.05 1.9
+  1998.5 0.05 3.3
+  1999.5 0.05 5.4
+  2000.5 0.05 6.3
+  2001.5 0.20 10.0
+  2002.5 0.40 8.0
+  2003.5 0.05 5.0
+  2004.5 0.05 2.3
+  2005.5 0.05 1.7
+  2006.5 0.05 1.7
+  2007.5 0.05 0.9
+  2008.5 0.50 4.1
+  2009.5 0.30 13.0
+  2010.5 0.05 3.2
+  2011.5 0.05 1.9
+  2012.5 0.05 2.6
+  2013.5 0.05 2.8
+  2014.5 0.05 2.0
+  2015.5 0.05 3.4
+  2016.5 0.05 4.4
+  2017.5 0.05 2.9
+  2018.5 0.05 2.1
+  2019.5 0.05 3.2
+  2020.5 0.05 6.7
+  2021.5 0.05 1.7
+  2022.5 0.05 2.6
+  2023.5 0.05 4.8
+  2024.5 0.05 4.6
+  2025.5 0.05 4.1
+}\defaultdata
+\begin{figure}[htbp]
+\centering
+\scalebox{0.9}{%
+\begin{tikzpicture}
+\definecolor{sgcol}{HTML}{B03A2E}
+\definecolor{igcol}{HTML}{1F4E79}
+\begin{axis}[
+  scale only axis, width=0.86\textwidth, height=5.2cm,
+  xmin=1919, xmax=2026, ymin=0, ymax=20, ytick={0,5,...,15},
+  xtick={1920,1940,...,2020},
+  x tick label style={/pgf/number format/1000 sep={}},
+  axis x line*=bottom, axis y line*=left, axis on top,
+  tick label style={font=\small}, label style={font=\small},
+  ylabel={Annual default rate (percent)},
+  legend style={draw=none, fill=none, font=\footnotesize, at={(0.98,0.98)}, anchor=north east},
+  legend cell align=left,
+  every axis plot/.append style={line width=0.9pt},
+]
+\fill[black!12] (axis cs:1920.0,0) rectangle (axis cs:1921.6,20);
+\fill[black!12] (axis cs:1923.4,0) rectangle (axis cs:1924.6,20);
+\fill[black!12] (axis cs:1926.8,0) rectangle (axis cs:1927.9,20);
+\fill[black!12] (axis cs:1929.6,0) rectangle (axis cs:1933.2,20);
+\fill[black!12] (axis cs:1937.4,0) rectangle (axis cs:1938.5,20);
+\fill[black!12] (axis cs:1945.1,0) rectangle (axis cs:1945.8,20);
+\fill[black!12] (axis cs:1948.9,0) rectangle (axis cs:1949.8,20);
+\fill[black!12] (axis cs:1953.5,0) rectangle (axis cs:1954.4,20);
+\fill[black!12] (axis cs:1957.6,0) rectangle (axis cs:1958.3,20);
+\fill[black!12] (axis cs:1960.3,0) rectangle (axis cs:1961.1,20);
+\fill[black!12] (axis cs:1969.9,0) rectangle (axis cs:1970.9,20);
+\fill[black!12] (axis cs:1973.9,0) rectangle (axis cs:1975.2,20);
+\fill[black!12] (axis cs:1980.0,0) rectangle (axis cs:1980.5,20);
+\fill[black!12] (axis cs:1981.5,0) rectangle (axis cs:1982.9,20);
+\fill[black!12] (axis cs:1990.5,0) rectangle (axis cs:1991.2,20);
+\fill[black!12] (axis cs:2001.2,0) rectangle (axis cs:2001.9,20);
+\fill[black!12] (axis cs:2007.9,0) rectangle (axis cs:2009.5,20);
+\fill[black!12] (axis cs:2020.1,0) rectangle (axis cs:2020.3,20);
+\addplot[sgcol] table[x=year, y=sg]{\defaultdata};
+\addlegendentry{Speculative grade (Ba and below)}
+\addplot[igcol] table[x=year, y=ig]{\defaultdata};
+\addlegendentry{Investment grade (Aaa to Baa)}
+\addlegendimage{area legend, fill=black!12, draw=black!12}
+\addlegendentry{Recession (NBER)}
+\node[font=\scriptsize, text=black!65, anchor=west] at (axis cs:1934.5,15.4) {Great Depression};
+\node[font=\scriptsize, text=black!65, anchor=south] at (axis cs:1970.5,8.9) {Penn Central 1970};
+\node[font=\scriptsize, text=black!65, anchor=south] at (axis cs:1991,10.5) {1990--91};
+\node[font=\scriptsize, text=black!65, anchor=south] at (axis cs:2001.5,10.1) {2001};
+\node[font=\scriptsize, text=black!65, anchor=south] at (axis cs:2009.5,13.1) {2009};
+\node[font=\scriptsize, text=black!65, anchor=south] at (axis cs:2020.5,6.8) {2020};
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{Annual default rates of Moody's-rated corporate issuers, 1920--2025 (approximate). Speculative-grade issuers default in waves that coincide with recessions and financial crises, while investment-grade defaults stay close to zero in almost every year. Shaded areas are recessions dated by the National Bureau of Economic Research (NBER). Source: approximated from Moody's annual default studies.}
+\label{fig:default-rates-time}
+\end{figure}
+
+
+\subsection{Expected-loss spread}
+
+Consider an investor who cares only about the average payoff of a bond and not about its risk. Such an investor asks for just enough extra yield to make up for the money expected to be lost through default, and no more. 
+
+Suppose a bond promises to repay \$1 in one year. With probability PD the issuer defaults, and the investor recovers only a fraction $R$ of the \$1, called the \term{recovery rate}\index{recovery rate}, so the share lost is $1-R$. On average, the investor therefore receives $1 - \text{PD}(1-R)$ instead of \$1. 
+
+
+
+With continuous compounding, the extra yield that makes up for this shortfall is called the \term{expected-loss spread}\index{credit spread!expected-loss component}:
+\begin{equation}
+  s^{\text{EL}} = -\ln\bigl[1 - \text{PD}(1-R)\bigr] \approx \text{PD}\,(1-R).
+  \label{eq:expected-loss-spread}
+\end{equation}
+
+The credit spread\index{credit spread} introduced in Eq. \ref{eq:credit-spread} is the spread that we actually observe in the market. It is usually larger than the expected-loss spread. The difference,
+\begin{equation}
+  s - s^{\text{EL}},
+  \label{eq:credit-risk-premium}
+\end{equation}
+is the \term{credit risk premium}\index{credit risk premium}. 
+
+\subsection{Why credit spreads can exceed expected losses}
+
+There are a few reasons.
+
+\begin{itemize}
+  \item \textbf{A credit risk premium.}\index{risk premium|textbf} Defaults cluster in recessions, when investors' other wealth is also falling. Investors who dislike risk\index{risk aversion} demand extra pay for losses that arrive at bad times.
+  \item \textbf{Liquidity.}\index{liquidity|textbf} Corporate bonds trade less often than Treasuries, and at wider bid--ask spreads\index{bid--ask spread}.
+  \item \textbf{Taxes.}\index{taxes|textbf} In the United States, interest on corporate bonds is subject to state income tax, while interest on Treasuries is not.
+\end{itemize}
+
+\textbf{Worked example.} A 10-year Baa bond yields 6\% and a 10-year Treasury yields 4\%, a spread of 2\%.
+
+\begin{itemize}
+  \item With $\mathrm{PD} = 0.27\%$ and $R = 38\%$, the expected-loss spread is $-\ln(1 - 0.0027 \times 0.62) \approx 0.17\%$. Expected losses explain only about 8\% of the spread.
+  \item For expected losses to explain the whole 2\%, the annual default rate would have to be about $(1 - e^{-0.02})/0.62 \approx 3.2\%$. That is roughly twelve times the historical Baa average, and well above the long-run average for Ba bonds.
+  \item Even pessimistic assumptions, $\mathrm{PD} = 1\%$ and $R = 20\%$, explain only 0.8 percentage points of the 2\% spread.
+\end{itemize}
+
+
+
+
+\section{How it works}
+\label{sec:15-how}
+
+A corporate bond's spread over a Treasury can be split into four pieces:
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.2\linewidth-4\tabcolsep)/2\relax}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.2\linewidth-4\tabcolsep)/2\relax}@{}}
+\toprule
+Component & What it pays for & How to measure it \\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Component & What it pays for & How to measure it \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Expected default loss & The average loss from defaults & Historical default rates $\times$ loss given default \\*
+Default risk premium & Bearing default losses that cluster in bad times & Residual after expected loss; models of default \\
+Liquidity premium & Costs and delays of trading corporate bonds & Bid--ask spreads, trading volume, bond-specific measures \\*
+Tax premium & State taxes on corporate interest & Tax rates applied to the yield \\
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
+
+The claim is that the first piece dominates. The test has two steps. First, estimate expected losses from historical default and recovery data, and compare them with actual spreads. If they explain most of the spread, the claim survives. Second, examine what is left over\index{regression!residuals}. If the remainder is small and stable, it might be liquidity or measurement error. If it is large, rises in recessions and predicts economic activity, it behaves like a risk premium.
+
+\textbf{Why the timing of defaults matters.} Two bonds with the same expected loss can deserve very different spreads. A bond whose defaults happen at random times adds little risk to a diversified\index{diversification} portfolio. A bond whose defaults all arrive in recessions, when stocks are falling and jobs are at risk, is much less attractive and should pay more. Defaults on investment-grade bonds are rare in normal times and concentrated in severe downturns, which is exactly the pattern that should demand a large premium.
+
+
+\section{The claim}
+\label{sec:15-claim}
+
+\begin{callout}
+\textbf{Claim.} The extra yield on corporate bonds over Treasuries mostly reflects the losses investors expect from default. Under reasonable assumptions about default and recovery rates, expected losses account for most of the average spread.
+\end{callout}
+
+To test it, three points need to be settled:
+
+\begin{itemize}
+  \item \textbf{What ``mostly'' means.} More than half of the average spread on investment-grade bonds. The claim could hold for junk bonds and fail for investment-grade bonds, or the reverse.
+  \item \textbf{Reasonable assumptions.} Long-run default and recovery rates from the rating agencies, and how far they would have to be stretched to rescue the claim.
+  \item \textbf{What would count against it.} Expected losses explaining less than half of investment-grade spreads under any plausible assumptions, with a remainder that rises in recessions and predicts weaker economic activity, like a payment for risk.
+\end{itemize}
+
+\section{The original evidence}
+\label{sec:15-evidence}
+
+\textbf{Elton, Gruber, Agrawal and Mann (2001)} found that expected default losses explained only a small part of corporate spreads; state taxes explained a large part, and the rest moved with the risk factors that explain stock returns. \textbf{Collin-Dufresne, Goldstein and Martin (2001)} found that a firm's borrowing, asset volatility and interest rates explained only about a quarter of changes in spreads, with most of the rest driven by one force common to all bonds. \textbf{Huang and Huang (2012)} found that default models fitted to historical losses explained only a small share of investment-grade spreads, though much more of high-yield spreads, a gap known as the \term{credit spread puzzle}\index{credit spread puzzle|textbf}. \textbf{Gilchrist and Zakraj\v{s}ek (2012)} called the part of spreads not explained by expected default the \term{excess bond premium}\index{excess bond premium|textbf}, and found that a rise in it predicted lower output and employment, suggesting it measures investors' appetite for risk.
+
+\section{Lab~\thechapter: Replicating the Elton et al.\ (2001) spread decomposition}
+\label{sec:15-lab}
+
+\textbf{Claim on trial\index{claims-on-trial method}:} credit spreads mainly reflect expected default losses. The lab replicates the spread decomposition of Elton, Gruber, Agrawal and Mann (2001) and the excess bond premium of Gilchrist and Zakraj\v{s}ek (2012), using free monthly data from FRED\index{FRED}: Moody's yields on Aaa and Baa bonds from 1919, the 10-year Treasury yield from 1953, the NBER recession indicator and industrial production. Because Moody's yields are for long bonds and state taxes\index{taxes|textbf} widen corporate--Treasury spreads, the Baa--Aaa spread is the cleanest measure.
+
+\textbf{Part A, spreads.} The Baa--Aaa, Baa--Treasury and Aaa--Treasury spreads, overall, by decade, and in recessions and expansions (Lab Figure~\ref{ch:16}.1).
+
+\textbf{Part B, decomposition.} The expected-loss spread under assumptions you can change, by default Moody's long-run averages of 0.27\% a year for Baa, zero for Aaa and a 38\% recovery rate, and the share of each spread it explains (Lab Figures~\ref{ch:16}.2 and~\ref{ch:16}.3).
+
+\textbf{Part C, the remainder as a risk premium.} Next-year industrial production growth regressed on each spread and on the excess bond premium (Lab Figure~\ref{ch:16}.4).
+
+\textbf{Part D, robustness checks.} A grid of default rates from 0.1\% to 2\% and recovery rates from 20\% to 60\% (Lab Figure~\ref{ch:16}.5), spread peaks in six crises, and subperiod averages.
+
+\label{sec:15-stress}
+\textbf{Robustness checks.} To explain most of a spread of one to two percentage points, Baa bonds would have to default at well over 1\% a year with low recoveries, the long-run record of Ba bonds, not Baa. Expected losses explain much more of the spread in the 1930s, but the claim must also explain the many decades with almost no defaults, and in 2008--09 and 2020 investment-grade defaults stayed far below what peak spreads implied. Part of the remainder pays for the difficulty of trading corporate bonds\index{liquidity|textbf}, which also rises in crises. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:15-verdict}.
+
+\section{Where the evidence stands}
+\label{sec:15-verdict}
+
+The published studies point to a clear pattern: \textbf{for investment-grade bonds, expected default losses explain only a minority of the spread, and the rest behaves like a premium for risk that rises in bad times. For high-yield bonds, expected losses are a much larger share.}
+
+{\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.45\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Investment-grade spreads & \textbf{No} & Expected losses explained only a small part; taxes and a risk premium made up much of the rest. & Elton, Gruber, Agrawal and Mann (2001) \\*
+\addlinespace[3pt]
+Default models calibrated to defaults & \textbf{No} & Credit risk explains a small share of investment-grade spreads, smaller still at short maturities. & Huang and Huang (2012) \\
+\addlinespace[3pt]
+High-yield spreads & \textbf{Largely} & Credit risk accounts for a much larger share. & Huang and Huang (2012) \\
+\addlinespace[3pt]
+Changes in spreads & \textbf{No} & Default-risk variables explain about a quarter; a common factor drives most of the rest. & Collin-Dufresne, Goldstein and Martin (2001) \\
+\addlinespace[3pt]
+The residual and the economy & \textbf{No} & The excess bond premium, not the default component, predicts lower output and employment. & Gilchrist and Zakraj\v{s}ek (2012) \\*
+\addlinespace[3pt]
+Ranking of spreads by rating & \textbf{Yes} & Ratings rank spreads correctly, though they do not explain their level. & Moody's Investors Service (2007) \\
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+}
+
+\textbf{What would change the picture.} The claim would gain support if a liquidity measure explained most of the remainder and that premium did not change with economic conditions. So far, both rise in bad times.
+
+\label{sec:15-open}
+\textbf{Open questions.} How much of the remainder is liquidity rather than risk, and how much of the premium is the price of dealers' limited capacity\index{capacity}, given how sharply spreads fell when the Fed announced corporate bond purchases in 2020?
+
+\section{What practitioners and investors can use}
+\label{sec:15-investors}
+
+Investment-grade bonds earn a spread well above expected losses, but as pay for losses that arrive together with stock-market losses and recessions, so corporate bonds are no substitute for Treasuries as protection. Moving into lower-rated or longer-dated bonds for extra yield means bearing more of the same recession risk, and a rating ranks how likely a bond is to default, not whether losses will arrive in a recession. Ask a credit manager how much of the extra yield would be lost in a recession with 2009-style defaults, and how closely returns move with stocks in bad months.
+
+\begin{callout}
+\textbf{What Failed: highly rated structured credit before 2008.} Issuers pooled mortgages and other loans and sliced each pool into \textbf{tranches}\index{tranches|textbf}, claims with different priority on the pool's losses. By 2007 roughly 60\% of global structured products were rated AAA, against less than 1\% of corporate bonds (Coval, Jurek and Stafford 2009), and they were priced with similar spreads. But senior tranches lose money only when many loans default together in a severe recession, so they deserved much larger risk premiums. In 2007 Moody's downgraded 31\% of the asset-backed CDO tranches it rated, including 14\% of those first rated AAA.
+\end{callout}
+
+% Key terms that this chapter uses without defining them, for readers new to finance.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Corporate bond.] A corporate bond is a loan to a company that pays interest and repays the amount borrowed on a fixed date.
+  \item[Loss given default.] Loss given default is the share of the money owed that lenders lose when a borrower defaults, equal to one minus the recovery rate.
+\end{description}
+\end{keyterms}

@@ -1,0 +1,38 @@
+% Chapter 9 infographic -- use right after \label{ch:09}: \input{chapters/ch09-infographic}
+\ifcsname FEinfoLoaded\endcsname\else\input{common/fe-infographic}\fi
+\begin{FEinfographic}{ch:09}{optimized portfolios earn higher risk-adjusted returns than an equal split (1/N) out of sample}
+
+\infopanel{1}{Why optimization disappoints}{%
+\infocards
+  {Estimation error}{Expected returns are estimated so poorly that the optimizer mostly amplifies the errors.}
+  {Unstable weights}{Small changes in the inputs swing the weights, which means extreme positions and heavy trading.}
+  {The repairs}{Constraints, shrinkage and risk-based rules tame the errors but end up close to 1/N.}}
+
+\infopanel{2}{Evidence scoreboard}{%
+\begin{infoscore}
+\scoreitem{n}{No}{Sample mean--variance against 1/N}
+\scoreitem{n}{No}{Enough data for sample mean--variance to win}
+\scoreitem{p}{Partly}{Mean--variance with smaller estimation errors}
+\scoreitem{p}{Partly}{Constrained and shrunk minimum variance}
+\scoreitem{n}{No}{Risk-based rules beat 1/N}
+\scoreitem{y}{Yes}{Timing rules that ignore correlations}
+\end{infoscore}}
+
+\infopanel{3}{Key numbers}{%
+\infonumbers
+  {14}{strategies; none beat 1/N consistently}
+  {3,000}{months of data needed for 25 assets}
+  {1,100}{months of U.S. stock data available}
+  {74\%}{monthly turnover of mean--variance, against 3\% for 1/N}}
+
+\infopanel{4}{Lab: replicating DeMiguel, Garlappi and Uppal (2009)}{%
+\begin{infolab}
+\item \textbf{A.} Nine rules on 10 industries, walk-forward on 120-month windows, tested against 1/N.
+\item \textbf{B.} The same on 30 industries and 25 size and book-to-market portfolios, after costs.
+\item \textbf{C.} Window length, costs, rebalancing and three crises. \textbf{D.} How unstable each rule's weights are.
+\end{infolab}}
+
+\infoverdict
+  {Sample mean--variance optimization loses to equal weighting out of sample, and its repaired versions mostly tie with it. The repairs lower risk, but they rarely raise the Sharpe ratio after costs.}
+  {Treat 1/N as the benchmark, distrust the expected returns most, and use optimization to manage risk rather than to chase return.}
+\end{FEinfographic}

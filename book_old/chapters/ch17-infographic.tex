@@ -1,0 +1,38 @@
+% Chapter 17 infographic -- use right after \label{ch:17}: \input{chapters/ch17-infographic}
+\ifcsname FEinfoLoaded\endcsname\else\input{common/fe-infographic}\fi
+\begin{FEinfographic}{ch:17}{a trader who sells an option and delta-hedges it as Black--Scholes prescribes is left with little risk}
+
+\infopanel{1}{The Greeks behind the hedge}{%
+\infocards
+  {Delta}{How much the option's value moves with the stock; holding delta shares offsets small moves.}
+  {Gamma}{How fast delta changes, so the hedge must be adjusted and loses on large moves.}
+  {Theta}{The value lost as time passes, the seller's pay for bearing gamma.}}
+
+\infopanel{2}{Evidence scoreboard}{%
+\begin{infoscore}
+\scoreitem{y}{Yes}{Hedging when the model holds}
+\scoreitem{n}{No}{Hedging with trading costs}
+\scoreitem{n}{No}{Market prices consistent with the model}
+\scoreitem{n}{No}{Hedged option positions earn zero}
+\scoreitem{p}{Partly}{Better hedges}
+\scoreitem{n}{No}{Dynamic replication in a crash}
+\end{infoscore}}
+
+\infopanel{3}{Key numbers}{%
+\infonumbers
+  {about 1/5}{of the premium left as error with daily hedging}
+  {4$\times$}{as frequent hedging halves the error}
+  {\$90 bn}{at most, covered by portfolio insurance in 1987}
+  {over 20\%}{market fall on October 19, 1987}}
+
+\infopanel{4}{Lab: the Black--Scholes hedge along real and simulated paths}{%
+\begin{infolab}
+\item \textbf{A.} The hedged P\&L of a one-month call at several hedging frequencies, on real and simulated paths.
+\item \textbf{B.} The P\&L against the gamma--theta approximation and the implied-minus-realized variance gap.
+\item \textbf{C.} Hedging frequency and costs. \textbf{D.} The worst months and their share of all losses.
+\end{infolab}}
+
+\infoverdict
+  {Delta hedging removes most of the everyday risk of an option position, but what remains is a bet on realized against implied volatility, with large losses in jumps and volatility spikes that more frequent hedging cannot remove.}
+  {A fund that sells options and delta-hedges is not market-neutral in the sense that matters: it bets against volatility and loses heavily in jumps.}
+\end{FEinfographic}

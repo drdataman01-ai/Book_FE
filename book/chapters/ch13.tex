@@ -1,8 +1,9 @@
-% Chapter 17 -- Claim: A Profitable Backtest Is Profitable to Trade
-% Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
+% Chapter 13 -- Claim: Investors Earn the Returns Their Stocks Earn
+% Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tikz, pgfplots, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
 \providecolor{feshade}{HTML}{F3F5FA}
+\providecolor{feorange}{HTML}{B8481C}
 \makeatletter
 \@ifundefined{callout}{%
   \newtcolorbox{callout}{breakable, enhanced,
@@ -10,11 +11,6 @@
     borderline west={2.5pt}{0pt}{gray!70},
     left=8pt, right=8pt, top=4pt, bottom=4pt}%
 }{}
-\makeatother
-
-\providecolor{fenavy}{HTML}{1B2A6B}
-\providecolor{feshade}{HTML}{F3F5FA}
-\makeatletter
 % Shaded box for optional technical material that general readers may skip.
 \@ifundefined{technote}{%
   \newtcolorbox{technote}{breakable, enhanced,
@@ -23,481 +19,245 @@
 }{}
 \makeatother
 
-\chapter{Claim: A Profitable Backtest Is Profitable to Trade}
+\chapter{Claim: Investors Earn the Returns Their Stocks Earn}
 \label{ch:13}
 \providecommand{\term}[1]{\emph{#1}}
 
-Many brokers now advertise commission-free trading, and it is easy to conclude that buying and selling shares costs nothing. It does not. Every purchase is made at a slightly higher price than every sale, and large orders push prices against the trader. These hidden costs are small on any one trade, but a strategy that trades often pays them again and again. This chapter asks how much of a strategy's backtested profit survives them.
+Ask an investor why they still own a stock that has fallen by a third, and a common answer is that they will sell it ``once it gets back to what I paid.'' Ask the same investor about a stock that has risen by a fifth, and they may say they sold it to ``lock in the gain.'' Neither answer mentions a calendar. Real investors do not hold every position for exactly one month or one year; they decide when to sell by watching the price, and the price they paid often shapes that decision. This chapter asks whether those decisions change what investors earn.
 
-Most of the claims tested so far, from size and value to momentum and trend following, were documented with \textbf{paper returns}\index{return!paper versus implementable}: the returns of portfolios rebuilt every month at recorded closing prices, in any size, at no cost. Researchers have long known that this is a simplification. It matters because of how an efficient market is defined. Jensen (1978) argued that a market is efficient with respect to some information if no one can earn \emph{economic} profits by trading on it, meaning profits after all the costs of trading. Grossman and Stiglitz (1980) went further. They showed that prices cannot reflect all information perfectly, because then no one would be paid for the cost of collecting it. On this view, some patterns in returns should survive on paper but not after costs, since costs are exactly what stops investors from trading them away.
+Almost every claim tested so far was judged by \term{fixed-period returns}\index{return!fixed-period|textbf}: the return of a portfolio over the next month, or the next year, measured on a calendar grid whether or not anyone traded on those dates. The models behind them, from the CAPM to the momentum factor, describe how prices move from one date to the next. They are silent about when investors buy and sell. A natural reading is that it does not matter: an investor who holds a stock earns the stock's return, whatever the holding period turns out to be.
 
-The question became pressing in the early 2000s, when researchers began to work out what it would cost to trade the best-known anomalies\index{anomaly}, the patterns in returns that standard risk models cannot explain (Chapter~\ref{ch:03}). Momentum, which trades often, was the natural first target. Lesmond, Schill and Zhou (2004) found that momentum\index{momentum} trades are concentrated in stocks that are expensive to trade, and concluded that most of its profits disappear after costs. Since a large fund also moves prices when it trades, Korajczyk and Sadka (2004) measured how much large orders move prices, and found that momentum profits shrink as the portfolio grows. To compare many strategies at once, Novy-Marx and Velikov (2016) then estimated trading costs for 23 well-known anomalies. Most strategies that replace more than half of their portfolio each month were no longer significant after costs. Because these estimates came from public data rather than an actual investor's trades, Frazzini, Israel and Moskowitz (2018) challenged their size. Using a large manager's own trading records, they found costs far below what the academic estimates assumed. The same patterns therefore look profitable or unprofitable depending on whose costs are used.
+Behavioral economists challenged that reading in the 1980s. Shefrin and Statman (1985) gave a name, the \term{disposition effect}\index{disposition effect|textbf}, to the tendency to ``sell winners too early and ride losers too long,'' and argued that it followed from Kahneman and Tversky's (1979) prospect theory, in which people judge outcomes as gains and losses from a reference point such as the purchase price. Odean (1998) then obtained the trading records of 10,000 accounts at a large discount broker and found that investors sold stocks that had risen far more readily than stocks that had fallen. Worse for the investors, the winners they sold went on to beat the losers they kept. Dichev (2007) took the question to whole markets: because money tends to flow into stocks after they have risen, the average dollar invested in U.S. stocks earned less than the market's published return. If these findings hold, the fixed-period returns reported in the earlier chapters describe the stocks correctly but overstate what their holders actually received.
 
-This chapter opens Part VII, which returns to the classic findings with the tools of the last two decades. The answer matters for research and for practice. For research, it decides whether an anomaly is evidence against market efficiency, or only a pattern that no investor could exploit. For practice, it decides which published strategies are worth running, how much money each can manage, and whether a fund that offers them can deliver its backtest. The claim on trial\index{claims-on-trial method} is the assumption behind most published backtests\index{backtest}: \textbf{a strategy that is profitable in a backtest is profitable to trade.}
+This chapter opens Part VII, which returns to the classic findings with the tools of the last two decades. The answer matters for three groups. For researchers, it decides whether a return measured on a calendar grid is the right yardstick for investors' welfare. For investors, it decides whether their own selling habits cost them money. For anyone judging a fund, a trading system or an adviser, it decides how to compare returns earned over holding periods of different lengths. The claim on trial\index{claims-on-trial method} is: \textbf{investors earn the returns their stocks earn, whatever rule they use to decide when to sell.}
 
-The lab in Section~\ref{sec:17-lab} repeats the main calculations of Novy-Marx and Velikov (2016) and Frazzini, Israel and Moskowitz (2018). It uses three free long--short factors from the \term{Kenneth R. French Data Library}, value, momentum and short-term reversal, together with a simulated market of individual stocks. The goal is to find out which strategies stay profitable after costs, what level of costs would wipe out each one, and how much money each can manage.
+The lab in Section~\ref{sec:hp-lab} tests the claim in three settings. It first applies six selling rules to the same simulated prices, where the true expected return is known. It then applies the same rules to a century of returns on the 49 industry portfolios of the Kenneth R. French Data Library, replicates the spirit of Odean's test of sold winners against held losers, and finally adds taxes and trading costs.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item read a limit order book\index{order book} and explain bid--ask spreads\index{bid--ask spread}, market and limit orders\index{market order}\index{limit order}, short selling\index{short selling} and long--short portfolios\index{long--short portfolio};
-  \item break trading costs into their parts, including market impact\index{market impact}, and estimate the main ones from public data;
-  \item compute a strategy's turnover\index{turnover}, its net return and the break-even cost\index{transaction costs!break-even} it can bear, and explain how market impact limits the money it can manage;
-  \item design strategies that trade less without giving up much of their signal.
+  \item compute a holding-period return over a random horizon, explain what a stopping time\index{stopping time} is, and state what the optional stopping theorem\index{optional stopping theorem} says a selling rule can and cannot do;
+  \item compare returns earned over holding periods of different lengths without being misled by annualizing short holds;
+  \item explain the disposition effect\index{disposition effect} through prospect theory\index{prospect theory} and realization utility\index{realization utility}, and measure it with Odean's proportions of gains and losses realized;
+  \item test whether an investor's selling decisions, taxes and the timing of money flows separate the return an asset earns from the return its holder receives.
 \end{itemize}
 
 
-In the lab you will take three of the best-known long--short strategies, value, momentum\index{momentum} and short-term reversal\index{short-term reversal}, measure how much each trades, charge each for trading, and see how their ranking changes. A simulated market with known expected returns\index{return!expected} then shows how much cost-aware design can recover.
+\section{Foundations: holding periods, stopping times and reference points}
+\label{sec:hp-foundations}
 
-\section{Foundations: how stocks are traded and sold short}
-\label{sec:17-foundations}
+\subsection{Fixed-period and holding-period returns}
 
-\subsection{The order book}
+A \term{fixed-period return}\index{return!fixed-period} is measured over a set length of calendar time, such as a month. A \term{holding-period return}\index{return!holding-period|textbf} is measured over the time an investor actually owns the asset, from the purchase to the sale. If an investor buys at the end of month 0 and sells at the end of month $\tau$, the holding-period return compounds the monthly returns $r_1, r_2, \ldots, r_\tau$ in between, as in Section~\ref{sec:02-returns}:
+\begin{equation}
+  R_{0,\tau} = \prod_{t=1}^{\tau} (1 + r_t) - 1 = \frac{P_\tau}{P_0} - 1 .
+  \label{eq:hp-hpr}
+\end{equation}
+Here $P_t$ is the price at the end of month $t$, including reinvested dividends. Equation~\eqref{eq:hp-hpr} shows the first point of this chapter: \textbf{the holding-period return is built entirely from fixed-period returns}. A random holding period does not change the returns of the stock. It changes which of those returns the investor collects.
 
-Most stocks trade on electronic exchanges that keep a \term{limit order book}\index{order book|textbf}. This is a list of standing offers to buy, called \textbf{bids}, and offers to sell, called \textbf{asks}, each at a stated price and quantity (Figure~\ref{fig:17-book}). The highest bid and the lowest ask are the \term{best quotes}. The gap between them is the \textbf{bid--ask spread}\index{bid--ask spread|textbf}, and their average is the \term{midpoint}\index{midpoint|textbf}. Spreads are quoted in \textbf{basis points}\index{basis point|textbf} of the midpoint. A basis point is a hundredth of a percent, so 100 basis points make 1\%.
+\subsection{Selling rules and stopping times}
 
-\providecolor{fenavy}{HTML}{1B2A6B}
-\providecolor{feorange}{HTML}{B8481C}
-
-\begin{figure}[htbp]
-  \centering
-  \scalebox{0.9}{%
-\begin{tikzpicture}[
-    x=0.014cm, y=0.5cm,     % x: shares; y: price levels
-    ask/.style={fill=feorange!35},
-    bid/.style={fill=fenavy!75},
-    price/.style={anchor=east, font=\small},
-  ]
-    % Asks (sellers) above the midpoint: level / price / shares
-    \foreach \wfL/\wfP/\wfQ in {1/50.02/200, 2/50.03/350, 3/50.04/300,
-                                4/50.05/450, 5/50.06/500} {
-      \fill[ask] (0,\wfL+0.5-0.38) rectangle (\wfQ,\wfL+0.5+0.38);
-      \node[price] at (-10,\wfL+0.5) {\$\wfP};
-    }
-    % Bids (buyers) below the midpoint
-    \foreach \wfL/\wfP/\wfQ in {1/49.98/250, 2/49.97/300, 3/49.96/400,
-                                4/49.95/350, 5/49.94/550} {
-      \fill[bid] (0,-\wfL-0.5-0.38) rectangle (\wfQ,-\wfL-0.5+0.38);
-      \node[price] at (-10,-\wfL-0.5) {\$\wfP};
-    }
-
-    % Best ask and best bid
-    \draw[feorange, thick] (0,1.12) rectangle (200,1.88);
-    \draw[fenavy, thick]   (0,-1.88) rectangle (250,-1.12);
-    \node[feorange, anchor=west, font=\small] at (215,1.5)
-      {best ask: buyers pay \$50.02};
-    \node[fenavy, anchor=west, font=\small] at (265,-1.5)
-      {best bid: sellers get \$49.98};
-
-    % Midpoint
-    \draw[densely dashed] (-10,0) -- (560,0);
-    \node[anchor=south east, font=\small, inner sep=2pt] at (560,0) {midpoint \$50.00};
-
-    % Spread bracket
-    \draw[decorate, decoration={brace, amplitude=4pt}]
-      (-150,-1.5) -- (-150,1.5)
-      node[midway, anchor=east, xshift=-5pt, align=right, font=\small]
-      {spread\\\$0.04\\(8 bp)};
-
-    % Headings and size axis
-    \draw[thin] (0,-6.1) -- (0,6.1);
-    \node[feorange, font=\small\bfseries, anchor=south west] at (0,6.1)
-      {Asks: sellers' limit orders};
-    \draw[-stealth, thin] (0,-6.1) -- (580,-6.1)
-      node[anchor=west, font=\small] {shares};
-    \node[fenavy, font=\small\bfseries, anchor=north west] at (0,-6.3)
-      {Bids: buyers' limit orders};
-  \end{tikzpicture}%
-}
-  \caption{Every trader who wants to deal at once pays a little more to buy than she receives to sell. A limit order book. Sellers' asks sit above the midpoint and buyers'
-    bids below it. A buyer who wants to trade at once pays the best ask,
-    \$50.02; a seller receives the best bid, \$49.98. The gap of \$0.04,
-    8 basis points of the \$50.00 midpoint, is the bid--ask spread.}
-  \label{fig:17-book}
-\end{figure}
-
-%\begin{figure}[htbp]
-%\centering
-%\includegraphics[width=0.8\linewidth]{images/fig06-1-order-book.png}
-%\caption{A limit order book. Sellers' asks sit above the midpoint and buyers' bids below it. A buyer who wants to trade at once pays the best ask, \$50.02; a seller receives the best bid, \$49.98. The gap of \$0.04, 8 basis points of the \$50.00 midpoint, is the bid--ask spread.}
-%\label{fig:17-book}
-%\end{figure}
-
-\subsection{Market and limit orders}
-
-There are two basic ways to trade.
+A \term{selling rule}\index{selling rule|textbf} decides, at the end of each month, whether to sell. Common rules include:
 
 \begin{itemize}
-  \item A \term{market order}\index{market order|textbf} trades immediately against the best available quotes: a buyer pays the ask, a seller receives the bid. Market orders \emph{demand} liquidity\index{liquidity} and pay the spread.
-  \item A \term{limit order}\index{limit order|textbf} sets a price and waits in the book until someone trades against it. Limit orders \emph{supply} liquidity and may earn the spread, but risk not being filled, or being filled just before the price moves against them.
+  \item \textbf{Fixed horizon.} Sell after a set number of months, whatever the price.
+  \item \textbf{Profit target.} Sell as soon as the gain reaches, say, 20\%.
+  \item \textbf{Stop-loss.} Sell as soon as the loss reaches, say, 20\%.
+  \item \textbf{Bracket.} Use a profit target and a stop-loss together, and sell at whichever comes first.
+  \item \textbf{Get even.} Sell at a profit target, but once the position has fallen far below cost, wait and sell as soon as the price is back to what was paid.
 \end{itemize}
 
-Large orders are usually broken into many small ones and executed over hours or days to limit their effect on prices.
+The month in which a rule sells, $\tau$, is random, because it depends on the price path. Probability theory calls such a random time a \term{stopping time}\index{stopping time|textbf} when the decision to stop at month $t$ uses only information available at month $t$. All five rules above qualify. A rule such as ``sell at the year's high'' does not, because no one knows that the high has arrived until later; it is the holding-period version of the look-ahead bias of Section~\ref{sec:02-lookahead}.
 
-\subsection{Who provides liquidity}
+\subsection{Fair games and the optional stopping theorem}
 
-\term{Market makers}\index{market maker|textbf} and high-frequency traders post bids and asks continuously and earn the spread. In return they bear \term{inventory risk}, the risk that prices move while they hold shares they have bought but not yet sold, and the risk of trading with better-informed investors. Spreads are wider for small, volatile and thinly traded stocks because these risks are larger there.
+A price is a \term{martingale}\index{martingale|textbf} if its expected value next period, given everything known today, equals today's price. In finance, discounted prices are martingales under the risk-neutral measure, and a stock with zero expected excess return behaves like one in the real world. A martingale is the mathematical version of a fair game.
 
-\subsection{Long and short positions}
+The \term{optional stopping theorem}\index{optional stopping theorem|textbf} says that if the price is a martingale and the stopping time is bounded, so that every position is eventually sold, then
+\begin{equation}
+  \mathrm{E}\left[P_\tau\right] = P_0 .
+  \label{eq:hp-ost}
+\end{equation}
+In words, \textbf{no selling rule can turn a fair game into a favorable one}. A rule can make wins frequent or rare, small or large, but it cannot change the expected value of the money that comes back.
 
-A \textbf{long} position owns a security and gains when its price rises. A \textbf{short} position borrows shares, sells them, and later buys them back to return them, so it gains when the price falls. The short seller pays any dividends to the lender. It also posts \term{collateral}\index{collateral|textbf}, cash or securities held as security for the loan, and pays a \term{borrowing fee}\index{borrowing fee|textbf} set in the securities-lending market. Most large stocks are cheap to borrow. A minority are hard to borrow and expensive. The lender can also \term{recall} the loan, which forces the short seller to buy the shares back.
-
-\subsection{Long--short portfolios}
-
-Academic factors such as HML\index{factor!HML (value)}, introduced in Section~\ref{sec:04-factors}, are \term{zero-investment} portfolios. They hold one dollar long and one dollar short, so the proceeds of the short sale pay for the long side. A factor's ``return'' is therefore the difference between the two sides, not a return on capital invested. A real long--short fund must hold collateral and capital against both sides, and it quotes its returns relative to that capital.
-
-\subsection{Turnover}
-
-\textbf{Turnover}\index{turnover|textbf} measures how much of a portfolio is traded in a period. A one-sided\index{hypothesis testing!one-sided and two-sided} monthly turnover of 10\% means that a tenth of the portfolio is sold, and replaced, each month. Turnover multiplies every cost of trading: a strategy that replaces its whole portfolio every month pays its trading costs twelve times a year on each side.
-
-\textbf{Worked example.} A stock is quoted at \$49.98 bid and \$50.02 ask. The midpoint is \$50.00 and the spread is \$0.04, or $0.04/50 = 0.0008$, 8 basis points. Buying with a market order and immediately selling would lose 8 basis points; the one-way cost\index{transaction costs!one-way and round-trip}, half the spread, is 4 basis points.
-
-
-\section{Paper returns versus implementable returns}
-\label{sec:17-paper}
-
-The factor returns in the Kenneth French Data Library\index{Kenneth French data library}, like most portfolio returns in academic research, are \textbf{paper returns}\index{return!paper versus implementable|textbf}. Each month the portfolio is rebuilt from the latest sorts, at closing prices, with no charge for trading. The construction is deliberately simple and transparent, which is why the data is so useful. But it answers the question ``what pattern exists in returns?'' rather than ``what could an investor have earned?''
-
-An \term{implementable return}, one an investor could actually have earned, differs in four ways:
-
-\begin{enumerate}
-  \item \textbf{Trading costs.}\index{transaction costs|textbf} Every purchase pays above the midpoint price and every sale receives below it; large orders also move the price.
-  \item \textbf{Short-selling costs and limits.} Selling short requires borrowing shares, which costs a fee, may be impossible for some stocks, and can be recalled.
-  \item \textbf{Timing and execution.} Signals computed from closing prices cannot be traded at those same prices. Orders take time to work, and fast-moving signals lose value while they wait.
-  \item \textbf{Scale.} A strategy that works with \$10 million may not work with \$10 billion, because the trades themselves change prices.
-\end{enumerate}
-
-None of these makes a paper return wrong. A pattern that cannot be traded profitably may still tell us something about risk or about how prices form. But a claim about profits needs an implementable return, and the two can differ by more than the whole premium.
-
-The gap is largest for strategies that trade often, in small or illiquid stocks, or on the short side. It is smallest for slow strategies in large stocks, which is one reason the market portfolio itself is so hard to beat after costs: it barely trades at all.
-
-\section{The anatomy of trading costs}
-\label{sec:17-anatomy}
-
-The cost of a trade has several parts, and they behave differently.
-
-\begingroup
-\small
-\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
-\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.19\linewidth-0.32\linewidth-4\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.32\linewidth}@{}}
-\toprule
-Component & What it is & How it scales \\
-\midrule
-\endfirsthead
-\multicolumn{3}{@{}l}{\emph{(continued)}} \\
-\toprule
-Component & What it is & How it scales \\
-\midrule
-\endhead
-\midrule
-\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
-\endfoot
-\bottomrule
-\endlastfoot
-Commissions and fees & Payments to brokers and exchanges & Small for institutions today; roughly proportional to the amount traded \\*
-Bid--ask spread & Buying at the ask and selling at the bid, above and below the midpoint & Proportional to the amount traded; wider for small, volatile and illiquid stocks \\
-Market impact & The price moving against an order while it is executed, because the order itself carries information or demands liquidity & Grows faster than the trade: roughly with the square root of the order's size relative to volume \\
-Delay and opportunity cost & Prices moving before the order is filled, or trades not made at all & Largest for fast signals \\*
-Short-selling costs & Fees to borrow shares, the risk of recall, rules that restrict shorting & Mostly small, very large for a minority of stocks \\
-\end{longtable}
-\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
-\endgroup
-
-The unit used throughout this chapter is the \term{one-way cost}\index{transaction costs!one-way and round-trip|textbf}: the cost of buying, or of selling, one dollar of stock, as a fraction of the dollar. For a small trade it is roughly half the bid--ask spread plus commissions. A \textbf{round trip}, buying and later selling, costs twice the one-way cost.
-
-\textbf{Costs have fallen, unevenly.} U.S. stock spreads narrowed sharply in 2001, when prices moved from fractions of a dollar to cents, a change called \term{decimalization}\index{decimalization|textbf}, and again as electronic trading spread. Large stocks now trade at spreads of a few basis points, but small, illiquid stocks still cost far more. This matters when reading long histories. A strategy tested from 1963 faced costs in its early decades several times higher than today's. Charging today's costs over the whole history therefore flatters the past, while charging the past's costs today understates what is now possible.
-
-\textbf{Short selling.}\index{short selling|textbf} A short seller borrows shares and pays the lender a fee. Using records from a large lender of shares, D'Avolio (2002) found that most U.S. stocks were cheap to borrow, but that a small group of ``special'' stocks carried high fees, and that these were often the very stocks with the strongest signals to sell short. The lender can also recall the shares at an awkward time, and regulators can ban short selling outright, as the U.S. Securities and Exchange Commission did for financial stocks in September 2008. Miller (1977) argued that when pessimists cannot sell short, prices reflect only the optimists' views, so overpricing can last. If so, anomalies should earn their profits mainly from overpriced stocks, and Stambaugh\index{Stambaugh bias}, Yu and Yuan (2012) found that many anomalies\index{anomaly} earn most of their profits on the short side, exactly where these obstacles bite. A long--short paper portfolio that ignores them overstates what an investor can achieve, sometimes by most of the premium.
-
-The lab uses a single one-way cost and a single borrowing fee for transparency. Real costs vary across stocks and over time, and Section~\ref{sec:17-measuring} shows how they can be estimated.
-
-
-\section{Measuring costs from public data}
-\label{sec:17-measuring}
-
-The best measure of trading costs is a trader's own record. \term{Implementation shortfall}\index{implementation shortfall|textbf} (Perold 1988) compares the value of a paper portfolio at the prices when the decision was made with the value of the portfolio actually achieved, capturing spreads, impact, delay and trades never completed. Most researchers do not have such records, so the field relies on estimates.
-
-\textbf{From quotes and trades.} With intraday data, such as the TAQ (Trade and Quote) database of every U.S. trade and quote, two spreads can be measured:
-
-\begin{itemize}
-  \item the \term{quoted spread}\index{bid--ask spread!quoted|textbf}, the gap between the best bid and ask;
-  \item the \term{effective spread}\index{bid--ask spread!effective|textbf}, twice the difference between the trade price and the midpoint at the time of the trade.
-\end{itemize}
-
-Effective spreads are usually smaller than quoted ones, because many trades execute inside the quotes.
-
-Researchers without intraday data can still estimate spreads from daily prices, which reach back to the 1920s. The shaded box lists the standard methods.
+A coin-flip example makes the point concrete. Suppose a stock priced at \$100 moves up or down by \$1 each day with equal probability, and an investor sells as soon as it reaches \$110 or falls to \$50. The chance of reaching \$110 first is $50/60$, or about 83\%. The investor wins five times out of six, but each loss is five times as large as each win, and the expected profit is $\tfrac{5}{6}\times 10 - \tfrac{1}{6}\times 50 = 0$. A profit target with a distant stop produces a high win rate and a hidden tail of large losses. A tight stop-loss with a distant target does the opposite: frequent small losses and occasional large wins. The expected value is the same.
 
 \begin{technote}
-\textbf{Technical note: estimating spreads from daily data.} Several estimators infer spreads from daily prices alone, which makes them available back to the 1920s:
-
-\begin{itemize}
-  \item \textbf{Roll (1984)}\index{bid--ask spread!estimators|textbf} infers the spread from \term{bid--ask bounce}\index{bid--ask bounce|textbf}: because trades alternate randomly between the bid and the ask, successive price changes are negatively correlated, and the size of that correlation\index{correlation} reveals the spread.
-  \item \textbf{Hasbrouck (2009)} estimates a similar model with a Bayesian Gibbs sampler, a simulation-based estimation method, which is more robust when the Roll estimator fails.
-  \item \textbf{Corwin and Schultz (2012)} use daily high and low prices: highs are usually trades at the ask and lows at the bid, and the spread's share of the range can be separated from volatility\index{volatility} by comparing one-day and two-day ranges.
-  \item \textbf{Abdi and Ranaldo (2017)} combine closing, high and low prices for a more precise estimator.
-  \item \textbf{Amihud (2002)}\index{illiquidity|textbf} measures \term{illiquidity} as the average absolute return per dollar of volume: a measure of price impact rather than a spread.
-\end{itemize}
-
-These estimators are noisy for any one stock and month, but useful averaged across portfolios, which is how Novy-Marx and Velikov (2016) used them to estimate the costs of dozens of anomalies.
+\textbf{Technical note: the conditions, and Wald's identity.} The optional stopping theorem needs the stopping time to be bounded, or at least well enough behaved that the price cannot drift arbitrarily far before the sale. A rule that holds losers ``until they get back to cost'' with no time limit can violate the condition: on a path that never recovers, the position is never sold, and Equation~\eqref{eq:hp-ost} need not hold for the positions that \emph{are} sold. This is why the lab gives every rule a longest holding period, the \term{cap}. For prices that follow geometric Brownian motion with expected return $\mu$ and volatility $\sigma$, the log price is a random walk with drift $\mu - \sigma^2/2$, the volatility drag of Equation~\eqref{eq:02-drag}. Wald's identity\index{Wald's identity} then gives, for any stopping time with finite expectation,
+\begin{equation}
+  \mathrm{E}\left[\ln \frac{P_\tau}{P_0}\right] = \left(\mu - \tfrac{1}{2}\sigma^2\right)\mathrm{E}[\tau] ,
+  \label{eq:hp-wald}
+\end{equation}
+so every selling rule earns the same expected log return per year invested.
 \end{technote}
 
-\textbf{Estimates from practice.} Frazzini, Israel and Moskowitz (2018) studied \$1.7 trillion of actual trades by a large institutional manager, across 21 developed markets over 19 years. They found trading costs about ten times smaller than earlier academic estimates suggested. The result shows that costs depend on who is trading and how. A patient institution that supplies liquidity pays far less than the typical investor assumed by spread estimators. The evidence, however, comes from a single manager using its own trading methods.
+\subsection{Reference points, prospect theory and realization utility}
+\label{sec:hp-prospect}
 
-The practical consequence is that a cost assumption is a judgment. A careful study reports results across a range of costs, and the lab does so, from zero to 100 basis points one way.
-
-\section{Turnover, net returns and break-even costs}
-\label{sec:17-turnover}
-
-\textbf{Turnover}\index{turnover|textbf} measures how much a portfolio trades. One-sided monthly turnover is the share of the portfolio sold, and replaced, each month. It equals half the sum of the absolute changes in portfolio weights. The changes are measured against the weights the portfolio would have drifted to if it had not traded. A value-weighted\index{index weighting!value-weighted} portfolio whose members never change has zero turnover, however much its prices move.
-
-What drives turnover is how fast the signal changes relative to how often the portfolio is rebuilt:
+Why would an investor prefer one selling rule to another if all have the same expected value? Kahneman and Tversky (1979) proposed \term{prospect theory}\index{prospect theory|textbf}, a description of how people actually choose among risky prospects. It has three features that matter here (Figure~\ref{fig:hp-value}):
 
 \begin{itemize}
-  \item \textbf{Value} sorts on book-to-market\index{book-to-market ratio} once a year. Book-to-market ratios are persistent, so most stocks stay on the same side from one year to the next.
-  \item \textbf{Momentum}\index{momentum|textbf} sorts monthly on the return from 12 months to 2 months ago. Each month's window shares ten of its eleven months with the last one, but enough stocks cross the \term{breakpoints}, the cut-offs between groups, to replace about a third of the portfolio each month.
-  \item \textbf{Short-term reversal}\index{short-term reversal|textbf} sorts monthly on the previous month's return, which has almost no persistence\index{persistence}. Nearly the whole portfolio is replaced every month.
+  \item \textbf{Reference dependence.} People judge outcomes as gains or losses relative to a reference point, not as levels of wealth. For an investor, the natural reference point is the purchase price.
+  \item \textbf{Loss aversion.} A loss hurts about twice as much as a gain of the same size pleases; Tversky and Kahneman (1992) estimated a ratio of about 2.25.
+  \item \textbf{Diminishing sensitivity.} The value function is concave for gains, so people are risk-averse when ahead, and convex for losses, so they are willing to gamble when behind.
 \end{itemize}
 
-\textbf{From gross to net.} A \textbf{gross} return is before costs; a \textbf{net} return is after them. A long--short portfolio with one dollar on each side and one-sided turnover $T$ sells and buys $T$ on each side, so it trades $4T$ dollars a month. At a one-way cost $c$, its monthly cost and net return are
-\begin{equation}
-  \text{cost} = 4\,T\,c, \qquad R^{\text{net}}_t = R^{\text{gross}}_t - 4\,T\,c - \frac{\text{borrow fee}}{12}
-  \label{eq:17-net}
-\end{equation}
+Diminishing sensitivity gives the disposition effect directly. An investor sitting on a gain prefers to lock it in rather than gamble on a further rise, while an investor sitting on a loss prefers to gamble on a recovery rather than accept the loss. Barberis and Xiong (2009) showed that the link is less automatic than it looks when investors care about gains and losses over a year. Barberis and Xiong (2012) then proposed \term{realization utility}\index{realization utility|textbf}: investors feel a burst of pleasure when they \emph{sell} at a gain and a burst of pain when they sell at a loss, as if each sale closed an episode with a score. Under realization utility, selling a winner is a reward in itself, and selling a loser is a defeat to be postponed.
 
-The \term{break-even cost}\index{transaction costs!break-even|textbf} is the one-way cost at which the average net return is zero:
-\begin{equation}
-  c^* = \frac{\text{average gross return} - \text{other costs}}{4T}
-  \label{eq:17-breakeven}
-\end{equation}
-It answers the most useful question about a strategy's costs: how cheaply must it trade to be worth trading? For example, a strategy with turnover of 10\% a month that earns 0.4\% a month gross can pay up to $0.4/(4 \times 0.10) = 1\%$ per trade before its profit is gone.
+\begin{figure}[htbp]
+\centering
+\scalebox{0.9}{%
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.78\linewidth, height=0.52\linewidth,
+  axis lines=middle, axis line style={-stealth},
+  xmin=-1.1, xmax=1.15, ymin=-2.4, ymax=1.35,
+  xtick=\empty, ytick=\empty,
+  clip=false,
+]
+  \addplot[fenavy, very thick, domain=0:1, samples=80] {x^0.88};
+  \addplot[fenavy, very thick, domain=-1:0, samples=80] {-2.25*(-x)^0.88};
+  \node[anchor=north east, font=\small, align=right] at (axis cs:1.15,-0.08) {gain or loss from\\ the purchase price};
+  \node[anchor=south east, font=\small] at (axis cs:-0.03,1.15) {felt value};
+  \node[anchor=south west, font=\small, align=left] at (axis cs:0.1,0.8) {gains: concave,\\ lock them in};
+  \node[anchor=west, font=\small, align=left] at (axis cs:0.08,-1.55) {losses: convex and steeper,\\ gamble on getting even};
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{Losses hurt more than gains please, and both fade at the margin. The prospect theory value function of Tversky and Kahneman (1992), $v(x) = x^{0.88}$ for gains and $v(x) = -2.25(-x)^{0.88}$ for losses. Measured from the purchase price, it makes an investor cautious after a gain and willing to gamble after a loss, which is the disposition effect.}
+\label{fig:hp-value}
+\end{figure}
 
-Novy-Marx and Velikov (2016) estimated turnover and costs for value-weighted versions of many anomalies. Their full-sample figures for the three strategies in this chapter (Table 3 of the working-paper version), with break-even costs computed from their gross returns using Equation~\eqref{eq:17-breakeven}:
+\subsection{Rational reasons for different holding periods}
+
+Not every difference in holding periods is a bias. Four rational forces also set how long investors hold.
+
+\begin{itemize}
+  \item \textbf{Trading costs.} Amihud and Mendelson (1986) showed that investors who expect to hold longer can spread the cost of a wide bid--ask spread over more years, so long-horizon investors end up owning the least liquid stocks. Atkins and Dyl (1997) confirmed that stocks with wider spreads are held longer. Chapter~\ref{ch:14} measures these costs.
+  \item \textbf{Taxes.} In most countries capital gains are taxed only when realized. Constantinides (1983) showed that a taxable investor should therefore realize losses promptly, to collect the tax saving, and defer gains, which is the opposite of the disposition effect.
+  \item \textbf{Liquidity needs.} Many investors sell because they need the money, for a house, a tuition bill or retirement, not because of the price. Blanchet-Scalliet, El Karoui, Jeanblanc and Martellini (2008) showed that when the date of such a need is uncertain and related to market returns, the optimal portfolio changes.
+  \item \textbf{Beliefs.} An investor who believes that today's losers will rebound and today's winners will fade would sell winners and keep losers on purpose. The disposition effect is costly only if that belief is wrong.
+\end{itemize}
+
+
+\section{How it works}
+\label{sec:hp-how}
+
+\textbf{Measuring the disposition effect.} Odean (1998) compared, on each day an investor sold anything, the gains the investor realized with the gains the investor could have realized. A position is a \term{paper gain}\index{paper gain and loss} if it is above its purchase price and was not sold that day, and a \term{realized gain} if it was sold. The \term{proportion of gains realized}\index{proportion of gains realized (PGR)|textbf} and the \term{proportion of losses realized}\index{proportion of losses realized (PLR)|textbf} are
+\begin{equation}
+  \text{PGR} = \frac{\text{realized gains}}{\text{realized gains} + \text{paper gains}} , \qquad
+  \text{PLR} = \frac{\text{realized losses}}{\text{realized losses} + \text{paper losses}} .
+  \label{eq:hp-pgr}
+\end{equation}
+An investor with no preference between selling winners and losers has PGR close to PLR. The disposition effect is PGR $>$ PLR.
+
+\textbf{From behavior to returns.} A selling rule can separate an investor's return from the stock's return through three channels.
+
+\begin{enumerate}
+  \item \textbf{The shape of outcomes.} Even when prices are a fair game, the rule changes the distribution of what investors experience: the win rate, the size of the typical loss and the number of positions still held below cost. The expected value does not change (Equation~\eqref{eq:hp-ost}).
+  \item \textbf{Predictable returns.} If returns are \emph{not} a fair game, the rule decides which returns the investor collects. With momentum\index{momentum} (Chapter~\ref{ch:04}), past winners tend to keep rising and past losers tend to keep falling, so an investor who sells winners and keeps losers holds the wrong stocks. Grinblatt and Han (2005) went further and argued that the disposition effect helps \emph{create} momentum: investors who sell winners too early slow the rise of good-news stocks, and investors who hold losers slow the fall of bad-news stocks, so prices underreact\index{underreaction} and then drift (Section~\ref{sec:05-behavior}). Frazzini (2006) found that prices underreact to news most when the stock's holders have large unrealized gains or losses.
+  \item \textbf{Taxes and costs.} Every sale pays a trading cost, and every realized gain pays tax. Two investors with identical pre-tax returns can end with very different wealth.
+\end{enumerate}
+
+\textbf{Comparing returns over different holding periods.} The usual way to compare returns of different lengths is to annualize each one, $(1 + R_{0,\tau})^{12/\tau} - 1$. Applied position by position, this rewards quick wins absurdly: a 20\% gain in two months annualizes to almost 200\%. A fairer measure divides the total log return of all positions by the total time they were held,
+\begin{equation}
+  g = \frac{\sum_j \ln(1 + R_j)}{\sum_j \tau_j / 12} ,
+  \label{eq:hp-peryear}
+\end{equation}
+which is the growth rate of money while it is invested under the rule. By Wald's identity, $g$ is the same for every selling rule when returns are unpredictable (Equation~\eqref{eq:hp-wald}). A difference in $g$ on real data is therefore evidence that the rule interacts with some predictable feature of returns.
+
+\textbf{Time-weighted and dollar-weighted returns.} A fund's published return is \term{time-weighted}\index{return!time-weighted|textbf}: it compounds the return of each period regardless of how much money was invested in it. An investor's own return is \term{dollar-weighted}\index{return!dollar-weighted|textbf}: it is the internal rate of return of the investor's cash flows, so periods with more money invested count more. If investors add money after good years and withdraw after bad ones, and returns then reverse, their dollar-weighted return falls below the time-weighted return. Dichev (2007) applied this idea to whole markets, treating share issues as money flowing in and buybacks and dividends as money flowing out.
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.9}{%
+\begin{tikzpicture}[x=0.45cm, y=8cm]
+  % reference lines
+  \draw[gray!60, dashed] (0,1.2) -- (22,1.2) node[right, font=\small, text=black] {+20\%: target};
+  \draw[gray!80] (0,1.0) -- (22,1.0) node[right, font=\small, text=black] {purchase price};
+  \draw[gray!60, dashed] (0,0.8) -- (22,0.8) node[right, font=\small, text=black] {$-$20\%: stop};
+  % price path
+  \draw[fenavy, thick] (0,1.0) -- (1,1.04) -- (2,0.97) -- (3,0.93) -- (4,0.88) -- (5,0.84) -- (6,0.79)
+    -- (7,0.82) -- (8,0.76) -- (9,0.80) -- (10,0.86) -- (11,0.91) -- (12,0.95) -- (13,1.01)
+    -- (14,1.06) -- (15,1.12) -- (16,1.10) -- (17,1.17) -- (18,1.22) -- (19,1.28) -- (20,1.33);
+  % exits
+  \fill[feorange] (6,0.79) circle (3pt);
+  \node[below, font=\footnotesize, align=center] at (6,0.77) {stop-loss and\\ bracket sell};
+  \fill[feorange] (13,1.01) circle (3pt);
+  \node[below right, font=\footnotesize] at (13,0.99) {get even sells};
+  \fill[feorange] (18,1.22) circle (3pt);
+  \node[above left, font=\footnotesize] at (18,1.23) {profit target sells};
+  % axis
+  \draw[-stealth] (0,0.66) -- (22,0.66) node[right, font=\small] {months};
+\end{tikzpicture}%
+}
+\caption{One price path, three holding periods. The same stock falls 20\% and then recovers to a 33\% gain. The stop-loss and the bracket sell at the bottom in month 6, the get-even rule sells at cost in month 13, and the profit target sells at $+$22\% in month 18. Each investor's holding-period return comes from the same monthly returns; the selling rule decides which of them each investor collects.}
+\label{fig:hp-path}
+\end{figure}
+
+
+\section{The claim}
+\label{sec:hp-claim}
+
+Stated so that it can fail:
+
+\begin{callout}
+\textbf{An investor who holds a stock earns, on average and per year invested, the return that fixed-period studies report for that stock, whatever rule the investor uses to decide when to sell, and after the taxes and costs that the rule itself causes.}
+\end{callout}
+
+The claim has a strong theoretical defense, the optional stopping theorem, and so the tests ask where that defense ends:
+
+\begin{itemize}
+  \item \textbf{Fair games.} When prices are unpredictable, do all selling rules earn the same expected return, and do they produce the same experience?
+  \item \textbf{Behavior.} Do real investors follow price-dependent selling rules, and which ones?
+  \item \textbf{Predictable returns.} Do the stocks investors sell go on to earn more or less than the stocks they keep?
+  \item \textbf{Taxes and costs.} Does the timing of sales change what investors keep?
+  \item \textbf{Money flows.} Does the timing of money into and out of the market make investors' dollar-weighted returns fall short of the market's?
+\end{itemize}
+
+
+\section{The original evidence}
+\label{sec:hp-evidence}
+
+\textbf{The disposition effect.} Shefrin and Statman (1985) named the effect and found supporting patterns in aggregate data on mutual fund redemptions and in earlier studies of individual trading accounts. \textbf{Odean (1998)}\index{Odean (1998)|textbf} provided the decisive test. Using 10,000 accounts at a discount broker from 1987 to 1993, he found that outside December investors realized 14.8\% of their available gains but only 9.8\% of their available losses, so a stock that was up was about one and a half times as likely to be sold as a stock that was down. In December, when selling losers saves taxes before the year ends, the pattern weakened. The effect was not explained by rebalancing, by the higher trading costs of low-priced stocks, or by a correct belief that losers would rebound: the winners investors sold beat the losers they kept by about 3.4 percentage points over the following year. Grinblatt and Keloharju (2001) found the same reluctance to realize losses among all investors in Finland, using a national register of trades.
+
+\textbf{Why investors do it.} The explanation turned out to be harder than the fact. Barberis and Xiong (2009) showed that standard prospect theory, applied to annual gains and losses, often predicts the \emph{opposite} of the disposition effect, because the investor who expects to be ahead takes more risk. Kyle, Ou-Yang and Xiong (2006) and Henderson (2012) solved the selling decision as an optimal stopping problem with prospect-theory preferences and found that a disposition effect does emerge once the investor's decision to sell is modeled directly. Kaustia (2010) found that the chance of selling jumps when a stock crosses its purchase price but changes little with the size of the gain or loss, which fits a reference point but not the curvature of the value function. Ben-David and Hirshleifer (2012) found that the chance of selling rises with \emph{both} larger gains and larger losses, a V-shape around the purchase price, and argued that investors sell when their beliefs about a stock change, not because they enjoy realizing gains.
+
+\textbf{Effects on prices.} Grinblatt and Han (2005) built a measure of each stock's unrealized capital gain across all its holders and found that it predicted returns and absorbed much of the momentum effect. Frazzini (2006) found that the drift after earnings announcements was strongest when the news pushed a stock away from its holders' purchase prices.
+
+\textbf{Money flows.} Dichev (2007) found that the dollar-weighted return of NYSE and AMEX stocks from 1926 to 2002 was 1.3 percentage points a year below the buy-and-hold return, that the gap for Nasdaq from 1973 to 2002 was 5.3 points, and that it was about 1.5 points across major international markets. The finding was quickly challenged. Keswani and Stolin (2008) found that the NYSE and AMEX gap was concentrated in the early part of Dichev's sample and that his international results depended on changes in database coverage. Hayley (2014) showed that a dollar-weighted return can fall below the time-weighted return simply because money follows \emph{past} returns, even if investors' timing does not hurt their expected wealth at all, and that this hindsight effect explains most of the gap for mainstream U.S. stocks.
+
+\textbf{Patient investors.} The longest holding periods belong to some professional managers. Cremers and Pareek (2016) found that fund managers who both deviate from their benchmark and trade infrequently outperformed, while frequent traders did not. Lan, Moneta and Wermers (2024) measured each mutual fund's holding horizon from its portfolio history and found that funds with long horizons earned positive long-term alphas.
+
+
+\section{Lab~\thechapter: Replicating Odean (1998) and testing the optional stopping theorem}
+\label{sec:hp-lab}
+
+\textbf{Claim on trial:} investors earn the returns their stocks earn, whatever rule they use to decide when to sell. The lab applies six selling rules, a fixed 12-month hold, a 120-month hold, a $+$20\% profit target, a $-$20\% stop-loss, a bracket and the get-even rule, to the same prices. Parts A, B and E use simulated prices with known properties; Parts C and D use the 49 value-weighted industry portfolios of the Kenneth R. French Data Library\index{Kenneth French data library}, monthly from July 1926. The code is in the repository folder \texttt{ch13-holding-periods/}.
+
+\textbf{Part A: optional stopping.} The six rules are applied to 50,000 simulated price paths with zero expected return and 30\% volatility, roughly the volatility of a single stock. Every rule's mean holding-period return is within two standard errors of zero, as Equation~\eqref{eq:hp-ost} requires. The experiences, however, could hardly differ more (Lab Figure~\ref{ch:13}.1). The profit target wins 71\% of the time, but its average loss is 63\%, and 29\% of its positions are still below cost when the ten-year cap forces a sale. The get-even rule wins 79\% of the time, with an average loss of 67\%. The stop-loss wins only 12\% of the time, but its average win is 165\%.
+
+\textbf{Part B: comparing returns over random horizons.} With an expected return of 8\% a year, annualizing each sale on its own makes the profit target look like a 77\% a year strategy and the stop-loss like a $-$16\% one. Measured by Equation~\eqref{eq:hp-peryear}, all six rules earn between 3.4\% and 3.5\% a year in log terms, the value $\mu - \sigma^2/2$ that Wald's identity predicts (Lab Figure~\ref{ch:13}.2).
+
+\textbf{Part C: real prices.} A position is bought every month in every industry, tens of thousands of positions in all, and each rule is applied with a five-year cap. The lab compares each rule's log return per year invested with the industries' own average, with a block bootstrap over entry months for the standard errors (Lab Figure~\ref{ch:13}.3). On unpredictable prices the gaps would be zero; a gap on real prices points to momentum or reversal in industry returns.
+
+\textbf{Part D: the disposition test.} For an investor who sells at $+$20\% and never sells below cost before the cap, the lab compares the next 12-month return of the winners sold with that of the losers held, month by month, with Newey--West standard errors for the overlapping horizons (Lab Figure~\ref{ch:13}.4). Industry portfolios are far less volatile than single stocks and capture only industry momentum (Moskowitz and Grinblatt 1999), so the gap should be smaller than Odean's.
+
+\textbf{Part E: taxes and costs.} Twenty thousand simulated investors follow four rules for 30 years, with a 20\% tax on realized gains, a credit for realized losses and a one-way cost of 10 basis points. Before tax, the rules end with nearly the same expected wealth, growing at 8.0\% to 8.2\% a year. After tax, selling losers to harvest the tax credit grows at 7.7\% a year and buying and holding at 7.5\%, while selling every year falls to 6.5\% and the disposition investor, who sells winners at $+$20\%, to 6.1\% (Lab Figure~\ref{ch:13}.5). Over 30 years, the disposition investor ends with about a third less expected wealth than the investor who harvests losses.
+
+\label{sec:hp-stress}
+\textbf{Robustness checks.} The thresholds, the cap and the sample are parameters, and Part C tests six rules at once, so a single significant gap should be read with the multiple-testing\index{multiple testing} caution of Chapter~\ref{ch:16}. The lab lets you change the thresholds, shorten the cap, start the sample in 1963, and turn taxes and costs off to see which part of each result they drive. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:hp-verdict}.
+
+
+\section{Where the evidence stands}
+\label{sec:hp-verdict}
+
+The published studies point to a clear pattern: \textbf{a selling rule cannot change the expected return of a fair game, but real investors' rules change the experience, collect the wrong returns when returns are predictable, and pay taxes earlier than they need to, so investors who sell winners and keep losers earn less than their stocks.} The table summarizes the evidence as of November 2026.
 
 \begingroup
 \small
 \setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
-\begin{longtable}{@{}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.13\linewidth-0.13\linewidth-0.13\linewidth-0.13\linewidth-0.12\linewidth-10\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.12\linewidth}@{}}
-\toprule
-Strategy & One-sided monthly turnover & Gross return (\% per month) & Estimated cost (\% per month) & Net return (\% per month) & Break-even one-way cost \\
-\midrule
-\endfirsthead
-\multicolumn{6}{@{}l}{\emph{(continued)}} \\
-\toprule
-Strategy & One-sided monthly turnover & Gross return (\% per month) & Estimated cost (\% per month) & Net return (\% per month) & Break-even one-way cost \\
-\midrule
-\endhead
-\midrule
-\multicolumn{6}{r@{}}{\emph{(continued on the next page)}} \\
-\endfoot
-\bottomrule
-\endlastfoot
-Value (book-to-market) & 2.9\% & 0.47 & 0.05 & 0.42 & about 4\% \\*
-Momentum & 34.5\% & 1.33 & 0.65 & 0.68 & about 1\% \\*
-Short-term reversal & 90.9\% & 0.37 & 1.65 & $-1.28$ & about 0.1\% \\*
-\end{longtable}
-\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
-\endgroup
-
-The three strategies differ sharply in how much cost they can bear (Figure~\ref{fig:17-breakeven}). Value could pay several percent per trade and still make a profit. Momentum survives costs of up to about one percent per trade. A careful institution can trade that cheaply, but a careless one may not. Short-term reversal is profitable on paper, but it would need to trade for about ten basis points per trade. That is less than most investors pay for the small, recently volatile stocks it buys and sells. Its paper profit is real, but tiny compared with the trading it needs.
-
-\providecolor{fenavy}{HTML}{1B2A6B}
-
-\begin{figure}[htbp]
-  \centering
-  \scalebox{0.9}{%
-\begin{tikzpicture}[
-    % Gross return (% a month) and monthly one-way turnover, from the table.
-    % Net return = gross - 4 * turnover * cost; break-even = gross / (4 * turnover).
-    declare function={
-      valG = 0.47;  valT = 0.029;
-      momG = 1.33;  momT = 0.346;
-      revG = 0.38;  revT = 0.95;
-    }]
-  \begin{axis}[
-    width=0.61\linewidth, height=0.38\linewidth,
-    axis lines=left,
-    axis line style={-stealth, thin},
-    xmin=0, xmax=1.3, ymin=-1.6, ymax=1.45,
-    xtick={0,0.2,0.4,0.6,0.8,1,1.2},
-    ytick={-1,0,1},
-    xticklabel style={/pgf/number format/fixed},
-    xlabel={One-way trading cost (\%)},
-    ylabel={Net return (\% a month)},
-    clip=false,
-  ]
-    \addplot[gray!60, thin, domain=0:1.3, samples=2] {0};
-
-    % Value
-    \addplot[fenavy, very thick, domain=0:1.3, samples=2] {valG - 4*valT*x};
-    % Momentum
-    \addplot[thick, dashed, domain=0:1.3, samples=2] {momG - 4*momT*x};
-    % Short-term reversal (stops at the bottom of the chart)
-    \addplot[very thick, densely dotted, domain=0:0.52, samples=2] {revG - 4*revT*x};
-
-    % Break-even points
-    \fill (axis cs:{momG/(4*momT)},0) circle (2.2pt);
-    \fill (axis cs:{revG/(4*revT)},0) circle (2.2pt);
-    \node[anchor=north east, font=\small] at (axis cs:{momG/(4*momT)-0.02},-0.03)
-      {break-even $\approx 1\%$};
-    \node[anchor=south west, font=\small] at (axis cs:{revG/(4*revT)+0.03},0.03)
-      {$\approx 0.1\%$};
-
-    % Line labels
-    \node[fenavy, anchor=west, font=\small] at (axis cs:1.31,{valG-4*valT*1.3+0.05}) {value};
-    \node[anchor=west, font=\small] at (axis cs:1.31,{momG-4*momT*1.3}) {momentum};
-    \node[anchor=west, font=\small] at (axis cs:0.48,-1.05) {short-term reversal};
-  \end{axis}
-  \end{tikzpicture}%
-}
-  \caption{The more a strategy trades, the faster its profit disappears as costs rise. Net return against one-way trading cost, from the turnover and gross
-    returns in the table. Each line falls at a rate of four times the strategy's
-    turnover; it crosses zero at the break-even cost. Value's line is nearly
-    flat and crosses zero off the chart, at about 4\%.}
-  \label{fig:17-breakeven}
-\end{figure}
-
-%\begin{figure}[htbp]
-%\centering
-%\includegraphics[width=0.85\linewidth]{images/fig06-2-break-even.png}
-%\caption{Net return against one-way trading cost, from the turnover and gross returns in the table. Each line falls at a rate of four times the strategy's turnover; it crosses zero at the break-even cost. Value's line is nearly flat and crosses zero off the chart, at about 4\%.}
-%\label{fig:17-breakeven}
-%\end{figure}
-
-A gross ranking by Sharpe ratio\index{Sharpe ratio} or t-statistic\index{t-statistic} therefore says little about which strategy an investor should prefer. The net ranking depends on turnover as much as on the gross premium.
-
-
-\section{Market impact and capacity}
-\label{sec:17-capacity}
-
-Spreads are roughly a fixed cost per dollar traded. \term{Market impact} is not: the more a strategy trades relative to the market's volume, the more each dollar costs. This is what gives every strategy a \term{capacity}\index{capacity|textbf}, a size beyond which its net returns shrink toward zero.
-
-\textbf{Why prices move.} Kyle (1985) described market makers who cannot tell orders from well-informed traders apart from other orders, so they move their prices in the direction of every order. Large orders are more likely to carry information and harder to absorb, so they move prices more. Studies of real institutional trades find that the price impact grows roughly with the square root of an order's size relative to the day's trading volume (Almgren, Thum, Hauptmann and Li 2005; T\'oth et al.\ 2011). A common working model is
-\begin{equation}
-  \text{impact per dollar} \approx Y\,\sigma_{daily}\,\sqrt{\frac{Q}{V}}
-  \label{eq:17-impact}
-\end{equation}
-Here $Q$ is the order size, $V$ is daily volume, $\sigma_{daily}$ is daily volatility and $Y$ is a constant close to one. The ratio $Q/V$ is the \term{participation rate}\index{participation rate|textbf}, the order's share of the day's trading. Trading 1\% of a day's volume in a stock with 2\% daily volatility costs about $2\% \times \sqrt{0.01} = 0.2\%$ in impact. Trading 10\% costs about $2\% \times \sqrt{0.10} \approx 0.6\%$ (Figure~\ref{fig:17-impact}).
-
-\providecolor{fenavy}{HTML}{1B2A6B}
-
-\begin{figure}[htbp]
-  \centering
-  \scalebox{0.9}{%
-\begin{tikzpicture}[
-    % Impact (%) = Y * sigma * sqrt(Q/V), with Y = 1 and sigma = 2%.
-    % x is Q/V in percent, so impact = 2 * sqrt(x/100) = 0.2 * sqrt(x).
-    declare function={impact(\x) = 0.2*sqrt(\x);}
-  ]
-  \begin{axis}[
-    width=0.55\linewidth, height=0.35\linewidth,
-    axis lines=left,
-    axis line style={-stealth, thin},
-    xmin=0, xmax=20.5, ymin=0, ymax=1,
-    xtick={0,5,...,20},
-    ytick={0,0.2,0.4,0.6,0.8,1},
-    yticklabel style={/pgf/number format/fixed},
-    tick label style={font=\small},
-    xlabel={Order size as a share of daily volume, $Q/V$ (\%)},
-    ylabel={Impact per dollar (\%)},
-    samples=200, domain=0:20,
-    clip=false,
-  ]
-    % If impact were linear (for comparison)
-    \addplot[gray!70, densely dashed, thin, samples=2] {0.0215*x};
-    \node[gray!40!black, font=\small, anchor=west] at (axis cs:20.2,0.36)
-      {if impact were linear};
-
-    % Square-root impact
-    \addplot[fenavy, very thick] {impact(x)};
-    \node[fenavy, font=\small, anchor=west] at (axis cs:20.2,{impact(20)})
-      {square root};
-
-    % Marked points
-    \fill[fenavy] (axis cs:1,0.2) circle (2.2pt);
-    \draw[gray!50] (axis cs:1.2,0.21) -- (axis cs:4.6,0.34);
-    \node[font=\small, anchor=west] at (axis cs:4.6,0.34) {1\% of volume: 0.2\%};
-
-    \fill[fenavy] (axis cs:10,0.632) circle (2.2pt);
-    \node[font=\small, anchor=north west] at (axis cs:10.5,0.62)
-      {10\% of volume: 0.6\%};
-  \end{axis}
-  \end{tikzpicture}%
-}
-  \caption{Bigger orders cost more per dollar, though less than in proportion to their size. Square-root market impact for a stock with 2\% daily volatility,
-    from Equation~\eqref{eq:17-impact} with $Y = 1$. Ten times the order size
-    costs about three times as much per dollar, not ten times; but total
-    impact cost, per dollar times dollars, still rises faster than the order.}
-  \label{fig:17-impact}
-\end{figure}
-
-%\begin{figure}[htbp]
-%\centering
-%\includegraphics[width=0.85\linewidth]{images/fig06-3-impact.png}
-%\caption{Square-root market impact for a stock with 2\% daily volatility, from Equation~\eqref{eq:17-impact} with $Y = 1$. Ten times the order size costs about three times as much per dollar, not ten times; but total impact cost, per dollar times dollars, still rises faster than the order.}
-%\label{fig:17-impact}
-%\end{figure}
-
-\textbf{From impact to capacity.} A strategy that manages assets $A$ with turnover $T$ trades about $2TA$ on each side every month, spread across its holdings. As $A$ grows, the participation rate $Q/V$ rises. Impact per dollar rises with its square root, so total impact cost rises faster than the assets. Net return therefore falls as the fund grows, slowly at first and then quickly. Capacity can be defined as the size at which the net return is halved, or the size at which it reaches zero. An investor would want to stop well before either point.
-
-Three features\index{features and targets} of a strategy set its capacity:
-
-\begin{enumerate}
-  \item \textbf{Turnover.}\index{turnover|textbf} Every dollar not traded is a dollar that does not move prices.
-  \item \textbf{Liquidity of its holdings.} Strategies that concentrate in small stocks hit their limits first.
-  \item \textbf{Gross premium.} A larger premium can absorb more cost before it is gone.
-\end{enumerate}
-
-Capacity also has an industry-wide side. If many managers follow similar signals, their combined trades set the price impact. A strategy's capacity is then shared among everyone who trades it. Berk and Green (2004) argued that in a competitive market, money flows to skilled managers until their returns after costs are no better than the alternatives.
-
-The capacity estimates in this chapter's lab rest on stated assumptions about volume, spreads and the impact constant. They are an illustration of how capacity arises and what it depends on, not a forecast for any real fund.
-
-\section{Designing for costs}
-\label{sec:17-design}
-
-A paper portfolio is built as if trading were free, so it trades whenever the signal moves, however slightly. A portfolio designed for costs trades only when the expected gain exceeds the cost. Several simple rules capture most of the benefit.
-
-\begin{itemize}
-  \item \textbf{Buy/hold spreads (banding).} Buy a stock only when it enters the top 30\% on the signal, but keep holding it until it falls out of, say, the top 50\%. Stocks that wobble around the breakpoint no longer generate trades. Novy-Marx and Velikov (2016) found this the single most effective simple way to reduce costs.
-  \item \textbf{Slower rebalancing\index{rebalancing}.} Rebuilding the portfolio quarterly rather than monthly cuts turnover for slow signals at little cost in signal. For fast signals it gives up most of the premium.
-  \item \textbf{Partial trading.} G\^arleanu and Pedersen (2013) showed that with predictable returns\index{return predictability} and \term{quadratic trading costs}\index{transaction costs!quadratic|textbf}, costs that rise with the square of the amount traded, the optimal policy trades only part of the way toward the target each period, and aims at a target that anticipates where the signal is heading.
-  \item \textbf{Netting and combining signals.} A multi-signal portfolio can cross trades internally: a stock that momentum wants to sell and value wants to buy need not be traded at all.
-  \item \textbf{Liquidity screens.}\index{liquidity|textbf} Restricting the universe to larger, more liquid stocks raises capacity and lowers costs, usually at some cost in gross premium, since many anomalies are strongest in small stocks.
-\end{itemize}
-
-Each rule trades a little signal for a lot less trading. The trade-off depends on how fast the signal decays: banding costs little for momentum, whose ranks change gradually, and cannot rescue short-term reversal, whose signal is gone within a month.
-
-\textbf{Saving costs is also a search.} Every design choice, such as the width of a band, how often to rebalance or which stocks to exclude, can be tuned to make a backtest look better, so the warnings about selection and \term{overfitting}\index{overfitting} in Section~\ref{sec:01-backtests} apply in full. Chen and Velikov (2023) studied 204 anomalies, allowing for effective spreads, the decline in returns after publication\index{anomaly!post-publication decay} and modern trading technology. They found that the average anomaly's expected return, net of these effects, was about 4 basis points a month. Strategies that looked impressive after costs in their own samples, once cost-saving rules were added, did not escape that conclusion. A cost-saving design should therefore be fixed in advance and judged out of sample, like any other part of a strategy.
-
-
-\begin{callout}
-\textbf{What Failed: buying last month's losers.} Jegadeesh (1990) and Lehmann (1990) showed that stocks with low returns over the past week or month tended to rebound, and stocks with high returns tended to fall back. On paper the pattern is strong and statistically robust, and the Fama--French\index{Fama--French factors} short-term reversal factor still has a positive average return. The trouble is trading. The strategy replaces almost its whole portfolio every month. It buys and sells stocks that have just moved sharply, often small and illiquid ones, where spreads are widest. Novy-Marx and Velikov (2016) estimated that its costs were larger than its gross return by more than a percentage point a month. Nagel (2012) argued that much of the reversal is a reward for supplying liquidity to impatient traders. That reward goes to market makers, who trade cheaply, not to investors who must pay the spread. For an ordinary investor, the claim that buying recent losers is profitable \textbf{fails} once costs are counted.
-\end{callout}
-
-\section{Lab~\thechapter: Replicating Novy-Marx and Velikov (2016)}
-\label{sec:17-lab}
-
-\textbf{Claim on trial:} a strategy that is profitable in a backtest is profitable to trade. The lab replicates Novy-Marx and Velikov (2016) and adds a capacity analysis in the spirit of Frazzini, Israel and Moskowitz (2018). It takes three long--short factors from the Kenneth R. French Data Library, value (HML), momentum (Mom) and short-term reversal (ST Rev), from July 1963, plus a simulated stock universe, and asks what each factor would have earned after costs. The code is in the repository folder \texttt{ch05-costs/}.
-
-\textbf{Part A: gross performance.} Average returns, t-statistics and Sharpe ratios as published. On paper, all three look like discoveries.
-
-\textbf{Part B: turnover.} The French library does not publish holdings, so turnover comes from Novy-Marx and Velikov's estimates and from a simulated universe of 1,000 stocks built like the Fama--French factors. Its turnover is about 2\% a month for value, 25\% for momentum and 76\% for reversal, close to the published estimates.
-
-\textbf{Part C: costs.} Net returns for one-way costs from 0 to 100 basis points plus a short-borrowing fee, the break-even costs, and the Sharpe-ratio ranking before and after a cost of 20 basis points (Lab Figures~\ref{ch:13}.1 and~\ref{ch:13}.2).
-
-\textbf{Part D: capacity.} The simulated universe is scaled to a \$50 trillion market with square-root impact, and each strategy's net return is traced as its assets grow from \$10 million to \$1 trillion.
-
-\textbf{Part E: mitigation, with known truth.} For momentum at a one-way cost of 50 basis points, holding stocks until they leave the top 50\% cuts turnover roughly in half, gives up about a fifth of the expected gross return, and raises the expected net return from about 0.30\% to 0.41\% a month. For reversal, no band width rescues the strategy at that cost: the signal decays too fast for patience to pay.
-
-The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:17-verdict}.
-
-\section{Where the evidence stands}
-\label{sec:17-verdict}
-
-The published studies point to a clear pattern: \textbf{whether a profitable backtest is profitable to trade depends on how much the strategy trades, what it trades and how much money is behind it: slow strategies in liquid stocks survive realistic costs, while fast strategies in small stocks often do not.} The table summarizes the evidence as of November 2026.
-
-{\small
-\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.45\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.19\linewidth-0.13\linewidth-0.23\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
 \toprule
 Situation & Holds? & Why & Evidence \\
 \midrule
@@ -512,31 +272,37 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Slow strategies, such as value & \textbf{Yes} & Turnover of about 3\% a month gives a break-even cost of about 4\% per trade. & Novy-Marx and Velikov (2016) \\*
+Expected return when prices are a fair game & \textbf{Yes} & No bounded selling rule can change the expected value of a martingale. & Optional stopping theorem; Wald's identity \\*
 \addlinespace[3pt]
-Momentum & \textbf{Partly} & Survives one-way costs up to about 1\%, but its profits concentrate in costly stocks and shrink with size. & Novy-Marx and Velikov (2016); Lesmond, Schill and Zhou (2004); Korajczyk and Sadka (2004) \\
+The investor's experience & \textbf{No} & Rules reshape win rates, tails and the losers still held, even when the expected return is unchanged. & Lab Part A \\
 \addlinespace[3pt]
-Short-term reversal & \textbf{No} & Nearly full monthly turnover; costs exceed its gross return by more than a point a month. & Novy-Marx and Velikov (2016) \\
+Individual investors who sell winners and keep losers & \textbf{No} & The winners sold beat the losers kept by about 3.4 points over the next year. & Odean (1998); Grinblatt and Keloharju (2001) \\
 \addlinespace[3pt]
-High-turnover strategies in general & \textbf{No} & Most strategies trading over half their portfolio monthly lose significance after costs. & Novy-Marx and Velikov (2016) \\
+After taxes & \textbf{No} & Selling winners realizes taxable gains early; selling losers first is the tax-efficient order. & Constantinides (1983); Odean (1998) \\
 \addlinespace[3pt]
-For a large, patient institution & \textbf{More often} & Actual costs were an order of magnitude below academic estimates, but from one manager's trades. & Frazzini, Israel and Moskowitz (2018) \\
+Whole markets, through the timing of money flows & \textbf{Disputed} & Dollar-weighted returns fall short of buy-and-hold, but much of the gap is a hindsight effect, not lost wealth. & Dichev (2007); Keswani and Stolin (2008); Hayley (2014) \\*
 \addlinespace[3pt]
-Strategies that rely on the short side & \textbf{Often not} & Many anomalies earn most on the short side, where fees, recalls and bans bite. & D'Avolio (2002); Stambaugh, Yu and Yuan (2012) \\*
-\addlinespace[3pt]
-The average anomaly & \textbf{No} & After costs and post-publication decay, its expected return is about 4 basis points a month. & Chen and Velikov (2023) \\
+Patient professional investors & \textbf{Yes, or better} & Funds that hold for long horizons earned positive long-term alphas. & Cremers and Pareek (2016); Lan, Moneta and Wermers (2024) \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
-}
+\endgroup
 
-The claim holds only for strategies whose break-even costs sit well above what their investors actually pay, at the size they intend to run.
+On the book's verdict scale, the claim \textbf{weakens}. It holds for the stock and for investors whose selling decisions do not depend on their purchase price, but not for the many investors whose decisions do.
 
-\textbf{What would change the picture.} The claim would gain support if many managers' trading records confirmed costs as low as those of Frazzini, Israel and Moskowitz (2018), and lose it if cost-saving designs fixed in advance failed out of sample.
+\textbf{What would change the picture.} The claim would regain ground if new account-level data, such as the records of commission-free trading apps, showed that the winners investors sell no longer beat the losers they keep once momentum is accounted for. It would weaken further if the dollar-weighted gap survived Hayley's (2014) correction in markets other than the United States.
+
+\label{sec:hp-open}
+\textbf{Open questions.} Is the disposition effect a preference, as realization utility says, or a belief, as Ben-David and Hirshleifer (2012) argue? And does it still drive momentum now that more stock is held by funds and algorithms that have no purchase price to anchor on?
+
 
 \section{What practitioners and investors can use}
-\label{sec:17-investors}
+\label{sec:hp-investors}
 
-Before investing in any strategy, ask for its one-sided monthly turnover, its break-even cost compared with what you will pay, what the short side costs, and its net return at the planned size, with the impact assumptions stated. Ask also whether cost-saving rules such as bands and rebalancing schedules were fixed before the backtest, because they are parameters too. Costs change the ranking of strategies, not just their level: a modest, slow premium harvested cheaply may be worth more than a spectacular, fast one that cannot be. Chapters~\ref{ch:14} and~\ref{ch:15} test more anomalies, and report their evidence after costs as well as before.
+Write the selling rule down before buying, and make it depend on what you expect the stock to do next, not on what you paid for it. A useful test for any position is to ask whether you would buy it today at today's price; if not, the purchase price is not a reason to keep it. In a taxable account, the tax code rewards the opposite of the natural instinct: realize losses, which earn a tax saving, and let gains run, which defers the tax. When comparing your own results with a fund's, or one trading system with another, compare returns per year invested, as in Equation~\eqref{eq:hp-peryear}, never the average of annualized short trades, and ask for the win rate together with the average loss. A strategy that wins nine times out of ten may be selling insurance against the tenth.
+
+\begin{callout}
+\textbf{What Failed: waiting to get back to even.} The most natural selling rule for a losing position is to wait until the price returns to what was paid. Odean's (1998) investors followed something close to it, and the losers they kept went on to underperform the winners they sold by about 3.4 percentage points over the following year, before counting the tax savings they gave up by not realizing the losses. The rule failed because the purchase price carries no information about the stock's future: the market does not know or care what any one investor paid. The claim that holding a loser until it recovers costs nothing \textbf{fails}.
+\end{callout}
 
 % Key terms that this chapter uses without defining them, for readers new to finance.
 \providecolor{FEMaroon}{RGB}{128,30,45}
@@ -554,7 +320,9 @@ Before investing in any strategy, ask for its one-sided monthly turnover, its br
 \begin{keyterms}
 \small
 \begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
-  \item[Kenneth R. French Data Library.] The Kenneth R. French Data Library is a free website that publishes the returns of standard factors and portfolios, such as value, size and momentum.
-  \item[Overfitting.] See Chapter~\ref{ch:19}, Section~\ref{sec:20-biasvar}, page~\pageref{sec:20-biasvar}.
+  \item[Momentum.] See Chapter~\ref{ch:04}, Section~\ref{sec:05-foundations}, page~\pageref{sec:05-foundations}.
+  \item[Bid--ask spread and turnover.] See Chapter~\ref{ch:14}, Section~\ref{sec:17-foundations}, page~\pageref{sec:17-foundations}.
+  \item[Newey--West standard errors.] Newey--West standard errors adjust a test for returns that overlap in time.
+  \item[Risk-neutral measure.] The risk-neutral measure uses adjusted probabilities under which every asset is expected to earn the risk-free rate.
 \end{description}
 \end{keyterms}

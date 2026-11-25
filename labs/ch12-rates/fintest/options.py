@@ -1,4 +1,4 @@
-"""Option pricing and option-strategy evaluation (Chapters 17 and 18).
+"""Option pricing and option-strategy evaluation (Chapters 18 and 18).
 
 * Black-Scholes-Merton prices, deltas and vegas for European calls and puts
 * Monthly put-writing and buy-write (covered call) returns built from an
@@ -221,7 +221,7 @@ def monthly_returns_from_levels(levels: pd.Series) -> pd.Series:
 
 
 # ---------------------------------------------------------------------------
-# Delta hedging (Chapter 17)
+# Delta hedging (Chapter 18)
 # ---------------------------------------------------------------------------
 
 

@@ -1,4 +1,4 @@
-% Chapter 19 -- Claim: Most Published Anomalies Fail to Replicate
+% Chapter 18 -- Claim: Low-Risk Stocks Beat High-Risk Stocks
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -23,307 +23,208 @@
 }{}
 \makeatother
 
-\chapter{Claim: Most Published Anomalies Fail to Replicate}
+\chapter{Claim: Low-Risk Stocks Beat High-Risk Stocks}
 \label{ch:15}
 \providecommand{\term}[1]{\emph{#1}}
 
-News stories regularly report a new study showing that some simple rule, such as buying cheap stocks or stocks with rising profits, has beaten the market. Other sciences, such as psychology and medicine, have discovered in recent years that many published findings could not be repeated when others tried. This chapter asks whether finance has the same problem, and how a reader can tell a lasting discovery from a lucky one.
+Common sense says that riskier investments must pay more on average, or no one would hold them. Yet investors who bought the dull, steady stocks of the market, such as utilities and grocery chains, have historically done about as well as those who bought the most exciting ones, with far smaller swings along the way. This chapter asks whether that pattern is real, why it might exist, and whether an investor can profit from it.
 
-By the 2010s academic finance had published hundreds of variables said to predict which stocks would earn more than others. Harvey, Liu and Zhu (2016) counted more than 300. They argued that, because so many had been tried, a new factor should clear a $t$-statistic of about 3 rather than 2. The worry was not new. Chapter~\ref{ch:01} showed how searching produces records that luck alone can explain. What was new was that the worry now applied to a whole literature. McLean and Pontiff (2016) took a different approach. Pure data mining predicts that returns vanish once the original sample ends, while mispricing predicts that they shrink after publication, as investors trade on them. They followed 97 predictors after their original samples ended and after they were published. Average returns were about 26\% lower after the sample ended, and 58\% lower after publication.
+The capital asset pricing model\index{capital asset pricing model (CAPM)} makes one central prediction: assets that move more with the market should earn more. If a stock's beta\index{beta} doubles, its expected excess return\index{return!excess} should double too. This was among the first predictions in finance to be tested, and Chapter~\ref{ch:03} showed that it failed early. Black, Jensen and Scholes (1972) and Fama and MacBeth (1973), who estimated the link between returns and beta month by month and averaged the results, found that average returns did rise with beta, but far less steeply than the theory implied. Black (1972) offered an explanation based on limits to borrowing. Some investors want more risk but cannot borrow freely. Instead of borrowing, they buy high-beta stocks, which pushes up their prices and lowers their later returns.
 
-Two large replication studies sharpened the debate. Hou, Xue and Zhang (2020) asked how many anomalies survive when tiny stocks count for little, and rebuilt 452 anomalies. They weighted stocks by market value and set group cut-offs using NYSE stocks only, two choices that limit the influence of the tiniest stocks, called micro-caps. About two thirds of the anomalies then failed even the conventional test. Jensen, Kelly and Pedersen (2023) asked whether a verdict that uses the evidence from all factors at once would be kinder, and rebuilt 153 factors in 93 countries. They used a Bayesian method that pulls each factor's estimate toward what similar factors suggest, and concluded that most factors do replicate. Because much of the disagreement lay in each study's code, Chen and Zimmermann (2022) published open code and data for more than 200 predictors, so that anyone could check. Respected researchers using largely the same data reached opposite conclusions, because they asked slightly different questions and applied different standards.
+For two decades the flat security market line was treated as a curiosity. It became a claim about profits when later research made the effect larger and easier to trade. Ang, Hodrick, Xing and Zhang (2006) tested the theory that only market risk is priced, and found that stocks with high \term{idiosyncratic volatility}\index{volatility}, the part of volatility not explained by the market, earned strikingly low returns. Asking why professionals did not trade such mispricing away, Baker, Bradley and Wurgler (2011) argued that fund managers judged against a benchmark have little reason to correct the mispricing. To show that the pattern reflects limits on borrowing everywhere, not a quirk of U.S. stocks, Frazzini and Pedersen (2014) built a leveraged ``betting-against-beta'' factor that earned high risk-adjusted returns in many countries and asset classes. The pattern is now called the \term{low-risk anomaly}\index{low-risk anomaly|textbf}. Novy-Marx and Velikov (2022) later argued that much of the betting-against-beta performance comes from the way the factor is built, not from low risk itself.
 
-At stake is the credibility of a whole field. If most anomalies are false, much of the factor-investing industry rests on noise. If most are real but fade after publication, investors are learning from research and trading the patterns away. The verdict depends less on the data than on the rules of evidence, so this chapter asks the reader to choose those rules and defend them. The claim on trial\index{claims-on-trial method} is: \textbf{most published cross-sectional return predictors do not replicate once micro-caps, multiple testing and publication are accounted for.}
+The question matters in practice. Low-volatility funds grew rapidly after 2010, and companies still use beta to set the return a new project must earn. The anomaly is also hard to exploit, because exploiting it needs leverage, which is exactly what the explanation says investors avoid. The claim on trial\index{claims-on-trial method} is: \textbf{low-beta and low-volatility stocks earn higher risk-adjusted returns than high-risk stocks, and a leveraged long--short portfolio captures the difference.}
 
-The lab in Section~\ref{sec:19-lab} uses the free Open Source Asset Pricing data of Chen and Zimmermann. It applies the standards of Hou, Xue and Zhang (2020) and of Jensen, Kelly and Pedersen (2023) to the same predictors, and it measures the decay found by McLean and Pontiff (2016). The goal is to see why careful researchers reached opposite conclusions, and which choices drive the difference.
+The lab in Section~\ref{sec:18-lab} repeats two classic tests on the free beta- and variance-sorted portfolios of the Kenneth R. French Data Library: the security market line of Black, Jensen and Scholes (1972) and the cross-sectional regressions of Fama and MacBeth (1973). It then rebuilds the betting-against-beta factor of Frazzini and Pedersen (2014) and compares it with AQR's free published series. The goal is to check whether low-risk stocks still earn more than the CAPM predicts once costs and construction choices are taken into account.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item explain market efficiency\index{efficient market hypothesis}, the joint-hypothesis problem\index{joint-hypothesis problem}, and the kinds of replication, from reproduction\index{reproduction} to pure, scientific and out-of-sample replication\index{replication!pure, scientific and out-of-sample};
-  \item explain how publication bias\index{publication bias} inflates published results, and how empirical Bayes\index{empirical Bayes} shrinkage\index{shrinkage} corrects noisy estimates;
-  \item set out the prosecution's and the defense's cases, and the design choices that lead them to opposite verdicts;
-  \item separate post-publication\index{anomaly!post-publication decay} decay caused by selection from decay caused by investors' learning, and defend your own verdict.
+  \item estimate a beta, split total risk\index{risk!total} into systematic and idiosyncratic parts, and compute a CAPM alpha\index{alpha};
+  \item draw the security market line\index{security market line}, and explain how limits on leverage\index{leverage} flatten it;
+  \item build a beta-neutral\index{market-neutral} betting-against-beta\index{betting against beta (BAB)} portfolio, and compare the explanations for the anomaly, such as leverage limits and lottery preferences\index{lottery preference};
+  \item judge whether a minimum-volatility or BAB fund can deliver what its backtest\index{backtest} promises.
 \end{itemize}
 
 
-\section{Foundations: market efficiency, anomalies and replication}
-\label{sec:19-foundations}
+\section{Foundations: beta, the CAPM and the security market line}
+\label{sec:18-foundations}
 
-\subsection{The efficient market hypothesis}
+\subsection{Beta, the CAPM and the security market line}
 
-Section~\ref{sec:01-efficient-markets} introduced the efficient market hypothesis and Fama's (1970) three forms, weak, semi-strong and strong. The debate in this chapter concerns the semi-strong form\index{efficient market hypothesis!semi-strong form}: whether publicly available characteristics of firms, such as their valuation ratios or past returns, predict returns beyond what risk justifies.
+Chapter~\ref{ch:03} introduced beta, the CAPM and the security market line (Section~\ref{sec:04-capm}). Beta is the slope of a regression of an asset's excess return on the market's excess return (Equation~\eqref{eq:04-capm}). The market itself has a beta of 1. The CAPM says that expected excess returns rise in a straight line with beta. Two consequences of the model matter for this chapter.
 
-\subsection{The joint-hypothesis problem}
+First, the security market line passes through the risk-free rate\index{risk-free rate} at $\beta = 0$ and through the market at $\beta = 1$, so its slope equals the market premium.
 
-Section~\ref{sec:01-efficient-markets} also introduced the joint-hypothesis problem. A strategy that beats a model such as the CAPM\index{capital asset pricing model (CAPM)} shows either that the market is inefficient or that the model is wrong, and the two cannot be separated (Fama 1970). For anomalies this has a direct consequence. One researcher can read the same evidence as mispricing\index{mispricing}, and another as a reward for a risk the model leaves out.
+Second, an asset's \term{total risk}\index{risk!total|textbf}, the variance\index{variance} of its return, splits into two parts. The systematic part is $\beta_i^2\,\mathrm{Var}(R_m)$. The idiosyncratic part is the variance of the regression residual\index{regression!residuals}. Only the systematic part earns a reward, because investors can diversify\index{diversification} the idiosyncratic part away at no cost. Two stocks with the same volatility can therefore have very different betas, and the CAPM says they should have very different expected returns\index{return!expected}.
 
-\subsection{Anomalies}
+\subsection{Alpha}
 
-An \textbf{anomaly}\index{anomaly|textbf} is a pattern in returns that a benchmark asset pricing model cannot explain. It is a characteristic, such as a valuation ratio or a past return, that predicts future returns after adjusting for the model's risk factors. Anomalies are usually found with \term{portfolio sorts}\index{portfolio sort} and long--short returns (Section~\ref{sec:05-foundations}). They are judged by the t-statistic\index{t-statistic} of the average return or of the alpha\index{alpha}.
+An asset's alpha, often called Jensen's alpha, is the intercept of the same regression: the average return beyond what beta explains (Section~\ref{sec:04-capm}). Under the CAPM every alpha is zero. A multifactor alpha adds other factors to the regression, such as size, value and momentum\index{momentum} (Chapter~\ref{ch:03}). The low-risk anomaly is a claim about how alpha varies with beta: low-beta stocks have had positive alphas and high-beta stocks negative ones.
 
-\subsection{Replication, reproduction and robustness}
+The CAPM assumes that investors can borrow and lend freely at the risk-free rate. An investor who wants more risk than the market can then borrow and buy more of the market. Many investors cannot do this. Mutual funds and pension plans face limits on \textbf{leverage}\index{leverage|textbf}, which means borrowing to hold more than their capital. Individuals face \textbf{margin} requirements and pay more than the risk-free rate to borrow. Black (1972) showed that without riskless borrowing the SML is still a straight line, but a flatter one. It starts at the return on a \term{zero-beta portfolio}\index{zero-beta portfolio|textbf}, a portfolio uncorrelated with the market, whose return lies above the risk-free rate.
 
-Terms are used loosely, but a useful distinction is:
+\textbf{Worked example.} The risk-free rate is 3\% and the market premium is 6\% (Figure~\ref{fig:18-sml}).
 
 \begin{itemize}
-  \item \term{Reproduction}\index{reproduction|textbf}: the same data and code give the same numbers. It checks for errors.
-  \item \textbf{Pure replication}\index{replication!pure, scientific and out-of-sample|textbf}: the same method on the same kind of data, perhaps rebuilt independently, gives the same result. It checks that the finding is not an artifact of one implementation.
-  \item \textbf{Scientific replication} or \term{robustness}\index{robustness|textbf}: different but reasonable choices of method, sample or market give a similar result. It checks that the finding is about the world, not about the choices.
-  \item \textbf{Out-of-sample replication}: the result holds in data not used to find it, such as later years or other countries.
+  \item Stock A has a beta of 0.6 and has averaged 9\%. The CAPM predicts $3\% + 0.6 \times 6\% = 6.6\%$, so A's alpha is $+2.4\%$.
+  \item Stock B has a beta of 1.5 and has averaged 10\%. The CAPM predicts $3\% + 1.5 \times 6\% = 12\%$, so B's alpha is $-2\%$.
+  \item An investor who can borrow at 3\% can lever A to a beta of 1. She holds $1/0.6 = 1.67$ dollars of A for each dollar of capital and borrows the remaining 0.67 dollars. Her expected return is $3\% + 1.67 \times (9\% - 3\%) = 13\%$, compared with 9\% for the market at the same beta. Even at a borrowing rate of 5\%, she earns $1.67 \times 9\% - 0.67 \times 5\% \approx 11.7\%$.
+  \item An investor who cannot borrow and wants a beta above 1 must buy B instead. If many investors are in that position, they bid up high-beta stocks such as B and push down their future returns. That is the core of the leverage-constraint explanation in Section~\ref{sec:18-explanations}.
 \end{itemize}
-
-The two sides of this chapter's debate differ largely in which of these they demand.
-
-\subsection{Publication bias}
-
-Journals are more likely to publish significant results. If only strong in-sample\index{in-sample versus out-of-sample} results are published, the published estimates are too high on average, even if every study was done honestly. The reason is that the published set has been selected for luck as well as for truth. Part E of this chapter's lab measures how large this effect can be.
-
-\subsection{Shrinkage}
-
-Suppose many noisy estimates are made at once. Each one can be improved by pulling it toward the average of all of them. Noisy estimates are pulled more, and precise ones less. A very high estimate is more likely to be partly luck than a moderate one, so pulling it back makes it more accurate on average. This idea comes from \term{empirical Bayes}\index{empirical Bayes|textbf} statistics (Efron and Morris 1975). It is called ``empirical'' because the data themselves supply the average toward which the estimates are pulled. It is the basis of the defense's method.
-
-\textbf{Worked example.} One hundred honest researchers each test a different trading signal, and none of the signals has any real predictive power. By chance, about five will find t-statistics beyond $\pm 1.96$, and those five publish (Figure~\ref{fig:19-pubbias}). Every published paper reports a significant result, yet none of the results is real. A reader who saw only the journals would find a literature with a 100\% success rate.
 
 \begin{figure}[htbp]
 \centering
 \scalebox{0.9}{%
-\begin{tikzpicture}[declare function={npdf(\x) = exp(-\x*\x/2)/sqrt(2*pi);}]
-\begin{axis}[
-  width=0.68\linewidth, height=0.34\linewidth,
-  axis lines=left, axis line style={-stealth},
-  xmin=-4, xmax=4.1, ymin=0, ymax=0.66,
-  xtick={-1.96,0,1.96}, xticklabels={$-1.96$,$0$,$1.96$},
-  ytick=\empty,
-  xlabel={t-statistic of a signal with no true power},
-  ylabel={Share of signals},
-  samples=200, domain=-4:4, clip=false,
+\begin{tikzpicture}[
+  % CAPM: r = 3 + 6 * beta. A = (0.6, 9), B = (1.5, 10); the line through A and B
+  declare function={capm(\b) = 3 + 6*\b;  flat(\b) = 9 + (\b - 0.6)/0.9;}
 ]
-  \addplot[name path=curve, draw=none] {npdf(x)};
-  \path[name path=base] (axis cs:-4,0) -- (axis cs:4,0);
-  \addplot[fenavy] fill between[of=curve and base, soft clip={domain=-4:-1.96}];
-  \addplot[fenavy] fill between[of=curve and base, soft clip={domain=1.96:4}];
-  \addplot[fegray, thick] {npdf(x)};
-
-  \node[align=center] at (axis cs:0,0.56) {about 95 signals: not significant,\\never published};
-  \node[fenavy, align=center, font=\footnotesize, anchor=south] (L) at (axis cs:-2.75,0.13) {about 2.5 signals:\\``significant,''\\published};
-  \node[fenavy, align=center, font=\footnotesize, anchor=south] (R) at (axis cs:2.75,0.13) {about 2.5 signals:\\``significant,''\\published};
-  \draw[-stealth, fenavy] (axis cs:-2.7,0.12) -- (axis cs:-2.3,0.03);
-  \draw[-stealth, fenavy] (axis cs:2.7,0.12) -- (axis cs:2.3,0.03);
+\begin{axis}[
+  width=0.6\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=0, xmax=2, ymin=0, ymax=15.5,
+  xtick={0,0.5,...,2}, ytick={0,5,10,15},
+  xticklabel style={/pgf/number format/fixed},
+  xlabel={Beta}, ylabel={Average return (\%)},
+  clip=false,
+]
+  \addplot[fegray, thick, dashed, domain=0:2, samples=2] {flat(x)};
+  \addplot[fenavy, very thick, domain=0:2, samples=2] {capm(x)};
+  \fill (axis cs:0.6,9)  circle (2.6pt);
+  \fill (axis cs:1,9)    circle (2.6pt);
+  \fill (axis cs:1.5,10) circle (2.6pt);
+  \node[anchor=south] at (axis cs:0.6,9.5) {A: $\alpha = +2.4\%$};
+  \node[anchor=north west] at (axis cs:0.98,8.4) {market};
+  \node[anchor=north west] at (axis cs:1.47,9.1) {B: $\alpha = -2\%$};
+  \node[anchor=north west] at (axis cs:0.02,2.7) {$r_f = 3\%$};
+  \node[fenavy, anchor=west] at (axis cs:2.02,15) {CAPM line};
+  \node[fegray, anchor=west, align=left] at (axis cs:2.02,{flat(2)})
+    {line through\\A and B};
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{If only significant results are published, the journals show only the lucky draws. Publication bias. One hundred signals with no true power produce t-statistics spread around zero. Only the few in the shaded tails, about 2.5 on each side, look significant and get published. The published record shows only the tails.}
-\label{fig:19-pubbias}
+\caption{Low-beta stocks have done better, and high-beta stocks worse, than the CAPM predicts. The security market line in the worked example. The CAPM line runs from the risk-free rate of 3\% through the market at a beta of 1. Stock A lies above it (positive alpha) and stock B below it (negative alpha), so the line through A and B is flatter than the CAPM predicts.}
+\label{fig:18-sml}
 \end{figure}
 
-\section{How it works: the factor zoo and how replications are designed}
-\label{sec:19-how}
+\section{How it works}
+\label{sec:18-how}
 
-\textbf{The zoo.} For decades, finance explained why some stocks earn more than others with a single factor, the market, as in the CAPM. Later it used a handful, such as size, value and momentum\index{momentum}. By 2011 the literature had produced so many candidate predictors that John Cochrane, in his presidential address to the American Finance Association, called it a ``zoo of new factors'' (Cochrane 2011). He argued that the field needed to sort out which factors were truly independent, which were redundant, and which were simply noise. Harvey, Liu and Zhu (2016) counted 316 factors published in leading journals, and the count has kept growing.
-
-The problem is statistical as much as economic. Thousands of researchers test thousands of variables on the same U.S. stock data, so some variables will look significant by luck alone. At the usual cut-off of a t-statistic near 2, about one useless variable in twenty passes, and journals mostly publish the ones that pass (Section~\ref{sec:19-foundations}). The published zoo is therefore a mixture of real effects and false discoveries, much as a stack of winning lottery tickets says little about whether anyone has a winning system. Many of its members are also the same idea measured in slightly different ways, such as several versions of the finding that cheap stocks beat expensive ones. Since Harvey, Liu and Zhu's count, two open data projects have made it possible to rebuild most of the zoo:
+There are three ways to sort stocks on risk, and the literature uses all three.
 
 \begin{itemize}
-  \item Chen and Zimmermann's \textbf{Open Source Asset Pricing}\index{Open Source Asset Pricing|textbf} (2022) replicates more than 200 cross-sectional predictors from the original papers' descriptions and publishes their portfolio returns and code.
-  \item Jensen, Kelly and Pedersen (2023) built a \term{global factor database} of 153 factors across 93 countries, with harmonized definitions, meaning each factor is built the same way in every country.
+  \item \textbf{Beta.}\index{beta|textbf} Estimate each stock's beta from past returns, typically 36 to 60 months of monthly data or a year of daily data. Sort into portfolios. This tests the CAPM directly.
+  \item \textbf{Total volatility.} Sort on the standard deviation\index{standard deviation} of past daily returns, often over one to three months. This needs no market model, and it is how most low-volatility funds work.
+  \item \textbf{Idiosyncratic volatility.}\index{idiosyncratic volatility|textbf} Sort on the volatility of residuals from a factor model\index{factor model}, usually the Fama--French\index{Fama--French factors} three-factor model. Under the CAPM this risk should not be priced at all, so a negative relation is especially puzzling.
 \end{itemize}
 
-No table can list hundreds of predictors, but none needs to, because most of them are variations on a few ideas. Hou, Xue and Zhang\index{q-factor model} (2020) sort their 452 anomalies into six categories. Table~\ref{tab:19-zoo} shows two or three well-known predictors from each. The sign shows whether stocks with a high value of the predictor earned higher (+) or lower ($-$) average returns in the original study. The Open Source Asset Pricing and JKP documentation give the full lists, with definitions and code for every predictor. Jensen, Kelly and Pedersen (2023) group their 153 factors into 13 similar themes.
+The three measures are strongly correlated. High-beta stocks tend to be volatile, and volatile stocks tend to have high idiosyncratic risk\index{risk!idiosyncratic}. Separating them is one of the open problems in this chapter.
 
-\begingroup
-\small
+A flat SML shows up in two ways. The first is in \emph{alphas}: low-risk portfolios have positive CAPM alphas, and high-risk portfolios negative ones. The second is in a \emph{long-short portfolio\index{long--short portfolio}}. The simple version buys low-risk stocks and sells high-risk stocks short. It has a strongly negative beta, so it loses money in rising markets even when the SML is flat. Its average return can be negative while its alpha is positive. \term{Betting against beta (BAB)}\index{betting against beta (BAB)|textbf} fixes this. It levers the low-beta leg up to a beta of 1 and scales the high-beta leg down to a beta of 1. The portfolio is then \term{beta-neutral}\index{market-neutral|textbf}, with no net exposure to the market (Figure~\ref{fig:18-bab}). The shaded box gives the formula.
 
-
-\renewcommand{\arraystretch}{1.15}
-\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
-\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.13\linewidth-0.17\linewidth-0.21\linewidth-0.05\linewidth-8\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.21\linewidth}>{\centering\arraybackslash}p{0.05\linewidth}@{}}
-\caption{A map of the factor zoo: representative predictors in the six categories of Hou, Xue and Zhang (2020).}
-\label{tab:19-zoo} \\
-\toprule
-Category & Predictor & What it measures & Original study & Sign \\
-\midrule
-\endfirsthead
-\multicolumn{5}{@{}l}{\emph{(continued)}} \\
-\toprule
-Category & Predictor & What it measures & Original study & Sign \\
-\midrule
-\endhead
-\midrule
-\multicolumn{5}{r@{}}{\emph{(continued on the next page)}} \\
-\endfoot
-\bottomrule
-\endlastfoot
-Momentum & Price momentum & Return over the past 12 months, skipping the most recent month & Jegadeesh and Titman (1993) & $+$ \\
- & Earnings surprise & Change in quarterly earnings from a year earlier, scaled by its volatility & Bernard and Thomas (1989) & $+$ \\
- & Short-term reversal & Return over the past month & Jegadeesh (1990) & $-$ \\
-\addlinespace
-Value versus growth & Book-to-market & Book value of equity divided by market value & Rosenberg, Reid and Lanstein (1985); Fama and French (1992) & $+$ \\
- & Earnings-to-price & Earnings divided by market value & Basu (1977) & $+$ \\
-\addlinespace
-Investment & Asset growth & Annual percentage growth in total assets & Cooper, Gulen and Schill (2008) & $-$ \\
- & Net share issuance & Annual change in shares outstanding & Pontiff and Woodgate (2008) & $-$ \\
- & Accruals & Earnings minus operating cash flow, scaled by assets & Sloan (1996) & $-$ \\
-\addlinespace
-Profitability & Gross profitability & Revenue minus cost of goods sold, divided by assets & Novy-Marx (2013) & $+$ \\
- & F-score & Sum of nine accounting signals of financial strength & Piotroski (2000) & $+$ \\
-\addlinespace
-Intangibles & R\&D intensity & Research and development spending divided by market value & Chan, Lakonishok and Sougiannis (2001) & $+$ \\
-\addlinespace
-Trading frictions & Size & Market value of equity & Banz (1981) & $-$ \\
- & Idiosyncratic volatility & Volatility of returns not explained by the Fama--French factors & Ang, Hodrick, Xing and Zhang (2006) & $-$ \\
- & Illiquidity & Average absolute daily return per dollar of trading volume & Amihud (2002) & $+$ \\
- & Maximum daily return & Largest daily return in the past month & Bali, Cakici and Whitelaw (2011) & $-$ \\
-\end{longtable}
-\endgroup
-
-\textbf{Design choices in a replication\index{replication}.} A replication of an anomaly must make many choices, each defensible, that can change the result:
-
-\begingroup
-\small
-\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
-\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.17\linewidth-0.34\linewidth-4\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.34\linewidth}@{}}
-\toprule
-Choice & Options & Why it matters \\
-\midrule
-\endfirsthead
-\multicolumn{3}{@{}l}{\emph{(continued)}} \\
-\toprule
-Choice & Options & Why it matters \\
-\midrule
-\endhead
-\midrule
-\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
-\endfoot
-\bottomrule
-\endlastfoot
-Universe & All stocks, or excluding micro-caps (for example below the NYSE 20th size percentile) & Many anomalies are concentrated in tiny stocks that are costly to trade and hold little value \\*
-Weighting & Equal-weighted or value-weighted portfolios & Equal weighting gives micro-caps large influence \\
-Breakpoints & Deciles, quintiles or terciles; NYSE or all-stock breakpoints & Extreme portfolios magnify signals and noise \\
-Sample & The original paper's sample, or the longest available & Later years are out of sample \\
-Significance hurdle & $t > 1.96$, $t > 3$, a false-discovery-rate rule, or a Bayesian posterior & Determines what counts as a success \\*
-Benchmark & Raw returns, CAPM alpha, or alpha against a multifactor model & A factor explained by others may be real but redundant \\
-\end{longtable}
-\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
-\endgroup
-
-\term{NYSE breakpoints}\index{NYSE breakpoints|textbf} set the cut-offs between groups using only stocks listed on the New York Stock Exchange. These stocks are larger on average, so the many tiny Nasdaq stocks do not crowd the extreme portfolios. A \term{Bayesian posterior}\index{Bayesian posterior|textbf} is the probability of a hypothesis after a prior belief has been combined with the data.
-
-\textbf{Pure and scientific replication again.} A replication that copies the original method tests whether the paper's numbers can be reproduced. One that changes the universe, weighting or hurdle tests whether the finding is robust. Both are valuable, but they answer different questions, and the debate in this chapter turns partly on that difference.
-
-\section{The claim}
-\label{sec:19-claim}
-
-Stated so that it can fail:
-
-\begin{callout}
-\textbf{Most published cross-sectional return predictors do not reflect a real, persistent relationship: they fail to replicate under reasonable standards, or their returns disappear outside the sample in which they were found.}
-\end{callout}
-
-``Reasonable standards'' is where the debate lies. The claim can be tested by \textbf{replication} within the original sample (which hurdle, and which portfolio construction?), \textbf{out of sample}\index{in-sample versus out-of-sample|textbf} (do returns persist after the sample ends and after publication?), and \term{statistical correction} (after allowing for the number of predictors tested and for publication bias, what share probably have a positive true return?).
-
-\section{The prosecution}
-\label{sec:19-prosecution}
-
-\textbf{Harvey, Liu and Zhu (2016)} argued that because hundreds of factors have been tested, and many more never published, the usual hurdle of $t > 2$ lets through too many false discoveries. They proposed a hurdle of about 3 and concluded that many published factors were likely false.
-
-\textbf{Hou, Xue and Zhang (2020)}\index{q-factor model|textbf} rebuilt 452 anomalies with one method designed to limit the influence of micro-caps\index{micro-caps}: NYSE breakpoints and value-weighted\index{index weighting!value-weighted} returns. 65\% failed a t-statistic of 1.96, and 82\% failed a multiple-testing hurdle of 2.78. Anomalies based on \term{trading frictions}\index{trading frictions|textbf}, such as illiquidity\index{illiquidity} and \term{idiosyncratic risk}\index{risk!idiosyncratic|textbf} (the part of a stock's volatility\index{volatility} that the market and other factors do not explain), failed most often, 96\% of them. They concluded that most anomalies are false or confined to micro-caps too small and costly to matter.
-
-The prosecution rests on two premises: the hurdle should be high because many tests have been run, and portfolios should give little weight to the smallest stocks.
-
-\section{The defense}
-\label{sec:19-defense}
-
-\textbf{Jensen, Kelly and Pedersen (2023)} used a Bayesian model that shrinks each factor's noisy alpha toward the average of related factors, rather than judging it alone against a fixed hurdle. They found that most factors replicate, cluster into 13 themes that are mostly significant parts of the optimal portfolio, work out of sample in 93 countries, and are corroborated rather than weakened by their large number.
-
-\textbf{Chen and Zimmermann (2022)} found that almost all predictors whose original papers reported clear evidence can be reproduced with the original methods. \textbf{Chen and Zimmermann (2020)} estimated that, across 156 predictors, publication bias makes in-sample returns only about 12\% too large, and that a t-statistic hurdle of about 1.8 is enough for published predictors. \textbf{Chen (2021)} argued that published t-statistics are too large to be explained by \term{p-hacking}\index{p-hacking|textbf}, trying analyses until one crosses the significance line, alone.
-
-The defense rests on two different premises: the question is whether the original findings are real, not whether they survive a method that plays down small stocks, and evidence should be pooled across related factors.
-
-\section{Post-publication decay}
-\label{sec:19-decay}
-
-\textbf{McLean and Pontiff (2016)}\index{anomaly!post-publication decay|textbf} followed 97 predictors and found returns 26\% lower after the original sample ended and 58\% lower after publication (Figure~\ref{fig:19-decay}). Nothing changed when a sample ended except that researchers stopped looking, so the first figure is an upper bound on data mining\index{data mining}. The further decline after publication reflects investors trading on the results, which suggests the original findings were real. Both forces matter, and the publication effect is the larger.
+\begin{technote}
+\textbf{Technical note: the BAB return.} In symbols, the portfolio's excess return is
+\begin{equation}
+  r_{\mathrm{BAB}} = \frac{r_L - r_f}{\beta_L} - \frac{r_H - r_f}{\beta_H}
+  \label{eq:18-bab}
+\end{equation}
+If the SML is flat, this portfolio earns a positive return with no market exposure. The betas must be \term{ex ante}, estimated from data available when the portfolio is formed. Otherwise the construction looks ahead (Section~\ref{sec:02-lookahead}).
+\end{technote}
 
 \begin{figure}[htbp]
 \centering
 \scalebox{0.9}{%
 \begin{tikzpicture}
 \begin{axis}[
-  width=0.8\linewidth, height=0.34\linewidth,
-  ybar, bar width=0.68cm,
+  width=0.6\linewidth, height=0.34\linewidth,
+  ybar, bar width=0.6cm,
   axis lines=left, axis line style={-stealth},
-  ymin=0, ymax=118, ytick={0,50,100},
-  ylabel={Return (in sample $= 100$)},
-  symbolic x coords={A,B,C},
-  xtick=data,
-  xticklabels={In sample, {After sample,\\before\\publication}, {After\\publication}},
-  xticklabel style={align=center, text width=2.3cm, font=\small},
-  enlarge x limits=0.25,
+  ymin=-2, ymax=2.2, ytick={-2,-1,0,1,2},
+  ylabel={Dollars per \$1 of capital},
+  symbolic x coords={L,H}, xtick=data,
+  xticklabels={{Low-beta leg\\($\beta_L = 0.6$)}, {High-beta leg\\($\beta_H = 1.5$)}},
+  xticklabel style={align=center},
+  enlarge x limits=0.45,
   nodes near coords,
+  nodes near coords style={font=\small},
+  extra y ticks={0}, extra y tick labels={},
+  extra y tick style={grid=major, major grid style={gray, thin}},
+  legend style={draw=none, at={(0.5,1.03)}, anchor=south, legend columns=2,
+                /tikz/every even column/.append style={column sep=1em}},
 ]
-  \addplot[fill=fenavy, draw=none] coordinates {(A,100) (B,74) (C,42)};
+  \addplot[fill=fenavy, draw=none] coordinates {(L,1.67) (H,-0.67)};
+  \addplot[fill=gray!40, draw=none] coordinates {(L,1) (H,-1)};
+  \legend{position size, resulting beta exposure}
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Published patterns lost more than half of their returns after publication. Post-publication decay in McLean and Pontiff (2016). With in-sample returns set to 100, the average predictor earned 74 between the end of its original sample and publication, and 42 after publication.}
-\label{fig:19-decay}
+\caption{Betting against beta borrows to scale up low-beta stocks and scales down high-beta ones until the market's moves cancel. Building a BAB portfolio from the worked example. Per dollar of capital, it holds \$1.67 of the low-beta stock ($\beta_L = 0.6$) and shorts \$0.67 of the high-beta stock ($\beta_H = 1.5$). Each leg then carries a beta exposure of 1, in opposite directions, so the portfolio's beta is zero.}
+\label{fig:18-bab}
 \end{figure}
 
-The lab adds a check the original study could not make: a simulated literature in which the truth is known. If only significant results are published, returns appear to fall after the sample ends even when nothing changes, which gives a benchmark for how much of the observed decay is selection.
+The explanations fall into two groups. One treats the anomaly\index{anomaly} as \term{mispricing}\index{mispricing|textbf}. The other treats it as \textbf{compensation for a risk the CAPM misses}. Section~\ref{sec:18-explanations} sets them out. The difference matters because the two groups predict different things: when the anomaly should be strongest, and whether it should survive once it becomes popular.
 
-\section{Why the two sides disagree}
-\label{sec:19-why}
+\section{The claim}
+\label{sec:18-claim}
 
-The two sides agree on most facts. They disagree on four choices.
+\begin{callout}
+\textbf{Claim.} Low-beta and low-volatility stocks earn higher risk-adjusted returns than the CAPM predicts. The security market line is flatter than the market premium, and a beta-neutral portfolio that is long low-risk stocks and short high-risk stocks earns a positive alpha.
+\end{callout}
 
-\begingroup
-\small
-\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
-\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.17\linewidth-4\tabcolsep)/2\relax}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.17\linewidth-4\tabcolsep)/2\relax}@{}}
-\toprule
-Choice & Prosecution (Hou, Xue and Zhang; Harvey, Liu and Zhu) & Defense (Jensen, Kelly and Pedersen; Chen and Zimmermann) \\
-\midrule
-\endfirsthead
-\multicolumn{3}{@{}l}{\emph{(continued)}} \\
-\toprule
-Choice & Prosecution (Hou, Xue and Zhang; Harvey, Liu and Zhu) & Defense (Jensen, Kelly and Pedersen; Chen and Zimmermann) \\
-\midrule
-\endhead
-\midrule
-\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
-\endfoot
-\bottomrule
-\endlastfoot
-Which stocks count & De-emphasize micro-caps: NYSE breakpoints, value weights & Replicate the original construction; micro-caps are part of the market \\*
-Hurdle & High: $t$ of about 3 or 2.78, for multiple testing & Lower, or a Bayesian posterior \\
-Unit of evidence & Each factor judged on its own & Related factors pooled; corroboration strengthens the evidence \\*
-Kind of replication & Scientific: does it survive reasonable alternative choices? & Pure: are the original findings reproducible and real? \\
-\end{longtable}
-\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
-\endgroup
-
-Neither side is wrong on its own terms. A factor found only among micro-caps may be real but irrelevant to an investor who cannot trade them; pooling related factors is more accurate if its assumptions hold, but misleading if a whole theme was mined together. ``Does this anomaly replicate?'' is not well posed until the purpose is stated: pure replication and pooled evidence suit the question of how markets price risk, while value-weighted, liquid, out-of-sample, after-cost evidence suits the question of what to invest in.
-
-\section{Lab~\thechapter: Replicating both sides of the anomaly debate}
-\label{sec:19-lab}
-
-The lab replicates Hou, Xue and Zhang (2020), Jensen, Kelly and Pedersen (2023) and McLean and Pontiff (2016). It asks what share of published predictors survive when each side's standards are applied to the same data, and how much of their return remains after their samples end and after publication. The data are the Open Source Asset Pricing monthly long--short returns for more than 200 predictors as constructed in the original papers, with each paper's sample period and publication year, and the code is in the repository folder \texttt{ch10-anomalies/}.
+To test it we need to specify four things.
 
 \begin{itemize}
-  \item \textbf{Part A, replication.} Each predictor's t-statistic over its original sample, and the share clearing $t > 1.96$, $t > 3$\index{t-statistic!$t>3$ hurdle} and a Benjamini--Hochberg test.
-  \item \textbf{Part B, decay.} Average returns in sample, after the sample and after publication, with a \textbf{pooled regression}\index{regression!pooled|textbf} across all predictors in the style of McLean and Pontiff, with errors clustered by\index{standard error!clustered} month.
-  \item \textbf{Part C, methodology.} The same statistics for an alternative construction, if supplied, the core of the disagreement.
-  \item \textbf{Part D, shrinkage.} Empirical Bayes estimates of each predictor's true mean, and whether shrunk estimates predict post-publication returns better than raw ones.
-  \item \textbf{Part E, known truth.} A simulated literature that publishes only signals with in-sample $t > 2$. With \textbf{no} true change after publication, it still shows returns about 54\% lower after publication, purely from publishing lucky results.
+  \item \textbf{The strong form.}\index{efficient market hypothesis!strong form|textbf} The SML is \emph{inverted\index{yield curve!inverted}}: low-risk stocks earn higher raw returns. Some volatility sorts find this; most beta sorts find a flat or weakly positive relation.
+  \item \textbf{The weak form.}\index{efficient market hypothesis!weak form|textbf} The SML is positive but flatter than the CAPM predicts, so low-beta stocks have positive alphas, as Black, Jensen and Scholes found. This is the claim tested here.
+  \item \textbf{Risk adjustment.} A CAPM alpha is the first test; the claim is stronger if the alpha survives size, value and momentum, and stronger still if it survives profitability and interest-rate exposure.
+  \item \textbf{What would count against it.} An alpha concentrated in micro-caps\index{micro-caps}, explained by other factors or faded since the strategy became popular. The claim fails if a tradable beta-neutral version earns nothing after costs.
 \end{itemize}
 
-The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method}, state the standard of evidence you apply, and compare your verdict with Section~\ref{sec:19-verdict}.
+\section{The original evidence}
+\label{sec:18-evidence}
+
+\textbf{A flat line from the start.} Because individual betas are measured with large errors\index{estimation error}, Black, Jensen and Scholes (1972) sorted NYSE stocks from 1931 to 1965 into ten portfolios by past beta. Average returns rose with beta, but much less than the CAPM predicted, so low-beta portfolios had positive alphas. Fama and MacBeth (1973) confirmed a positive but modest slope, and Haugen and Heins (1975) found that low-volatility portfolios had matched or beaten high-volatility ones. Because size and beta are closely related, Fama and French (1992) included size and found almost no relation between beta and average return from 1963 to 1990.
+
+\textbf{Idiosyncratic volatility.}\index{idiosyncratic volatility|textbf} Ang, Hodrick, Xing and Zhang (2006) found that the fifth of U.S. stocks with the highest idiosyncratic volatility earned 1.06\% a month less than the lowest fifth, a strong form of the anomaly, and later found the same in 23 developed markets.
+
+\textbf{From anomaly to strategy.} Baker, Bradley and Wurgler (2011) argued that \term{benchmarking} stops institutions from exploiting the anomaly. Frazzini and Pedersen (2014) built the BAB factor of Section~\ref{sec:18-how}, which had a Sharpe ratio\index{Sharpe ratio} of 0.78 in U.S. stocks from 1926 to 2012, alphas that survived size, value, momentum and liquidity\index{liquidity} controls, and success in 19 international markets and in bonds and futures. It did worse when borrowing was hard, as their leverage theory predicts. Low-volatility index funds launched around 2011 and grew quickly.
+
+\section{Explanations}
+\label{sec:18-explanations}
+
+\textbf{Leverage constraints.}\index{leverage|textbf} Investors who want high returns but cannot borrow buy high-beta stocks instead of a levered market portfolio, which bids them up and flattens the SML (Black 1972; Frazzini and Pedersen 2014). As predicted, constrained investors hold high-beta portfolios, and BAB does worse when borrowing becomes harder.
+
+\textbf{Lottery preferences.}\index{lottery preference|textbf} Some investors overpay for stocks with a small chance of a very large gain. Barberis and Huang (2008) derive this from \term{prospect theory}\index{prospect theory}, in which people overweight unlikely outcomes, and Bali, Cakici and Whitelaw (2011) found that stocks with the largest recent one-day returns underperform, which explains much of the idiosyncratic volatility effect.
+
+\textbf{Benchmarking.} For a manager judged against a market-weighted index, a low-beta stock with a positive alpha adds \term{tracking error}\index{tracking error|textbf}, the volatility of the gap between the fund's return and the benchmark's, and lags in rising markets, so institutions do not correct the mispricing (Baker, Bradley and Wurgler 2011).
+
+\textbf{Overpricing that is hard to short.} Liu, Stambaugh\index{Stambaugh bias} and Yuan (2018) found that the beta anomaly comes from beta's correlation\index{correlation} with idiosyncratic volatility and is concentrated among overpriced stocks, where short-selling\index{short selling} is costly.
+
+\textbf{Missing risk factors.} Low-risk stocks tend to be large, profitable and conservative, and the five-factor model explains much of their alpha (Fama and French 2016). They also behave partly like bonds, and an interest-rate premium explains part of the anomaly, flattered by falling yields from 1981 to 2020 (Driessen, Kuiper, Nazliben and Beilo 2019). And modelling time-varying betas\index{beta!time-varying} largely removes the alpha gap (Cederburg and O'Doherty 2016).
+
+These explanations can all be partly true. Asness, Frazzini, Gormsen and Pedersen (2020) split BAB into a bet against correlation, linked to \term{leverage constraints}, and a bet against volatility, linked to lottery demand, and found that both earn returns.
+
+\section{Lab~\thechapter: Replicating Black, Jensen and Scholes (1972) and Frazzini and Pedersen (2014)}
+\label{sec:18-lab}
+
+\textbf{Claim on trial\index{claims-on-trial method}:} low-risk stocks earn more than the CAPM predicts. The lab replicates Black, Jensen and Scholes (1972), Fama and MacBeth (1973) and Frazzini and Pedersen (2014), using ten portfolios formed on market beta, on total variance and on residual variance, each value- and equal-weighted\index{index weighting!equal-weighted}, from July 1963, from the Kenneth French\index{Kenneth French data library} library, with the Fama--French and momentum factors and the 10-year Treasury yield from FRED\index{FRED}. Unlike Frazzini and Pedersen, who use individual stocks with rank weights, the lab uses published portfolios that anyone can reproduce, so expect the same pattern with smaller numbers.
+
+\textbf{Part A, the SML.} For each set of deciles, average excess return, realized beta, CAPM and four-factor alphas, and the slope of return on beta, plotted against the CAPM line (Lab Figure~\ref{ch:15}.1).
+
+\textbf{Part B, long-short portfolios.} A low-minus-high portfolio, long the three lowest-risk deciles and short the three highest, and a BAB-style portfolio that levers each leg to a beta of one, with betas estimated from the previous 60 months (Lab Figure~\ref{ch:15}.2).
+
+\textbf{Part C, robustness checks.} Equal versus value weights, three subperiods, interest-rate exposure, returns in 2008, 2020 and 2022, and rolling ten-year alphas (Lab Figures~\ref{ch:15}.3 and~\ref{ch:15}.4).
+
+\textbf{Part D, the investor's view.} The lowest-volatility and lowest-beta quintiles against the market: Sharpe ratio, alpha, drawdown\index{drawdown}, tracking error and the share of years they trailed (Lab Figure~\ref{ch:15}.5).
+
+\label{sec:18-stress}
+\textbf{Robustness checks.} Novy-Marx and Velikov (2022) found that AQR's BAB factor puts on average about \$1.05 of each dollar into the smallest 1\% of stocks\index{micro-caps|textbf}, which are expensive to trade (Chapter~\ref{ch:14}), so if the lab's effect is much stronger with equal than value weights\index{index weighting!value-weighted}, small stocks are doing much of the work (Section~\ref{sec:02-microcaps}). The lab uses four factors, so its alphas probably overstate what the five-factor model leaves. 2022, when stocks and bonds fell together, is the natural out-of-sample\index{in-sample versus out-of-sample} test of interest-rate exposure, and the post-2010 subperiod shows whether crowding\index{crowding|textbf} has shrunk the premium. Finally, stocks sorted into low past-beta portfolios tend to have higher true betas, which flattens the SML even if the CAPM holds\index{estimation error|textbf}. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:18-verdict}.
 
 \section{Where the evidence stands}
-\label{sec:19-verdict}
+\label{sec:18-verdict}
 
-The published studies point to a split picture: \textbf{most published anomalies are not pure statistical flukes. But most are smaller than reported, concentrated in small stocks, partly traded away, and not profitable to trade after costs.} The table summarizes the evidence as of November 2026.
+The published studies point to a clear pattern: \textbf{the security market line is flatter than the CAPM predicts, one of the most robust findings in empirical finance. Whether low risk earns a separate premium that a beta-neutral portfolio can collect depends on how the portfolio is built, on small stocks and on overlap with other factors.} The table summarizes the evidence as of November 2026.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.45\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -341,53 +242,35 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-Original construction, conventional hurdle & \textbf{No} & Almost all predictors with clear original evidence reproduce with the original methods. & Chen and Zimmermann (2022) \\*
+A flat security market line & \textbf{Yes} & Returns rise with beta far less than the market premium implies, in the U.S. and abroad. & Black, Jensen and Scholes (1972); Fama and MacBeth (1973); Fama and French (1992) \\*
 \addlinespace[3pt]
-Micro-caps de-emphasized, value-weighted & \textbf{Yes} & 65\% of 452 anomalies fail $t = 1.96$ and 82\% fail 2.78; 96\% of trading-frictions anomalies fail. & Hou, Xue and Zhang (2020) \\
+Idiosyncratic volatility & \textbf{Yes} & The most volatile stocks earned about 1\% a month less than the least, in 23 markets; lottery demand absorbs much of it. & Ang, Hodrick, Xing and Zhang (2006); Bali, Cakici and Whitelaw (2011) \\
 \addlinespace[3pt]
-The right hurdle for multiple testing & \textbf{Disputed} & About 3 on one side; about 1.8 for published predictors on the other. & Harvey, Liu and Zhu (2016); Chen and Zimmermann (2020) \\
+The beta-neutral BAB factor & \textbf{Partly} & High risk-adjusted returns across countries and assets, but much capital in the smallest stocks. & Frazzini and Pedersen (2014); Novy-Marx and Velikov (2022) \\
 \addlinespace[3pt]
-Bayesian pooling across factors and countries & \textbf{No} & Most factors replicate, cluster into 13 themes and work out of sample in 93 countries. & Jensen, Kelly and Pedersen (2023) \\
+After profitability and investment factors & \textbf{Weakly} & The five-factor model explains much of the alphas. & Fama and French (2016) \\
 \addlinespace[3pt]
-Out of sample, after publication & \textbf{Partly} & Returns were 26\% lower after the samples and 58\% lower after publication, partly from selection. & McLean and Pontiff (2016); Part E of the lab \\*
+With betas that vary over time & \textbf{Weakly} & Time-varying betas largely remove the alpha gap. & Cederburg and O'Doherty (2016) \\
 \addlinespace[3pt]
-After costs, for an investor & \textbf{Yes} & Little expected return remains for the average anomaly. & Chen and Velikov (2023); Chapter~\ref{ch:13} \\
+Interest-rate exposure & \textbf{Partly} & An interest-rate premium explains part, but not all, of the anomaly. & Driessen, Kuiper, Nazliben and Beilo (2019) \\*
+\addlinespace[3pt]
+Why the line is flat & \textbf{Disputed} & Leverage constraints, lottery preferences, benchmarking and costly short selling all have support. & Frazzini and Pedersen (2014); Baker, Bradley and Wurgler (2011); Liu, Stambaugh and Yuan (2018) \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
 
-Whether this makes most anomalies ``false'' depends on whether the question is scientific or practical, so a verdict on this claim is a choice of standard as much as a reading of the data (Section~\ref{sec:19-why}).
+Low-volatility portfolios have delivered returns close to the market's with less volatility, which is useful to an unconstrained investor, but inflows since 2011 may have raised their prices and made past returns a poor guide.
 
-\textbf{What would change the picture.} A shared standard, such as pre-registered\index{pre-registration} hurdles fixed before the data are examined, or value-weighted, micro-cap-robust results reported alongside the original construction, would narrow the disagreement more than any new data set.
+\textbf{What would change the picture.} The strong form would gain support if a beta-neutral, value-weighted version kept a significant alpha against the five-factor model and interest-rate exposure out of sample. It would lose support if the post-2010 alphas proved to be inflow effects that reversed.
 
-\label{sec:19-open}
-\textbf{Open questions.} How many signals were tested but never published? The unknown size of this \textbf{file drawer}\index{publication bias|textbf} limits every multiple-testing correction. And is post-publication decay learning or selection, a question Part E answers in simulation but not yet in real data?
+\label{sec:18-open}
+\textbf{Open questions.} Which risk measure is priced, beta, as leverage theories suggest, or volatility, as lottery theories suggest? And how large is the alpha of a value-weighted, beta-neutral portfolio of liquid stocks against the five-factor model?
 
 \section{What practitioners and investors can use}
-\label{sec:19-investors}
+\label{sec:18-investors}
 
-To judge any new factor fund or signal, check whether the original t-statistic clears about 3, whether the effect holds among large, liquid stocks with value weights, and whether it belongs to a theme that works, such as value, momentum, profitability or low risk. Expect roughly half the backtest\index{backtest} after publication at best, ask for turnover\index{turnover} and net returns at realistic costs (Chapter~\ref{ch:13}), and ask how many signals were tested before this one.
+\textbf{Minimum-volatility funds}\index{minimum-volatility funds|textbf}, long-only portfolios chosen for low volatility, are the most common way to access the anomaly. With a beta around 0.7 to 0.8, they usually trail strong bull markets and beat the market in crashes, so the case for them is a better return per unit of risk, not higher returns. Their tracking error\index{tracking error|textbf} is large enough that they can lag the market for years, and they tend to overweight interest-sensitive sectors such as utilities and consumer staples. \textbf{BAB-style funds}\index{betting against beta (BAB)|textbf} are a different product: \term{market-neutral}, levered, exposed to the micro-cap issues above, and prone to sharp losses when high-beta stocks rebound.
 
 \begin{callout}
-\textbf{What Failed: the trading-frictions anomalies.} Anomalies based on liquidity\index{liquidity}, idiosyncratic volatility\index{idiosyncratic volatility} and other trading frictions looked strong in the papers that introduced them. When Hou, Xue and Zhang played down micro-caps with NYSE breakpoints and value weights, 96\% of them failed to clear a t-statistic of 1.96, because their returns had come mostly from the smallest, least liquid stocks, where costs are largest. The claim that frictions-based anomalies offer returns an investor can capture \textbf{fails}.
+\textbf{What Failed: the CAPM as a hurdle rate.} The CAPM's empirical problems have been known since the early 1970s, yet it remains the standard way to set the cost of equity: Graham and Harvey (2001) found that 73.5\% of 392 U.S. chief financial officers always or almost always used it. A flat SML means the CAPM overstates the cost of capital for high-beta projects and understates it for low-beta ones, so firms may reject good low-beta projects and accept poor high-beta ones. The failure is treating a model of \emph{risk} as a reliable model of \emph{expected return} when the evidence has long said otherwise.
 \end{callout}
-
-% Key terms that this chapter uses without defining them, for readers new to finance.
-\providecolor{FEMaroon}{RGB}{128,30,45}
-\providecolor{FECream}{RGB}{253,248,238}
-\providecolor{FEGold}{RGB}{196,150,60}
-\makeatletter
-\@ifundefined{keyterms}{%
-  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
-    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
-    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
-    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
-}{}
-\makeatother
-
-\begin{keyterms}
-\small
-\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
-  \item[Portfolio sort.] See Chapter~\ref{ch:04}, Section~\ref{sec:05-foundations}, page~\pageref{sec:05-foundations}.
-\end{description}
-\end{keyterms}

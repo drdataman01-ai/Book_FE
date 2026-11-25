@@ -1,0 +1,980 @@
+% Chapter 20 -- Claim: Machine Learning Predicts Returns Better Than Linear Models
+% Placed directly after ch05.tex (Out-of-Sample Evaluation) in fe.tex.
+% Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tikz, pgfplots, tcolorbox (breakable, skins), hyperref or url.
+% Defines the callout box only if the preamble has not.
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\providecolor{fegray}{HTML}{4D4D4D}
+\makeatletter
+\@ifundefined{callout}{%
+  \newtcolorbox{callout}{breakable, enhanced,
+    colback=white, colframe=gray!70, boxrule=0.5pt, arc=1mm,
+    borderline west={2.5pt}{0pt}{gray!70},
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
+\chapter{Claim: Machine Learning Predicts Returns Better Than Linear Models}
+\label{ch:19}
+\providecommand{\term}[1]{\emph{#1}}
+
+The same kind of software that recognizes faces in photographs, translates languages and recommends films is now marketed as a way to pick stocks, and several exchange-traded funds advertise that they are run by artificial intelligence. It is natural to wonder whether tools that work so well elsewhere can see patterns in the stock market that human researchers have missed. This chapter asks what the evidence shows.
+
+For half a century the standard tool for predicting stock returns was linear regression, and Chapter~\ref{ch:06} showed how modest its results were. By the late 2010s two things had changed. First, the factor zoo had produced nearly a hundred characteristics that might predict returns, far more than a regression can combine reliably. Second, machine-learning methods that handle many inputs and curved relationships had matured in other fields. Gu, Kelly and Xiu (2020) brought the two together. They used about 30,000 U.S. stocks from 1957 to 2016 and 94 characteristics. Neural networks\index{neural network} and regression trees\index{regression tree} roughly doubled the performance of the best regression-based strategies. Most of the gain came from capturing interactions between familiar signals.
+
+The study changed both research and practice. \term{Machine learning} became a standard tool of empirical asset pricing, and funds and exchange-traded funds branded with artificial intelligence followed. The study also started a debate about what the gains mean. Kelly, Malamud and Zhou (2024), puzzled that predictions improved as models grew, argued that very large models can predict better than small ones, which they called a ``\term{virtue of complexity}''. Avramov, Cheng and Metzker (2023) asked whether the predictability can be traded, and found that much of it comes from small, hard-to-trade stocks and fades after costs. Nagel (2025) questioned whether an investor could have captured the reported gains in real time.
+
+The stakes are practical. If machine learning finds predictability that linear models miss, it belongs in every quantitative toolkit. If its gains vanish in tradable stocks after costs, the label promises more than it delivers. The claim on trial\index{claims-on-trial method} is: \textbf{machine-learning models find return predictability\index{return predictability} that traditional linear models miss, and it can be turned into profitable portfolios.}
+
+This chapter explains the essentials of regularized regression, random forests, gradient boosting and neural networks. Readers who want a fuller, step-by-step introduction to these methods, with code, can consult the chapters on supervised learning and regularization in Kuo (2024a). The lab in Section~\ref{sec:20-lab} repeats the horse race of Gu, Kelly and Xiu (2020) on 149 free portfolios from the Kenneth R. French Data Library, with the Goyal--Welch predictors of Chapter~\ref{ch:06}. It checks whether machine learning beats linear models out of sample, and whether the gain survives trading costs.
+
+By the end of the chapter you will be able to:
+
+\begin{itemize}
+  \item explain how ridge regression\index{regularization!ridge}, the lasso\index{regularization!lasso} and the elastic net\index{regularization!elastic net} shrink\index{shrinkage} coefficients to prevent overfitting;
+  \item explain how a regression tree is grown, how random forests\index{random forest} and gradient boosting\index{gradient boosting} combine many trees, and how a neural network computes and learns;
+  \item choose hyperparameters\index{hyperparameters} in a walk-forward design, and read a model through \term{feature importance}\index{feature importance}, \term{partial dependence}\index{partial dependence} and \term{Shapley values}\index{Shapley values};
+  \item judge a machine-learning strategy by its value-weighted\index{index weighting!value-weighted}, net-of-cost performance against a linear model on the same inputs.
+\end{itemize}
+
+In the lab you will run a horse race between linear models, an \term{elastic net}, gradient-boosted trees and a neural network on a panel of 149 portfolios, using only information available at each date. You will then test whether any gain survives among large portfolios, in later years and after trading costs. Finally, you will test whether the ``virtue of complexity\index{virtue of complexity}'' holds when very large models are used to time the stock market.
+
+
+\section{Foundations}
+\label{sec:20-foundations}
+
+This section begins by distinguishing the two kinds of question a return forecast can answer, and explains why this chapter focuses on the \term{cross-section} of stocks. It then introduces machine learning through a linear regression of stock returns on a few characteristics, and asks an obvious question: why not add every predictor available? The answer is overfitting, and the section closes by introducing regularization as its remedy.
+
+\subsection{Time-series and cross-sectional questions}
+\label{sec:20-crosssection}
+
+Return data have two dimensions, time and assets, and a forecasting model can work along either one. The two directions answer different questions.
+
+A \textbf{time-series}\index{regression!time-series|textbf} question follows one asset, or the market as a whole, over many periods. Its question is \emph{when}: will the market do better next month than usual? The factor model of Equation~\eqref{eq:04-ff3}, which tracks one asset's return against the factors month by month, is a time-series regression, and so is the predictive regression of the market's return on the dividend yield in Chapter~\ref{ch:06}.
+
+A \textbf{cross-sectional}\index{regression!cross-sectional|textbf} question looks across many assets at the same time. Its question is \emph{which}: which stocks will do better than others next month? The simplest tool is a cross-sectional regression. In month $t$, it regresses each stock's next-month excess return on characteristics $\mathbf{z}_{i,t}$ known at the end of the month, such as size, book-to-market or momentum:
+\begin{equation}
+  R^{e}_{i,t+1} = a_t + \mathbf{c}_t^{\top} \mathbf{z}_{i,t} + e_{i,t+1}, \qquad i = 1, \dots, N.
+  \label{eq:20-xs}
+\end{equation}
+The slope $\mathbf{c}_t$ measures how much return each characteristic was associated with in that month. Fama and French (1992) used this design to show that size and book-to-market, not beta, explained the differences in average returns across U.S. stocks. A single month's slopes are very noisy. The regression is therefore run every month, and the slopes are averaged over time. This is the Fama--MacBeth\index{regression!Fama--MacBeth} procedure of Section~\ref{sec:04-factors}, applied to characteristics rather than betas.
+
+The most common cross-sectional tool, however, is not a regression but a \textbf{portfolio sort}\index{portfolio sort|textbf}. Each month, stocks are ranked on a characteristic and divided into groups, often ten groups called \term{deciles}. The average return of each group is recorded over the following month. If the characteristic predicts returns, average returns rise or fall steadily from the bottom decile to the top. A \textbf{long--short portfolio}\index{long--short portfolio} that buys the top decile and sells the bottom one then earns the difference. The SMB and HML factors of Equation~\eqref{eq:04-ff3} are built in exactly this way. Sorts are easy to understand and do not assume a straight-line relationship. But they handle only one or two characteristics at a time, whereas regressions and the machine-learning models of this chapter can handle many at once.
+
+The two kinds of question differ sharply in how much data they offer. A century of monthly data gives about 1,200 observations for the market's time series. A single month of U.S. stocks gives several thousand observations for the cross-section, and every month adds a new set. This is why most of the machine-learning evidence concerns cross-sectional questions. It is also why this chapter, unlike Chapter~\ref{ch:06}, is mainly about the cross-section. Gu, Kelly and Xiu\index{Gu, Kelly and Xiu (2020)} (2020), the study at the center of the chapter, asked which stocks would do better than others. They judged their models by long--short portfolios built from decile sorts on the models' forecasts.
+
+\subsection{Starting from a simple factor model}
+\label{sec:20-simple}
+
+The simplest cross-sectional model of expected returns\index{return!expected} regresses each stock's next-month excess return\index{return!excess} on a few characteristics chosen in advance. Unlike Equation~\eqref{eq:20-xs}, which is estimated month by month, it pools all stocks and months into a single regression with one set of slopes. Gu, Kelly and Xiu\index{Gu, Kelly and Xiu (2020)} (2020) used the three with the longest record in the literature: size, book-to-market\index{book-to-market ratio} and momentum\index{momentum}. For stock $i$ at the end of month $t$, the model is
+\begin{equation}
+  R^{e}_{i,t+1} = \alpha + \beta_1\,\text{size}_{i,t} + \beta_2\,\text{bm}_{i,t} + \beta_3\,\text{mom}_{i,t} + \varepsilon_{i,t+1}.
+  \label{eq:20-ols3}
+\end{equation}
+They called this benchmark OLS-3, after the ordinary least squares\index{regression!ordinary least squares (OLS)} method used to estimate it.
+
+This familiar regression already contains every ingredient of machine learning. In \term{supervised learning}\index{machine learning!supervised|textbf}, a model learns from examples whose outcomes are known. The inputs are called \term{features}\index{features and targets|textbf}; here they are the three characteristics. The outcome is called the \textbf{target}; here it is next month's return. The examples are past stock-months. Learning means choosing the coefficients so that the model's predictions are close to the targets in these examples. ``Close'' is measured by a \textbf{loss function}\index{loss function|textbf}, and OLS uses the sum of squared errors\index{loss function!squared-error (MSE)}. Once the coefficients are learned, the model is applied to today's characteristics to forecast next month's returns. A linear regression is therefore the simplest supervised learner. OLS-3 is a strong benchmark precisely because it is simple: three slopes estimated from millions of stock-months carry very little estimation error\index{estimation error}.
+
+Machine learning generalizes this model in two directions. It allows many more features, and it allows the relationship between features and returns to take a more flexible shape than a straight line. In general, a model maps a vector of characteristics $\mathbf{z}_{i,t}$, known at the end of month $t$, to a forecast of next month's return:
+\begin{equation}
+  E_t[R^{e}_{i,t+1}] = g(\mathbf{z}_{i,t})
+  \label{eq:20-g}
+\end{equation}
+Equation~\eqref{eq:20-ols3} is the special case in which $g$ is a weighted sum of three characteristics. Machine learning lets the data choose $g$ from a richer family, with more characteristics, curves and interactions.
+
+The data form a \term{panel}\index{panel data|textbf}: many assets observed over many months. A study of U.S. stocks may have several thousand stocks in each month and several hundred months, so that the number of stock-months runs into the millions, even though the number of independent months is only a few hundred. The function $g$ is the same for every stock and every month, which is what lets the model learn from all of them at once.
+
+\subsection{Why not use every predictor?}
+\label{sec:20-why}
+
+If three characteristics predict returns, a natural question follows: why not use every predictor available, in pursuit of the best possible forecast? The supply is enormous. 
+Cochrane (2011) called the growing list of proposed factors a ``zoo,'' and Harvey, Liu and Zhu (2016) counted more than 300 of them.
+Gu, Kelly and Xiu used 94 firm characteristics, their interactions with eight macroeconomic variables, and industry indicators, for 920 inputs in all.
+
+Adding predictors always looks good on the data used to fit the model. An OLS regression with an extra predictor can never fit the training data worse than one without it. A regression that uses every available predictor, the \term{kitchen-sink regression}\index{regression!kitchen-sink|textbf}, therefore can fit the training data best.
+
+Out of sample, the result is the opposite. In Gu, Kelly and Xiu's test period, OLS-3 had a small positive out-of-sample $R^2$. OLS with all 920 inputs had an out-of-sample $R^2$ of $-3.46\%$, far worse than forecasting zero (Figure~\ref{fig:20-gkx}). In Chapter~\ref{ch:06}, the kitchen sink of fourteen market predictors also forecast worse than the historical mean. The reason is the same in both cases. Each coefficient is estimated with error. When the true signal is weak, many predictors fit the training sample well by chance. OLS cannot tell a predictor that carries information from one that happened to fit, so it gives both large coefficients. The model has learned the noise in the training sample along with the signal. This is \textbf{overfitting}\index{overfitting|textbf}. Its opposite, a model too simple to capture real effects, is \term{underfitting}\index{underfitting|textbf}.
+
+An overfit model looks best on the very data it was fitted to, so the training error cannot reveal the problem. Only data the model has not seen can. The question is therefore not whether to use more predictors, but how much complexity the data can support. The next subsection gives a way to think about that question.
+
+\subsection{Overfitting and the bias--variance trade-off}
+\label{sec:20-biasvar}
+
+Using every available predictor does not necessarily produce better forecasts, as the previous subsection showed. The reason lies in the bias--variance trade-off, which describes the two different ways a forecast can go wrong.
+
+Archery helps explain the two kinds of error (Figure~\ref{fig:20-targets}). Imagine that the same model is estimated many times, each time on a different sample of training data, and that each estimate takes one shot at the target. \term{Bias}\index{bias (of an estimator)|textbf} is how far the average shot lands from the bullseye. A model that \term{leaves} out a real effect is biased: however many samples it sees, it misses in the same direction. \term{Variance}\index{variance|textbf} is how widely the shots are scattered around their own average. A model with many parameters has high variance, because each new sample moves its estimates, and its forecasts, a long way.
+
+\begin{figure}[htbp]
+  \centering
+  \scalebox{0.9}{%
+\begin{tikzpicture}[
+    target/.style={draw=fenavy!35, line width=0.5pt},
+    shot/.style={fill=fenavy, draw=white, line width=0.3pt},
+    lab/.style={font=\small, anchor=north, align=center},
+  ]
+    % One target, drawn at (\tgX,\tgY), with shots offset by (\tgDX,\tgDY) and spread \tgS
+    \newcommand{\fetarget}[5]{%
+      \begin{scope}[shift={(#1,#2)}]
+        \foreach \tgR in {1.0,0.75,0.5,0.25} {\draw[target] (0,0) circle (\tgR);}
+        \fill[fenavy!20] (0,0) circle (0.25);
+        \foreach \tgA/\tgB in {0.2/0.5,-0.6/0.3,0.5/-0.4,-0.3/-0.6,0.7/0.1,-0.1/0.8,-0.8/-0.2,0.3/-0.9} {
+          \fill[shot] ({#3 + #5*\tgA},{#4 + #5*\tgB}) circle (0.06);
+        }
+      \end{scope}}
+    \fetarget{0}{0}{0}{0}{0.18}
+    \fetarget{3}{0}{0}{0}{0.75}
+    \fetarget{0}{-2.9}{0.5}{0.45}{0.18}
+    \fetarget{3}{-2.9}{0.5}{0.45}{0.6}
+
+    \node[font=\small\bfseries] at (0,1.35) {low variance};
+    \node[font=\small\bfseries] at (3,1.35) {high variance};
+    \node[font=\small\bfseries, rotate=90] at (-1.45,0) {low bias};
+    \node[font=\small\bfseries, rotate=90] at (-1.45,-2.9) {high bias};
+  \end{tikzpicture}%
+}
+  \caption{Bias and variance. Each dot is a forecast from the same model
+    estimated on a different training sample, and the bullseye is the truth.
+    Bias is how far the dots' average lies from the bullseye; variance is how
+    widely the dots are scattered. The best model has both low (top left), but
+    reducing one usually raises the other.}
+  \label{fig:20-targets}
+\end{figure}
+
+A forecast's expected squared error can be split into three parts:
+\begin{equation}
+  \text{Expected forecast error} = \text{Bias}^2 + \text{Variance} + \text{Irreducible error}.
+  \label{eq:20-biasvar}
+\end{equation}
+The \term{irreducible error}\index{irreducible error|textbf} is the part of the return that is pure noise, which no model can predict. The \textbf{bias}, squared here, comes from a model that is systematically wrong. The \textbf{variance} comes from estimating the model on one particular sample of data. Only the bias and the variance depend on the model, and they move in opposite directions. Adding parameters lowers bias, because the model can capture more of the true relationship. But it raises variance, because there is more to estimate from the same data. This is the \term{bias--variance trade-off}\index{bias--variance trade-off|textbf}. Geman, Bienenstock and Doursat (1992) set it out for neural networks, and it applies to every model in this chapter. As Figure~\ref{fig:09-biasvar} shows, total error is lowest at an intermediate level of complexity.
+
+\providecolor{fegray}{HTML}{4D4D4D}
+
+\begin{figure}[htbp]
+  \centering
+  \scalebox{0.9}{%
+\begin{tikzpicture}[
+    font=\small,
+    declare function={
+      bias(\x)  = 0.67/(\x + 0.47);   % squared bias: falls with complexity
+      var(\x)   = 0.0048*\x^2.16;     % variance: rises with complexity
+      noise     = 0.14;               % irreducible error
+    }]
+  \begin{axis}[
+    width=0.62\linewidth, height=0.38\linewidth,
+    axis lines=left,
+    axis line style={-stealth, thin},
+    xmin=0, xmax=10.3, ymin=0, ymax=1.08,
+    xtick=\empty, ytick=\empty,
+    xlabel={Model complexity},
+    ylabel={Forecast error},
+    label style={font=\small},
+    samples=150,
+    clip=false,
+  ]
+    % Components
+    \addplot[fegray, semithick, dashed, domain=0.24:10] {bias(x)};
+    \addplot[fegray, semithick, densely dotted, domain=0:10] {var(x)};
+    \addplot[gray, thin, domain=0:10] {noise};
+    % Total = bias + variance + irreducible error
+    \addplot[fenavy, thick, domain=0.27:10] {bias(x) + var(x) + noise};
+
+    % Best point
+    \draw[fenavy, densely dashed, thin] (axis cs:3.45,0) -- (axis cs:3.45,0.381);
+    \node[fenavy, anchor=south, font=\footnotesize] at (axis cs:3.45,0.45) {best};
+
+    % Right-hand labels
+    \node[fenavy, anchor=west, font=\footnotesize] at (axis cs:10.1,0.898) {total error};
+    \node[fegray, anchor=west, font=\footnotesize] at (axis cs:10.1,0.694) {variance};
+    \node[gray,   anchor=west, font=\footnotesize] at (axis cs:10.1,0.19)  {irreducible error};
+    \node[fegray, anchor=west, font=\footnotesize] at (axis cs:10.1,0.03) {bias};
+
+    % Regions
+    \node[anchor=west, font=\footnotesize] at (axis cs:0.6,1.0)  {underfit};
+    \node[anchor=west, font=\footnotesize] at (axis cs:6.0,0.98) {overfit};
+  \end{axis}
+  \end{tikzpicture}%
+}
+  \caption{The bias--variance trade-off. The horizontal axis measures model
+    complexity, roughly the number of parameters the model estimates; the
+    vertical axis measures the model's expected forecast error on new data.
+    Moving right, bias (dashed) falls and variance (dotted) rises, while the
+    irreducible error (flat line) stays the same. Total error, their sum, is
+    lowest at an intermediate complexity marked ``best.''}
+  \label{fig:09-biasvar}
+\end{figure}
+
+Figure~\ref{fig:09-biasvar} can be read from left to right. The horizontal axis measures \term{model complexity}\index{model complexity|textbf}, roughly the number of parameters the model estimates. OLS-3 sits near the left end, and the kitchen-sink regression with 920 inputs sits far to the right. For other models, complexity means the depth of a tree, the number of trees, or the number of neurons in a network. The vertical axis measures the model's \emph{expected forecast error}. This is its average squared error on new data that it was not fitted to, not its error on the training data. At the left end, the model is too simple: it underfits, and bias dominates its error. At the right end, it is too flexible: it overfits, and variance dominates. The irreducible error is a flat floor beneath both, because no amount of complexity can remove it. The total error falls at first, reaches its lowest point, and then rises again. The best model sits at that low point.
+
+The trade-off matters most when the signal is weak relative to the noise, as it is for stock returns. The variance from estimating many parameters then quickly outweighs the small reduction in bias. The low point of the curve lies far to the left, so a simple model often forecasts better than a rich one, even when the rich one is closer to the truth. This does not mean that rich models must be abandoned. The remedy is \textbf{regularization}\index{regularization|textbf}. It keeps a rich model but limits how far its estimates may move to fit the particular sample. It accepts a little more bias in exchange for a large cut in variance, and so moves the model toward the low point of the curve. The next section shows how it works.
+
+\section{Regularization}
+\label{sec:20-models}
+\label{sec:20-shrinkage}
+
+The idea of regularization is to keep the model but stop it from fitting the noise. Regression has three popular methods for doing this: ridge regression, the lasso and the elastic net. They differ in only one detail. The same idea, in other forms, keeps the trees and networks of the following sections in check.
+
+\subsection{Adding a penalty to the regression}
+
+Regularization is easiest to see in the linear regression of Equation~\eqref{eq:20-ols3}.
+
+OLS chooses the intercept $\alpha$ and the vector of slopes $\beta$ to make the sum of squared errors as small as possible:
+\begin{equation}
+  \min_{\alpha,\,\beta} \; \sum_{s} \left(R^{e}_{s+1} - \alpha - \beta^{\top} x_s\right)^2
+  \label{eq:20-sse}
+\end{equation}
+where $x_s$ is the vector of predictors observed at $s$ and $R^{e}_{s+1}$ is the market's excess return in the following period. With many predictors, OLS can make this sum small by giving large coefficients to predictors that only happen to fit the sample. That is how the kitchen sink overfits.
+
+A \textbf{regularized}\index{regularization|textbf} or \textbf{penalized} regression adds a second term, a penalty that grows with the size of the coefficients:
+\begin{equation}
+  \min_{\alpha,\,\beta} \; \underbrace{\sum_{s} \left(R^{e}_{s+1} - \alpha - \beta^{\top} x_s\right)^2}_{\text{fit}}
+  \; + \; \lambda \times \underbrace{\text{(size of the slopes)}}_{\text{penalty}}
+  \label{eq:20-penalty}
+\end{equation}
+The two terms pull in opposite directions. The fit term wants the model to match the training data, and the penalty term wants the slopes to stay small. The number $\lambda \ge 0$ sets the balance between them. A predictor earns a large coefficient only if it improves the fit by enough to pay its penalty, so predictors that fit the sample by chance are held back.
+
+\subsection{What \texorpdfstring{$\lambda$}{lambda} does}
+
+The two extreme values of $\lambda$ show what it controls.
+
+\begin{itemize}
+  \item When $\lambda = 0$, the penalty disappears, and the problem is the ordinary regression of Equation~\eqref{eq:20-sse}. With every predictor included, this is the kitchen sink: low bias, high variance.
+  \item When $\lambda$ is very large, every slope is pushed to zero. The intercept is not penalized, so the forecast becomes the average return of the training window, which is the historical-mean\index{historical-mean benchmark} benchmark of Section~\ref{sec:09-benchmarks}: high bias, low variance.
+\end{itemize}
+
+A regularized regression therefore lies between the kitchen sink and the historical mean, and $\lambda$ decides where. In the terms of Figure~\ref{fig:09-biasvar}, $\lambda$ moves the model along the horizontal axis. The goal is to choose the value that lands near the low point of the curve. This also explains a finding of Chapter~\ref{ch:06}. The Campbell--Thompson restrictions\index{Campbell--Thompson restrictions} and the equal-weight combination\index{combination forecast} forecast both pull forecasts toward the mean. Their success out of sample is evidence that this kind of shrinkage\index{shrinkage} works.
+
+\subsection{Ridge, lasso and elastic net}
+
+The three methods differ only in how they measure the size of the slopes. In plain words, ridge shrinks every coefficient a little, the lasso drops weak predictors entirely, and the elastic net mixes the two. The shaded box gives the formulas.
+
+\begin{technote}
+\textbf{Technical note: the three penalties.}
+
+\textbf{Ridge regression.} Ridge regression\index{regularization!ridge|textbf} measures size by the sum of the squared slopes:
+\begin{equation}
+  \min_{\alpha,\,\beta} \; \sum_{s} \left(R^{e}_{s+1} - \alpha - \beta^{\top} x_s\right)^2 + \lambda \sum_{j} \beta_j^2
+  \label{eq:20-ridge}
+\end{equation}
+This is called an \term{L2 penalty}, after the ``2'' in the squares. Ridge shrinks every slope toward zero, but it never sets one exactly to zero.
+
+\textbf{The lasso.} The lasso\index{regularization!lasso|textbf} measures size by the sum of the absolute slopes:
+\begin{equation}
+  \min_{\alpha,\,\beta} \; \sum_{s} \left(R^{e}_{s+1} - \alpha - \beta^{\top} x_s\right)^2 + \lambda \sum_{j} |\beta_j|
+  \label{eq:20-lasso}
+\end{equation}
+This is called an \term{L1 penalty}; the vertical bars of the absolute value look like the ``1''. Unlike ridge, the lasso sets some slopes exactly to zero, so it chooses which predictors to keep at the same time as it estimates them.
+
+The difference is easiest to see by thinking of the penalty as a force that pushes each slope toward zero. For ridge, the push weakens as the slope gets smaller, so the slope approaches zero without ever reaching it. For the lasso, the push stays the same however small the slope becomes. Whenever a predictor helps the fit by less than that constant push, its slope is driven all the way to zero. In calculus terms, the push equals the slope of the penalty. For $\beta^2$ it is $2\beta$, which shrinks with $\beta$; for $|\beta|$ it is 1, which does not.
+
+\textbf{The elastic net.} The elastic net\index{regularization!elastic net|textbf}  mixes the two penalties:
+\begin{equation}
+  \min_{\alpha,\,\beta} \; \sum_{s} \left(R^{e}_{s+1} - \alpha - \beta^{\top} x_s\right)^2
+  + \lambda \left[\, \omega \sum_{j} |\beta_j| + (1-\omega) \sum_{j} \beta_j^2 \,\right]
+  \label{eq:20-enet}
+\end{equation}
+The weight $\omega$, between 0 and 1, sets the mix. Setting $\omega = 0$ gives ridge, setting $\omega = 1$ gives the lasso, and values in between combine them. With $\lambda = 0$, all three methods collapse to OLS.
+\end{technote}
+
+\subsection{Which predictors to keep?}
+
+The choice matters most when predictors are correlated, as many stock characteristics are. Ridge spreads the weight across a group of correlated predictors so that they share it. In the extreme case of $k$ identical predictors, each receives the same coefficient, one $k$-th of the total. The lasso, by contrast, tends to keep one predictor from the group and set the others to zero.
+
+Ridge therefore suits a world in which many characteristics each carry a little information, and the lasso suits a world in which only a few matter. The elastic net hedges between the two, and it is the usual choice for stock characteristics.
+
+\subsection{A related approach: dimension reduction}
+
+Another way to tame many correlated predictors is to compress them into a few combinations before running the regression. \term{Principal components regression}\index{principal components regression|textbf} first finds the combinations of the predictors that capture most of their joint variation, and then regresses returns on the first few of them. \term{Partial least squares}\index{partial least squares|textbf} instead chooses the combinations according to how strongly they relate to the return. In both methods, the number of combinations kept is the hyperparameter. These methods remain linear, but they replace hundreds of noisy slopes with a handful of well-estimated ones.
+
+\section{Regression trees}
+\label{sec:20-trees}
+
+Random forests and gradient boosting, the subjects of the next two sections, are both built from trees, so this section begins with a single tree.
+
+\subsection{Forecasting by asking questions}
+
+The regressions of the previous section assume that each characteristic has the same effect on expected returns\index{return!expected}, whatever the values of the other characteristics. A \textbf{decision tree}\index{decision tree|textbf} drops that assumption. It forecasts the way people often make decisions, by asking a sequence of yes-or-no questions. A tree that forecasts a number, such as a return, is called a \term{regression tree}\index{regression tree|textbf}; a tree that forecasts a category, such as whether a borrower defaults, is called a classification tree.
+
+Figure~\ref{fig:20-tree} shows a small regression tree for next-month stock returns. To forecast a stock's return, start at the top and answer the questions. The first asks whether the stock's momentum is positive. If it is not, the stock ends in the left-hand box, and the forecast is 0.2\% a month. If it is, a second question asks whether the stock is small. Small winners end in one box, with a forecast of 1.5\%, and large winners in another, with a forecast of 0.8\%.
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{fegray}{HTML}{4D4D4D}
+
+\begin{figure}[htbp]
+  \centering
+  \scalebox{0.9}{%
+\begin{tikzpicture}[
+    node distance=1.2cm and 1.6cm,
+    q/.style={draw=fenavy, fill=fenavy!12, rounded corners=3pt, font=\small,
+              align=center, inner sep=4pt, minimum width=2.6cm},
+    leaf/.style={draw=fenavy, fill=fenavy, text=white, rounded corners=3pt,
+                 font=\small, align=center, inner sep=4pt, minimum width=2.3cm},
+    edge/.style={-stealth, thin, fenavy!80},
+    lab/.style={font=\scriptsize, fill=white, inner sep=1pt},
+    note/.style={font=\scriptsize, text=fegray, align=left, anchor=west},
+  ]
+    \node[q] (root) at (0,0) {Momentum $> 0$?};
+    \node[leaf] (l1) at (-2.9,-1.7) {forecast\\0.2\%};
+    \node[q] (size) at (2.3,-1.7) {Small stock?};
+    \node[leaf] (l2) at (0.6,-3.4) {forecast\\1.5\%};
+    \node[leaf] (l3) at (4.0,-3.4) {forecast\\0.8\%};
+
+    \draw[edge] (root) -- node[lab, pos=0.45] {no}  (l1);
+    \draw[edge] (root) -- node[lab, pos=0.45] {yes} (size);
+    \draw[edge] (size) -- node[lab, pos=0.45] {yes} (l2);
+    \draw[edge] (size) -- node[lab, pos=0.45] {no}  (l3);
+
+    % Annotations
+    \node[note] at (5.3,0)    {root: the first question};
+    \node[note] at (5.3,-1.7) {internal node: a later question};
+    \node[note] at (5.3,-3.4) {leaves: the forecasts};
+    \draw[fegray, densely dotted, thin] (1.45,0) -- (5.25,0);
+    \draw[fegray, densely dotted, thin] (3.5,-1.7) -- (5.25,-1.7);
+    \draw[fegray, densely dotted, thin] (5.2,-3.4) -- (5.25,-3.4);
+  \end{tikzpicture}%
+}
+  \caption{A regression tree of depth two. Each stock answers the questions from
+    the top down and ends in a leaf, whose forecast is the average return of the
+    training stocks that ended there. The second question is asked only of
+    stocks with positive momentum, so the effect of size depends on momentum:
+    an interaction. The numbers are illustrative.}
+  \label{fig:20-tree}
+\end{figure}
+
+The tree has its own vocabulary. The first question is the \emph{root}, later questions are \emph{internal nodes}, and the final boxes are \emph{leaves}. The number of questions asked in sequence, two in Figure~\ref{fig:20-tree}, is the tree's \term{depth}.
+
+\subsection{How a tree is grown}
+
+A tree is grown from the training data one question at a time. At the start, every stock is in one group, and the only possible forecast is the group's average return. The tree then considers every characteristic and every possible cut-off, such as ``momentum above zero'' or ``size below the median,'' and picks the one question whose split most reduces the sum of squared errors, the same loss that OLS uses. The forecast in each new group is that group's average return. The tree then repeats the search inside each group, and keeps going until it reaches a stopping rule.
+
+\subsection{What a tree can capture: interactions}
+
+The tree in Figure~\ref{fig:20-tree} says that momentum predicts returns, and that it predicts them most strongly among small stocks. The effect of size depends on momentum: size matters for winners, but the tree does not ask about it for losers. This is an \term{interaction}\index{interaction effects|textbf}, in which the effect of one characteristic depends on another. A linear regression with the two characteristics entered separately cannot express it, because it gives size the same effect for every stock. A tree finds such interactions on its own, without being told where to look. It can also capture curved effects, such as a characteristic that matters only at its extremes, because a cut-off can be placed anywhere.
+
+\subsection{The danger: trees overfit}
+
+A tree's flexibility is also its weakness. If it is allowed to keep splitting, it will eventually put every training stock in a leaf of its own and fit the training data perfectly. In the terms of Figure~\ref{fig:09-biasvar}, such a tree has low bias but very high variance, because each leaf's forecast rests on one or two noisy returns. A single tree is also unstable: a small change in the training data can change the first question, and with it the whole tree.
+
+The tree is regularized by limiting its growth. Its main \term{hyperparameters} are its maximum \textbf{depth} and the minimum number of observations allowed in a leaf. Depth also controls how many characteristics can interact: a tree of depth one uses a single characteristic at a time, and deeper trees allow interactions among two, three or more. As with $\lambda$ in the previous section, these settings are chosen on validation data. The next two sections show a more powerful remedy, which is to combine many trees.
+
+\section{Random forests}
+\label{sec:20-rf}
+
+\subsection{From one tree to a forest}
+
+A single tree has two problems, as the previous section showed. It overfits if it is grown deep. It is also unstable, because a small change in the training data can change the first question and therefore the whole tree. Both are problems of variance. The remedy is to grow many trees and combine them into an \term{ensemble}\index{ensemble methods|textbf}. This works like the wisdom of crowds: the average of many independent guesses is usually more accurate than any one of them. Random forests, the subject of this section, build the crowd by growing trees side by side and averaging them. Gradient boosting, the subject of the next section, builds it by growing trees one after another. Both are among the most reliable methods in machine learning (Kuo 2024a).
+
+\subsection{Bagging: many trees on resampled data}
+
+If every tree were grown on the same data, every tree would be the same, and averaging them would change nothing. The trees must therefore differ. \term{Bagging}\index{bagging|textbf}, short for bootstrap aggregating (Breiman 1996), makes them differ by giving each tree a different version of the training data (Figure~\ref{fig:20-ensembles}). Each version is a \term{bootstrap sample}\index{bootstrap}: it has as many observations as the training data, drawn at random with replacement, so some observations appear several times and others not at all. A tree is grown on each sample, and the forecasts of all the trees are averaged.
+
+\begin{figure}[htbp]
+  \centering
+  \scalebox{0.9}{%
+\begin{tikzpicture}[
+    box/.style={draw=fenavy, fill=fenavy!10, rounded corners=2pt, font=\small,
+                minimum width=1.55cm, minimum height=0.6cm, align=center},
+    resbox/.style={draw=fenavy, fill=fenavy, text=white, rounded corners=2pt,
+                font=\small, minimum width=1.7cm, minimum height=0.6cm, align=center},
+    arr/.style={-stealth, thin, fenavy!80},
+  ]
+    \node[box] (data) at (0,0.6) {training\\data};
+    \foreach \bgI/\bgY/\bgL in {1/1.6/sample 1,2/0.6/sample 2,3/-0.6/sample $B$} {
+      \node[box] (s\bgI) at (2.8,\bgY) {\bgL};
+      \node[box] (t\bgI) at (5.2,\bgY) {tree \ifnum\bgI=3 $B$\else\bgI\fi};
+      \draw[arr] (data.east) -- (s\bgI.west);
+      \draw[arr] (s\bgI) -- (t\bgI);
+    }
+    \node[font=\small] at (2.8,0.0) {$\vdots$};
+    \node[font=\small] at (5.2,0.0) {$\vdots$};
+    \node[resbox] (avg) at (8.0,0.6) {average of\\all trees};
+    \foreach \bgI in {1,2,3} {\draw[arr] (t\bgI.east) -- (avg.west);}
+    \node[font=\scriptsize, text=fegray, anchor=north] at (2.8,-1.0) {drawn with replacement};
+    \node[font=\scriptsize, text=fegray, anchor=north] at (5.2,-1.0) {grown deep};
+  \end{tikzpicture}%
+}
+  \caption{Bagging and random forests. Each of $B$ trees is grown deep on its own
+    bootstrap sample of the training data, and the forecast is the average of
+    all the trees. In a random forest, each split may also choose only from a
+    random subset of the predictors, which makes the trees differ more.}
+  \label{fig:20-ensembles}
+\end{figure}
+
+\subsection{The random forest}
+
+A \term{random forest}\index{random forest|textbf} (Breiman 2001) adds a second source of variety. At each split, a tree may choose its question only from a random subset of the predictors, not from all of them. Without this rule, one strong predictor, such as momentum, would be chosen first in almost every tree, and the trees would look alike. With it, each tree is forced to try different predictors, so the trees differ more and the average gains more from combining them.
+
+\subsection{Why averaging works}
+
+Each tree in a forest is grown deep, so on its own it has low bias but high variance: it overfits its own sample in its own way. Because the trees differ, their mistakes point in different directions and partly cancel when they are averaged, while the patterns that most trees find survive. In the terms of Figure~\ref{fig:09-biasvar}, averaging keeps the low bias of deep trees and removes much of their variance. This is regularization by averaging rather than by penalty.
+
+The main hyperparameters are the number of trees, their maximum depth, the minimum number of observations in a leaf, and the number of predictors tried at each split. Adding trees rarely hurts, because it only makes the average more stable, so the number of trees is usually set as large as computing time allows.
+
+\section{Gradient boosting}
+\label{sec:20-gbm}
+
+\subsection{Correcting mistakes one step at a time}
+
+\term{Boosting}\index{boosting|textbf} combines trees in the opposite way to a random forest. Instead of growing many deep trees side by side, it grows small trees one after another, and each new tree is fitted to the errors that the trees before it left (Freund and Schapire 1997; Friedman 2001). The individual trees are deliberately weak, often only one or two questions deep, and are called \term{weak learners}. The power of boosting lies not in any one tree but in the long sequence of small corrections.
+
+An artillery crew finding its range is a good picture. The first shot misses. The crew measures by how much and in which direction, and adjusts its aim. The next shot misses by less, the crew adjusts again, and after many shots the aim is accurate. In \term{gradient boosting}\index{gradient boosting|textbf}, the first ``shot'' is a simple forecast such as the average return, the miss is the set of forecast errors, and each adjustment is a small tree fitted to those errors (Figure~\ref{fig:20-boosting}).
+
+\begin{figure}[htbp]
+  \centering
+  \scalebox{0.9}{%
+\begin{tikzpicture}[
+    box/.style={draw=fenavy, fill=fenavy!10, rounded corners=2pt, font=\small,
+                minimum width=1.9cm, minimum height=0.6cm, align=center},
+    resbox/.style={draw=fenavy, fill=fenavy, text=white, rounded corners=2pt,
+                font=\small, minimum width=1.9cm, minimum height=0.6cm, align=center},
+    arr/.style={-stealth, thin, fenavy!80},
+  ]
+    \node[box] (b0) at (0,0)    {start:\\average return};
+    \node[box] (b1) at (3.0,0)  {tree 1\\fits the errors};
+    \node[box] (b2) at (6.0,0)  {tree 2\\fits what remains};
+    \node[resbox] (b3) at (9.4,0) {forecast:\\sum of small steps};
+    \draw[arr] (b0) -- (b1);
+    \draw[arr] (b1) -- (b2);
+    \draw[arr] (b2) -- node[above=1pt, font=\scriptsize] {$\cdots$} (b3);
+  \end{tikzpicture}%
+}
+  \caption{Gradient boosting. The forecast starts from the average return. Each
+    small tree is fitted to the errors left by the forecast so far, and only a
+    fraction of it, set by the learning rate, is added. The final forecast is
+    the sum of many small corrections.}
+  \label{fig:20-boosting}
+\end{figure}
+
+\subsection{The learning rate}
+
+Each new tree is added with a small weight called the \term{learning rate}\index{gradient boosting!learning rate|textbf}, so the forecast moves only part of the way toward correcting each error. A small example shows how this works. Suppose the average return in the training data is 0.6\% a month, so boosting starts by forecasting 0.6\% for every stock. A first tree with a single question splits the stocks by momentum and finds that the forecast is too low for winners and too high for losers, by 0.4 percentage points in each case. With a learning rate of 0.1, boosting adds only a tenth of that correction: the forecast for winners rises to 0.64\%, and the forecast for losers falls to 0.56\%. The next tree is then fitted to the errors that remain, which may reveal a size effect among the winners, and so on for hundreds of trees.
+
+Moving cautiously is a form of regularization. A forecast that jumps all the way to each tree's answer would quickly fit the noise in the training data. Many small steps let the patterns that recur from tree to tree build up, while one-off noise has little effect. In the terms of Figure~\ref{fig:09-biasvar}, each new tree lowers bias, and the small learning rate keeps variance from growing too fast.
+
+\subsection{Hyperparameters}
+
+The main hyperparameters are the number of trees, their depth and the learning rate, which typically lies between 0.01 and 0.2. They work together. A lower learning rate needs more trees to reach the same fit, but it usually forecasts better. Unlike in a random forest, adding trees can eventually hurt, because each tree fits more of what remains, including noise. The number of trees is therefore chosen by \term{early stopping}: training stops when the error on the validation data stops falling.
+
+\subsection{Why ``gradient''? Gradient descent}
+
+The word ``gradient'' in gradient boosting comes from \term{gradient descent}\index{gradient descent|textbf}, a general method for finding the minimum of a loss function step by step when no formula gives the answer directly. The same method trains the neural networks of the next section, so it is worth seeing once in its simplest form.
+
+Suppose we want the value of $x$ that minimizes the loss $L(x) = x^2 - x - 2$. Calculus gives the answer directly: the slope $L'(x) = 2x - 1$ is zero at $x = 0.5$. Gradient descent finds the same answer without solving for it. It starts from a guess, measures the slope there, and takes a step downhill:
+\begin{equation}
+  x_{t+1} = x_t - \eta \, L'(x_t)
+  \label{eq:20-gd}
+\end{equation}
+where $\eta$ is the \textbf{learning rate}\index{learning rate}, the size of each step. The minus sign is what makes the step go downhill. Where the slope is positive, the loss rises with $x$, so the step reduces $x$; where the slope is negative, the step increases it.
+
+Start from $x_0 = 3$ with $\eta = 0.25$. The slope there is 5, so the first step moves to $3 - 0.25 \times 5 = 1.75$. The next steps move to 1.125, 0.8125 and 0.656, each halving the distance to the minimum (Figure~\ref{fig:20-gd}). The learning rate matters. With $\eta = 1$, the first step overshoots to $-2$, the second jumps back to 3, and the search never settles. Too large a step overshoots, and too small a step takes a long time to arrive.
+
+\begin{figure}[htbp]
+  \centering
+  \scalebox{0.9}{%
+\begin{tikzpicture}
+  \begin{axis}[
+    width=0.7\linewidth, height=0.42\linewidth,
+    axis lines=left,
+    axis line style={-stealth, thin},
+    xmin=-1.2, xmax=3.6, ymin=-2.6, ymax=4.8,
+    xlabel={$x$}, ylabel={Loss $L(x)$},
+    xtick={-1,0,1,2,3}, ytick={-2,0,2,4},
+    tick label style={font=\scriptsize},
+    samples=100, clip=false,
+  ]
+    \addplot[fegray, thick, domain=-1.1:3.4] {x^2 - x - 2};
+    % Gradient-descent steps from x0 = 3 with learning rate 0.25
+    \addplot[fenavy, thick, -stealth, mark=*, mark size=1.6pt,
+             mark options={fill=fenavy}]
+      coordinates {(3,4) (1.75,-0.6875) (1.125,-1.859) (0.8125,-2.152) (0.65625,-2.226)};
+    \node[fenavy, anchor=west, font=\scriptsize] at (axis cs:3.05,4)  {start, $x_0 = 3$};
+    \node[fenavy, anchor=west, font=\scriptsize] at (axis cs:1.8,-0.69) {step 1};
+    \node[fenavy, anchor=west, font=\scriptsize] at (axis cs:1.17,-1.86) {step 2};
+    \draw[gray, densely dashed, thin] (axis cs:0.5,-2.6) -- (axis cs:0.5,-2.25);
+  \end{axis}
+  \end{tikzpicture}%
+}
+  \caption{Gradient descent on the loss $L(x) = x^2 - x - 2$. Starting from
+    $x_0 = 3$ with a learning rate of 0.25, each step moves downhill by a
+    quarter of the slope, and the search closes in on the minimum at
+    $x = 0.5$.}
+  \label{fig:20-gd}
+\end{figure}
+
+Gradient boosting applies the same idea, with one twist. Instead of stepping a single number $x$ downhill, it steps the forecasts themselves. With squared-error loss, the direction in which the loss falls fastest is simply the set of current forecast errors. Fitting a tree to the errors is therefore the same as taking a step downhill. The boosting learning rate plays exactly the role of $\eta$: it sets how big each step is. The same trade-off applies. Large steps reach a good fit quickly but risk overshooting into the noise, while small steps are slower but safer.
+
+\section{Neural networks}
+\label{sec:20-nn}
+
+Neural networks are often introduced with pictures of the brain, which makes them seem more mysterious than they are. A reader who knows regression already knows most of what is needed. This section explains a network from a regression one step at a time, following Kuo (2024a). For a step-by-step treatment of neural networks, see Chapters 11 and 12 of Kuo (2026), ``Foundations of Deep Learning'' and ``Training Deep Learning Models.''
+
+\subsection{A regression is a network with no hidden layer}
+
+A linear regression multiplies each predictor by a coefficient, adds the results and an intercept, and reports the total. A \term{neural network}\index{neural network|textbf} draws the same calculation as a diagram (Figure~\ref{fig:20-nn}, left). Each predictor is a node in the \textbf{input layer}. The arrows carry \term{weights}, which play the role of coefficients. The node in the \textbf{output layer}, called a \term{neuron}\index{neural network!neuron|textbf}, adds up the weighted inputs plus a constant.
+
+Most of a network's vocabulary is new only in name. Table~\ref{tab:20-nnterms} translates it. One term needs care: in network language, the constant is called the \emph{bias}. This is simply the intercept, and it has nothing to do with the bias of the bias--variance trade-off.
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.38\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.85\linewidth-0.38\linewidth-2\tabcolsep\relax}@{}}
+\caption{Regression terms and their neural-network names.}
+\label{tab:20-nnterms} \\
+\toprule
+Regression & Neural network \\
+\midrule
+\endfirsthead
+\multicolumn{2}{@{}l}{\emph{(continued)}} \\
+\toprule
+Regression & Neural network \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Predictors $x_1, \dots, x_p$ & Inputs (the input layer) \\*
+Coefficients $\beta_1, \dots, \beta_p$ & Weights \\
+Intercept $\alpha$ & Bias \\
+Linear predictor $\alpha + \beta^{\top}x$ & A neuron's weighted sum \\
+Link function, such as the logistic & Activation function \\
+Fitted value & Output \\*
+Estimation (least squares, maximum likelihood) & Training (gradient descent) \\
+\end{longtable}
+\endgroup
+
+\subsection{Logistic regression is a network too}
+
+Suppose the target is not a return but a yes-or-no outcome, such as whether a borrower defaults. Logistic regression\index{regression!logistic} computes the same weighted sum, $a = \alpha + \beta^{\top}x$, and then passes it through the \term{sigmoid}\index{neural network!sigmoid} (logistic) function,
+\begin{equation}
+  \sigma(a) = \frac{1}{1 + e^{-a}},
+  \label{eq:20-sigmoid}
+\end{equation}
+which turns any number into a probability between 0 and 1. In a network, a function applied to a neuron's weighted sum is called an \term{activation function}\index{neural network!activation|textbf}.
+
+So a network with no hidden layer and a sigmoid output is exactly a logistic regression, and a network with no activation at all is exactly a linear regression. Nothing new has happened yet; only the names have changed.
+
+\begin{figure}[htbp]
+  \centering
+  \scalebox{0.9}{%
+\begin{tikzpicture}[
+    inp/.style={circle, draw=fenavy, fill=fenavy!12, minimum size=0.62cm, inner sep=0pt, font=\scriptsize},
+    hid/.style={circle, draw=fenavy, fill=fenavy!40, minimum size=0.62cm, inner sep=0pt, font=\scriptsize},
+    outn/.style={circle, draw=fenavy, fill=fenavy, text=white, minimum size=0.62cm, inner sep=0pt, font=\scriptsize},
+    wire/.style={-stealth, thin, fenavy!60},
+    lab/.style={font=\scriptsize, align=center, anchor=north},
+  ]
+    % ---------- Left: logistic regression ----------
+    \foreach \nnI in {1,...,4} {
+      \node[inp] (a\nnI) at (0,{2.25-0.9*\nnI}) {$x_{\nnI}$};
+    }
+    \node[outn] (ao) at (2.6,0) {$\sigma$};
+    \foreach \nnI in {1,...,4} {\draw[wire] (a\nnI) -- (ao);}
+    \draw[wire] (ao) -- (3.6,0) node[anchor=west, font=\small] {$\hat p$};
+    \node[lab] at (0,-1.95) {input\\layer};
+    \node[lab] at (2.6,-1.95) {output\\layer};
+    \node[font=\small\bfseries] at (1.4,2.05) {Logistic regression};
+
+    % ---------- Right: one hidden layer ----------
+    \begin{scope}[xshift=6.3cm]
+      \foreach \nnI in {1,...,3} {
+        \node[inp] (b\nnI) at (0,{1.8-0.9*\nnI}) {$x_{\nnI}$};
+      }
+      \foreach \nnJ in {1,...,4} {
+        \node[hid] (h\nnJ) at (2.0,{2.25-0.9*\nnJ}) {$h_{\nnJ}$};
+      }
+      \node[outn] (bo) at (4.0,0) {};
+      \foreach \nnI in {1,...,3} {\foreach \nnJ in {1,...,4} {\draw[wire] (b\nnI) -- (h\nnJ);}}
+      \foreach \nnJ in {1,...,4} {\draw[wire] (h\nnJ) -- (bo);}
+      \draw[wire] (bo) -- (5.0,0) node[anchor=west, font=\small] {$\hat{R}^{e}$};
+      \node[lab] at (0,-1.95) {input\\layer};
+      \node[lab] at (2.0,-1.95) {hidden layer\\(ReLU)};
+      \node[lab] at (4.0,-1.95) {output\\layer};
+      \node[font=\small\bfseries] at (2.2,2.05) {A network with one hidden layer};
+    \end{scope}
+  \end{tikzpicture}%
+}
+  \caption{From regression to a neural network. Left: a logistic regression
+    drawn as a network, with four inputs, one weight on each arrow, and an
+    output neuron that applies the sigmoid function. Right: adding a hidden
+    layer of neurons, each with its own weighted sum and ReLU activation, lets
+    the network learn nonlinear relationships and interactions.}
+  \label{fig:20-nn}
+\end{figure}
+
+\subsection{Hidden layers add flexibility}
+
+The genuinely new step is to put one or more \term{hidden layers}\index{neural network!hidden layer|textbf} between the inputs and the output (Figure~\ref{fig:20-nn}, right). Each hidden neuron computes its own weighted sum of the inputs and passes it through an activation function. The output neuron then combines the hidden neurons' results. The layers are called hidden because their outputs do not appear in the data; they are intermediate quantities that the network constructs for itself.
+
+The activation function is what makes hidden layers useful. Without it, each layer would compute a weighted sum of weighted sums, which is still a weighted sum, and the whole network would collapse back into a linear regression. The activation used almost universally in hidden layers today is the \term{rectified linear unit}\index{neural network!activation (ReLU)|textbf}, or ReLU, $\max(0, a)$. It returns its input when the input is positive and zero otherwise, so each hidden neuron is either switched on or switched off.
+
+With one hidden layer of $K$ ReLU neurons, the return forecast is
+\begin{equation}
+  \hat{R}^{e} = c + \sum_{k=1}^{K} v_k \max\!\left(0,\; a_k + \mathbf{w}_k^{\top}\mathbf{z}\right)
+  \label{eq:20-nn}
+\end{equation}
+Reading from the inside out: hidden neuron $k$ computes a weighted sum of the characteristics $\mathbf{z}$, with weights $\mathbf{w}_k$ and bias $a_k$, and switches off if the sum is negative. The output neuron then adds up the hidden neurons' results with weights $v_k$ and bias $c$. Because a return can take any value, the output neuron has no activation, as in a linear regression.
+
+\subsection{Training a network}
+
+A regression's coefficients come from a formula, but a network's weights do not, because no formula exists for them. They are found instead by the gradient descent of Section~\ref{sec:20-gbm}, applied to every weight at once.
+
+Training works as follows. The weights start at small random values. The slope of the loss with respect to every weight is then computed by an efficient use of the chain rule called \term{backpropagation}. Every weight takes a small step downhill, as in Equation~\eqref{eq:20-gd}. To save time, each step uses a small random batch of the training data rather than all of it. This is why the method is often called \term{stochastic} gradient descent\index{neural network!gradient descent}. One pass through all the training data is called an \term{epoch}, and training usually runs for many epochs.
+
+\section{Measuring success and interpreting a model}
+\label{sec:20-measure}
+
+\subsection{Measuring success}
+
+The statistical test is the out-of-sample $R^2$\index{out-of-sample R-squared@out-of-sample $R^2$}. The version used for individual stocks differs from the one used for the market in Chapter~\ref{ch:06}. Both compare the model's squared forecast errors with those of a simple benchmark, and they differ only in the benchmark. The shaded box gives the two formulas.
+
+\begin{technote}
+\textbf{Technical note: two versions of the out-of-sample $R^2$.} For the market, Campbell and Thompson (2008) use the historical mean $\bar{R}^{e}_t$, as in Equation~\eqref{eq:09-r2os}:
+\begin{equation}
+  R^2_{\text{OS}} = 1 - \frac{\sum_{t} \left(R^{e}_{t+1} - \hat{R}^{e}_{t+1}\right)^2}{\sum_{t} \left(R^{e}_{t+1} - \bar{R}^{e}_t\right)^2}
+  \label{eq:20-r2-mean}
+\end{equation}
+For individual stocks, Gu, Kelly and Xiu (2020) use a forecast of zero, and they pool the errors over all stocks $i$ and months $t$ in the test period:
+\begin{equation}
+  R^2_{\text{OS},0} = 1 - \frac{\sum_{i,t} \left(R^{e}_{i,t+1} - \hat{R}^{e}_{i,t+1}\right)^2}{\sum_{i,t} \left(R^{e}_{i,t+1}\right)^2}
+  \label{eq:20-r2}
+\end{equation}
+The only change is in the denominator, which holds the benchmark's squared errors. In Equation~\eqref{eq:20-r2-mean} the benchmark forecasts the historical mean; in Equation~\eqref{eq:20-r2} it forecasts zero, so its squared errors are simply the squared returns.
+\end{technote}
+
+Each version uses whichever benchmark is harder to beat in its setting.
+
+For the market as a whole, the harder benchmark is the historical mean. The equity premium is positive, and a long history estimates it reasonably well, so the historical mean is a good forecast. A forecast of zero would ignore the premium and be too easy to beat.
+
+For a single stock, the opposite holds, and the harder benchmark is zero. A stock's average return over a few years is extremely noisy. A stock that happened to have a lucky run has a high historical mean, but the luck will not repeat. Such forecasts usually do worse than simply forecasting zero, so a model measured against them would look better than it is.
+
+Because the two statistics use different benchmarks, they cannot be compared directly. Section~\ref{sec:09-benchmarks} explains why the choice of benchmark always deserves a second look. For individual stocks, even a monthly $R^2$\index{regression!R-squared@$R^2$} of a few tenths of a percent against zero is economically large (Figure~\ref{fig:20-gkx}).
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.9}{%
+\begin{tikzpicture}[font=\small]
+\begin{axis}[
+  width=0.62\linewidth, height=0.36\linewidth,
+  xbar, bar width=0.32cm,
+  axis x line*=bottom, axis y line*=left,
+  xmin=0, xmax=0.45,
+  xtick={0,0.1,...,0.4},
+  xticklabel style={/pgf/number format/fixed, font=\footnotesize},
+  yticklabel style={font=\footnotesize},
+  xlabel={Monthly out-of-sample $R^2$ (\%)},
+  xlabel style={font=\footnotesize},
+  symbolic y coords={NN,BT,RF,EN,OLS},
+  ytick={NN,BT,RF,EN,OLS},
+  yticklabels={Neural net (best),Boosted trees,Random forest,Elastic net,OLS-3},
+  enlarge y limits=0.15,
+  nodes near coords, nodes near coords align={horizontal},
+  every node near coord/.append style={font=\footnotesize,
+    /pgf/number format/fixed, /pgf/number format/fixed zerofill,
+    /pgf/number format/precision=2},
+  clip=false,
+]
+  \addplot[fill=gray!45, draw=none, bar shift=0pt] coordinates
+    {(0.16,OLS) (0.11,EN)};
+  \addplot[fill=fenavy, draw=none, bar shift=0pt] coordinates
+    {(0.33,RF) (0.34,BT) (0.40,NN)};
+  \node[anchor=south, font=\footnotesize] at (rel axis cs:0.5,1.02)
+    {OLS with all 920 covariates: $-3.46\%$ (off the scale)};
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{Monthly out-of-sample $R^2$ for individual U.S. stocks, 1987--2016, from Gu, Kelly and Xiu (2020). Trees and neural networks roughly doubled the $R^2$ of a three-characteristic OLS model. OLS on all 920 covariates, at $-3.46\%$, was far worse than forecasting zero.}
+\label{fig:20-gkx}
+\end{figure}
+
+\section{Where machine learning works in finance}
+\label{sec:20-applications}
+
+Return prediction is the most publicized use of machine learning in finance, but it is far from the only one, and it is among the hardest. Before putting the claim on trial, it helps to see where the methods succeed and where they struggle, because the contrast explains why return prediction is such a demanding test. Table~\ref{tab:20-applications} lists the main applications and where this book treats them.
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.21\linewidth}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.95\linewidth-0.21\linewidth-0.25\linewidth-4\tabcolsep\relax}@{}}
+\caption{Applications of machine learning in finance.}
+\label{tab:20-applications} \\
+\toprule
+Application & Target & Typical methods and where the book treats it \\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Application & Target & Typical methods and where the book treats it \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Cross-section of stock returns & next month's return relative to other stocks & penalized regression, boosted trees, neural networks; this chapter \\*
+Asset pricing models & factors and stocks' exposures to them & principal components, IPCA, autoencoders; this section \\
+Bond and currency premia & excess returns on bonds or currencies & penalized regression and neural networks on yields and macroeconomic data; Chapters~\ref{ch:12} and~\ref{ch:11} \\
+Volatility and risk & next period's realized volatility or tail loss & tree ensembles and networks against HAR and GARCH; Chapters~\ref{ch:07} and~\ref{ch:08} \\
+Credit risk & whether a borrower defaults & gradient boosting, random forests \\
+Fraud and anomaly detection & whether a transaction or trade is unusual & isolation forests, autoencoders (often unsupervised); Kuo (2024a) \\
+Text and news & sentiment, or the return after a news item & dictionaries, embeddings, language models \\*
+Portfolio construction & portfolio weights directly & shrinkage, hierarchical clustering; Chapter~\ref{ch:09} \\
+\end{longtable}
+\endgroup
+
+\subsection{Why success varies}
+
+Machine learning has excelled where three conditions hold: there is a great deal of data, the signal is strong, and the relationship stays the same once it is learned. Israel, Kelly and Moskowitz (2020) pointed out that return prediction fails all three (Table~\ref{tab:20-conditions}).
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.2\linewidth-4\tabcolsep)/2\relax}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.2\linewidth-4\tabcolsep)/2\relax}@{}}
+\caption{Why return prediction is harder than other machine-learning tasks.}
+\label{tab:20-conditions} \\
+\toprule
+Condition & Image recognition, credit scoring & Return prediction \\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Condition & Image recognition, credit scoring & Return prediction \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Amount of data & millions of labeled examples & a few hundred independent months \\*
+Strength of signal & strong: the label is usually clear & faint: most of the return is noise \\*
+Stability & stable: images and borrowers do not change because a model exists & unstable: investors trade away any pattern that becomes known \\*
+\end{longtable}
+\endgroup
+
+\term{Credit scoring}\index{credit scoring} shows the favorable case. Khandani, Kim and Lo (2010) trained models on the transaction and credit-bureau data of a large bank's customers. Their forecasts of consumer delinquencies were good enough to reduce losses substantially, and lenders now use gradient-boosted trees routinely. Return prediction is the unfavorable case. In the terms of Figure~\ref{fig:09-biasvar}, little data and a faint signal push the best model far toward the simple end. The flexibility that makes machine learning powerful elsewhere becomes a source of variance here. This is why the claim on trial is the hardest test the methods face in finance.
+
+\subsection{Machine learning inside economic models}
+
+One response to these difficulties is to use machine learning inside an economic model rather than in place of one. \term{Instrumented principal components}\index{IPCA (instrumented principal components)} analysis, or IPCA (Kelly, Pruitt and Su 2019), keeps the structure of a factor model while letting the data choose the factors. It lets stocks' exposures to a few factors depend on their characteristics. It finds that a handful of such factors explains the cross-section\index{cross-section of returns} of returns better than the standard factors. Gu, Kelly and Xiu (2021) extended the idea with an \term{autoencoder}\index{autoencoder}, a neural network that compresses many returns into a few factors. Chen, Pelger and Zhu (2024) used deep networks with the added condition, required by economic theory, that they must price all assets. Other studies use shrinkage to tame the factor zoo directly. Asking how many characteristics are really needed, Freyberger, Neuhierl and Weber (2020) found that only a small set of characteristics carries independent information about returns. Kozak, Nagel and Santosh (2020) questioned that goal and found that a model with many small exposures priced the cross-section better than one with a few characteristics. Economic structure makes these results easier to interpret, and it reduces the variance that pure prediction suffers from.
+
+\section{The claim}
+\label{sec:20-claim}
+
+\begin{callout}
+\textbf{Claim.} Machine-learning models find return predictability that traditional linear models miss, and it can be turned into profitable portfolios.
+\end{callout}
+
+The claim has three parts, each of which can fail on its own. The \textbf{statistical} part: flexible models forecast returns out of sample better than linear models with the same inputs. The \textbf{hidden} part: the gain comes from interactions or nonlinear effects, not just from using more known characteristics. The \textbf{economic} part: the gain survives trading costs and holds among stocks large enough to trade.
+
+\section{The original evidence and the debate it started}
+\label{sec:20-evidence}
+
+\subsection{The original study: Gu, Kelly and Xiu (2020)}
+
+Gu, Kelly and Xiu\index{Gu, Kelly and Xiu (2020)|textbf} used monthly CRSP\index{CRSP} returns for almost 30,000 U.S. stocks from 1957 to 2016, with 94 characteristics, 8 macroeconomic predictors and 74 industry indicators, about 920 inputs in all once interacted. Models were trained on 1957--1974, validated on 1975--1986 and tested on 1987--2016 (Table~\ref{tab:20-gkx}).
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{\dimexpr 0.8\linewidth-0.3\linewidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.3\linewidth}@{}}
+\caption{Monthly out-of-sample $R^2$ for individual U.S. stocks, 1987--2016, from Gu, Kelly and Xiu (2020).}
+\label{tab:20-gkx} \\
+\toprule
+Model & Out-of-sample $R^2$ (\%) \\
+\midrule
+\endfirsthead
+\multicolumn{2}{@{}l}{\emph{(continued)}} \\
+\toprule
+Model & Out-of-sample $R^2$ (\%) \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+OLS, all inputs & $-3.46$ \\*
+OLS-3 (size, book-to-market, momentum) & 0.16 \\
+Elastic net & 0.11 \\
+Random forest & 0.33 \\
+Gradient-boosted trees & 0.34 \\*
+Neural networks (one to five layers) & 0.33 to 0.40 \\
+\end{longtable}
+\endgroup
+
+A long--short portfolio of the top and bottom deciles of neural-network forecasts earned an annualized Sharpe ratio\index{Sharpe ratio} of 1.35 value-weighted and 2.45 equal-weighted\index{index weighting!equal-weighted}, against 0.61 and 0.83 for OLS-3. All the methods relied on the same signals: price trends (momentum and short-term reversal\index{short-term reversal}), liquidity\index{liquidity} (size, volume and the bid--ask spread\index{bid--ask spread}) and risk (volatility\index{idiosyncratic volatility} and beta\index{beta}), and the networks' edge came mainly from interactions among them. OLS with all inputs was a disaster, so regularization is essential, and the gap between equal- and value-weighted results suggests that much of the profit comes from small stocks.
+
+\subsection{Where the gains come from}
+
+Leippold, Wang and Zhou (2022) found stronger predictability in China's retail-dominated market, concentrated in small stocks and significant after costs. Avramov, Cheng and Metzker (2023) found that in the U.S. much of the profit came from stocks that are hard to arbitrage\index{arbitrage}: excluding microcaps\index{micro-caps} and distressed firms, or volatile periods, cut profits considerably, and high turnover\index{turnover} eroded them further after costs. The evidence therefore supports the statistical part of the claim, is weaker on the hidden part, and is weakest on the economic part.
+
+\subsection{The virtue of complexity, and a second look}
+\label{sec:20-complexity}
+
+The bias--variance trade-off of Figure~\ref{fig:09-biasvar} suggests that beyond some point more parameters only hurt. Belkin, Hsu, Ma and Mandal (2019) documented \term{double descent}\index{double descent|textbf} (Figure~\ref{fig:20-doubledescent}): test error peaks at the \term{interpolation threshold}\index{interpolation threshold|textbf}, where parameters equal observations and the model fits the training data exactly, and can fall again beyond it, because estimation then picks the fit with the smallest coefficients, a hidden form of shrinkage.
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{fegray}{HTML}{4D4D4D}
+
+\begin{figure}[htbp]
+  \centering
+  \scalebox{0.9}{%
+\begin{tikzpicture}[
+    declare function={
+      dtest(\x)  = 0.30 + 0.25/(\x + 0.6) + 0.28/((\x - 4)^2 + 0.4);
+      dtrain(\x) = 0.62*(1 - \x/4)^1.3;
+    }]
+  \begin{axis}[
+    width=0.64\linewidth, height=0.39\linewidth,
+    axis lines=left,
+    axis line style={-stealth, thin},
+    xmin=0, xmax=10.3, ymin=0, ymax=1.18,
+    xtick=\empty, ytick=\empty,
+    xlabel={Model complexity (number of parameters)},
+    ylabel={Forecast error},
+    samples=300,
+    clip=false,
+  ]
+    % Interpolation threshold: parameters = observations
+    \draw[gray, densely dashed, thin] (axis cs:4,0) -- (axis cs:4,1.12);
+    \node[gray!40!black, anchor=south, align=center, font=\small]
+      at (axis cs:4,1.12) {interpolation threshold\\(parameters $=$ observations)};
+
+    % Training error: falls to zero at the threshold and stays there
+    \addplot[fegray, thick, densely dotted, domain=0:4] {dtrain(x)};
+    \addplot[fegray, thick, densely dotted, domain=4:10] {0.004};
+
+    % Test error: classical U, peak at the threshold, second descent
+    \addplot[fenavy, very thick, domain=0:10] {dtest(x)};
+
+    % Right-hand labels
+    \node[fenavy, anchor=west] at (axis cs:10.1,0.33) {test error};
+    \node[fegray, anchor=west] at (axis cs:10.1,0.09) {training error};
+
+    % Regimes
+    \node[anchor=north, font=\small, align=center] at (axis cs:1.9,1.1)
+      {classical\\regime\\(Figure~\ref{fig:09-biasvar})};
+    \node[anchor=north, font=\small, align=center] at (axis cs:7.4,0.97)
+      {over-parameterized\\regime};
+  \end{axis}
+  \end{tikzpicture}%
+}
+  \caption{Double descent. To the left of the interpolation threshold, test
+    error follows the U shape of Figure~\ref{fig:09-biasvar}. Near the
+    threshold the model can fit the training data exactly, and test error
+    peaks. Beyond it, among the many models that fit the training data
+    exactly, estimation picks the one with the smallest coefficients, and
+    test error can fall again. The curve is stylized; whether the second
+    descent appears, and how far it falls, depends on the problem.}
+  \label{fig:20-doubledescent}
+\end{figure}
+
+Kelly, Malamud and Zhou (2024) argued that simple models understate predictability when the true relationship is unknown. Expanding the Goyal--Welch\index{Goyal--Welch critique} predictors into thousands of \term{random Fourier features}\index{random Fourier features|textbf}, random nonlinear transformations, and fitting them on windows as short as 12 months, they found that \term{market timing}\index{market timing} improved with complexity, even with a negative out-of-sample $R^2$. Nagel (2025) showed that when features far outnumber training months, the forecast becomes a weighted average of recent returns, a \term{volatility-timed momentum}\index{momentum!volatility-managed|textbf} strategy. On artificial data in which returns reverse, the method built the same strategy and performed poorly, so in his reading its historical success came from momentum happening to work. The debate is still active.
+
+Two lessons follow for any complex model: compare it with the simple strategy it may be reproducing, and test it on simulated data with a known truth (Section~\ref{sec:09-insample}). As Chapter~\ref{ch:06} showed, in-sample fit is a poor guide: the methods that worked build shrinkage and validation into the estimator, and their gains are largest in the cross-section and in hard-to-trade corners of the market, and smallest and most disputed for the market as a whole.
+
+\section{Lab~\thechapter: Replicating Gu, Kelly and Xiu (2020) on a portfolio panel}
+\label{sec:20-lab}
+
+\textbf{Claim on trial:} machine learning finds return predictability that linear models miss, and it survives costs. Because CRSP is not free, the lab replicates Gu, Kelly and Xiu (2020) on 149 value-weighted portfolios from the Kenneth R. French Data Library\index{Kenneth French data library}, 100 sorted on size and book-to-market and 49 industries, with the Fama--French\index{Fama--French factors} factors and the Goyal--Welch predictors from Lab~\ref{ch:06}. Portfolios average away single-stock noise and leave out microcaps, a test closer to what a large investor can trade. Each month the lab ranks ten characteristics covering size, value, past returns and risk, adds two market variables, and forecasts each portfolio's next-month return relative to the average. Five models compete: OLS-3, OLS on all twelve inputs, an elastic net, gradient-boosted trees and a three-layer neural network, retrained every five years, tuned on the preceding ten and tested from 1975.
+
+\begin{itemize}
+  \item \textbf{Part A} compares out-of-sample $R^2$, Diebold--Mariano tests against OLS-3, and top-minus-bottom 10\% long--short portfolios.
+  \item \textbf{Part B} repeats this for large portfolios only, before and after 2000, and net of costs of 10, 25 and 50 basis points\index{basis point}.
+  \item \textbf{Part C} checks how much the network depends on its seed, and which inputs matter most.
+  \item \textbf{Part D} tests the virtue of complexity with ridge regressions on 2 to 1,200 random Fourier features of the Goyal--Welch predictors\index{walk-forward evaluation!rolling window}.
+\end{itemize}
+
+\label{sec:20-stress}
+\textbf{Robustness checks.} Which assets are included matters most: Gu, Kelly and Xiu's equal-weighted Sharpe ratio was almost twice the value-weighted one, and excluding microcaps and distressed firms weakened profits (Avramov, Cheng and Metzker 2023). Flexible models trade more, so report turnover\index{transaction costs|textbf} with every Sharpe ratio (Chapter~\ref{ch:13}), and a result that holds for one seed or configuration only is closer to luck than skill. Validation controls overfitting within one design, not the choice among many designs\index{researcher degrees of freedom|textbf} (Section~\ref{sec:01-backtests}). The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:20-verdict}.
+
+\section{Where the evidence stands}
+\label{sec:20-verdict}
+
+The published studies point to a mixed picture: \textbf{in broad samples of U.S. stocks, regularized nonlinear models forecast returns better out of sample than linear models with a few characteristics. But they rely on familiar signals, and their gains are concentrated where trading is costly.} The table summarizes the evidence as of November 2026.
+
+{\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.45\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Out-of-sample forecasts in broad samples & \textbf{Yes} & Networks and trees roughly doubled the performance of leading regression strategies; unregularized OLS did worst. & Gu, Kelly and Xiu (2020) \\*
+\addlinespace[3pt]
+Hidden structure & \textbf{Weakly} & The gain comes mainly from interactions among familiar signals. & Gu, Kelly and Xiu (2020) \\
+\addlinespace[3pt]
+Value-weighted portfolios & \textbf{Partly} & Sharpe ratio of 1.35 value-weighted, against 2.45 equal-weighted. & Gu, Kelly and Xiu (2020) \\
+\addlinespace[3pt]
+Hard-to-arbitrage stocks excluded, after costs & \textbf{Weakly} & Excluding micro-caps, distressed firms or volatile periods cut profits, and turnover eroded them further. & Avramov, Cheng and Metzker (2023) \\
+\addlinespace[3pt]
+A retail-dominated market & \textbf{Yes} & Stronger predictability in China, concentrated in small stocks and significant after costs. & Leippold, Wang and Zhou (2022) \\*
+\addlinespace[3pt]
+Very large models for market timing & \textbf{Disputed} & Timing improved with thousands of random features, but may be volatility-timed momentum in disguise. & Kelly, Malamud and Zhou (2024); Nagel (2025) \\
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+}
+
+Machine learning is a better tool for an old job, not a source of hidden alpha.
+
+\textbf{What would change the picture.} The economic part of the claim would gain support if value-weighted, net-of-cost machine-learning portfolios beat regularized linear ones among large stocks, out of sample after 2016, by a significant margin.
+
+\label{sec:20-open}
+\textbf{Open questions.} How much of the edge remains among the largest 500 or 1,000 stocks, and is the virtue of complexity a general result or, as Nagel argues, disguised volatility-timed momentum? Chapters~\ref{ch:20} to~\ref{ch:22} ask the same question of transformers and time-series foundation models\index{foundation models}.
+
+\section{What practitioners and investors can use}
+\label{sec:20-investors}
+
+Machine learning is a better blender, not a crystal ball: expect a modest improvement over a well-built linear multi-factor model, not a new source of returns. Insist on the realistic number, value-weighted and after costs, because equal-weighted backtests\index{backtest} without costs flatter flexible models most. Treat interpretability\index{interpretability} as a risk control, and expect decay, because published signals lose power after publication (Chapter~\ref{ch:15}) and models trained on them inherit it. Beyond the questions of Section~\ref{sec:09-investors}, ask how much of the return comes from the smallest 20\% of stocks and from the short side, and how much the results change with the random seed or the training window.
+
+\begin{callout}
+\textbf{What Failed: the AI fund that trailed the index.} In 2017 the AI Powered Equity ETF (ticker AIEQ\index{AI Powered Equity ETF (AIEQ)}) launched as the first exchange-traded fund run by artificial intelligence, with its manager, EquBot, using IBM Watson to process news, filings and market data. By January 2022 it was up 57\% since launch, against 84\% for the S\&P 500 total return\index{return!total} index (Tech Brew 2022). Stock returns carry little signal, competition for it is intense, and a model that learns from the past is always learning about a market that has already moved on.
+\end{callout}
+
+% Key terms that this chapter uses without defining them, for readers new to finance.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Credit scoring.] Credit scoring uses data about borrowers to predict whether they will repay a loan.
+  \item[Feature importance.] Feature importance measures how much a model's accuracy depends on each of its inputs.
+  \item[Hyperparameters.] Hyperparameters are settings chosen before a model is fitted, such as the strength of a penalty or the depth of a tree, usually by testing them on validation data.
+  \item[Market timing.] Market timing means moving money into or out of the market according to a forecast of its next return.
+  \item[Partial dependence.] Partial dependence shows how a model's forecast changes as one input changes, with the other inputs held at typical values.
+  \item[Root, internal nodes and leaves.] A tree starts at its root, splits the data at each internal node, and gives its forecast at the leaves, where no further splits are made.
+  \item[Shapley values.] Shapley values split a single forecast into the contributions of each input, so that the contributions add up to the forecast.
+\end{description}
+\end{keyterms}

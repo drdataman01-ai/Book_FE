@@ -1,0 +1,38 @@
+% Chapter 8 infographic -- use right after \label{ch:08}: \input{chapters/ch08-infographic}
+\ifcsname FEinfoLoaded\endcsname\else\input{common/fe-infographic}\fi
+\begin{FEinfographic}{ch:08}{losses exceed a 99\% Value at Risk on about 1\% of days, in calm markets and in crises alike}
+
+\infopanel{1}{What a VaR model must get right}{%
+\infocards
+  {How often}{Breaches of a 99\% VaR should happen on about 1\% of days, which Kupiec's test checks.}
+  {When}{Breaches should not bunch together, which Christoffersen's test checks.}
+  {How bad}{VaR says where bad days begin, not how bad they are; expected shortfall measures that.}}
+
+\infopanel{2}{Evidence scoreboard}{%
+\begin{infoscore}
+\scoreitem{y}{Yes}{The best models in normal times}
+\scoreitem{y}{Yes}{Spotting bad models}
+\scoreitem{n}{No}{The models most banks use}
+\scoreitem{n}{No}{The first days of a crisis}
+\scoreitem{n}{No}{Deep in the tail (99.9\%)}
+\scoreitem{o}{Not measured}{The size of the worst losses}
+\end{infoscore}}
+
+\infopanel{3}{Key numbers}{%
+\infonumbers
+  {24,000}{trading days of U.S. data since 1930}
+  {about 240}{breaches expected at 99\%}
+  {22.6\%}{fall of the Dow on October 19, 1987}
+  {about 1/2}{of UBS's 2007 losses from ``VaR-neutral'' tranches}}
+
+\infopanel{4}{Lab: replicating the Kupiec and Christoffersen backtests}{%
+\begin{infolab}
+\item \textbf{A.} The number of 99\% VaR breaches for six models, with Kupiec's test and the regulatory zones.
+\item \textbf{B.} Whether breaches bunch, with Christoffersen's test.
+\item \textbf{C.} Crises, the deep tail and the window length. \textbf{D.} Expected shortfall at 97.5\%.
+\end{infolab}}
+
+\infoverdict
+  {VaR can measure risk reliably, but only with the right model, and not during a crisis.}
+  {Use a fast-reacting volatility forecast with fat tails, report expected shortfall alongside VaR, backtest all the time, and run scenario tests of past crises.}
+\end{FEinfographic}

@@ -1,39 +1,39 @@
-% Chapter 14 infographic -- use right after \label{ch:14}: \input{chapters/ch14-infographic}
+% Chapter 14 infographic -- use right after \label{ch:14}: \input{chapters/ch13-infographic}
 \ifcsname FEinfoLoaded\endcsname\else\input{common/fe-infographic}\fi
-\begin{FEinfographic}{ch:14}{low-risk stocks earn higher risk-adjusted returns than high-risk stocks}
+\begin{FEinfographic}{ch:14}{a strategy that is profitable in a backtest is profitable to trade}
 
-\infopanel{1}{The low-risk anomaly}{%
+\infopanel{1}{Three costs a backtest leaves out}{%
 \infocards
-  {A flat SML}{Returns rise with beta far less than the CAPM predicts, so low-beta stocks have positive alphas.}
-  {Betting against beta}{Lever low-beta stocks and short high-beta ones to build a market-neutral portfolio.}
-  {Why?}{Leverage constraints, lottery preferences, benchmarking and costly short selling all have support.}}
+  {Turnover}{Every trade pays half the bid--ask spread, and fast strategies trade most of their portfolio each month.}
+  {Market impact}{Large trades move prices against the trader, and the cost grows with the size of the fund.}
+  {The short side}{Borrowing fees, recalls and bans make many anomalies costly to short.}}
 
 \infopanel{2}{Evidence scoreboard}{%
 \begin{infoscore}
-\scoreitem{y}{Yes}{A flat security market line}
-\scoreitem{y}{Yes}{Idiosyncratic volatility}
-\scoreitem{p}{Partly}{The beta-neutral BAB factor}
-\scoreitem{p}{Weakly}{After profitability and investment factors}
-\scoreitem{p}{Weakly}{With betas that vary over time}
-\scoreitem{p}{Partly}{Interest-rate exposure}
-\scoreitem{o}{Disputed}{Why the line is flat}
+\scoreitem{y}{Yes}{Slow strategies, such as value}
+\scoreitem{p}{Partly}{Momentum}
+\scoreitem{n}{No}{Short-term reversal}
+\scoreitem{n}{No}{High-turnover strategies in general}
+\scoreitem{y}{More often}{For a large, patient institution}
+\scoreitem{n}{Often not}{Strategies that rely on the short side}
+\scoreitem{n}{No}{The average anomaly}
 \end{infoscore}}
 
-\infopanel{3}{Key numbers}{%
+\infopanel{3}{Monthly turnover and what it costs}{%
 \infonumbers
-  {about 1\%}{a month: most minus least volatile stocks}
-  {\$1.05}{of each BAB dollar in the smallest 1\% of stocks}
-  {0.7--0.8}{typical beta of a minimum-volatility fund}
-  {73.5\%}{of CFOs who use the CAPM for the cost of equity}}
+  {2\%}{monthly turnover of value}
+  {25\%}{monthly turnover of momentum}
+  {76\%}{monthly turnover of short-term reversal}
+  {4 bp}{a month: the average anomaly after costs and decay}}
 
-\infopanel{4}{Lab: replicating Black, Jensen and Scholes (1972) and Frazzini and Pedersen (2014)}{%
+\infopanel{4}{Lab: replicating Novy-Marx and Velikov (2016)}{%
 \begin{infolab}
-\item \textbf{A.} The security market line for portfolios sorted on beta, volatility and residual volatility.
-\item \textbf{B.} Low-minus-high and BAB-style long--short portfolios.
-\item \textbf{C.} Weighting, subperiods, interest rates and crises. \textbf{D.} Low-risk quintiles from an investor's view.
+\item \textbf{A.} Gross returns of value, momentum and short-term reversal. \textbf{B.} Turnover in a simulated universe.
+\item \textbf{C.} Net returns and break-even costs from 0 to 100 basis points.
+\item \textbf{D.} Capacity as assets grow to \$1 trillion. \textbf{E.} Buy/hold bands that cut momentum's turnover in half.
 \end{infolab}}
 
 \infoverdict
-  {The security market line is flatter than the CAPM predicts, one of the most robust findings in empirical finance. Whether low risk earns a separate premium that a beta-neutral portfolio can collect depends on construction, small stocks and overlap with other factors.}
-  {Minimum-volatility funds offer a better return per unit of risk, not higher returns, and can lag the market for years; BAB funds are levered, market-neutral and crash-prone.}
+  {Whether a profitable backtest is profitable to trade depends on how much the strategy trades, what it trades and how much money is behind it: slow strategies in liquid stocks survive realistic costs, while fast strategies in small stocks often do not.}
+  {Ask for turnover, the break-even cost against what you will pay, the cost of the short side and the net return at your planned size.}
 \end{FEinfographic}

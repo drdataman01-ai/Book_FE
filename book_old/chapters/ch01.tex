@@ -1,0 +1,904 @@
+% Chapter 1 -- Claim: A Strong Track Record Proves Skill
+% Requires: amsmath, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
+% Defines the callout box only if the preamble has not.
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+% Key terms are marked with \term{...}. The style is set once, in the
+% preamble; this fallback uses italics if the preamble has not defined it.
+\providecommand{\term}[1]{\emph{#1}}
+\makeatletter
+\@ifundefined{callout}{%
+  \newtcolorbox{callout}{breakable, enhanced,
+    colback=white, colframe=gray!70, boxrule=0.5pt, arc=1mm,
+    borderline west={2.5pt}{0pt}{gray!70},
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
+\chapter{Claim: A Strong Track Record Proves Skill}
+\label{ch:01}
+
+Most people meet the question of this chapter long before they study finance. A friend mentions that he doubled his money on a stock he picked himself, a coworker swears by a newsletter that called the last market crash, and you may also have seen a \term{mutual fund} advertise that it has beaten the market five years in a row.
+Each of these situations raises the same question: does a good record show that the person behind it knows better, or did that person simply get lucky? But we also know the small print on almost every fund advertisement. It warns that past performance is no guarantee of future results.
+
+\term{Empirical finance} is the branch of finance that tests ideas about markets against real data, such as decades of stock prices, fund returns and interest rates.
+Whether a good record reveals skill is also one of the oldest questions in empirical finance. In the 1960s mutual funds, which pool the savings of many investors and pay a professional manager to choose the stocks, sold themselves on their past returns. At the same time, the newly developed \term{Capital Asset Pricing Model (CAPM)}, which links the return an investor should expect from an investment to how strongly it moves with the overall market, gave researchers a way to ask whether those returns were more than the reward for bearing market risk. Jensen (1968) applied it to 115 mutual funds over 1945--1964. After expenses, the funds as a group earned less than a \term{buy-and-hold} position in the market with the same risk, and very few individual funds did better than chance would allow. In plain terms, the typical fund investor would have done better by buying a slice of the whole market and simply holding it. Jensen's measure, the intercept of a \term{regression} of a fund's \term{excess return} on the market's, is still called \term{Jensen's alpha}\index{alpha!Jensen's}. In everyday language, \term{alpha} is the extra return a manager earns beyond what the market alone would have delivered, and it is the yardstick for skill throughout this book.
+
+The question matters because the answer decides how money is managed. If a long record reveals skill, investors can find good managers by studying their past returns, and paying a manager to pick stocks, which is called \term{active management}, is sensible. If it does not, much of what investors pay for is luck, and a low-cost \term{index fund}, which simply holds every stock in a \term{market index} such as the S\&P~500, is the better choice. The statistics are harder than they look. Returns are noisy, histories are short, and thousands of managers and strategies are compared at once, so the best record among many is mostly the product of chance. A simple analogy shows why. If a thousand people each flip a coin ten times, chances are that one of them will flip ten heads in a row, yet nobody would call that person a skilled coin flipper. When thousands of fund managers compete, some of them will produce dazzling records in the same way. Fama and French (2010) returned to Jensen's question for this reason, asking whether the stars among thousands of modern funds outnumber what luck alone would produce, and they confirmed that few fund managers show enough skill to cover their costs. Bailey, Borwein, L\'opez de Prado and Zhu (2014) saw the same danger in backtests, which apply a trading rule to historical prices to see how it would have performed. They showed that because a researcher can try thousands of variations of a rule and report only the best one, the winning backtest can look impressive even when the rule has no value. Harvey, Liu and Zhu (2016) noted that the field had by then tested hundreds of factors against the usual bar, and argued that it should therefore demand stronger evidence before accepting a new result.
+
+The implications run through the rest of this book. Every claim that follows is supported by some record of past returns, and every one of them faces the same question: how much of the record is luck? The claim on trial\index{claims-on-trial method} in this chapter is the one every strategy builder hopes is true: \textbf{a long enough track record can reveal real skill.} Testing it means learning how long ``long enough'' is, and what else a record must show. The chapter also introduces the method the rest of the book uses: state the claim, understand it, verify it, judge it, and apply what survives.
+
+The chapter draws on four papers. Jensen (1968) and Fama and French (2010) test whether fund managers beat chance; their fund data are not free, so their results are discussed rather than rerun. Bailey et al.\ (2014) show how the best of many backtests misleads, and Harvey, Liu and Zhu (2016) ask how high the statistical bar must be. The lab in Section~\ref{sec:01-lab} replicates the logic of these papers with free data: it runs 1,000 strategies with no skill at all on the U.S. market since 1926, in order to measure how good a track record luck alone can produce, and how much higher the bar must be before a record counts as evidence of skill. A strategy here is simply a rule that decides, month by month, whether to own the stock market or to keep the money in safe \term{Treasury bills}.
+
+By the end of the chapter you will be able to:
+
+\begin{itemize}
+  \item compute simple, log and excess returns\index{return!excess}, and convert monthly means and volatilities\index{volatility} to annual ones;
+  \item calculate a Sharpe ratio\index{Sharpe ratio} and judge whether a mean return is statistically different from zero;
+  \item distinguish profits that come from bearing risk, from luck and from skill, and measure skill as alpha\index{alpha};
+  \item explain what market efficiency\index{efficient market hypothesis} implies for return predictability\index{return predictability}, and what it does not;
+  \item calculate how many years of data are needed to tell a good strategy from luck;
+  \item list the main ways a backtest can mislead;
+  \item use the book's claims-on-trial method and verdict scale\index{verdict scale}.
+\end{itemize}
+
+In the lab you will generate 1,000 trading strategies that are random by construction, run them on nearly a century of real U.S. market data, and watch several of them look like the work of a genius. Because you know that every one of them is pure luck, you will see exactly what a real record must do to stand out from luck. That is the best preparation for judging and building the strategies you will meet in the rest of the book and in your career.
+
+\begin{callout}
+\textbf{For readers new to the stock market.} The chapter uses a handful of everyday market terms, and readers who already know them can skip ahead to Section~\ref{sec:01-foundations}. A \term{share of stock} is a small piece of ownership in a company, and its price rises and falls as investors change their views about the company's future profits. Some companies also pay part of their profits to shareholders as a \term{dividend}. A \term{stock market index}, such as the S\&P~500, tracks the combined value of a large group of stocks, in this case about 500 of the largest U.S. companies, so when the news reports that ``the market'' rose 1\% today, it usually means that an index rose 1\%. A mutual fund pools money from many investors and invests it on their behalf. An \term{actively managed fund} pays a manager to pick stocks in the hope of beating the index, while an index fund simply buys all the stocks in the index and charges a much lower fee. A Treasury bill is a short-term loan to the U.S. government, and because the government is all but certain to repay it, its interest rate serves as the return an investor can earn without taking any risk. Finally, \term{risk} in this book means how much an investment's returns bounce around from year to year, which is why a stock that rises 30\% one year and falls 20\% the next is called riskier than a savings account, even if it ends up ahead.
+\end{callout}
+
+
+
+\section{Foundations: returns, risk and the Sharpe ratio}
+\label{sec:01-foundations}
+
+\subsection{Returns}
+
+The \term{simple return}\index{return!simple|textbf} on an asset over a period is the gain in price plus any income, divided by the starting price:
+\begin{equation}
+  R_t = \frac{P_t + D_t - P_{t-1}}{P_{t-1}}
+  \label{eq:01-return}
+\end{equation}
+where $P$ is the price and $D$ is any dividend or coupon paid during the period. For example, if you buy a share for \$100, receive a \$2 dividend during the year, and the share is worth \$108 at the end of the year, your simple return is $(108 + 2 - 100)/100 = 10$\%. A return that includes income is a \term{total return}\index{return!total|textbf}; one that does not is a \term{price return}. General readers can think of the log return, introduced next, as a bookkeeping device that makes returns easier to add up over time; it is almost the same as the simple return whenever returns are small. The \term{log return}\index{return!log|textbf}, $r = \ln(1 + R)$, is convenient because log returns add over time: the log return over a year is the sum of the twelve monthly log returns. Simple returns, by contrast, compound: \$1 grows to $(1 + R_1)(1 + R_2)\cdots(1 + R_n)$.
+
+\subsection{The risk-free rate and excess returns}
+\label{sec:01-rf}
+
+The return on a short-term government bill, such as a one-month U.S. Treasury bill, is treated as the \term{risk-free rate}\index{risk-free rate|textbf}, $R_f$: it is known in advance and carries essentially no default risk. 
+The excess return\index{return!excess|textbf} of an asset is its return minus the risk-free rate. If $R_{i,t}$ denotes the return on asset $i$ in period $t$ and $R_{f,t}$ denotes the risk-free rate for the same period, the excess return is
+\begin{equation}
+R^{e}_{i,t} = R_{i,t} - R_{f,t}.
+\label{eq:excess-return}
+\end{equation}
+Excess returns measure what an investor earns for bearing risk, and most of finance is about them. Following Cochrane (2005), this book writes an excess return as $R^{e}$ and reserves a lowercase $r$ for log returns.
+
+The average excess return of the stock market over bills is the \term{equity premium}\index{equity premium|textbf}. Writing $R_{m,t}$ for the return on the market portfolio, the equity premium is
+\begin{equation}
+E\left[R^{e}_{m,t}\right] = E\left[R_{m,t} - R_{f,t}\right],
+\label{eq:equity-premium}
+\end{equation}
+and its sample estimate over $T$ periods is
+\begin{equation}
+\bar{R}^{e}_{m} = \frac{1}{T}\sum_{t=1}^{T} R^{e}_{m,t} = \frac{1}{T}\sum_{t=1}^{T}\left(R_{m,t} - R_{f,t}\right).
+\label{eq:equity-premium-sample}
+\end{equation}
+
+
+
+
+\subsection{Expected return and volatility}
+\label{sec:01-expret}
+
+An asset's \term{expected return}\index{return!expected|textbf}, $E[R]$, is the average return an investor anticipates; it is never observed directly and must be estimated from history or from a model. Risk is usually measured by the \term{standard deviation}\index{standard deviation|textbf} of returns, called \term{volatility}\index{volatility|textbf}. In everyday terms, volatility is the size of a typical swing around the average: a volatility of 20\% means that a year in which stocks land 20 points above or below their usual return is entirely ordinary. Monthly figures are converted to annual ones by multiplying the mean by 12 and the standard deviation by $\sqrt{12}$, which assumes returns in different months are uncorrelated. For U.S. stocks over the last century, the annual equity premium has averaged roughly 6 to 8 percent with volatility near 20 percent, so a single year's return tells us very little about the expected return.
+
+\subsection{Why one year tells us so little}
+
+The problem is the size of the noise relative to the signal. Take an expected excess return of 7\%, the middle of that range, and a volatility of 20\%. The volatility is almost three times the expected return, so the randomness in any single year swamps the reward we are trying to measure. Figure~\ref{fig:01-oneyear} shows the range of outcomes this implies.
+
+\begin{enumerate}
+  \item \textbf{Ordinary years are far from the average.} About two years in three fall within one standard deviation of the expected return, between $7 - 20 = -13$\% and $7 + 20 = 27$\%. A gain of 27\% and a loss of 13\% are both ordinary years, even though the expected return is the same 7\% in each.
+  \item \textbf{Large swings are normal.} About 95\% of years fall within two standard deviations, $7 \pm 1.96 \times 20$, or roughly $-32$\% to 46\%. A year like 2008, when U.S. stocks fell by more than a third, lies just beyond this range. Such a year is rare, but it is not out of character for a market this volatile.
+  \item \textbf{Losing years are common.} Even though stocks are expected to beat bills by 7\% a year, 
+  the excess return is negative in about 36\% of years, or roughly one year in three. A single bad year is therefore no evidence that the equity premium has disappeared, and a single good year is no evidence that it is large.
+  \item \textbf{Averaging helps, but slowly.} Averaging over $T$ years shrinks the noise in the estimate to $20/\sqrt{T}$ percent. After 10 years the standard error is still about 6.3\%, so the average could plausibly lie anywhere from about $-5$\% to 19\%. Even after 100 years it is 2\%, giving a 95\% range of about 3\% to 11\%. This is why, after a century of data, researchers can say only that the equity premium is ``roughly 6 to 8 percent'' rather than give a precise number.
+\end{enumerate}
+
+The same arithmetic, applied to the \term{Sharpe ratio} rather than the average return, is what makes strategies so hard to evaluate in Section~\ref{sec:01-signal-noise}.
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+
+\begin{figure}[!htbp]
+  \centering
+  \scalebox{0.9}{%
+\begin{tikzpicture}[
+    % One-year excess return ~ Normal(mean 7%, s.d. 20%)
+    declare function={
+      mu = 7; sd = 20;
+      pdf(\x) = exp(-0.5*((\x-mu)/sd)^2)/(sd*sqrt(2*pi));
+    }]
+  \begin{axis}[
+    width=0.82\linewidth, height=0.42\linewidth,
+    axis lines=left,
+    axis line style={-stealth, thin},
+    xmin=-63, xmax=77, ymin=0, ymax=0.023,
+    xtick={-53,-33,-13,7,27,47,67},
+    ytick=\empty,
+    xlabel={One-year excess return (\%)},
+    ylabel={Likelihood},
+    samples=200, domain=-63:77,
+    clip=false,
+  ]
+    \addplot[name path=dens, draw=none] {pdf(x)};
+    \path[name path=base] (axis cs:-63,0) -- (axis cs:77,0);
+
+    % Plus or minus one standard deviation: -13% to 27%
+    \addplot[fill=fenavy!22, draw=none]
+      fill between[of=dens and base, soft clip={domain=-13:27}];
+    % Below zero
+    \addplot[fill=gray!60, fill opacity=0.6, draw=none]
+      fill between[of=dens and base, soft clip={domain=-63:0}];
+
+    % Edges of the one-sigma band
+    \draw[fenavy] (axis cs:-13,0) -- (axis cs:-13,{pdf(-13)});
+    \draw[fenavy] (axis cs:27,0)  -- (axis cs:27,{pdf(27)});
+
+    % Density curve on top
+    \addplot[fenavy, thick] {pdf(x)};
+
+    % Expected return
+    \draw[thick, dashed] (axis cs:7,0) -- (axis cs:7,0.0215)
+      node[above] {expected 7\%};
+
+    % Labels
+    \node[anchor=west] at (axis cs:-64,0.0122) {below zero: 36\%};
+    \node[fenavy, anchor=west] at (axis cs:25,0.0165)
+      {$\pm 1\sigma$: $-13\%$ to $27\%$};
+  \end{axis}
+  \end{tikzpicture}%
+}
+  \caption{A single year says little about how good the stock market is, because ordinary years range from large losses to large gains. The curve shows one year's excess return on the stock market, assuming an expected excess return of 7\% and volatility of 20\%. The blue band covers the middle two-thirds of years, from $-13$\% to 27\%; the gray area is the 36\% of years with a negative excess return.}
+  \label{fig:01-oneyear}
+\end{figure}
+
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.85\linewidth]{images/fig01-1-one-year-return.png}
+%\caption{One year's excess return on the stock market, assuming an expected excess return of 7\% and volatility of 20\%. The blue band covers the middle two-thirds of years, from $-13$\% to 27\%; the gray area is the 36\% of years with a negative excess return.}
+%\label{fig:01-oneyear}
+%\end{figure}
+
+
+\subsection{The Sharpe ratio}
+\label{sec:01-sharpe}
+
+Sharpe (1966) proposed judging an investment by its excess return per unit of risk:
+\begin{equation}
+  \mathrm{SR} = \frac{E[R] - R_f}{\sigma} = \frac{E[R^{e}]}{\sigma}
+  \label{eq:01-sr}
+\end{equation}
+
+The Sharpe ratio works much like a car's fuel economy. Miles per gallon tells you how far a car goes for each gallon it burns, and the Sharpe ratio tells you how much extra return an investment delivers for each unit of risk it carries. The stock market's long-run Sharpe ratio is around 0.3 to 0.4 a year. Because \term{leverage}\index{leverage} scales excess return and volatility equally, the Sharpe ratio does not change when a portfolio is levered up or down, which makes it the natural measure for comparing strategies (Figure~\ref{fig:01-sharpe-slope}).
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.85\linewidth]{images/fig01-2-sharpe-slope.png}
+%\caption{The Sharpe ratio is the slope of a line from the risk-free rate. Leverage moves a portfolio along its line, raising or lowering both excess return and volatility, but does not change the slope. A better strategy lies on a steeper line.}
+%\label{fig:01-sharpe-slope}
+%\end{figure}
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+
+\begin{figure}[!htbp]
+  \centering
+  \scalebox{0.9}{%
+\begin{tikzpicture}
+  \begin{axis}[
+    width=0.8\linewidth, height=0.42\linewidth,
+    axis lines=left,
+    axis line style={-stealth, thin},
+    xmin=0, xmax=41, ymin=0, ymax=16,
+    xtick={0,5,...,40},
+    ytick={0,5,10,15},
+    xlabel={Volatility, $\sigma$ (\% a year)},
+    ylabel={Expected excess return (\%)},
+    clip=false,
+  ]
+    % A higher Sharpe ratio, for comparison
+    \addplot[gray, thick, dashed, domain=0:28, samples=2] {0.5*x};
+    \node[gray, anchor=south] at (axis cs:23,14) {SR $= 0.5$};
+
+    % Capital allocation line through the market (Sharpe ratio 0.35)
+    \addplot[fenavy, thick, domain=0:40, samples=2] {0.35*x};
+
+    % Portfolios on the line
+    \fill[fenavy] (axis cs:10,3.5)  circle (2.6pt);
+    \fill[fenavy] (axis cs:20,7)    circle (2.6pt);
+    \fill[fenavy] (axis cs:30,10.5) circle (2.6pt);
+    \node[anchor=north west, inner sep=2pt] at (axis cs:10.3,3.5) {half in bills};
+    \node[anchor=north west, inner sep=2pt] at (axis cs:20.3,7)   {market, SR $= 0.35$};
+    \node[anchor=north west, inner sep=2pt] at (axis cs:30.3,10.5) {levered $1.5\times$};
+
+    % Risk-free asset at the origin
+    \node[anchor=east] at (axis cs:-0.6,1.6) {$R_f$};
+  \end{axis}
+  \end{tikzpicture}%
+}
+  \caption{Borrowing can make any strategy earn more, but only by taking more risk, so the fair comparison is return per unit of risk. The Sharpe ratio is the slope of a line from the risk-free rate. Leverage moves a portfolio along its line, raising or lowering both excess return and volatility, but does not change the slope. A better strategy lies on a steeper line.}
+  \label{fig:01-sharpe-slope}
+\end{figure}
+
+
+\subsection{Risk, luck and skill}
+
+Investors who make money in the stock market can do so for three different reasons. The distinction runs through the whole book.
+
+
+\begin{itemize}
+  \item \textbf{Bearing risk.} Stocks are riskier than Treasury bills, so over
+  time they have paid more. This extra return is the equity premium defined
+  above. An investor who simply buys and holds an index fund earns it without
+  any special ability. Profit from bearing risk is a reward for risk, not
+  evidence of skill.
+
+  Here are three examples. (i) A retiree who has held an S\&P~500 index fund since
+  1990 has earned far more than a savings account would have paid, without
+  ever picking a stock. (ii) A manager who borrows to hold the index at
+  1.5 times exposure, which means investing \$150 in stocks for every \$100
+  of the fund's own money (a practice called leverage), beats the index in most years, but only because he
+  carries 1.5 times its risk; in a crash he loses 1.5 times as much.
+  (iii) A trader who sells \term{out-of-the-money}\index{option!moneyness} \term{put options}\index{option!put} collects a small,
+  steady premium month after month and looks like a genius, until a market
+  crash wipes out years of gains. A put option of this kind works like
+  insurance against a market crash, so the trader is in effect an insurance
+  company that collects premiums in calm years and pays out heavily when
+  disaster strikes. In each case the extra return is payment
+  for risk that anyone could have taken.
+
+  \item \textbf{Luck.} Returns are noisy, so some investors do well by
+  chance, sometimes for years at a time. We also hear more about the winners
+  than the losers, which makes luck look more common than it is.
+
+  Here are three examples. (i) Ten thousand people each flip a coin every year to
+  decide whether to hold stocks or cash. After ten years, about ten of them
+  will have called the market right every single year, and some will write
+  books about their method. (ii) A newsletter sends 1{,}000 readers a
+  ``buy'' call on a stock and another 1{,}000 a ``sell'' call. Whichever way
+  the stock moves, half the readers now hold a correct prediction, and the
+  trick can be repeated on that half. (iii) An investor puts her savings into
+  one small biotech company just before it receives surprise drug approval.
+  Her gain was real, but it rests on a single draw, so it says almost nothing
+  about her ability.
+
+  Real streaks raise the same question. Bill Miller's Legg Mason Value Trust
+  beat the S\&P~500 in every calendar year from 1991 to 2005, a run of fifteen
+  years that made him the most celebrated fund manager of his era. In 2008
+  the fund lost about 55\% while the index fell about 38\%, and over his full
+  tenure his average return ended up only slightly above the index's. A
+  fifteen-year streak sounds impossible to achieve by chance, yet with
+  thousands of funds competing, some long streaks are to be expected, and
+  the streak alone cannot tell us how much was skill and how much was luck.
+
+
+  \item \textbf{Skill.} Skill is the ability to earn more than the risk taken
+  explains. It produces a return that a simple, cheap alternative carrying the
+  same risk would not have delivered. Skill usually comes from better
+  information, better analysis or better execution.
+
+  Here are three examples, one of each kind. 
+  With \textbf{(i) better
+  information}, an analyst counts cars in retailers' parking lots from
+  satellite images and forecasts sales before the companies report them.
+  With \textbf{(ii) better analysis}, a fund beats a portfolio with the same
+  market, \term{size and value exposures}, after fees, over twenty years and across
+  many independent bets. Here ``size and value exposures'' means the fund is
+  compared with a portfolio holding the same mix of small and large companies
+  and of cheap and expensive stocks, so that its success cannot be explained
+  by those well-known tilts alone (Chapter~\ref{ch:03}).
+  With \textbf{(iii) better execution}, a trading firm
+  buys and sells the same stocks as everyone else but pays less in \term{trading
+  costs}\index{transaction costs} and \term{price impact}\index{market impact}. It keeps a few \term{basis points}\index{basis point} per trade that others
+  give away. A basis point is one hundredth of a percentage point, so the
+  saving on each trade is tiny, but it adds up over millions of trades.
+
+  
+  Researchers and practitioners have documented several cases that are widely
+  regarded as genuine skill, and they fall into the same three groups.
+  
+  \begin{enumerate}
+    \item \textbf{Better information.} The parking-lot example is not hypothetical.
+  Satellite counts of retailers' parking lots are now sold to investors
+  willing to pay for them, and Katona, Painter, Patatoukas and Zeng (2025)
+  asked whether the data give their buyers a real edge. They found that
+  buyers were able to trade profitably ahead of \term{earnings announcements},
+  especially when the news was bad. Information that travels privately is
+  harder to observe, so Cohen, Frazzini and Malloy (2008) traced the school
+  ties between fund managers and executives. Managers earned higher returns
+  on stocks of companies whose senior officers had attended the same
+  university as the manager, which suggests that information can travel
+  through personal networks. Many \term{insider trades} are routine and blur the
+  signal in the rest, so Cohen, Malloy and Pomorski (2012) separated
+  corporate insiders who trade on a regular schedule from those who break
+  their routine. The routine trades carried little information, while the
+  unusual trades predicted future returns.
+
+    \item \textbf{Better analysis.} When thousands of funds compete, the best
+  records may be luck, and fund returns have too many extreme months for the
+  usual tests. Kosowski, Timmermann, Wermers and White (2006) addressed both
+  problems with a \term{bootstrap}\index{bootstrap}, asking whether the best mutual
+  fund records could be produced by luck alone. A bootstrap reshuffles a fund's actual monthly
+  results many times to see how good the best records would look if no
+  manager had any skill. They concluded that a minority of managers appear
+  to pick stocks well enough to cover their costs, and that their records are
+  difficult to explain by chance. Berk and van Binsbergen (2015) noted that
+  investors pour money into a skilled manager's fund until its percentage
+  return after fees looks ordinary, so they measured skill as the dollars a
+  fund adds rather than as a percentage return. By
+  that measure, the typical manager adds value, and differences in skill
+  persist for many years. Kacperczyk, Sialm and Zheng (2005) asked why a
+  professional would ignore the textbook advice to diversify, and found that
+  funds concentrating on a few industries tend to outperform after adjusting for
+  risk, consistent with managers who specialize in areas they understand well.
+
+    \item \textbf{Better execution.} Academic studies often conclude that
+  famous strategies lose their profits after trading costs, but they estimate
+  those costs from models rather than from real institutional trades.
+  Frazzini, Israel and Moskowitz (2018) studied the actual trades of a large
+  asset manager and found that its trading costs were much lower than the
+  estimates used in many academic studies. Careful
+  execution can therefore turn a strategy that looks unprofitable on paper
+  into one that works in practice. Speed is the extreme form of this
+  skill, and Baron, Brogaard, Hagstr\"om{}er and Kirilenko (2019) studied the
+  race among \term{high-frequency trading} firms. They found large and persistent
+  differences in performance among these firms, which use computers to buy and sell
+  within fractions of a second, and much of the difference was
+  explained by how fast each firm could trade.
+  
+  \end{enumerate}
+
+  Within the industry, the most frequently cited example is the Medallion
+  Fund of Renaissance Technologies, whose exceptionally strong record over
+  several decades is difficult to attribute to luck or to ordinary risk
+  (Zuckerman, 2019). It is worth keeping these examples in proportion,
+  however. Fama and French (2010) found that, after fees, very few mutual
+  funds show evidence of skill, even though some do before fees. Genuine
+  skill appears to exist, but it seems to be rare, and much of its value is
+  often captured by the managers rather than passed on to investors.
+  
+  
+\end{itemize}
+
+
+
+
+\begin{callout}
+\textbf{What Failed: Long-Term Capital Management.} 
+
+In 1994 John Meriwether, a star bond trader, founded a \term{hedge fund}, a lightly regulated investment fund for wealthy investors and institutions that is free to borrow heavily and bet on falling as well as rising prices. Its partners included Myron Scholes and Robert Merton, who would share the 1997 Nobel Prize in economics. The fund bet that small price gaps between closely related bonds would close, and it borrowed heavily to turn those small gaps into large profits. For several years the record looked like proof of skill, with returns of roughly 40\% a year after fees in 1995 and 1996. 
+
+In 1998, after Russia defaulted on its debt, investors everywhere fled to the safest assets, the gaps widened instead of closing, and the fund lost about \$4.6 billion in a few months. The Federal Reserve Bank of New York organized a rescue in which a group of banks put in \$3.6 billion to wind the fund down. Much of the fund's steady profit had been payment for bearing a rare crash risk, and a short record of good years could not reveal that risk until it struck (Lowenstein, 2000).
+\end{callout}
+
+
+
+\noindent\textbf{Which one is it?} Suppose an investor
+consistently chooses the right stock at the right time. Before calling this
+skill, ask two questions. First, \emph{does the risk explain it?} If the
+investor's picks are mostly high-risk stocks bought during a rising market,
+a cheap fund holding equally risky stocks might have done just as well, and
+the profit is a reward for risk. Second, \emph{does luck explain it?} If the
+record is short, or the investor is one of many whose picks we never hear
+about, a run of good calls is what chance alone would produce. Only when the
+answer to both questions is no does skill become the likely explanation. The
+rest of this section shows how finance measures it.
+
+\textbf{Finance measures skill with alpha}. The idea is simple even though the formula looks technical. We ask how much of a strategy's return could have been earned just by riding the market, and we call whatever is left over alpha. A regression is the statistical tool that does this split: it finds the straight line that best describes how the strategy's return moves with the market's. Regress a strategy's excess return on the market's excess return:
+\begin{equation}
+  R^{e}_{s} = \alpha + \beta\, R^{e}_{m} + \varepsilon \nonumber
+\label{eq:ch01_beta}
+\end{equation}
+where $R^{e}_{s} = R_s - R_f$ is the strategy's excess return, $R^{e}_{m} = R_m - R_f$ is the market's excess return, as in Equation~\eqref{eq:excess-return}, and $\varepsilon$ is the part of the return the regression does not explain. The coefficient $\beta$ (\term{beta}\index{beta|textbf}) measures how much market risk the strategy carries. A fund with a beta of 1.5, for example, tends to rise about 15\% when the market rises 10\% and to fall about 15\% when the market falls 10\%. The term $\beta\, R^{e}_{m}$ is therefore the return that market exposure alone would have delivered. The intercept $\alpha$ is what is left over, that is, the average return beyond what the strategy's market risk explains. For example, suppose a strategy has a beta of 0.6 and earns an average excess return of 6\% a year while the market earns 8\%. Market risk explains $0.6 \times 8 = 4.8$\%, so the strategy's alpha is $6 - 4.8 = 1.2$\% a year. Chapter~\ref{ch:03} develops this regression and its extensions to other sources of risk.
+
+A positive alpha is necessary for skill but not sufficient, because luck also produces positive alphas. Telling the two apart is the central problem of this chapter.
+
+\subsection{Estimating a mean, and how uncertain the estimate is}
+\label{sec:01-se}
+
+An average computed from a limited number of years is only an estimate of the true average, and the \emph{standard error} tells us how far off that estimate is likely to be. Given $T$ independent observations of a return with standard deviation $\sigma$, the sample mean $\bar{R}$ has a \term{standard error}\index{standard error|textbf} of
+\begin{equation}
+  \mathrm{SE}(\bar{R}) = \frac{\sigma}{\sqrt{T}}.
+  \label{eq:01-se}
+\end{equation}
+The standard error measures how far the sample mean is likely to fall from the true mean, and it shrinks only with the square root of the number of observations, so quadrupling the data merely halves it. The \term{t-statistic}\index{t-statistic|textbf} is a signal-to-noise ratio. It counts how many units of noise an average return sits above zero, and as a rule of thumb a value above about 2 means the result is unlikely to be luck. Formally, the t-statistic of a mean is the estimate divided by its standard error; under the hypothesis that the true mean is zero, it has approximately a standard \term{normal distribution}\index{distribution!normal}, so values beyond about $\pm 1.96$ occur by chance only 5\% of the time. Applied to the Sharpe ratio, the same arithmetic gives a useful rule: the t-statistic of a strategy's mean return is approximately its annual Sharpe ratio times the square root of the number of years. A Sharpe ratio of 0.5
+needs about 15 years of data before the t-statistic of its mean return reaches 1.96 (Figure~\ref{fig:01-years}).
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.85\linewidth]{images/fig01-3-years-needed.png}
+%\caption{How many years of return data are needed before a strategy's track record becomes statistically significant. The years count the length of the history being analyzed, not how long the strategy must trade or hold its positions. With a true Sharpe ratio of 0.5, about 15 years of data are needed to reach $t = 1.96$; with 0.25, about 61.}
+%\label{fig:01-years}
+%\end{figure}
+
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+
+\begin{figure}[!htbp]
+  \centering
+  \scalebox{0.9}{%
+\begin{tikzpicture}
+  \begin{axis}[
+    width=0.78\linewidth, height=0.4\linewidth,
+    axis lines=left,
+    axis line style={-stealth, thin},
+    xmin=0, xmax=61, ymin=0, ymax=5.4,
+    xtick={0,10,...,60},
+    ytick={0,2,4},
+    xlabel={Years of return data analyzed, $T$},
+    ylabel={t-statistic $\approx \mathrm{SR}\sqrt{T}$},
+    samples=200,
+    clip=false,
+  ]
+    % 5% significance
+    \addplot[thick, dashed, domain=0:60, samples=2] {2};
+    \node[anchor=south] at (axis cs:40,2.05) {5\% significance};
+
+    % t = SR * sqrt(T) for three Sharpe ratios
+    \addplot[thick, black, domain=0:27] {1.0*sqrt(x)};
+    \addplot[thick, fenavy, domain=0:60] {0.5*sqrt(x)};
+    \addplot[thick, gray!55, domain=0:60] {0.25*sqrt(x)};
+
+    \node[anchor=west] at (axis cs:28,{sqrt(27)}) {SR $= 1.0$};
+    \node[fenavy, anchor=west] at (axis cs:60.5,{0.5*sqrt(60)}) {SR $= 0.5$};
+    \node[gray, anchor=west] at (axis cs:60.5,{0.25*sqrt(60)}) {SR $= 0.25$};
+
+    % Years needed to reach t = 2
+    \fill (axis cs:4,2)  circle (2.4pt);
+    \fill (axis cs:16,2) circle (2.4pt);
+    \node[anchor=south] at (axis cs:4,2.08) {4};
+    \node[fenavy, anchor=south] at (axis cs:16,2.08) {16};
+  \end{axis}
+  \end{tikzpicture}%
+}
+  \caption{The weaker a strategy's edge, the longer its record must be before luck can be ruled out. The curves show how many years of return data are needed before a strategy's track record becomes statistically significant. The years count the length of the history being analyzed, not how long the strategy must trade or hold its positions. With a true Sharpe ratio of 0.5, about 15 years of data are needed to reach $t = 1.96$. With a Sharpe ratio of 0.25, about 61 years are needed.}
+  \label{fig:01-years}
+\end{figure}
+
+
+
+\textbf{Worked example.} A strategy earns an average excess return of 0.5\% a month with a monthly standard deviation of 4\% over 10 years. Its annual mean is 6\%, its annual volatility is 4\% $\times \sqrt{12} \approx 13.9$\%, and its Sharpe ratio is $6/13.9 \approx 0.43$. The t-statistic is $0.5 / (4/\sqrt{120}) \approx 1.37$. This is not \term{statistically significant} at the 5\% level, even though the strategy may be genuinely good.
+
+
+
+\section{Efficient markets and the random walk}
+\label{sec:01-efficient-markets}
+
+The starting point for any claim about beating the market is the \term{efficient market hypothesis}. In Eugene Fama's (1970) formulation, a market is efficient if prices fully reflect available information. The intuition comes from competition. If a predictable profit existed, traders would act on it, and their trading would push prices until the profit disappeared.
+
+Fama distinguished three versions by the information set\index{forecasting!information set}:
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.180\linewidth}>{\raggedright\arraybackslash}p{0.234\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.180\linewidth-0.234\linewidth-4\tabcolsep\relax}@{}}
+\toprule
+Version & Prices reflect & Implication if true \\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Version & Prices reflect & Implication if true \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+\term{Weak form} & Past prices and trading volume & Technical trading rules cannot earn abnormal returns \\*
+\term{Semi-strong form} & All public information & Analysis of public news and accounting data cannot earn abnormal returns \\*
+\term{Strong form} & All information, including private & Even insiders cannot earn abnormal returns \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
+
+An \term{abnormal return} in the table means a return above what the investment's risk would justify, which is the alpha of Section~\ref{sec:01-foundations}. Everyday examples make the three versions concrete. A trader who studies price charts to spot patterns is betting against the weak form. An investor who reads company earnings reports and news stories to pick stocks is betting against the semi-strong form. A company executive who buys shares before a merger is announced, using news the public does not yet have, is betting against the strong form, and in most countries that trade is illegal insider trading.
+
+Few economists believe the strong form\index{efficient market hypothesis!strong form}, and insider-trading laws exist because it fails. The weak and semi-strong forms are where the empirical debate happens, and where most claims in this book live.
+
+\textbf{What efficiency does not imply.} Efficiency is often misread, so three clarifications matter:
+
+\begin{enumerate}
+  \item \textbf{It does not mean returns are unpredictable in every sense.} Expected returns can vary over time or across stocks as compensation for risk. A predictable return that is fair payment for risk is consistent with efficiency, but a predictable return that is a free lunch is not. Separating the two is known as the \term{joint-hypothesis problem}\index{joint-hypothesis problem}, because every test of efficiency is also a test of a model of what returns \emph{should} be.
+  \item \textbf{It does not mean prices are always right.} It means mispricings are hard to identify and profit from after costs. Grossman and Stiglitz (1980) showed that a perfectly efficient market is impossible, because if prices reflected everything, no one would pay to gather information. Markets must be inefficient enough to reward the people who make them efficient. An old joke captures the tension. An economist walking with a friend refuses to pick up a \$20 bill lying on the sidewalk, explaining that if it were real, someone would already have taken it. Grossman and Stiglitz's point is that someone must keep looking for \$20 bills, and that a few can be found by those who search hardest.
+  \item \textbf{It does not mean volatility is unpredictable.} As Chapter~\ref{ch:07} shows, risk is far more predictable than return.
+\end{enumerate}
+
+\textbf{The random walk\index{random walk} as a benchmark.} If prices respond only to new, unpredictable information, price changes should look approximately like a random walk, in which tomorrow's change is unrelated to today's. Samuelson (1965) showed that properly anticipated prices fluctuate randomly. In plain words, if today's price already reflects everything investors expect, then only surprises can move it, and surprises by definition cannot be predicted from today's price change. Lo and MacKinlay (1988) later rejected a strict random walk for weekly U.S. returns, finding small but measurable patterns from one week to the next, so the model is not literally true. Even so, it remains the right benchmark, and any strategy must beat what a random walk, or a simple buy-and-hold position, would deliver.
+
+For this book, the practical lesson is a prior belief that we bring to every claim. Before seeing any evidence, we should treat a claim that a simple rule beats the market as unlikely. Such a claim is not impossible, since the following chapters find some rules that survive, but it is unlikely enough to demand strong evidence.
+
+\section{Signal and noise}
+\label{sec:01-signal-noise}
+
+The deeper reason claims are hard to verify is statistical. In finance, the signal is small and the noise is large. The differences between good and bad strategies are a few percent a year in expected return, while their returns move by fifteen or twenty percent a year at random.
+
+\textbf{The Sharpe ratio, again.}\index{Sharpe ratio|textbf} The yardstick for a strategy is the Sharpe ratio of Equation~\eqref{eq:01-sr}. In this section we write $\mu = E[R^{e}]$ for the strategy's expected excess return, so that $\mathrm{SR} = \mu/\sigma$, with all quantities annualized. The rest of the book uses $\mu$ in the same way. Against the stock market's long-run Sharpe ratio of 0.3 to 0.4 (Section~\ref{sec:01-foundations}), a strategy with a true Sharpe ratio of 0.5 after costs would be a valuable discovery, and 1.0 would be exceptional.
+
+\textbf{How precisely can we measure it?} With $T$ years of independent returns, the t-statistic for testing whether the true Sharpe ratio is zero is approximately
+\begin{equation}
+  t \approx \mathrm{SR}\,\sqrt{T}
+  \label{eq:01-t}
+\end{equation}
+In words, the evidence for a strategy grows only with the square root of the length of its record, so a record must be four times as long to make the evidence twice as strong. The shaded box shows where the formula comes from.
+
+\begin{technote}
+\textbf{Technical note: where the rule comes from.} Equation~\eqref{eq:01-t} follows from the definition of the Sharpe ratio in Equation~\eqref{eq:01-sr} in four steps.
+
+\begin{enumerate}
+  \item \textbf{Estimate the mean.} Take $T$ years of annual excess returns. Their sample average, $\bar{R}^{e}$, is our estimate of the expected excess return $\mu$.
+  \item \textbf{Find its standard error.} If the yearly returns are independent with volatility $\sigma$, the standard error of an average of $T$ of them is
+  \begin{equation}
+    \mathrm{SE}(\bar{R}^{e}) = \frac{\sigma}{\sqrt{T}} \nonumber
+  \end{equation}
+  \item \textbf{Form the t-statistic.} To test whether the true mean is zero, divide the estimate by its standard error:
+  \begin{equation}
+    t = \frac{\bar{R}^{e}}{\sigma/\sqrt{T}} = \frac{\bar{R}^{e}}{\sigma}\,\sqrt{T} \nonumber
+  \end{equation}
+  \item \textbf{Recognize the Sharpe ratio.} The ratio $\bar{R}^{e}/\sigma$ is the measured Sharpe ratio. Replacing $\bar{R}^{e}$ with the true mean $\mu$ gives the t-statistic we should expect on average:
+  \begin{equation}
+    t \approx \frac{\mu}{\sigma}\,\sqrt{T} = \mathrm{SR}\,\sqrt{T} \nonumber
+  \end{equation}
+  The result is approximate for two reasons: the measured mean differs from the true one, and in practice $\sigma$ must be estimated as well.
+\end{enumerate}
+
+The answer is the same with monthly or daily data. Sampling $k$ times a year gives $kT$ observations, each with mean $\mu/k$ and volatility $\sigma/\sqrt{k}$, so
+\begin{equation}
+  t = \frac{\mu/k}{(\sigma/\sqrt{k})/\sqrt{kT}} = \frac{\mu}{\sigma}\,\sqrt{T} \nonumber
+\end{equation}
+and the sampling frequency $k$ cancels.
+\end{technote}
+
+By the same reasoning, the standard error of an estimated annual Sharpe ratio is roughly $1/\sqrt{T}$. Lo (2002) gives the refinements for non-normal and autocorrelated returns, but the rough version is enough to see the problem. Setting $t = 1.96$, the usual 5\% significance threshold, in Equation~\eqref{eq:01-t} and solving for $T$ gives the number of years needed before a strategy's record can be distinguished from luck. Dividing both sides by SR gives $\sqrt{T} \approx 1.96/\mathrm{SR}$, and squaring gives
+\begin{equation}
+  T \approx \left(\frac{1.96}{\mathrm{SR}}\right)^2
+  \label{eq:01-T}
+\end{equation}
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}ll@{}}
+\toprule
+True Sharpe ratio & Years of data needed for the mean return to reach $t = 1.96$ \\
+\midrule
+\endfirsthead
+\multicolumn{2}{@{}l}{\emph{(continued)}} \\
+\toprule
+True Sharpe ratio & Years of data needed for the mean return to reach $t = 1.96$ \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+0.25 & 61 \\*
+0.50 & 15 \\
+0.75 & 7 \\
+1.00 & 4 \\*
+1.50 & 2 \\
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
+
+A strategy as good as the stock market itself needs more than two decades of data before its record is statistically convincing. Most fund track records, and most backtests shown to investors, are far shorter.
+
+A natural question is whether daily data could shorten the wait, since a decade contains about 2,500 trading days but only 120 months. They cannot. The precision of an average return depends on the number of years in the record, not on how often returns are written down, although frequent data do help when the goal is to measure risk. The shaded box explains why.
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{The same 16-year record measured annually, monthly and daily. The expected excess return is 10\% a year and the volatility is 20\% a year, so the annual Sharpe ratio is 0.5. The daily figures assume 252 trading days a year.}
+\label{tab:01-frequency} \\
+\toprule
+Frequency & Observations & Mean per & Volatility per & Sharpe ratio & $\sqrt{N}$ & $t$ \\
+ & $N$ & period (\%) & period (\%) & per period & & \\
+\midrule
+\endfirsthead
+\multicolumn{7}{@{}l}{\emph{(continued)}} \\
+\toprule
+Frequency & Observations & Mean per & Volatility per & Sharpe ratio & $\sqrt{N}$ & $t$ \\
+ & $N$ & period (\%) & period (\%) & per period & & \\
+\midrule
+\endhead
+\midrule
+\multicolumn{7}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Annual  & 16    & 10.000 & 20.00 & 0.500  & 4.00  & 2.00 \\*
+Monthly & 192   & 0.833  & 5.77  & 0.144  & 13.86 & 2.00 \\*
+Daily   & 4{,}032 & 0.040 & 1.26  & 0.0315 & 63.50 & 2.00 \\*
+\end{longtable}
+\endgroup
+
+\begin{technote}
+\textbf{Technical note: does the return frequency matter?} For the years-needed table above, it does not. Daily data give 252 observations a year instead of 12, but each daily return carries proportionally less information about the mean, so the years needed are the same. Table~\ref{tab:01-frequency} shows this for one strategy observed over the same 16 years at three frequencies. The strategy has an expected excess return of 10\% a year and a volatility of 20\%, so its Sharpe ratio is 0.5. The t-statistic is always the Sharpe ratio \emph{per period} times the square root of the \emph{number of periods}. Sampling more often multiplies the number of observations, but shrinks the Sharpe ratio of each one by the square root of that factor, and the two effects cancel.
+
+
+Going from annual to monthly data gives 12 times as many observations, but each has a mean 12 times smaller and a volatility $\sqrt{12}$ times smaller, so its Sharpe ratio is $\sqrt{12}$ times smaller. Since $\sqrt{N}$ grows by exactly $\sqrt{12}$, the t-statistic does not change. The same happens with 252 in place of 12 for daily data. This is why Equation~\eqref{eq:01-t} can be stated in years. $T$ counts observations only when the Sharpe ratio is measured over the same period, and for an annual Sharpe ratio that period is a year. Merton (1980) made the general point that the precision of an estimated expected return depends on the length of the history, not on the sampling frequency. With log returns the reason is especially plain. The average annual log return over $T$ years depends only on the first and last prices,
+\begin{equation}
+  \bar{r} = \frac{\ln P_T - \ln P_0}{T}, \nonumber
+\end{equation}
+because every price in between is added once and subtracted once. Dividing a century into days rather than months adds no information about the mean, and its standard error stays at about $20/\sqrt{100} = 2$\%, as in Section~\ref{sec:01-foundations}. The same holds for every claim about \emph{average} returns, such as the equity premium, value, momentum\index{momentum} and published anomalies\index{anomaly}, which is why Chapters~\ref{ch:03} to~\ref{ch:15} can test them on monthly data without losing anything.
+
+Claims about \emph{risk} are different. Each additional observation adds information about how much returns vary, so the precision of an estimated volatility grows with the number of returns $N$, not just the number of years:
+\begin{equation}
+  \mathrm{SE}(\hat{\sigma}) \approx \frac{\sigma}{\sqrt{2N}} \nonumber
+\end{equation}
+With 20\% volatility and a century of data, the standard error is about 0.41 percentage points with monthly returns ($N = 1{,}200$) and about 0.09 with daily returns ($N \approx 25{,}200$), more than four times smaller. This is why the chapters on volatility (Chapter~\ref{ch:07}), value at risk\index{Value at Risk (VaR)} (Chapter~\ref{ch:08}), trading costs (Chapter~\ref{ch:13}) and delta hedging\index{delta hedging} (Chapter~\ref{ch:17}) use daily or even intraday data.
+
+The rule ``the mean needs a long history, risk needs frequent data'' is a good guide, but it has limits.
+\begin{itemize}
+  \item \textbf{Very high frequency adds noise.} At intraday frequencies, the bounce between \term{bid and ask prices} (the prices at which dealers will buy and sell) and stale quotes distort measured returns, so for volatility, more frequent data help only up to a point.
+  \item \textbf{Daily betas can be biased.} Stocks that trade infrequently react to market news with a delay, which makes their daily betas too low. Monthly data, or a correction that adds lagged market returns to the regression (Dimson, 1979), reduces the bias. This matters for the low-risk anomaly\index{low-risk anomaly} in Chapter~\ref{ch:14}.
+  \item \textbf{Annualizing is not automatic.} The rules in Section~\ref{sec:01-foundations} for converting monthly figures to annual ones assume that returns are uncorrelated over time. When they are \term{autocorrelated}, meaning that one month's return partly echoes the last, as for many hedge funds and illiquid assets that trade rarely and are hard to price, a monthly Sharpe ratio multiplied by $\sqrt{12}$ can be badly off (Lo, 2002).
+  \item \textbf{The cancellation is exact only for log returns.} For simple returns, the precision of the mean still depends mainly on the length of the history, but only approximately.
+\end{itemize}
+\end{technote}
+
+The practical lesson is to match the data to the claim. To measure an expected return more precisely, you need a longer history, not more frequent data. To measure risk, more frequent data do help.
+
+\textbf{What a ten-year record can tell you.} The ``10 years'' here is not how long the strategy holds its positions, since the strategy may trade daily or monthly. It is the length of the track record you look at when you judge the strategy. A thought experiment shows how noisy that judgment is.
+
+\begin{enumerate}
+  \item \textbf{The strategy is genuinely good.} Suppose its true Sharpe ratio is 0.5. Nobody can see this number directly. We see only the Sharpe ratio measured from its \term{realized returns}\index{return!realized}.
+  \item \textbf{The measurement is noisy.} With a 10-year record, the standard error of the measured Sharpe ratio is about $1/\sqrt{10} \approx 0.32$.
+  \item \textbf{The record could show almost anything.} A 95\% range for the measured Sharpe ratio is $0.5 \pm 1.96 \times 0.32$, or about $-0.1$ to 1.1. Imagine watching the same strategy over many different decades. In one decade it looks like a star, with a Sharpe ratio near 1.0. In another it looks like a failure, with a Sharpe ratio near zero. The strategy is the same, and only the decade differs.
+  \item \textbf{Luck can look like skill.} A strategy with no skill has a true Sharpe ratio of zero, yet its measured Sharpe ratio exceeds 0.5 whenever the noise is more than $0.5/0.32 \approx 1.6$ standard errors. That happens in roughly 6\% of decades, by luck alone.
+\end{enumerate}
+
+Figure~\ref{fig:01-ten-year} draws the two cases side by side. The curves overlap heavily. A measured Sharpe ratio of 0.4, for example, is quite consistent with both a genuinely good strategy and a useless one. A ten-year record cannot reliably tell them apart.
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{fegray}{HTML}{4D4D4D}
+
+\begin{figure}[!htbp]
+  \centering
+  \scalebox{0.9}{%
+\begin{tikzpicture}[
+    % Estimated Sharpe ratio from a 10-year record: s.e. = 1/sqrt(10)
+    declare function={
+      se = 1/sqrt(10);
+      npdf(\x,\m) = exp(-0.5*((\x-\m)/se)^2)/(se*sqrt(2*pi));
+    }]
+  \begin{axis}[
+    scale only axis, width=0.7\linewidth, height=0.3\linewidth,
+    axis lines=left,
+    axis line style={-stealth, thin},
+    xmin=-1.25, xmax=1.8, ymin=0, ymax=1.6,
+    xtick={-1,-0.5,0,0.5,1,1.5},
+    xticklabel style={/pgf/number format/fixed},
+    ytick=\empty,
+    ylabel={Likelihood},
+    xlabel={Sharpe ratio measured from a 10-year record},
+    xlabel style={yshift=-28pt},
+    samples=200,
+    clip=false,
+  ]
+    % No skill: true SR = 0
+    \addplot[name path=null, fegray, thick, domain=-1.25:1.6] {npdf(x,0)};
+    \path[name path=base] (axis cs:-1.25,0) -- (axis cs:1.8,0);
+    % No-skill records above 0.5
+    \addplot[fill=gray!40, draw=none]
+      fill between[of=null and base, soft clip={domain=0.5:1.6}];
+
+    % Good strategy: true SR = 0.5
+    \addplot[fenavy, thick, domain=-0.75:1.8] {npdf(x,0.5)};
+
+    % Centers
+    \draw[fegray, dashed] (axis cs:0,0) -- (axis cs:0,{npdf(0,0)});
+    \draw[fenavy, dashed] (axis cs:0.5,0) -- (axis cs:0.5,{npdf(0.5,0.5)});
+    \node[fegray, anchor=south east, align=center] at (axis cs:0.05,1.3)
+      {no skill\\(true SR $= 0$)};
+    \node[fenavy, anchor=south west, align=center] at (axis cs:0.45,1.3)
+      {good strategy\\(true SR $= 0.5$)};
+
+    % Share of no-skill records above 0.5
+    \node[fegray, anchor=south west, align=left] at (axis cs:1.12,0.62)
+      {no-skill records\\above 0.5: about 6\%};
+    \draw[-stealth, gray] (axis cs:1.2,0.6) -- (axis cs:0.78,0.17);
+
+    % 95% range of the good strategy's measured Sharpe ratio
+    \draw[fenavy, thick, |<->|] (axis cs:-0.12,-0.33) -- (axis cs:1.12,-0.33);
+    \node[fenavy, anchor=north] at (axis cs:0.5,-0.36)
+      {95\% of decades: $-0.1$ to $1.1$};
+  \end{axis}
+  \end{tikzpicture}%
+}
+  \caption{What a 10-year record can show. Even a decade of results cannot reliably tell a good strategy from a useless one, because the two ranges of outcomes overlap heavily. The gray curve is the range of Sharpe ratios a strategy with no skill produces over different decades, and the blue curve is the same for a strategy with a true Sharpe ratio of 0.5. The shaded tail is the 6\% of decades in which the useless strategy beats 0.5 by luck.}
+  \label{fig:01-ten-year}
+\end{figure}
+
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.85\linewidth]{images/fig01-4-ten-year-record.png}
+%\caption{What a 10-year record can show. The gray curve is the range of Sharpe ratios a strategy with no skill produces over different decades; the blue curve is the same for a strategy with a true Sharpe ratio of 0.5. The shaded tail is the 6\% of decades in which the useless strategy beats 0.5 by luck.}
+%\label{fig:01-ten-year}
+%\end{figure}
+
+\textbf{Why prediction is harder than it looks.} The same arithmetic applies to forecasting. A model that explains just 1\% of the variation in monthly returns would be worth a great deal to an investor (Campbell and Thompson 2008 make this point). The share of variation a model explains is called its \term{$R^2$}\index{regression!R-squared@$R^2$}. An $R^2$ of 1\% is almost impossible to distinguish from zero in a few decades of data, and almost trivially easy to produce by accident when many models are tried. Small true effects, large noise and short samples together make finance a field where false discoveries are easy and true ones are hard to confirm.
+
+\section{Cautions: Why backtests can mislead}
+\label{sec:01-backtests}
+
+A backtest applies a strategy's rules to historical data to show how it would have performed. It is the most common evidence offered for a strategy and the easiest to get wrong. Seven problems account for most misleading backtests; later chapters treat each in depth.
+
+\begin{enumerate}
+  \item \textbf{Selection across many trials.} If you test 100 rules and report the best, its record overstates what it will deliver. It is like the Texas sharpshooter who fires at the side of a barn and then paints a target around the tightest cluster of bullet holes. This is the subject of the lab, and Chapter~\ref{ch:15} returns to it.
+  \item \textbf{Overfitting parameters.}\index{overfitting|textbf} Tuning a rule's settings, such as choosing a 47-day average instead of 50 or a threshold of 1.3 instead of 1.5, fits the noise in the sample. The result is like a suit tailored to a single pose, which fits perfectly in that pose and badly in every other. Each added parameter is another hidden trial.
+  \item \textbf{Look-ahead bias.}\index{look-ahead bias|textbf} A backtest may use information that was not available at the time, such as revised economic data, or accounting figures before their release date (Chapter~\ref{ch:02}). It is the backtesting equivalent of betting on a game after you already know the final score.
+  \item \textbf{Survivorship bias.}\index{survivorship bias|textbf} A backtest may test only companies or funds that still exist, which leaves out the ones that failed (Chapter~\ref{ch:02}). During the Second World War, the statistician Abraham Wald made the same point about bombers: studying the bullet holes on planes that came home would put armor in the wrong places, because the planes hit in the most vulnerable spots never returned.
+  \item \textbf{Ignoring costs.} Spreads, commissions, market impact, borrowing fees\index{borrowing fee} and taxes\index{taxes} can erase a paper profit, especially for high-turnover\index{turnover} strategies (Chapter~\ref{ch:13}).
+  \item \textbf{Short or unrepresentative samples.} A decade of data may contain only one market regime, such as a long boom with no crash, so it says little about how the strategy would fare when conditions change. As Section~\ref{sec:01-signal-noise} showed, a short sample cannot separate skill from luck.
+  \item \textbf{A story told after the fact.} Once a pattern is found, a plausible explanation is easy to write. The story makes the result feel robust, but it was written to fit the data, not tested against it.
+\end{enumerate}
+
+These problems compound. A backtest can be honest in every visible detail, using correct prices, real costs and no look-ahead, and still mislead because it is the best of many attempts that are never shown.
+
+\begin{callout}
+\textbf{What Failed: butter in Bangladesh.} To show how easy \term{data mining}\index{data mining} is, David Leinweber searched a United Nations database for series that tracked the S\&P 500. Butter production in Bangladesh fit well. Adding U.S. cheese production and the sheep population of Bangladesh and the United States raised the fit further, until the $R^2$ looked like a breakthrough. The relationship, of course, predicted nothing afterward. The example was a joke with a serious point: if you search enough series, you are guaranteed to find a near-perfect fit. Leinweber later wrote it up as ``Stupid Data Miner Tricks'' (2007).
+\end{callout}
+
+\section{The claims-on-trial method and the verdict scale}
+\label{sec:01-method}
+
+Every claim chapter and every lab opens with a line labelled \textbf{Claim on trial}\index{claims-on-trial method|textbf}. The label is a reminder of who does the work. You are not told whether the claim is true; you test it yourself. The book's subtitle, \emph{Active Learning by Verifying Famous Claims}, describes the bargain. Each trial needs a method (a regression, a backtest, a volatility model, a hedge), and you learn that method in order to reach a verdict, then use it again in later trials until it is second nature.
+
+The rest of this book applies one method to every claim. It is simple enough to remember and strict enough to protect against the problems in Section~\ref{sec:01-backtests}.
+
+\begin{enumerate}
+  \item \textbf{Claim} --- State what is asserted in one testable sentence. ``Momentum works'' is vague; ``stocks with the highest 12-month returns, skipping the last month, outperform the lowest by a positive average return after costs'' can be tested.
+  \item \textbf{Understand} --- Learn how the idea works and how the original evidence was produced, including the data, the sample period, the method and the number of alternatives the authors tried.
+  \item \textbf{Verify} --- Rebuild the result yourself, then stress-test it \term{out of sample}\index{in-sample versus out-of-sample}, in other markets, after costs and after publication.
+  \item \textbf{Judge} --- Compare your results with the published evidence, which each chapter summarizes in a section called \emph{Where the evidence stands}. Then reach your own verdict on the scale below, and date it with the sample period you tested.
+  \item \textbf{Apply} --- State what an investor or practitioner can actually use, and what remains open.
+\end{enumerate}
+
+\textbf{The verdict scale}\index{verdict scale|textbf}
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.162\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.162\linewidth-2\tabcolsep\relax}@{}}
+\toprule
+Verdict & Meaning \\
+\midrule
+\endfirsthead
+\multicolumn{2}{@{}l}{\emph{(continued)}} \\
+\toprule
+Verdict & Meaning \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Survives & The result replicates, holds out of sample and in other markets, and remains economically meaningful after costs. \\*
+Weakens & The result is real but smaller, less reliable, or narrower than claimed, for example only in small stocks or before publication. \\
+Fails & The result does not replicate, or disappears out of sample or after costs. \\*
+Provisional & The evidence is too new or too mixed for a firm verdict. \\
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
+
+Two habits make the method work. First, \textbf{decide the test before seeing the result}. Write down the claim, the data and the pass criteria in advance, so that the test cannot be bent to fit the outcome. Second, \textbf{always ask ``compared to what?''} Every claim is judged against a simple benchmark, such as the market, the historical average\index{historical-mean benchmark} or a naive rule, and never against zero.
+
+This chapter's lab applies the method to a claim at the root of the whole field: whether a track record can reveal real skill.
+
+\section{Lab~\thechapter: Replicating Bailey et al.\ (2014) and Harvey, Liu and Zhu (2016)}
+\label{sec:01-lab}
+
+\textbf{Claim on trial:} a long enough track record can reveal real skill. Bailey, Borwein, L\'opez de Prado and Zhu (2014) show that the best of many backtests can look impressive by chance alone, and Harvey, Liu and Zhu (2016) argue that the usual $t > 2$ hurdle is far too low when many strategies are tried. The lab therefore first measures what luck alone can do. It builds 1,000 strategies with no skill at all: each month, each one is either in the stock market or in Treasury bills, switching at random with an average holding period of 3 to 24 months, so that they look like real market-timing rules. The data are monthly U.S. market excess returns and Treasury bill rates since 1926 from the Kenneth R. French Data Library\index{Kenneth French data library}, and the code is in the repository folder \texttt{ch01-brilliant-by-chance/}.
+
+The first half of the sample, roughly 1926 to 1975, is the backtest\index{backtest|textbf}, in which a researcher would test the strategies and choose the best. The second half, roughly 1976 to today, is the period \textbf{after selection}, which shows what an investor who adopted the chosen strategy would have experienced. Skill is measured as alpha against buy-and-hold (Section~\ref{sec:01-foundations}), whose true value is zero for every strategy here. Its significance is the \term{one-sided}\index{hypothesis testing!one-sided and two-sided} t-statistic $t_\alpha$, computed with \term{Newey--West}\index{standard error!Newey--West (HAC)} standard errors (Chapter~\ref{ch:03}).
+
+The lab has three parts:
+\begin{enumerate}
+  \item \textbf{Signal and noise.}\index{signal and noise|textbf} Measure the market's Sharpe ratio over the full sample and every 10-year window (Lab Figure~\ref{ch:01}.1).
+  \item \textbf{Brilliant by chance.} Backtest the 1,000 random strategies, count those with $t_\alpha > 1.96$, pick the one with the highest $t_\alpha$, and follow all of them after selection (Lab Figures~\ref{ch:01}.2 to~\ref{ch:01}.4).
+  \item \textbf{The cost of searching.} Show how the best backtest $t_\alpha$ rises as the number of strategies tried grows from 1 to 1,000 (Lab Figure~\ref{ch:01}.5).
+\end{enumerate}
+
+Because every strategy has zero skill, statistics tells us roughly what to expect. About 25 of the 1,000 strategies (2.5\%) should show a significant alpha in the backtest, and the highest backtest $t_\alpha$ should be about 3.2. The \term{Bonferroni threshold}, which divides the usual 5\% chance of a false alarm among all 1,000 tries, is $t_\alpha > 3.89$. After selection, the backtest ``winners'' should have an average $t_\alpha$ of about zero. The lab ends by asking you to write your own verdict on the claim, using the scale of Section~\ref{sec:01-method} and the numbers from your own run, and to compare it with Section~\ref{sec:01-verdict}.
+
+\section{Where the evidence stands}
+\label{sec:01-verdict}
+
+The published studies point to a clear pattern: \textbf{a track record can reveal real skill, but only when it is long enough, clears a bar that allows for how many strategies were tried, and keeps working after it was chosen.} Most records do not meet these conditions, and genuine skill appears to be rare. The table summarizes the evidence as of November 2026.
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.19\linewidth-0.13\linewidth-0.22\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.22\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Mutual funds as a group, after fees & \textbf{No} & The average fund earns less than a cheap market fund with the same risk, and few funds beat what chance alone would produce. & Jensen (1968); Fama and French (2010) \\*
+A minority of skilled managers & \textbf{Yes} & The best records of a small group of managers are hard to explain by luck, and differences in skill persist for many years. & Kosowski, Timmermann, Wermers and White (2006); Berk and van Binsbergen (2015) \\
+Records with an identifiable edge & \textbf{Yes} & Profits that trace back to better information or cheaper execution are evidence of skill, not only of luck. & Katona et al.\ (2025); Frazzini, Israel and Moskowitz (2018) \\
+Short records & \textbf{No} & A Sharpe ratio of 0.5 needs about 15 years of data to reach $t = 1.96$, and most records are far shorter. & Lo (2002); Section~\ref{sec:01-signal-noise} \\*
+The best of many backtests & \textbf{No} & When many strategies are tried, the best one looks impressive by chance alone, so the usual bar of $t = 2$ is far too low. & Bailey et al.\ (2014); Harvey, Liu and Zhu (2016) \\
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
+
+A record therefore counts as evidence of skill only if it meets three conditions:
+
+\begin{enumerate}
+  \item \textbf{It is long enough for its Sharpe ratio:} about $(1.96/\mathrm{SR})^2$ years, roughly 15 years for a Sharpe ratio of 0.5 and 4 years for 1.0 (Section~\ref{sec:01-signal-noise}).
+  \item \textbf{It clears a bar that allows for how many strategies were tried:} $t_\alpha > 3.89$ after 1,000 tries, and, Harvey, Liu and Zhu (2016) argue, a $t$ of about 3 for any new finding, because the field has already tested so many ideas.
+  \item \textbf{It keeps working on data that played no part in choosing it}, such as the period after the strategy was selected.
+\end{enumerate}
+
+\textbf{What would change the picture.} The claim would gain broader support if large groups of managers, chosen in advance, kept beating cheap alternatives after fees over long periods. It would be rejected if even the managers singled out by Kosowski and colleagues and by Berk and van Binsbergen lost their edge in later data.
+
+\section{What practitioners and investors can use}
+\label{sec:01-investors}
+
+The most important lesson is to judge evidence by \textbf{how it was produced}, not by how good it looks. A spectacular record and a modest one can carry the same information, or none, depending on the search behind them. Before trusting a record, remember that a backtest may be the best of many tries, look at what happened after the strategy was chosen, and compare the result with what a low-cost index fund earned over the same years.
+
+\textbf{Questions to ask a fund manager or strategy vendor:} How many strategies or settings did you test before choosing this one? Which part of the record is live, and which is a backtest? When was the design fixed, and how has it performed since? What is the alpha against the benchmark, with its t-statistic? Are transaction costs, fees and taxes included?
+
+% Key terms that this chapter uses without defining them, for readers new to finance.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Buy-and-hold.] Buy-and-hold means buying an investment and keeping it, without trying to time when to get in or out.
+  \item[Data mining.] Data mining means searching through many variables or rules until one happens to fit the past, which usually means it was found by luck.
+  \item[Earnings announcement.] An earnings announcement is the date on which a company publicly reports its profits for the latest quarter or year.
+  \item[Insider trades.] Insider trades are purchases or sales of a company's shares by its own executives and directors.
+  \item[Newey--West standard errors.] Newey--West standard errors adjust a statistical test for returns that are linked from one period to the next.
+  \item[Normal distribution.] The normal distribution is the familiar bell-shaped curve, in which about 95\% of outcomes fall within two standard deviations of the average.
+  \item[One-sided test.] A one-sided test looks for results that are surprising in one direction only, such as an alpha that is too high to be luck.
+  \item[Out of sample.] See Chapter~\ref{ch:06}, Section~\ref{sec:09-insample}, page~\pageref{sec:09-insample}.
+  \item[Out-of-the-money option.] See Chapter~\ref{ch:17}, Section~\ref{sec:14-foundations}, page~\pageref{sec:14-foundations}.
+  \item[Price impact.] Called market impact there. See Chapter~\ref{ch:13}, Section~\ref{sec:17-capacity}, page~\pageref{sec:17-capacity}.
+  \item[Realized return.] A realized return is the return that actually happened, as opposed to the return that was expected.
+  \item[Statistically significant.] A result is statistically significant when it would be unlikely to arise by chance alone, usually with less than a 5\% chance.
+  \item[Trading costs.] See Chapter~\ref{ch:13}, Section~\ref{sec:17-anatomy}, page~\pageref{sec:17-anatomy}.
+\end{description}
+\end{keyterms}

@@ -1,4 +1,4 @@
-% Chapter 18 -- Claim: Low-Risk Stocks Beat High-Risk Stocks
+% Chapter 17 -- Claim: A Profitable Backtest Is Profitable to Trade
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -23,208 +23,478 @@
 }{}
 \makeatother
 
-\chapter{Claim: Low-Risk Stocks Beat High-Risk Stocks}
+\chapter{Claim: A Profitable Backtest Is Profitable to Trade}
 \label{ch:14}
 \providecommand{\term}[1]{\emph{#1}}
 
-Common sense says that riskier investments must pay more on average, or no one would hold them. Yet investors who bought the dull, steady stocks of the market, such as utilities and grocery chains, have historically done about as well as those who bought the most exciting ones, with far smaller swings along the way. This chapter asks whether that pattern is real, why it might exist, and whether an investor can profit from it.
+Many brokers now advertise commission-free trading, and it is easy to conclude that buying and selling shares costs nothing. It does not. Every purchase is made at a slightly higher price than every sale, and large orders push prices against the trader. These hidden costs are small on any one trade, but a strategy that trades often pays them again and again. This chapter asks how much of a strategy's backtested profit survives them.
 
-The capital asset pricing model\index{capital asset pricing model (CAPM)} makes one central prediction: assets that move more with the market should earn more. If a stock's beta\index{beta} doubles, its expected excess return\index{return!excess} should double too. This was among the first predictions in finance to be tested, and Chapter~\ref{ch:03} showed that it failed early. Black, Jensen and Scholes (1972) and Fama and MacBeth (1973), who estimated the link between returns and beta month by month and averaged the results, found that average returns did rise with beta, but far less steeply than the theory implied. Black (1972) offered an explanation based on limits to borrowing. Some investors want more risk but cannot borrow freely. Instead of borrowing, they buy high-beta stocks, which pushes up their prices and lowers their later returns.
+Most of the claims tested so far, from size and value to momentum and trend following, were documented with \textbf{paper returns}\index{return!paper versus implementable}: the returns of portfolios rebuilt every month at recorded closing prices, in any size, at no cost. Researchers have long known that this is a simplification. It matters because of how an efficient market is defined. Jensen (1978) argued that a market is efficient with respect to some information if no one can earn \emph{economic} profits by trading on it, meaning profits after all the costs of trading. Grossman and Stiglitz (1980) went further. They showed that prices cannot reflect all information perfectly, because then no one would be paid for the cost of collecting it. On this view, some patterns in returns should survive on paper but not after costs, since costs are exactly what stops investors from trading them away.
 
-For two decades the flat security market line was treated as a curiosity. It became a claim about profits when later research made the effect larger and easier to trade. Ang, Hodrick, Xing and Zhang (2006) tested the theory that only market risk is priced, and found that stocks with high \term{idiosyncratic volatility}\index{volatility}, the part of volatility not explained by the market, earned strikingly low returns. Asking why professionals did not trade such mispricing away, Baker, Bradley and Wurgler (2011) argued that fund managers judged against a benchmark have little reason to correct the mispricing. To show that the pattern reflects limits on borrowing everywhere, not a quirk of U.S. stocks, Frazzini and Pedersen (2014) built a leveraged ``betting-against-beta'' factor that earned high risk-adjusted returns in many countries and asset classes. The pattern is now called the \term{low-risk anomaly}\index{low-risk anomaly|textbf}. Novy-Marx and Velikov (2022) later argued that much of the betting-against-beta performance comes from the way the factor is built, not from low risk itself.
+The question became pressing in the early 2000s, when researchers began to work out what it would cost to trade the best-known anomalies\index{anomaly}, the patterns in returns that standard risk models cannot explain (Chapter~\ref{ch:03}). Momentum, which trades often, was the natural first target. Lesmond, Schill and Zhou (2004) found that momentum\index{momentum} trades are concentrated in stocks that are expensive to trade, and concluded that most of its profits disappear after costs. Since a large fund also moves prices when it trades, Korajczyk and Sadka (2004) measured how much large orders move prices, and found that momentum profits shrink as the portfolio grows. To compare many strategies at once, Novy-Marx and Velikov (2016) then estimated trading costs for 23 well-known anomalies. Most strategies that replace more than half of their portfolio each month were no longer significant after costs. Because these estimates came from public data rather than an actual investor's trades, Frazzini, Israel and Moskowitz (2018) challenged their size. Using a large manager's own trading records, they found costs far below what the academic estimates assumed. The same patterns therefore look profitable or unprofitable depending on whose costs are used.
 
-The question matters in practice. Low-volatility funds grew rapidly after 2010, and companies still use beta to set the return a new project must earn. The anomaly is also hard to exploit, because exploiting it needs leverage, which is exactly what the explanation says investors avoid. The claim on trial\index{claims-on-trial method} is: \textbf{low-beta and low-volatility stocks earn higher risk-adjusted returns than high-risk stocks, and a leveraged long--short portfolio captures the difference.}
+This chapter continues Part VII. Chapter~\ref{ch:13} showed that an investor's own selling decisions can separate the return a stock earns from the return its holder receives. This chapter turns to the costs that every trade pays. The answer matters for research and for practice. For research, it decides whether an anomaly is evidence against market efficiency, or only a pattern that no investor could exploit. For practice, it decides which published strategies are worth running, how much money each can manage, and whether a fund that offers them can deliver its backtest. The claim on trial\index{claims-on-trial method} is the assumption behind most published backtests\index{backtest}: \textbf{a strategy that is profitable in a backtest is profitable to trade.}
 
-The lab in Section~\ref{sec:18-lab} repeats two classic tests on the free beta- and variance-sorted portfolios of the Kenneth R. French Data Library: the security market line of Black, Jensen and Scholes (1972) and the cross-sectional regressions of Fama and MacBeth (1973). It then rebuilds the betting-against-beta factor of Frazzini and Pedersen (2014) and compares it with AQR's free published series. The goal is to check whether low-risk stocks still earn more than the CAPM predicts once costs and construction choices are taken into account.
+The lab in Section~\ref{sec:17-lab} repeats the main calculations of Novy-Marx and Velikov (2016) and Frazzini, Israel and Moskowitz (2018). It uses three free long--short factors from the \term{Kenneth R. French Data Library}, value, momentum and short-term reversal, together with a simulated market of individual stocks. The goal is to find out which strategies stay profitable after costs, what level of costs would wipe out each one, and how much money each can manage.
 
 By the end of the chapter you will be able to:
 
 \begin{itemize}
-  \item estimate a beta, split total risk\index{risk!total} into systematic and idiosyncratic parts, and compute a CAPM alpha\index{alpha};
-  \item draw the security market line\index{security market line}, and explain how limits on leverage\index{leverage} flatten it;
-  \item build a beta-neutral\index{market-neutral} betting-against-beta\index{betting against beta (BAB)} portfolio, and compare the explanations for the anomaly, such as leverage limits and lottery preferences\index{lottery preference};
-  \item judge whether a minimum-volatility or BAB fund can deliver what its backtest\index{backtest} promises.
+  \item read a limit order book\index{order book} and explain bid--ask spreads\index{bid--ask spread}, market and limit orders\index{market order}\index{limit order}, short selling\index{short selling} and long--short portfolios\index{long--short portfolio};
+  \item break trading costs into their parts, including market impact\index{market impact}, and estimate the main ones from public data;
+  \item compute a strategy's turnover\index{turnover}, its net return and the break-even cost\index{transaction costs!break-even} it can bear, and explain how market impact limits the money it can manage;
+  \item design strategies that trade less without giving up much of their signal.
 \end{itemize}
 
 
-\section{Foundations: beta, the CAPM and the security market line}
-\label{sec:18-foundations}
+In the lab you will take three of the best-known long--short strategies, value, momentum\index{momentum} and short-term reversal\index{short-term reversal}, measure how much each trades, charge each for trading, and see how their ranking changes. A simulated market with known expected returns\index{return!expected} then shows how much cost-aware design can recover.
 
-\subsection{Beta, the CAPM and the security market line}
+\section{Foundations: how stocks are traded and sold short}
+\label{sec:17-foundations}
 
-Chapter~\ref{ch:03} introduced beta, the CAPM and the security market line (Section~\ref{sec:04-capm}). Beta is the slope of a regression of an asset's excess return on the market's excess return (Equation~\eqref{eq:04-capm}). The market itself has a beta of 1. The CAPM says that expected excess returns rise in a straight line with beta. Two consequences of the model matter for this chapter.
+\subsection{The order book}
 
-First, the security market line passes through the risk-free rate\index{risk-free rate} at $\beta = 0$ and through the market at $\beta = 1$, so its slope equals the market premium.
+Most stocks trade on electronic exchanges that keep a \term{limit order book}\index{order book|textbf}. This is a list of standing offers to buy, called \textbf{bids}, and offers to sell, called \textbf{asks}, each at a stated price and quantity (Figure~\ref{fig:17-book}). The highest bid and the lowest ask are the \term{best quotes}. The gap between them is the \textbf{bid--ask spread}\index{bid--ask spread|textbf}, and their average is the \term{midpoint}\index{midpoint|textbf}. Spreads are quoted in \textbf{basis points}\index{basis point|textbf} of the midpoint. A basis point is a hundredth of a percent, so 100 basis points make 1\%.
 
-Second, an asset's \term{total risk}\index{risk!total|textbf}, the variance\index{variance} of its return, splits into two parts. The systematic part is $\beta_i^2\,\mathrm{Var}(R_m)$. The idiosyncratic part is the variance of the regression residual\index{regression!residuals}. Only the systematic part earns a reward, because investors can diversify\index{diversification} the idiosyncratic part away at no cost. Two stocks with the same volatility can therefore have very different betas, and the CAPM says they should have very different expected returns\index{return!expected}.
-
-\subsection{Alpha}
-
-An asset's alpha, often called Jensen's alpha, is the intercept of the same regression: the average return beyond what beta explains (Section~\ref{sec:04-capm}). Under the CAPM every alpha is zero. A multifactor alpha adds other factors to the regression, such as size, value and momentum\index{momentum} (Chapter~\ref{ch:03}). The low-risk anomaly is a claim about how alpha varies with beta: low-beta stocks have had positive alphas and high-beta stocks negative ones.
-
-The CAPM assumes that investors can borrow and lend freely at the risk-free rate. An investor who wants more risk than the market can then borrow and buy more of the market. Many investors cannot do this. Mutual funds and pension plans face limits on \textbf{leverage}\index{leverage|textbf}, which means borrowing to hold more than their capital. Individuals face \textbf{margin} requirements and pay more than the risk-free rate to borrow. Black (1972) showed that without riskless borrowing the SML is still a straight line, but a flatter one. It starts at the return on a \term{zero-beta portfolio}\index{zero-beta portfolio|textbf}, a portfolio uncorrelated with the market, whose return lies above the risk-free rate.
-
-\textbf{Worked example.} The risk-free rate is 3\% and the market premium is 6\% (Figure~\ref{fig:18-sml}).
-
-\begin{itemize}
-  \item Stock A has a beta of 0.6 and has averaged 9\%. The CAPM predicts $3\% + 0.6 \times 6\% = 6.6\%$, so A's alpha is $+2.4\%$.
-  \item Stock B has a beta of 1.5 and has averaged 10\%. The CAPM predicts $3\% + 1.5 \times 6\% = 12\%$, so B's alpha is $-2\%$.
-  \item An investor who can borrow at 3\% can lever A to a beta of 1. She holds $1/0.6 = 1.67$ dollars of A for each dollar of capital and borrows the remaining 0.67 dollars. Her expected return is $3\% + 1.67 \times (9\% - 3\%) = 13\%$, compared with 9\% for the market at the same beta. Even at a borrowing rate of 5\%, she earns $1.67 \times 9\% - 0.67 \times 5\% \approx 11.7\%$.
-  \item An investor who cannot borrow and wants a beta above 1 must buy B instead. If many investors are in that position, they bid up high-beta stocks such as B and push down their future returns. That is the core of the leverage-constraint explanation in Section~\ref{sec:18-explanations}.
-\end{itemize}
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feorange}{HTML}{B8481C}
 
 \begin{figure}[htbp]
-\centering
-\scalebox{0.9}{%
+  \centering
+  \scalebox{0.9}{%
 \begin{tikzpicture}[
-  % CAPM: r = 3 + 6 * beta. A = (0.6, 9), B = (1.5, 10); the line through A and B
-  declare function={capm(\b) = 3 + 6*\b;  flat(\b) = 9 + (\b - 0.6)/0.9;}
-]
-\begin{axis}[
-  width=0.6\linewidth, height=0.34\linewidth,
-  axis lines=left, axis line style={-stealth},
-  xmin=0, xmax=2, ymin=0, ymax=15.5,
-  xtick={0,0.5,...,2}, ytick={0,5,10,15},
-  xticklabel style={/pgf/number format/fixed},
-  xlabel={Beta}, ylabel={Average return (\%)},
-  clip=false,
-]
-  \addplot[fegray, thick, dashed, domain=0:2, samples=2] {flat(x)};
-  \addplot[fenavy, very thick, domain=0:2, samples=2] {capm(x)};
-  \fill (axis cs:0.6,9)  circle (2.6pt);
-  \fill (axis cs:1,9)    circle (2.6pt);
-  \fill (axis cs:1.5,10) circle (2.6pt);
-  \node[anchor=south] at (axis cs:0.6,9.5) {A: $\alpha = +2.4\%$};
-  \node[anchor=north west] at (axis cs:0.98,8.4) {market};
-  \node[anchor=north west] at (axis cs:1.47,9.1) {B: $\alpha = -2\%$};
-  \node[anchor=north west] at (axis cs:0.02,2.7) {$r_f = 3\%$};
-  \node[fenavy, anchor=west] at (axis cs:2.02,15) {CAPM line};
-  \node[fegray, anchor=west, align=left] at (axis cs:2.02,{flat(2)})
-    {line through\\A and B};
-\end{axis}
-\end{tikzpicture}%
+    x=0.014cm, y=0.5cm,     % x: shares; y: price levels
+    ask/.style={fill=feorange!35},
+    bid/.style={fill=fenavy!75},
+    price/.style={anchor=east, font=\small},
+  ]
+    % Asks (sellers) above the midpoint: level / price / shares
+    \foreach \wfL/\wfP/\wfQ in {1/50.02/200, 2/50.03/350, 3/50.04/300,
+                                4/50.05/450, 5/50.06/500} {
+      \fill[ask] (0,\wfL+0.5-0.38) rectangle (\wfQ,\wfL+0.5+0.38);
+      \node[price] at (-10,\wfL+0.5) {\$\wfP};
+    }
+    % Bids (buyers) below the midpoint
+    \foreach \wfL/\wfP/\wfQ in {1/49.98/250, 2/49.97/300, 3/49.96/400,
+                                4/49.95/350, 5/49.94/550} {
+      \fill[bid] (0,-\wfL-0.5-0.38) rectangle (\wfQ,-\wfL-0.5+0.38);
+      \node[price] at (-10,-\wfL-0.5) {\$\wfP};
+    }
+
+    % Best ask and best bid
+    \draw[feorange, thick] (0,1.12) rectangle (200,1.88);
+    \draw[fenavy, thick]   (0,-1.88) rectangle (250,-1.12);
+    \node[feorange, anchor=west, font=\small] at (215,1.5)
+      {best ask: buyers pay \$50.02};
+    \node[fenavy, anchor=west, font=\small] at (265,-1.5)
+      {best bid: sellers get \$49.98};
+
+    % Midpoint
+    \draw[densely dashed] (-10,0) -- (560,0);
+    \node[anchor=south east, font=\small, inner sep=2pt] at (560,0) {midpoint \$50.00};
+
+    % Spread bracket
+    \draw[decorate, decoration={brace, amplitude=4pt}]
+      (-150,-1.5) -- (-150,1.5)
+      node[midway, anchor=east, xshift=-5pt, align=right, font=\small]
+      {spread\\\$0.04\\(8 bp)};
+
+    % Headings and size axis
+    \draw[thin] (0,-6.1) -- (0,6.1);
+    \node[feorange, font=\small\bfseries, anchor=south west] at (0,6.1)
+      {Asks: sellers' limit orders};
+    \draw[-stealth, thin] (0,-6.1) -- (580,-6.1)
+      node[anchor=west, font=\small] {shares};
+    \node[fenavy, font=\small\bfseries, anchor=north west] at (0,-6.3)
+      {Bids: buyers' limit orders};
+  \end{tikzpicture}%
 }
-\caption{Low-beta stocks have done better, and high-beta stocks worse, than the CAPM predicts. The security market line in the worked example. The CAPM line runs from the risk-free rate of 3\% through the market at a beta of 1. Stock A lies above it (positive alpha) and stock B below it (negative alpha), so the line through A and B is flatter than the CAPM predicts.}
-\label{fig:18-sml}
+  \caption{Every trader who wants to deal at once pays a little more to buy than she receives to sell. A limit order book. Sellers' asks sit above the midpoint and buyers'
+    bids below it. A buyer who wants to trade at once pays the best ask,
+    \$50.02; a seller receives the best bid, \$49.98. The gap of \$0.04,
+    8 basis points of the \$50.00 midpoint, is the bid--ask spread.}
+  \label{fig:17-book}
 \end{figure}
 
-\section{How it works}
-\label{sec:18-how}
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.8\linewidth]{images/fig06-1-order-book.png}
+%\caption{A limit order book. Sellers' asks sit above the midpoint and buyers' bids below it. A buyer who wants to trade at once pays the best ask, \$50.02; a seller receives the best bid, \$49.98. The gap of \$0.04, 8 basis points of the \$50.00 midpoint, is the bid--ask spread.}
+%\label{fig:17-book}
+%\end{figure}
 
-There are three ways to sort stocks on risk, and the literature uses all three.
+\subsection{Market and limit orders}
+
+There are two basic ways to trade.
 
 \begin{itemize}
-  \item \textbf{Beta.}\index{beta|textbf} Estimate each stock's beta from past returns, typically 36 to 60 months of monthly data or a year of daily data. Sort into portfolios. This tests the CAPM directly.
-  \item \textbf{Total volatility.} Sort on the standard deviation\index{standard deviation} of past daily returns, often over one to three months. This needs no market model, and it is how most low-volatility funds work.
-  \item \textbf{Idiosyncratic volatility.}\index{idiosyncratic volatility|textbf} Sort on the volatility of residuals from a factor model\index{factor model}, usually the Fama--French\index{Fama--French factors} three-factor model. Under the CAPM this risk should not be priced at all, so a negative relation is especially puzzling.
+  \item A \term{market order}\index{market order|textbf} trades immediately against the best available quotes: a buyer pays the ask, a seller receives the bid. Market orders \emph{demand} liquidity\index{liquidity} and pay the spread.
+  \item A \term{limit order}\index{limit order|textbf} sets a price and waits in the book until someone trades against it. Limit orders \emph{supply} liquidity and may earn the spread, but risk not being filled, or being filled just before the price moves against them.
 \end{itemize}
 
-The three measures are strongly correlated. High-beta stocks tend to be volatile, and volatile stocks tend to have high idiosyncratic risk\index{risk!idiosyncratic}. Separating them is one of the open problems in this chapter.
+Large orders are usually broken into many small ones and executed over hours or days to limit their effect on prices.
 
-A flat SML shows up in two ways. The first is in \emph{alphas}: low-risk portfolios have positive CAPM alphas, and high-risk portfolios negative ones. The second is in a \emph{long-short portfolio\index{long--short portfolio}}. The simple version buys low-risk stocks and sells high-risk stocks short. It has a strongly negative beta, so it loses money in rising markets even when the SML is flat. Its average return can be negative while its alpha is positive. \term{Betting against beta (BAB)}\index{betting against beta (BAB)|textbf} fixes this. It levers the low-beta leg up to a beta of 1 and scales the high-beta leg down to a beta of 1. The portfolio is then \term{beta-neutral}\index{market-neutral|textbf}, with no net exposure to the market (Figure~\ref{fig:18-bab}). The shaded box gives the formula.
+\subsection{Who provides liquidity}
+
+\term{Market makers}\index{market maker|textbf} and high-frequency traders post bids and asks continuously and earn the spread. In return they bear \term{inventory risk}, the risk that prices move while they hold shares they have bought but not yet sold, and the risk of trading with better-informed investors. Spreads are wider for small, volatile and thinly traded stocks because these risks are larger there.
+
+\subsection{Long and short positions}
+
+A \textbf{long} position owns a security and gains when its price rises. A \textbf{short} position borrows shares, sells them, and later buys them back to return them, so it gains when the price falls. The short seller pays any dividends to the lender. It also posts \term{collateral}\index{collateral|textbf}, cash or securities held as security for the loan, and pays a \term{borrowing fee}\index{borrowing fee|textbf} set in the securities-lending market. Most large stocks are cheap to borrow. A minority are hard to borrow and expensive. The lender can also \term{recall} the loan, which forces the short seller to buy the shares back.
+
+\subsection{Long--short portfolios}
+
+Academic factors such as HML\index{factor!HML (value)}, introduced in Section~\ref{sec:04-factors}, are \term{zero-investment} portfolios. They hold one dollar long and one dollar short, so the proceeds of the short sale pay for the long side. A factor's ``return'' is therefore the difference between the two sides, not a return on capital invested. A real long--short fund must hold collateral and capital against both sides, and it quotes its returns relative to that capital.
+
+\subsection{Turnover}
+
+\textbf{Turnover}\index{turnover|textbf} measures how much of a portfolio is traded in a period. A one-sided\index{hypothesis testing!one-sided and two-sided} monthly turnover of 10\% means that a tenth of the portfolio is sold, and replaced, each month. Turnover multiplies every cost of trading: a strategy that replaces its whole portfolio every month pays its trading costs twelve times a year on each side.
+
+\textbf{Worked example.} A stock is quoted at \$49.98 bid and \$50.02 ask. The midpoint is \$50.00 and the spread is \$0.04, or $0.04/50 = 0.0008$, 8 basis points. Buying with a market order and immediately selling would lose 8 basis points; the one-way cost\index{transaction costs!one-way and round-trip}, half the spread, is 4 basis points.
+
+
+\section{Paper returns versus implementable returns}
+\label{sec:17-paper}
+
+The factor returns in the Kenneth French Data Library\index{Kenneth French data library}, like most portfolio returns in academic research, are \textbf{paper returns}\index{return!paper versus implementable|textbf}. Each month the portfolio is rebuilt from the latest sorts, at closing prices, with no charge for trading. The construction is deliberately simple and transparent, which is why the data is so useful. But it answers the question ``what pattern exists in returns?'' rather than ``what could an investor have earned?''
+
+An \term{implementable return}, one an investor could actually have earned, differs in four ways:
+
+\begin{enumerate}
+  \item \textbf{Trading costs.}\index{transaction costs|textbf} Every purchase pays above the midpoint price and every sale receives below it; large orders also move the price.
+  \item \textbf{Short-selling costs and limits.} Selling short requires borrowing shares, which costs a fee, may be impossible for some stocks, and can be recalled.
+  \item \textbf{Timing and execution.} Signals computed from closing prices cannot be traded at those same prices. Orders take time to work, and fast-moving signals lose value while they wait.
+  \item \textbf{Scale.} A strategy that works with \$10 million may not work with \$10 billion, because the trades themselves change prices.
+\end{enumerate}
+
+None of these makes a paper return wrong. A pattern that cannot be traded profitably may still tell us something about risk or about how prices form. But a claim about profits needs an implementable return, and the two can differ by more than the whole premium.
+
+The gap is largest for strategies that trade often, in small or illiquid stocks, or on the short side. It is smallest for slow strategies in large stocks, which is one reason the market portfolio itself is so hard to beat after costs: it barely trades at all.
+
+\section{The anatomy of trading costs}
+\label{sec:17-anatomy}
+
+The cost of a trade has several parts, and they behave differently.
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.19\linewidth-0.32\linewidth-4\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.32\linewidth}@{}}
+\toprule
+Component & What it is & How it scales \\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Component & What it is & How it scales \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Commissions and fees & Payments to brokers and exchanges & Small for institutions today; roughly proportional to the amount traded \\*
+Bid--ask spread & Buying at the ask and selling at the bid, above and below the midpoint & Proportional to the amount traded; wider for small, volatile and illiquid stocks \\
+Market impact & The price moving against an order while it is executed, because the order itself carries information or demands liquidity & Grows faster than the trade: roughly with the square root of the order's size relative to volume \\
+Delay and opportunity cost & Prices moving before the order is filled, or trades not made at all & Largest for fast signals \\*
+Short-selling costs & Fees to borrow shares, the risk of recall, rules that restrict shorting & Mostly small, very large for a minority of stocks \\
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
+
+The unit used throughout this chapter is the \term{one-way cost}\index{transaction costs!one-way and round-trip|textbf}: the cost of buying, or of selling, one dollar of stock, as a fraction of the dollar. For a small trade it is roughly half the bid--ask spread plus commissions. A \textbf{round trip}, buying and later selling, costs twice the one-way cost.
+
+\textbf{Costs have fallen, unevenly.} U.S. stock spreads narrowed sharply in 2001, when prices moved from fractions of a dollar to cents, a change called \term{decimalization}\index{decimalization|textbf}, and again as electronic trading spread. Large stocks now trade at spreads of a few basis points, but small, illiquid stocks still cost far more. This matters when reading long histories. A strategy tested from 1963 faced costs in its early decades several times higher than today's. Charging today's costs over the whole history therefore flatters the past, while charging the past's costs today understates what is now possible.
+
+\textbf{Short selling.}\index{short selling|textbf} A short seller borrows shares and pays the lender a fee. Using records from a large lender of shares, D'Avolio (2002) found that most U.S. stocks were cheap to borrow, but that a small group of ``special'' stocks carried high fees, and that these were often the very stocks with the strongest signals to sell short. The lender can also recall the shares at an awkward time, and regulators can ban short selling outright, as the U.S. Securities and Exchange Commission did for financial stocks in September 2008. Miller (1977) argued that when pessimists cannot sell short, prices reflect only the optimists' views, so overpricing can last. If so, anomalies should earn their profits mainly from overpriced stocks, and Stambaugh\index{Stambaugh bias}, Yu and Yuan (2012) found that many anomalies\index{anomaly} earn most of their profits on the short side, exactly where these obstacles bite. A long--short paper portfolio that ignores them overstates what an investor can achieve, sometimes by most of the premium.
+
+The lab uses a single one-way cost and a single borrowing fee for transparency. Real costs vary across stocks and over time, and Section~\ref{sec:17-measuring} shows how they can be estimated.
+
+
+\section{Measuring costs from public data}
+\label{sec:17-measuring}
+
+The best measure of trading costs is a trader's own record. \term{Implementation shortfall}\index{implementation shortfall|textbf} (Perold 1988) compares the value of a paper portfolio at the prices when the decision was made with the value of the portfolio actually achieved, capturing spreads, impact, delay and trades never completed. Most researchers do not have such records, so the field relies on estimates.
+
+\textbf{From quotes and trades.} With intraday data, such as the TAQ (Trade and Quote) database of every U.S. trade and quote, two spreads can be measured:
+
+\begin{itemize}
+  \item the \term{quoted spread}\index{bid--ask spread!quoted|textbf}, the gap between the best bid and ask;
+  \item the \term{effective spread}\index{bid--ask spread!effective|textbf}, twice the difference between the trade price and the midpoint at the time of the trade.
+\end{itemize}
+
+Effective spreads are usually smaller than quoted ones, because many trades execute inside the quotes.
+
+Researchers without intraday data can still estimate spreads from daily prices, which reach back to the 1920s. The shaded box lists the standard methods.
 
 \begin{technote}
-\textbf{Technical note: the BAB return.} In symbols, the portfolio's excess return is
-\begin{equation}
-  r_{\mathrm{BAB}} = \frac{r_L - r_f}{\beta_L} - \frac{r_H - r_f}{\beta_H}
-  \label{eq:18-bab}
-\end{equation}
-If the SML is flat, this portfolio earns a positive return with no market exposure. The betas must be \term{ex ante}, estimated from data available when the portfolio is formed. Otherwise the construction looks ahead (Section~\ref{sec:02-lookahead}).
-\end{technote}
-
-\begin{figure}[htbp]
-\centering
-\scalebox{0.9}{%
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.6\linewidth, height=0.34\linewidth,
-  ybar, bar width=0.6cm,
-  axis lines=left, axis line style={-stealth},
-  ymin=-2, ymax=2.2, ytick={-2,-1,0,1,2},
-  ylabel={Dollars per \$1 of capital},
-  symbolic x coords={L,H}, xtick=data,
-  xticklabels={{Low-beta leg\\($\beta_L = 0.6$)}, {High-beta leg\\($\beta_H = 1.5$)}},
-  xticklabel style={align=center},
-  enlarge x limits=0.45,
-  nodes near coords,
-  nodes near coords style={font=\small},
-  extra y ticks={0}, extra y tick labels={},
-  extra y tick style={grid=major, major grid style={gray, thin}},
-  legend style={draw=none, at={(0.5,1.03)}, anchor=south, legend columns=2,
-                /tikz/every even column/.append style={column sep=1em}},
-]
-  \addplot[fill=fenavy, draw=none] coordinates {(L,1.67) (H,-0.67)};
-  \addplot[fill=gray!40, draw=none] coordinates {(L,1) (H,-1)};
-  \legend{position size, resulting beta exposure}
-\end{axis}
-\end{tikzpicture}%
-}
-\caption{Betting against beta borrows to scale up low-beta stocks and scales down high-beta ones until the market's moves cancel. Building a BAB portfolio from the worked example. Per dollar of capital, it holds \$1.67 of the low-beta stock ($\beta_L = 0.6$) and shorts \$0.67 of the high-beta stock ($\beta_H = 1.5$). Each leg then carries a beta exposure of 1, in opposite directions, so the portfolio's beta is zero.}
-\label{fig:18-bab}
-\end{figure}
-
-The explanations fall into two groups. One treats the anomaly\index{anomaly} as \term{mispricing}\index{mispricing|textbf}. The other treats it as \textbf{compensation for a risk the CAPM misses}. Section~\ref{sec:18-explanations} sets them out. The difference matters because the two groups predict different things: when the anomaly should be strongest, and whether it should survive once it becomes popular.
-
-\section{The claim}
-\label{sec:18-claim}
-
-\begin{callout}
-\textbf{Claim.} Low-beta and low-volatility stocks earn higher risk-adjusted returns than the CAPM predicts. The security market line is flatter than the market premium, and a beta-neutral portfolio that is long low-risk stocks and short high-risk stocks earns a positive alpha.
-\end{callout}
-
-To test it we need to specify four things.
+\textbf{Technical note: estimating spreads from daily data.} Several estimators infer spreads from daily prices alone, which makes them available back to the 1920s:
 
 \begin{itemize}
-  \item \textbf{The strong form.}\index{efficient market hypothesis!strong form|textbf} The SML is \emph{inverted\index{yield curve!inverted}}: low-risk stocks earn higher raw returns. Some volatility sorts find this; most beta sorts find a flat or weakly positive relation.
-  \item \textbf{The weak form.}\index{efficient market hypothesis!weak form|textbf} The SML is positive but flatter than the CAPM predicts, so low-beta stocks have positive alphas, as Black, Jensen and Scholes found. This is the claim tested here.
-  \item \textbf{Risk adjustment.} A CAPM alpha is the first test; the claim is stronger if the alpha survives size, value and momentum, and stronger still if it survives profitability and interest-rate exposure.
-  \item \textbf{What would count against it.} An alpha concentrated in micro-caps\index{micro-caps}, explained by other factors or faded since the strategy became popular. The claim fails if a tradable beta-neutral version earns nothing after costs.
+  \item \textbf{Roll (1984)}\index{bid--ask spread!estimators|textbf} infers the spread from \term{bid--ask bounce}\index{bid--ask bounce|textbf}: because trades alternate randomly between the bid and the ask, successive price changes are negatively correlated, and the size of that correlation\index{correlation} reveals the spread.
+  \item \textbf{Hasbrouck (2009)} estimates a similar model with a Bayesian Gibbs sampler, a simulation-based estimation method, which is more robust when the Roll estimator fails.
+  \item \textbf{Corwin and Schultz (2012)} use daily high and low prices: highs are usually trades at the ask and lows at the bid, and the spread's share of the range can be separated from volatility\index{volatility} by comparing one-day and two-day ranges.
+  \item \textbf{Abdi and Ranaldo (2017)} combine closing, high and low prices for a more precise estimator.
+  \item \textbf{Amihud (2002)}\index{illiquidity|textbf} measures \term{illiquidity} as the average absolute return per dollar of volume: a measure of price impact rather than a spread.
 \end{itemize}
 
-\section{The original evidence}
-\label{sec:18-evidence}
+These estimators are noisy for any one stock and month, but useful averaged across portfolios, which is how Novy-Marx and Velikov (2016) used them to estimate the costs of dozens of anomalies.
+\end{technote}
 
-\textbf{A flat line from the start.} Because individual betas are measured with large errors\index{estimation error}, Black, Jensen and Scholes (1972) sorted NYSE stocks from 1931 to 1965 into ten portfolios by past beta. Average returns rose with beta, but much less than the CAPM predicted, so low-beta portfolios had positive alphas. Fama and MacBeth (1973) confirmed a positive but modest slope, and Haugen and Heins (1975) found that low-volatility portfolios had matched or beaten high-volatility ones. Because size and beta are closely related, Fama and French (1992) included size and found almost no relation between beta and average return from 1963 to 1990.
+\textbf{Estimates from practice.} Frazzini, Israel and Moskowitz (2018) studied \$1.7 trillion of actual trades by a large institutional manager, across 21 developed markets over 19 years. They found trading costs about ten times smaller than earlier academic estimates suggested. The result shows that costs depend on who is trading and how. A patient institution that supplies liquidity pays far less than the typical investor assumed by spread estimators. The evidence, however, comes from a single manager using its own trading methods.
 
-\textbf{Idiosyncratic volatility.}\index{idiosyncratic volatility|textbf} Ang, Hodrick, Xing and Zhang (2006) found that the fifth of U.S. stocks with the highest idiosyncratic volatility earned 1.06\% a month less than the lowest fifth, a strong form of the anomaly, and later found the same in 23 developed markets.
+The practical consequence is that a cost assumption is a judgment. A careful study reports results across a range of costs, and the lab does so, from zero to 100 basis points one way.
 
-\textbf{From anomaly to strategy.} Baker, Bradley and Wurgler (2011) argued that \term{benchmarking} stops institutions from exploiting the anomaly. Frazzini and Pedersen (2014) built the BAB factor of Section~\ref{sec:18-how}, which had a Sharpe ratio\index{Sharpe ratio} of 0.78 in U.S. stocks from 1926 to 2012, alphas that survived size, value, momentum and liquidity\index{liquidity} controls, and success in 19 international markets and in bonds and futures. It did worse when borrowing was hard, as their leverage theory predicts. Low-volatility index funds launched around 2011 and grew quickly.
+\section{Turnover, net returns and break-even costs}
+\label{sec:17-turnover}
 
-\section{Explanations}
-\label{sec:18-explanations}
+\textbf{Turnover}\index{turnover|textbf} measures how much a portfolio trades. One-sided monthly turnover is the share of the portfolio sold, and replaced, each month. It equals half the sum of the absolute changes in portfolio weights. The changes are measured against the weights the portfolio would have drifted to if it had not traded. A value-weighted\index{index weighting!value-weighted} portfolio whose members never change has zero turnover, however much its prices move.
 
-\textbf{Leverage constraints.}\index{leverage|textbf} Investors who want high returns but cannot borrow buy high-beta stocks instead of a levered market portfolio, which bids them up and flattens the SML (Black 1972; Frazzini and Pedersen 2014). As predicted, constrained investors hold high-beta portfolios, and BAB does worse when borrowing becomes harder.
+What drives turnover is how fast the signal changes relative to how often the portfolio is rebuilt:
 
-\textbf{Lottery preferences.}\index{lottery preference|textbf} Some investors overpay for stocks with a small chance of a very large gain. Barberis and Huang (2008) derive this from \term{prospect theory}\index{prospect theory}, in which people overweight unlikely outcomes, and Bali, Cakici and Whitelaw (2011) found that stocks with the largest recent one-day returns underperform, which explains much of the idiosyncratic volatility effect.
+\begin{itemize}
+  \item \textbf{Value} sorts on book-to-market\index{book-to-market ratio} once a year. Book-to-market ratios are persistent, so most stocks stay on the same side from one year to the next.
+  \item \textbf{Momentum}\index{momentum|textbf} sorts monthly on the return from 12 months to 2 months ago. Each month's window shares ten of its eleven months with the last one, but enough stocks cross the \term{breakpoints}, the cut-offs between groups, to replace about a third of the portfolio each month.
+  \item \textbf{Short-term reversal}\index{short-term reversal|textbf} sorts monthly on the previous month's return, which has almost no persistence\index{persistence}. Nearly the whole portfolio is replaced every month.
+\end{itemize}
 
-\textbf{Benchmarking.} For a manager judged against a market-weighted index, a low-beta stock with a positive alpha adds \term{tracking error}\index{tracking error|textbf}, the volatility of the gap between the fund's return and the benchmark's, and lags in rising markets, so institutions do not correct the mispricing (Baker, Bradley and Wurgler 2011).
+\textbf{From gross to net.} A \textbf{gross} return is before costs; a \textbf{net} return is after them. A long--short portfolio with one dollar on each side and one-sided turnover $T$ sells and buys $T$ on each side, so it trades $4T$ dollars a month. At a one-way cost $c$, its monthly cost and net return are
+\begin{equation}
+  \text{cost} = 4\,T\,c, \qquad R^{\text{net}}_t = R^{\text{gross}}_t - 4\,T\,c - \frac{\text{borrow fee}}{12}
+  \label{eq:17-net}
+\end{equation}
 
-\textbf{Overpricing that is hard to short.} Liu, Stambaugh\index{Stambaugh bias} and Yuan (2018) found that the beta anomaly comes from beta's correlation\index{correlation} with idiosyncratic volatility and is concentrated among overpriced stocks, where short-selling\index{short selling} is costly.
+The \term{break-even cost}\index{transaction costs!break-even|textbf} is the one-way cost at which the average net return is zero:
+\begin{equation}
+  c^* = \frac{\text{average gross return} - \text{other costs}}{4T}
+  \label{eq:17-breakeven}
+\end{equation}
+It answers the most useful question about a strategy's costs: how cheaply must it trade to be worth trading? For example, a strategy with turnover of 10\% a month that earns 0.4\% a month gross can pay up to $0.4/(4 \times 0.10) = 1\%$ per trade before its profit is gone.
 
-\textbf{Missing risk factors.} Low-risk stocks tend to be large, profitable and conservative, and the five-factor model explains much of their alpha (Fama and French 2016). They also behave partly like bonds, and an interest-rate premium explains part of the anomaly, flattered by falling yields from 1981 to 2020 (Driessen, Kuiper, Nazliben and Beilo 2019). And modelling time-varying betas\index{beta!time-varying} largely removes the alpha gap (Cederburg and O'Doherty 2016).
+Novy-Marx and Velikov (2016) estimated turnover and costs for value-weighted versions of many anomalies. Their full-sample figures for the three strategies in this chapter (Table 3 of the working-paper version), with break-even costs computed from their gross returns using Equation~\eqref{eq:17-breakeven}:
 
-These explanations can all be partly true. Asness, Frazzini, Gormsen and Pedersen (2020) split BAB into a bet against correlation, linked to \term{leverage constraints}, and a bet against volatility, linked to lottery demand, and found that both earn returns.
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.13\linewidth-0.13\linewidth-0.13\linewidth-0.13\linewidth-0.12\linewidth-10\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.12\linewidth}@{}}
+\toprule
+Strategy & One-sided monthly turnover & Gross return (\% per month) & Estimated cost (\% per month) & Net return (\% per month) & Break-even one-way cost \\
+\midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\emph{(continued)}} \\
+\toprule
+Strategy & One-sided monthly turnover & Gross return (\% per month) & Estimated cost (\% per month) & Net return (\% per month) & Break-even one-way cost \\
+\midrule
+\endhead
+\midrule
+\multicolumn{6}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Value (book-to-market) & 2.9\% & 0.47 & 0.05 & 0.42 & about 4\% \\*
+Momentum & 34.5\% & 1.33 & 0.65 & 0.68 & about 1\% \\*
+Short-term reversal & 90.9\% & 0.37 & 1.65 & $-1.28$ & about 0.1\% \\*
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
 
-\section{Lab~\thechapter: Replicating Black, Jensen and Scholes (1972) and Frazzini and Pedersen (2014)}
-\label{sec:18-lab}
+The three strategies differ sharply in how much cost they can bear (Figure~\ref{fig:17-breakeven}). Value could pay several percent per trade and still make a profit. Momentum survives costs of up to about one percent per trade. A careful institution can trade that cheaply, but a careless one may not. Short-term reversal is profitable on paper, but it would need to trade for about ten basis points per trade. That is less than most investors pay for the small, recently volatile stocks it buys and sells. Its paper profit is real, but tiny compared with the trading it needs.
 
-\textbf{Claim on trial\index{claims-on-trial method}:} low-risk stocks earn more than the CAPM predicts. The lab replicates Black, Jensen and Scholes (1972), Fama and MacBeth (1973) and Frazzini and Pedersen (2014), using ten portfolios formed on market beta, on total variance and on residual variance, each value- and equal-weighted\index{index weighting!equal-weighted}, from July 1963, from the Kenneth French\index{Kenneth French data library} library, with the Fama--French and momentum factors and the 10-year Treasury yield from FRED\index{FRED}. Unlike Frazzini and Pedersen, who use individual stocks with rank weights, the lab uses published portfolios that anyone can reproduce, so expect the same pattern with smaller numbers.
+\providecolor{fenavy}{HTML}{1B2A6B}
 
-\textbf{Part A, the SML.} For each set of deciles, average excess return, realized beta, CAPM and four-factor alphas, and the slope of return on beta, plotted against the CAPM line (Lab Figure~\ref{ch:14}.1).
+\begin{figure}[htbp]
+  \centering
+  \scalebox{0.9}{%
+\begin{tikzpicture}[
+    % Gross return (% a month) and monthly one-way turnover, from the table.
+    % Net return = gross - 4 * turnover * cost; break-even = gross / (4 * turnover).
+    declare function={
+      valG = 0.47;  valT = 0.029;
+      momG = 1.33;  momT = 0.346;
+      revG = 0.38;  revT = 0.95;
+    }]
+  \begin{axis}[
+    width=0.61\linewidth, height=0.38\linewidth,
+    axis lines=left,
+    axis line style={-stealth, thin},
+    xmin=0, xmax=1.3, ymin=-1.6, ymax=1.45,
+    xtick={0,0.2,0.4,0.6,0.8,1,1.2},
+    ytick={-1,0,1},
+    xticklabel style={/pgf/number format/fixed},
+    xlabel={One-way trading cost (\%)},
+    ylabel={Net return (\% a month)},
+    clip=false,
+  ]
+    \addplot[gray!60, thin, domain=0:1.3, samples=2] {0};
 
-\textbf{Part B, long-short portfolios.} A low-minus-high portfolio, long the three lowest-risk deciles and short the three highest, and a BAB-style portfolio that levers each leg to a beta of one, with betas estimated from the previous 60 months (Lab Figure~\ref{ch:14}.2).
+    % Value
+    \addplot[fenavy, very thick, domain=0:1.3, samples=2] {valG - 4*valT*x};
+    % Momentum
+    \addplot[thick, dashed, domain=0:1.3, samples=2] {momG - 4*momT*x};
+    % Short-term reversal (stops at the bottom of the chart)
+    \addplot[very thick, densely dotted, domain=0:0.52, samples=2] {revG - 4*revT*x};
 
-\textbf{Part C, robustness checks.} Equal versus value weights, three subperiods, interest-rate exposure, returns in 2008, 2020 and 2022, and rolling ten-year alphas (Lab Figures~\ref{ch:14}.3 and~\ref{ch:14}.4).
+    % Break-even points
+    \fill (axis cs:{momG/(4*momT)},0) circle (2.2pt);
+    \fill (axis cs:{revG/(4*revT)},0) circle (2.2pt);
+    \node[anchor=north east, font=\small] at (axis cs:{momG/(4*momT)-0.02},-0.03)
+      {break-even $\approx 1\%$};
+    \node[anchor=south west, font=\small] at (axis cs:{revG/(4*revT)+0.03},0.03)
+      {$\approx 0.1\%$};
 
-\textbf{Part D, the investor's view.} The lowest-volatility and lowest-beta quintiles against the market: Sharpe ratio, alpha, drawdown\index{drawdown}, tracking error and the share of years they trailed (Lab Figure~\ref{ch:14}.5).
+    % Line labels
+    \node[fenavy, anchor=west, font=\small] at (axis cs:1.31,{valG-4*valT*1.3+0.05}) {value};
+    \node[anchor=west, font=\small] at (axis cs:1.31,{momG-4*momT*1.3}) {momentum};
+    \node[anchor=west, font=\small] at (axis cs:0.48,-1.05) {short-term reversal};
+  \end{axis}
+  \end{tikzpicture}%
+}
+  \caption{The more a strategy trades, the faster its profit disappears as costs rise. Net return against one-way trading cost, from the turnover and gross
+    returns in the table. Each line falls at a rate of four times the strategy's
+    turnover; it crosses zero at the break-even cost. Value's line is nearly
+    flat and crosses zero off the chart, at about 4\%.}
+  \label{fig:17-breakeven}
+\end{figure}
 
-\label{sec:18-stress}
-\textbf{Robustness checks.} Novy-Marx and Velikov (2022) found that AQR's BAB factor puts on average about \$1.05 of each dollar into the smallest 1\% of stocks\index{micro-caps|textbf}, which are expensive to trade (Chapter~\ref{ch:13}), so if the lab's effect is much stronger with equal than value weights\index{index weighting!value-weighted}, small stocks are doing much of the work (Section~\ref{sec:02-microcaps}). The lab uses four factors, so its alphas probably overstate what the five-factor model leaves. 2022, when stocks and bonds fell together, is the natural out-of-sample\index{in-sample versus out-of-sample} test of interest-rate exposure, and the post-2010 subperiod shows whether crowding\index{crowding|textbf} has shrunk the premium. Finally, stocks sorted into low past-beta portfolios tend to have higher true betas, which flattens the SML even if the CAPM holds\index{estimation error|textbf}. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:18-verdict}.
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.85\linewidth]{images/fig06-2-break-even.png}
+%\caption{Net return against one-way trading cost, from the turnover and gross returns in the table. Each line falls at a rate of four times the strategy's turnover; it crosses zero at the break-even cost. Value's line is nearly flat and crosses zero off the chart, at about 4\%.}
+%\label{fig:17-breakeven}
+%\end{figure}
+
+A gross ranking by Sharpe ratio\index{Sharpe ratio} or t-statistic\index{t-statistic} therefore says little about which strategy an investor should prefer. The net ranking depends on turnover as much as on the gross premium.
+
+
+\section{Market impact and capacity}
+\label{sec:17-capacity}
+
+Spreads are roughly a fixed cost per dollar traded. \term{Market impact} is not: the more a strategy trades relative to the market's volume, the more each dollar costs. This is what gives every strategy a \term{capacity}\index{capacity|textbf}, a size beyond which its net returns shrink toward zero.
+
+\textbf{Why prices move.} Kyle (1985) described market makers who cannot tell orders from well-informed traders apart from other orders, so they move their prices in the direction of every order. Large orders are more likely to carry information and harder to absorb, so they move prices more. Studies of real institutional trades find that the price impact grows roughly with the square root of an order's size relative to the day's trading volume (Almgren, Thum, Hauptmann and Li 2005; T\'oth et al.\ 2011). A common working model is
+\begin{equation}
+  \text{impact per dollar} \approx Y\,\sigma_{daily}\,\sqrt{\frac{Q}{V}}
+  \label{eq:17-impact}
+\end{equation}
+Here $Q$ is the order size, $V$ is daily volume, $\sigma_{daily}$ is daily volatility and $Y$ is a constant close to one. The ratio $Q/V$ is the \term{participation rate}\index{participation rate|textbf}, the order's share of the day's trading. Trading 1\% of a day's volume in a stock with 2\% daily volatility costs about $2\% \times \sqrt{0.01} = 0.2\%$ in impact. Trading 10\% costs about $2\% \times \sqrt{0.10} \approx 0.6\%$ (Figure~\ref{fig:17-impact}).
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+
+\begin{figure}[htbp]
+  \centering
+  \scalebox{0.9}{%
+\begin{tikzpicture}[
+    % Impact (%) = Y * sigma * sqrt(Q/V), with Y = 1 and sigma = 2%.
+    % x is Q/V in percent, so impact = 2 * sqrt(x/100) = 0.2 * sqrt(x).
+    declare function={impact(\x) = 0.2*sqrt(\x);}
+  ]
+  \begin{axis}[
+    width=0.55\linewidth, height=0.35\linewidth,
+    axis lines=left,
+    axis line style={-stealth, thin},
+    xmin=0, xmax=20.5, ymin=0, ymax=1,
+    xtick={0,5,...,20},
+    ytick={0,0.2,0.4,0.6,0.8,1},
+    yticklabel style={/pgf/number format/fixed},
+    tick label style={font=\small},
+    xlabel={Order size as a share of daily volume, $Q/V$ (\%)},
+    ylabel={Impact per dollar (\%)},
+    samples=200, domain=0:20,
+    clip=false,
+  ]
+    % If impact were linear (for comparison)
+    \addplot[gray!70, densely dashed, thin, samples=2] {0.0215*x};
+    \node[gray!40!black, font=\small, anchor=west] at (axis cs:20.2,0.36)
+      {if impact were linear};
+
+    % Square-root impact
+    \addplot[fenavy, very thick] {impact(x)};
+    \node[fenavy, font=\small, anchor=west] at (axis cs:20.2,{impact(20)})
+      {square root};
+
+    % Marked points
+    \fill[fenavy] (axis cs:1,0.2) circle (2.2pt);
+    \draw[gray!50] (axis cs:1.2,0.21) -- (axis cs:4.6,0.34);
+    \node[font=\small, anchor=west] at (axis cs:4.6,0.34) {1\% of volume: 0.2\%};
+
+    \fill[fenavy] (axis cs:10,0.632) circle (2.2pt);
+    \node[font=\small, anchor=north west] at (axis cs:10.5,0.62)
+      {10\% of volume: 0.6\%};
+  \end{axis}
+  \end{tikzpicture}%
+}
+  \caption{Bigger orders cost more per dollar, though less than in proportion to their size. Square-root market impact for a stock with 2\% daily volatility,
+    from Equation~\eqref{eq:17-impact} with $Y = 1$. Ten times the order size
+    costs about three times as much per dollar, not ten times; but total
+    impact cost, per dollar times dollars, still rises faster than the order.}
+  \label{fig:17-impact}
+\end{figure}
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.85\linewidth]{images/fig06-3-impact.png}
+%\caption{Square-root market impact for a stock with 2\% daily volatility, from Equation~\eqref{eq:17-impact} with $Y = 1$. Ten times the order size costs about three times as much per dollar, not ten times; but total impact cost, per dollar times dollars, still rises faster than the order.}
+%\label{fig:17-impact}
+%\end{figure}
+
+\textbf{From impact to capacity.} A strategy that manages assets $A$ with turnover $T$ trades about $2TA$ on each side every month, spread across its holdings. As $A$ grows, the participation rate $Q/V$ rises. Impact per dollar rises with its square root, so total impact cost rises faster than the assets. Net return therefore falls as the fund grows, slowly at first and then quickly. Capacity can be defined as the size at which the net return is halved, or the size at which it reaches zero. An investor would want to stop well before either point.
+
+Three features\index{features and targets} of a strategy set its capacity:
+
+\begin{enumerate}
+  \item \textbf{Turnover.}\index{turnover|textbf} Every dollar not traded is a dollar that does not move prices.
+  \item \textbf{Liquidity of its holdings.} Strategies that concentrate in small stocks hit their limits first.
+  \item \textbf{Gross premium.} A larger premium can absorb more cost before it is gone.
+\end{enumerate}
+
+Capacity also has an industry-wide side. If many managers follow similar signals, their combined trades set the price impact. A strategy's capacity is then shared among everyone who trades it. Berk and Green (2004) argued that in a competitive market, money flows to skilled managers until their returns after costs are no better than the alternatives.
+
+The capacity estimates in this chapter's lab rest on stated assumptions about volume, spreads and the impact constant. They are an illustration of how capacity arises and what it depends on, not a forecast for any real fund.
+
+\section{Designing for costs}
+\label{sec:17-design}
+
+A paper portfolio is built as if trading were free, so it trades whenever the signal moves, however slightly. A portfolio designed for costs trades only when the expected gain exceeds the cost. Several simple rules capture most of the benefit.
+
+\begin{itemize}
+  \item \textbf{Buy/hold spreads (banding).} Buy a stock only when it enters the top 30\% on the signal, but keep holding it until it falls out of, say, the top 50\%. Stocks that wobble around the breakpoint no longer generate trades. Novy-Marx and Velikov (2016) found this the single most effective simple way to reduce costs.
+  \item \textbf{Slower rebalancing\index{rebalancing}.} Rebuilding the portfolio quarterly rather than monthly cuts turnover for slow signals at little cost in signal. For fast signals it gives up most of the premium.
+  \item \textbf{Partial trading.} G\^arleanu and Pedersen (2013) showed that with predictable returns\index{return predictability} and \term{quadratic trading costs}\index{transaction costs!quadratic|textbf}, costs that rise with the square of the amount traded, the optimal policy trades only part of the way toward the target each period, and aims at a target that anticipates where the signal is heading.
+  \item \textbf{Netting and combining signals.} A multi-signal portfolio can cross trades internally: a stock that momentum wants to sell and value wants to buy need not be traded at all.
+  \item \textbf{Liquidity screens.}\index{liquidity|textbf} Restricting the universe to larger, more liquid stocks raises capacity and lowers costs, usually at some cost in gross premium, since many anomalies are strongest in small stocks.
+\end{itemize}
+
+Each rule trades a little signal for a lot less trading. The trade-off depends on how fast the signal decays: banding costs little for momentum, whose ranks change gradually, and cannot rescue short-term reversal, whose signal is gone within a month.
+
+\textbf{Saving costs is also a search.} Every design choice, such as the width of a band, how often to rebalance or which stocks to exclude, can be tuned to make a backtest look better, so the warnings about selection and \term{overfitting}\index{overfitting} in Section~\ref{sec:01-backtests} apply in full. Chen and Velikov (2023) studied 204 anomalies, allowing for effective spreads, the decline in returns after publication\index{anomaly!post-publication decay} and modern trading technology. They found that the average anomaly's expected return, net of these effects, was about 4 basis points a month. Strategies that looked impressive after costs in their own samples, once cost-saving rules were added, did not escape that conclusion. A cost-saving design should therefore be fixed in advance and judged out of sample, like any other part of a strategy.
+
+
+\begin{callout}
+\textbf{What Failed: buying last month's losers.} Jegadeesh (1990) and Lehmann (1990) showed that stocks with low returns over the past week or month tended to rebound, and stocks with high returns tended to fall back. On paper the pattern is strong and statistically robust, and the Fama--French\index{Fama--French factors} short-term reversal factor still has a positive average return. The trouble is trading. The strategy replaces almost its whole portfolio every month. It buys and sells stocks that have just moved sharply, often small and illiquid ones, where spreads are widest. Novy-Marx and Velikov (2016) estimated that its costs were larger than its gross return by more than a percentage point a month. Nagel (2012) argued that much of the reversal is a reward for supplying liquidity to impatient traders. That reward goes to market makers, who trade cheaply, not to investors who must pay the spread. For an ordinary investor, the claim that buying recent losers is profitable \textbf{fails} once costs are counted.
+\end{callout}
+
+\section{Lab~\thechapter: Replicating Novy-Marx and Velikov (2016)}
+\label{sec:17-lab}
+
+\textbf{Claim on trial:} a strategy that is profitable in a backtest is profitable to trade. The lab replicates Novy-Marx and Velikov (2016) and adds a capacity analysis in the spirit of Frazzini, Israel and Moskowitz (2018). It takes three long--short factors from the Kenneth R. French Data Library, value (HML), momentum (Mom) and short-term reversal (ST Rev), from July 1963, plus a simulated stock universe, and asks what each factor would have earned after costs. The code is in the repository folder \texttt{ch14-costs/}.
+
+\textbf{Part A: gross performance.} Average returns, t-statistics and Sharpe ratios as published. On paper, all three look like discoveries.
+
+\textbf{Part B: turnover.} The French library does not publish holdings, so turnover comes from Novy-Marx and Velikov's estimates and from a simulated universe of 1,000 stocks built like the Fama--French factors. Its turnover is about 2\% a month for value, 25\% for momentum and 76\% for reversal, close to the published estimates.
+
+\textbf{Part C: costs.} Net returns for one-way costs from 0 to 100 basis points plus a short-borrowing fee, the break-even costs, and the Sharpe-ratio ranking before and after a cost of 20 basis points (Lab Figures~\ref{ch:14}.1 and~\ref{ch:14}.2).
+
+\textbf{Part D: capacity.} The simulated universe is scaled to a \$50 trillion market with square-root impact, and each strategy's net return is traced as its assets grow from \$10 million to \$1 trillion.
+
+\textbf{Part E: mitigation, with known truth.} For momentum at a one-way cost of 50 basis points, holding stocks until they leave the top 50\% cuts turnover roughly in half, gives up about a fifth of the expected gross return, and raises the expected net return from about 0.30\% to 0.41\% a month. For reversal, no band width rescues the strategy at that cost: the signal decays too fast for patience to pay.
+
+The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:17-verdict}.
 
 \section{Where the evidence stands}
-\label{sec:18-verdict}
+\label{sec:17-verdict}
 
-The published studies point to a clear pattern: \textbf{the security market line is flatter than the CAPM predicts, one of the most robust findings in empirical finance. Whether low risk earns a separate premium that a beta-neutral portfolio can collect depends on how the portfolio is built, on small stocks and on overlap with other factors.} The table summarizes the evidence as of November 2026.
+The published studies point to a clear pattern: \textbf{whether a profitable backtest is profitable to trade depends on how much the strategy trades, what it trades and how much money is behind it: slow strategies in liquid stocks survive realistic costs, while fast strategies in small stocks often do not.} The table summarizes the evidence as of November 2026.
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.45\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
@@ -242,35 +512,49 @@ Situation & Holds? & Why & Evidence \\
 \endfoot
 \bottomrule
 \endlastfoot
-A flat security market line & \textbf{Yes} & Returns rise with beta far less than the market premium implies, in the U.S. and abroad. & Black, Jensen and Scholes (1972); Fama and MacBeth (1973); Fama and French (1992) \\*
+Slow strategies, such as value & \textbf{Yes} & Turnover of about 3\% a month gives a break-even cost of about 4\% per trade. & Novy-Marx and Velikov (2016) \\*
 \addlinespace[3pt]
-Idiosyncratic volatility & \textbf{Yes} & The most volatile stocks earned about 1\% a month less than the least, in 23 markets; lottery demand absorbs much of it. & Ang, Hodrick, Xing and Zhang (2006); Bali, Cakici and Whitelaw (2011) \\
+Momentum & \textbf{Partly} & Survives one-way costs up to about 1\%, but its profits concentrate in costly stocks and shrink with size. & Novy-Marx and Velikov (2016); Lesmond, Schill and Zhou (2004); Korajczyk and Sadka (2004) \\
 \addlinespace[3pt]
-The beta-neutral BAB factor & \textbf{Partly} & High risk-adjusted returns across countries and assets, but much capital in the smallest stocks. & Frazzini and Pedersen (2014); Novy-Marx and Velikov (2022) \\
+Short-term reversal & \textbf{No} & Nearly full monthly turnover; costs exceed its gross return by more than a point a month. & Novy-Marx and Velikov (2016) \\
 \addlinespace[3pt]
-After profitability and investment factors & \textbf{Weakly} & The five-factor model explains much of the alphas. & Fama and French (2016) \\
+High-turnover strategies in general & \textbf{No} & Most strategies trading over half their portfolio monthly lose significance after costs. & Novy-Marx and Velikov (2016) \\
 \addlinespace[3pt]
-With betas that vary over time & \textbf{Weakly} & Time-varying betas largely remove the alpha gap. & Cederburg and O'Doherty (2016) \\
+For a large, patient institution & \textbf{More often} & Actual costs were an order of magnitude below academic estimates, but from one manager's trades. & Frazzini, Israel and Moskowitz (2018) \\
 \addlinespace[3pt]
-Interest-rate exposure & \textbf{Partly} & An interest-rate premium explains part, but not all, of the anomaly. & Driessen, Kuiper, Nazliben and Beilo (2019) \\*
+Strategies that rely on the short side & \textbf{Often not} & Many anomalies earn most on the short side, where fees, recalls and bans bite. & D'Avolio (2002); Stambaugh, Yu and Yuan (2012) \\*
 \addlinespace[3pt]
-Why the line is flat & \textbf{Disputed} & Leverage constraints, lottery preferences, benchmarking and costly short selling all have support. & Frazzini and Pedersen (2014); Baker, Bradley and Wurgler (2011); Liu, Stambaugh and Yuan (2018) \\
+The average anomaly & \textbf{No} & After costs and post-publication decay, its expected return is about 4 basis points a month. & Chen and Velikov (2023) \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
 
-Low-volatility portfolios have delivered returns close to the market's with less volatility, which is useful to an unconstrained investor, but inflows since 2011 may have raised their prices and made past returns a poor guide.
+The claim holds only for strategies whose break-even costs sit well above what their investors actually pay, at the size they intend to run.
 
-\textbf{What would change the picture.} The strong form would gain support if a beta-neutral, value-weighted version kept a significant alpha against the five-factor model and interest-rate exposure out of sample. It would lose support if the post-2010 alphas proved to be inflow effects that reversed.
-
-\label{sec:18-open}
-\textbf{Open questions.} Which risk measure is priced, beta, as leverage theories suggest, or volatility, as lottery theories suggest? And how large is the alpha of a value-weighted, beta-neutral portfolio of liquid stocks against the five-factor model?
+\textbf{What would change the picture.} The claim would gain support if many managers' trading records confirmed costs as low as those of Frazzini, Israel and Moskowitz (2018), and lose it if cost-saving designs fixed in advance failed out of sample.
 
 \section{What practitioners and investors can use}
-\label{sec:18-investors}
+\label{sec:17-investors}
 
-\textbf{Minimum-volatility funds}\index{minimum-volatility funds|textbf}, long-only portfolios chosen for low volatility, are the most common way to access the anomaly. With a beta around 0.7 to 0.8, they usually trail strong bull markets and beat the market in crashes, so the case for them is a better return per unit of risk, not higher returns. Their tracking error\index{tracking error|textbf} is large enough that they can lag the market for years, and they tend to overweight interest-sensitive sectors such as utilities and consumer staples. \textbf{BAB-style funds}\index{betting against beta (BAB)|textbf} are a different product: \term{market-neutral}, levered, exposed to the micro-cap issues above, and prone to sharp losses when high-beta stocks rebound.
+Before investing in any strategy, ask for its one-sided monthly turnover, its break-even cost compared with what you will pay, what the short side costs, and its net return at the planned size, with the impact assumptions stated. Ask also whether cost-saving rules such as bands and rebalancing schedules were fixed before the backtest, because they are parameters too. Costs change the ranking of strategies, not just their level: a modest, slow premium harvested cheaply may be worth more than a spectacular, fast one that cannot be. Chapters~\ref{ch:15} and~\ref{ch:16} test more anomalies, and report their evidence after costs as well as before.
 
-\begin{callout}
-\textbf{What Failed: the CAPM as a hurdle rate.} The CAPM's empirical problems have been known since the early 1970s, yet it remains the standard way to set the cost of equity: Graham and Harvey (2001) found that 73.5\% of 392 U.S. chief financial officers always or almost always used it. A flat SML means the CAPM overstates the cost of capital for high-beta projects and understates it for low-beta ones, so firms may reject good low-beta projects and accept poor high-beta ones. The failure is treating a model of \emph{risk} as a reliable model of \emph{expected return} when the evidence has long said otherwise.
-\end{callout}
+% Key terms that this chapter uses without defining them, for readers new to finance.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Kenneth R. French Data Library.] The Kenneth R. French Data Library is a free website that publishes the returns of standard factors and portfolios, such as value, size and momentum.
+  \item[Overfitting.] See Chapter~\ref{ch:20}, Section~\ref{sec:20-biasvar}, page~\pageref{sec:20-biasvar}.
+\end{description}
+\end{keyterms}

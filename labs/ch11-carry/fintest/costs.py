@@ -1,4 +1,4 @@
-"""Trading costs, turnover and capacity (Chapter 13).
+"""Trading costs, turnover and capacity (Chapter 14).
 
 * Cost accounting for long-short portfolios: monthly cost, net return and
   break-even cost from one-sided turnover

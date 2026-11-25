@@ -53,7 +53,7 @@ By the end of the chapter you will be able to:
 
 \subsection{Measuring past performance}
 
-In words, a stock's return over several months is found by compounding its monthly returns, so that each month's gain or loss applies to the amount reached the month before. A stock's past return over a window is its cumulative return over those months: $(1 + R_1)(1 + R_2)\cdots(1 + R_k) - 1$. The standard momentum signal uses the return from twelve months ago to two months ago, written ``12--1'' or ``12--2'': it covers eleven months and \textbf{skips the most recent month}\index{momentum!skipping the most recent month|textbf} (Figure~\ref{fig:05-signal}). The skip exists because returns over a single month tend to reverse (Chapter~\ref{ch:13}'s \term{short-term reversal}\index{short-term reversal}); including that month would mix two opposite effects.
+In words, a stock's return over several months is found by compounding its monthly returns, so that each month's gain or loss applies to the amount reached the month before. A stock's past return over a window is its cumulative return over those months: $(1 + R_1)(1 + R_2)\cdots(1 + R_k) - 1$. The standard momentum signal uses the return from twelve months ago to two months ago, written ``12--1'' or ``12--2'': it covers eleven months and \textbf{skips the most recent month}\index{momentum!skipping the most recent month|textbf} (Figure~\ref{fig:05-signal}). The skip exists because returns over a single month tend to reverse (Chapter~\ref{ch:14}'s \term{short-term reversal}\index{short-term reversal}); including that month would mix two opposite effects.
 
 \begin{figure}[htbp]
 \centering
@@ -162,7 +162,7 @@ Momentum at horizons of a few months to a year fits underreaction or delayed ove
 \section{How it works}
 \label{sec:05-how}
 
-\textbf{The strategy.} At the end of each month, rank stocks on their 12--1 past return. Buy the top group, sell the bottom group, hold for a month, and repeat. Because the ranking window shifts by one month at a time, ten of its eleven months carry over, and about a third of each side of the portfolio is replaced each month (Chapter~\ref{ch:13}). Jegadeesh and Titman\index{Jegadeesh and Titman} (1993) studied many combinations of ranking and holding periods from three to twelve months; the 12--1 ranking with a one-month hold has become the standard.
+\textbf{The strategy.} At the end of each month, rank stocks on their 12--1 past return. Buy the top group, sell the bottom group, hold for a month, and repeat. Because the ranking window shifts by one month at a time, ten of its eleven months carry over, and about a third of each side of the portfolio is replaced each month (Chapter~\ref{ch:14}). Jegadeesh and Titman\index{Jegadeesh and Titman} (1993) studied many combinations of ranking and holding periods from three to twelve months; the 12--1 ranking with a one-month hold has become the standard.
 
 \textbf{Why momentum might exist.} Three families of explanation compete.
 
@@ -242,7 +242,7 @@ The last clause matters: a premium that is real on average but brings losses of 
 \section{Lab~\thechapter: Replicating Jegadeesh and Titman (1993) and Daniel and Moskowitz (2016)}
 \label{sec:05-lab}
 
-The lab asks whether momentum has earned a premium throughout a century of U.S. data, when its crashes occur, and whether volatility scaling can make it holdable. It replicates Jegadeesh and Titman (1993), the crash regressions of Daniel and Moskowitz (2016) and the volatility scaling of Barroso and Santa-Clara (2015). The data come from Kenneth French\index{Kenneth French data library}'s library: the monthly and daily momentum factor from the 1920s, the market factor and risk-free rate\index{risk-free rate}, ten portfolios sorted on past returns and ten industry portfolios. The code is in the repository folder \texttt{ch09-momentum/}.
+The lab asks whether momentum has earned a premium throughout a century of U.S. data, when its crashes occur, and whether volatility scaling can make it holdable. It replicates Jegadeesh and Titman (1993), the crash regressions of Daniel and Moskowitz (2016) and the volatility scaling of Barroso and Santa-Clara (2015). The data come from Kenneth French\index{Kenneth French data library}'s library: the monthly and daily momentum factor from the 1920s, the market factor and risk-free rate\index{risk-free rate}, ten portfolios sorted on past returns and ten industry portfolios. The code is in the repository folder \texttt{ch04-momentum/}.
 
 \begin{itemize}
   \item \textbf{Part A, replication\index{replication}.} Momentum's average return, t-statistic\index{t-statistic}, Sharpe ratio, skewness, worst month and \textbf{maximum drawdown}\index{maximum drawdown|textbf} (the largest fall from a previous peak), over the full sample, by decade and after publication.
@@ -253,7 +253,7 @@ The lab asks whether momentum has earned a premium throughout a century of U.S. 
 \end{itemize}
 
 \label{sec:05-stress}
-\textbf{Robustness checks.} Momentum's record since 1993 is one of the longest out-of-sample tests of any anomaly, and the lab extends it through the 2009 crash. With turnover of about 35\% a month, costs absorb roughly 3 percentage points of the annual premium at 20 basis points and about 8 at 50 (Equation~\eqref{eq:17-net}), while Novy-Marx and Velikov (2016) still found a significant net premium (Chapter~\ref{ch:13}). The crash signals use only information available at the start of each month, and volatility scaling is itself a claim that can be overfit\index{overfitting}, so the lab lets you change its six-month window and 12\% target. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:05-verdict}.
+\textbf{Robustness checks.} Momentum's record since 1993 is one of the longest out-of-sample tests of any anomaly, and the lab extends it through the 2009 crash. With turnover of about 35\% a month, costs absorb roughly 3 percentage points of the annual premium at 20 basis points and about 8 at 50 (Equation~\eqref{eq:17-net}), while Novy-Marx and Velikov (2016) still found a significant net premium (Chapter~\ref{ch:14}). The crash signals use only information available at the start of each month, and volatility scaling is itself a claim that can be overfit\index{overfitting}, so the lab lets you change its six-month window and 12\% target. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:05-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:05-verdict}
@@ -296,7 +296,7 @@ With volatility scaling & \textbf{Partly} & Scaling reduced the crashes and rais
 \textbf{What would change the picture.} The claim would hold fully if volatility scaling, fixed in advance and tested on new data, removed the crashes without removing the premium. It would weaken if the premium kept shrinking until it no longer covered realistic costs.
 
 \label{sec:05-open}
-\textbf{Open questions.} Can momentum crashes be forecast in real time, after the multiple-testing\index{multiple testing} corrections of Chapter~\ref{ch:15}? And if crashes are the risk that the premium pays for, does managing them reduce the premium?
+\textbf{Open questions.} Can momentum crashes be forecast in real time, after the multiple-testing\index{multiple testing} corrections of Chapter~\ref{ch:16}? And if crashes are the risk that the premium pays for, does managing them reduce the premium?
 
 \section{What practitioners and investors can use}
 \label{sec:05-investors}

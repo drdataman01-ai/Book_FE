@@ -1,0 +1,743 @@
+% Chapter 14 -- Claim: Delta Hedging Removes Option Risk
+% Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
+% Defines the callout box only if the preamble has not.
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{fegray}{HTML}{4D4D4D}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+\@ifundefined{callout}{%
+  \newtcolorbox{callout}{breakable, enhanced,
+    colback=white, colframe=gray!70, boxrule=0.5pt, arc=1mm,
+    borderline west={2.5pt}{0pt}{gray!70},
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\makeatletter
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
+\chapter{Claim: Delta Hedging Removes Option Risk}
+\label{ch:17}
+\providecommand{\term}[1]{\emph{#1}}
+
+Assume a fund manager will receive \$1 million in three months, and she plans to invest it in a stock that now trades at \$100. She worries that the stock will rise before her money arrives. She could wait and hope, but she would rather pay a small amount today for protection. She buys a \textbf{call option}\index{option!call|textbf}, a contract that gives her the right, but not the obligation, to buy the stock in three months at a fixed price of \$100, called the \term{strike price}\index{option!strike price|textbf}. The option costs about \$4.50 per share, a price called the \term{premium}\index{option!premium|textbf}. If the stock rises to \$120, she uses her right, buys at \$100 and saves \$20 per share. If the stock falls to \$90, she simply lets the option expire and buys in the market at \$90, and her only cost is the premium. The option works like insurance against a rising price. A \textbf{put option}\index{option!put|textbf}, the right to \emph{sell} at a fixed price, works the same way for an investor who fears a falling price.
+
+Every option has two sides. The \textbf{buyer}\index{option!buyer|textbf} pays the premium and gets the right, and the \textbf{seller}\index{option!seller (writer)|textbf}, also called the writer, receives the premium and must honor the contract if the buyer uses it. With two kinds of option and two sides to each, there are four basic positions, and Figure~\ref{fig:14-four-payoffs} shows the profit of each when the option expires. All four use the stock in the story, which trades at \$100 today, and a strike price of \$100 in three months. The call costs \$4.50 and the put \$3.50. The fund manager is in the top-left panel. If the stock rises to \$120, she gains \$20 a share, or \$15.50 after the premium, and the higher the stock goes, the more she gains. If the stock ends at \$90 or \$100, she loses only the \$4.50 premium. The buyer of a put, in the bottom-left panel, is in the mirror position: she gains when the stock falls, \$10 a share at \$90, or \$6.50 after the premium, and loses only the premium if it does not. The two right-hand panels show the sellers, and each is the mirror image of the buyer beside it, because the buyer's gain is the seller's loss. A seller's best outcome is to keep the premium, while the loss from a large move has no such limit. Buyers of options therefore risk a small, known amount for the chance of a large gain, and sellers collect a small, steady income in exchange for bearing the risk of a large loss.
+
+% Figure: profit at expiration of the four basic option positions
+\begin{figure}[htbp]
+\centering
+\scalebox{0.9}{%
+\begin{tikzpicture}[
+  dot/.style={only marks, mark=*, mark size=1.7pt},
+  val/.style={font=\scriptsize},
+  note/.style={font=\scriptsize, text=fegray, align=center}]
+\begin{groupplot}[
+  group style={group size=2 by 2, horizontal sep=1.5cm, vertical sep=2.4cm},
+  width=0.5\linewidth, height=5.4cm,
+  xmin=70, xmax=130, ymin=-30, ymax=30,
+  xtick={90,100,120}, ytick={-20,-10,0,10,20},
+  xticklabel style={font=\scriptsize}, yticklabel style={font=\scriptsize},
+  xlabel={Stock price at expiration (\$)}, xlabel style={font=\footnotesize},
+  axis lines=left, grid=major, grid style={gray!20},
+  title style={font=\small\bfseries},
+  every axis plot/.append style={line width=1.2pt},
+]
+% ---------------- Buy a call ----------------
+\nextgroupplot[title={Buy a call (premium \$4.50)}, ylabel={Profit per share (\$)}, ylabel style={font=\footnotesize}]
+\addplot[gray!60, line width=0.5pt, domain=70:130] {0};
+\addplot[fenavy, domain=70:130, samples=200] {max(x-100,0)-4.5};
+\addplot[dot, fenavy] coordinates {(90,-4.5) (100,-4.5) (120,15.5)};
+\node[val, fenavy, anchor=south east] at (axis cs:120,15.5) {+\$15.50};
+\node[val, fenavy, anchor=north] at (axis cs:90,-5.5) {$-$\$4.50};
+\node[note, anchor=north west] at (axis cs:71,28) {gain grows\\with a rise};
+% ---------------- Sell a call ----------------
+\nextgroupplot[title={Sell a call (premium \$4.50)}]
+\addplot[gray!60, line width=0.5pt, domain=70:130] {0};
+\addplot[red!60!black, domain=70:130, samples=200] {4.5-max(x-100,0)};
+\addplot[dot, red!60!black] coordinates {(90,4.5) (100,4.5) (120,-15.5)};
+\node[val, red!60!black, anchor=north east] at (axis cs:120,-15.5) {$-$\$15.50};
+\node[val, red!60!black, anchor=south] at (axis cs:90,5.5) {+\$4.50};
+\node[note, anchor=north west] at (axis cs:71,-10) {loss grows\\with a rise};
+% ---------------- Buy a put ----------------
+\nextgroupplot[title={Buy a put (premium \$3.50)}, ylabel={Profit per share (\$)}, ylabel style={font=\footnotesize}]
+\addplot[gray!60, line width=0.5pt, domain=70:130] {0};
+\addplot[fenavy, domain=70:130, samples=200] {max(100-x,0)-3.5};
+\addplot[dot, fenavy] coordinates {(90,6.5) (100,-3.5) (120,-3.5)};
+\node[val, fenavy, anchor=south west] at (axis cs:90,6.5) {+\$6.50};
+\node[val, fenavy, anchor=north] at (axis cs:120,-4.5) {$-$\$3.50};
+\node[note, anchor=north east] at (axis cs:129,28) {gain grows\\with a fall};
+% ---------------- Sell a put ----------------
+\nextgroupplot[title={Sell a put (premium \$3.50)}]
+\addplot[gray!60, line width=0.5pt, domain=70:130] {0};
+\addplot[red!60!black, domain=70:130, samples=200] {3.5-max(100-x,0)};
+\addplot[dot, red!60!black] coordinates {(90,-6.5) (100,3.5) (120,3.5)};
+\node[val, red!60!black, anchor=north west] at (axis cs:90,-6.5) {$-$\$6.50};
+\node[val, red!60!black, anchor=south] at (axis cs:120,4.5) {+\$3.50};
+\node[note, anchor=north east] at (axis cs:129,-10) {loss grows\\with a fall};
+\end{groupplot}
+\end{tikzpicture}%
+}
+\caption{Profit at expiration of the four basic option positions. The stock trades at \$100 today, every option has a strike price of \$100 and three months to expiry, the call costs \$4.50 and the put \$3.50. The dots mark three outcomes: the stock falls to \$90, stays at \$100 or rises to \$120. Buyers (navy, left) pay the premium, risk only that amount and gain from a large move. Sellers (red, right) receive the premium, gain at most that amount and bear the loss from a large move. Each seller's line is the mirror image of the buyer's, because the buyer's gain is the seller's loss. The fund manager in the story is in the top-left panel, and the bank that sold her the call is in the top-right panel.}
+\label{fig:14-four-payoffs}
+\end{figure}
+
+The bank that sold the fund manager the option sits in the top-right panel of Figure~\ref{fig:14-four-payoffs}, and it has the opposite problem. If the stock rises to \$120, the bank must deliver shares worth \$120 for only \$100 and lose \$20 per share, far more than the \$4.50 it received. The bank does not want to bet on the stock, so it hedges. On the day it sells the option, it buys about 0.56 shares for every option it has sold. This number is the option's \term{delta}\index{Greeks!delta|textbf}, which measures how much the option's value changes when the stock price moves by \$1. If the stock rises by \$1, the option the bank owes becomes about 56 cents more costly, but the 0.56 shares it holds gain about 56 cents, so the two changes cancel.
+
+\textbf{How does the bank determine the 0.56 shares?} The bank uses an option pricing model, which gives the option's value for any stock price. To find delta, it asks the model a simple question: how much would the option be worth if the stock were \$1 higher or \$1 lower? Table~\ref{tab:14-delta} shows the answer.
+
+\begingroup
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}cc@{}}
+\caption{The value of the call option at three stock prices.}
+\label{tab:14-delta} \\
+\toprule
+Stock price & Option value \\
+\midrule
+\endfirsthead
+\multicolumn{2}{@{}l}{\emph{(continued)}} \\
+\toprule
+Stock price & Option value \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+\$99  & \$3.95 \\*
+\$100 & \$4.49 \\*
+\$101 & \$5.06 \\*
+\end{longtable}
+\endgroup
+
+When the stock moves from \$99 to \$101, the option's value rises by about \$1.12, or about 56 cents for each \$1 move in the stock. That rate of change is the option's delta. A share always moves dollar for dollar with the stock, so 0.56 shares move by exactly as much as the option, and holding them cancels the bank's risk from small moves. The same number, 0.56, can be derived directly from the \term{Black--Scholes} formula, which is introduced later in this chapter.
+
+The delta does not stay fixed, so the bank must keep adjusting its holding. When the stock rises, the option becomes more likely to be used, so the bank buys more shares. When the stock falls, the option becomes less likely to be used, so the bank sells some. By the expiry date, the bank holds one full share per option if the stock is above \$100 and none if it is below, which is exactly what it needs to keep its promise to the fund manager. This strategy is called \term{delta hedging}\index{delta hedging|textbf}. If it works perfectly, the net cost of all the buying and selling along the way equals the premium the bank received. The bank has then reproduced the option with shares alone and carries no risk.
+
+In 1973 Fischer Black and Myron Scholes, together with a closely related paper by Robert Merton, turned this idea into a striking claim: an option can be \term{replicated}\index{replication|textbf}, meaning that its payoff can be reproduced exactly by trading the stock and borrowing or lending cash. The trader only has to hold the right number of shares and adjust that number continuously, whatever the market does. If that is true, an option's price is not a matter of opinion about where the market is going. It is simply the cost of replicating the option. The Chicago Board Options Exchange opened the same year, and within a few years traders were pricing options with the formula on handheld calculators. The work earned Scholes and Merton the 1997 Nobel Prize in economics. Black had died in 1995 and was not eligible, because the prize is not awarded after death.
+
+
+The argument rests on assumptions that no real market meets: continuous trading, constant volatility and no trading costs. Researchers soon asked how much these assumptions matter. Leland (1985) asked what trading costs do to the hedge, and showed that with trading costs, a hedger who adjusts the hedge often pays a great deal, while one who adjusts it rarely is left with risk (Figure~\ref{fig:14-freq}), so perfect replication is impossible. After the crash of 1987, option prices showed a lasting \emph{volatility smile}\index{volatility smile}, a sign that the market does not believe the model's assumptions (Section~\ref{sec:14-iv}). To estimate what hedged option sellers are paid for bearing the risk the model leaves, Bakshi and Kapadia (2003) measured the gains on hedged option positions and found them consistently negative for option buyers, a sign that hedged option sellers are paid for bearing volatility risk (Section~\ref{sec:14-verdict}). Because volatility tends to rise when the market falls, Hull and White (2017) proposed a better hedge that allows for the way volatility tends to move with the market (Section~\ref{sec:14-stress}).
+
+
+
+The answer matters well beyond option traders. The replication argument underlies the pricing of almost every derivative, and it is why banks can sell structured products, investments that package a bond with options, such as a note that pays part of the stock market's gain while guaranteeing the original investment, and hedge them instead of betting on them. 
+
+The claim on trial\index{claims-on-trial method} is: \textbf{a trader who sells an option and delta-hedges it as Black--Scholes prescribes is left with little risk.}
+
+The lab in Section~\ref{sec:14-lab} repeats the Black--Scholes hedge, in the spirit of Bakshi and Kapadia (2003), on simulated price paths where the model holds exactly and on real index paths since 1990. It uses free daily U.S. market returns and the VIX as the implied volatility, to measure how much risk is left after hedging, where it comes from, and how large the losses are in the worst months.
+
+By the end of the chapter you will be able to:
+
+\begin{itemize}
+  \item explain how Black--Scholes prices an option by replicating it\index{replication}, and which assumptions this needs;
+  \item break a delta-hedged\index{delta hedging} option's daily profit and loss into gamma\index{Greeks!gamma} and theta\index{Greeks!theta}, and estimate the error from hedging only at intervals;
+  \item explain why the volatility smile\index{volatility smile} is evidence against the model's assumptions;
+  \item judge what risks a ``fully hedged'' option seller or structured-product issuer still carries.
+\end{itemize}
+
+
+
+
+
+
+\section{Foundations: options and Black--Scholes}
+\label{sec:14-foundations}
+
+\subsection{Payoffs}
+
+A call\index{option!call} gives its owner the right to buy an asset at a fixed strike price\index{option!strike price} $K$ on the expiry date $T$. At expiry it pays
+\begin{equation}
+  \max(S_T - K,\, 0),
+  \label{eq:14-call-payoff}
+\end{equation}
+where $S_T$ is the asset's price then. A put\index{option!put} gives the right to sell, and pays $\max(K - S_T, 0)$. The buyer pays the premium\index{option!premium}. The seller, or \term{writer}, receives the premium and takes on the obligation. An option is \term{at the money}\index{option!moneyness|textbf} when its strike equals the current price, \textbf{in the money} when exercising it now would pay something, and \textbf{out of the money} when exercising it now would pay nothing.
+
+
+\textbf{Worked example.} Return to the fund manager at the start of the chapter. She buys a three-month call on a stock trading at \$100, with a strike of $K = \$100$, and pays a premium of about \$4.50. Because the stock price equals the strike when she buys it, the call is at the money. Table~\ref{tab:14-payoff} shows what happens at expiry.
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}ccccc@{}}
+\caption{Payoffs at expiry for the call in the story, with a strike of \$100 and a premium of \$4.50. Profits are after the premium. The last column shows what a put with the same strike would pay.}
+\label{tab:14-payoff} \\
+\toprule
+Stock price & Call payoff & Fund manager's & Bank's & Put payoff \\
+at expiry, $S_T$ & $\max(S_T - 100, 0)$ & profit & profit & $\max(100 - S_T, 0)$ \\
+\midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\emph{(continued)}} \\
+\toprule
+Stock price & Call payoff & Fund manager's & Bank's & Put payoff \\
+at expiry, $S_T$ & $\max(S_T - 100, 0)$ & profit & profit & $\max(100 - S_T, 0)$ \\
+\midrule
+\endhead
+\midrule
+\multicolumn{5}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+\$90     & \$0     & $-\$4.50$  & $+\$4.50$  & \$10 \\*
+\$100    & \$0     & $-\$4.50$  & $+\$4.50$  & \$0 \\
+\$104.50 & \$4.50  & \$0        & \$0        & \$0 \\*
+\$120    & \$20    & $+\$15.50$ & $-\$15.50$ & \$0 \\
+\end{longtable}
+\endgroup
+
+The fund manager's loss is limited to the premium, while her gain grows with the stock price. The bank's position is the mirror image: its gain is limited to the premium, and its loss has no limit, which is why it hedges. She breaks even at \$104.50, where the payoff just repays the premium. A put works the other way, paying off when the stock ends below the strike.
+
+\subsection{Put--call parity}
+\label{sec:14-parity}
+
+Consider European options, which can be exercised only at expiry (the name refers to the type of contract, not where it trades), on an asset that pays no dividends. A call and a put with the same strike and expiry satisfy
+\begin{equation}
+  C - P = S - K e^{-rT}
+  \label{eq:14-parity}
+\end{equation}
+Here $Ke^{-rT}$ is the present value of the strike, the amount that, invested at the interest rate today, grows to $K$ by expiry. Rearranged, owning the stock and selling a call gives the same result as holding cash of $Ke^{-rT}$ and selling a put. A \term{covered call}\index{option selling!covered call|textbf} (own the stock and sell a call) and a \term{cash-secured put}\index{option selling!cash-secured put|textbf} (hold the strike in Treasury bills and sell a put) with the same strike are therefore the same position.
+
+\textbf{Worked example.} Return to the call in the story: the stock trades at \$100, the strike is $K = \$100$, the option expires in three months ($T = 0.25$), and the interest rate is 4\%. The call's Black--Scholes price is \$4.49. The present value of the strike is $K e^{-rT} = 100\,e^{-0.04 \times 0.25} \approx \$99.00$, so Equation~\eqref{eq:14-parity} gives the price of a put with the same strike and expiry:
+\begin{equation}
+  P = C - S + K e^{-rT} = 4.49 - 100 + 99.00 = \$3.49.
+  \label{eq:14-parity-example}
+\end{equation}
+The call costs \$1.00 more than the put, which is exactly the gap between the stock price and the present value of the strike.
+
+Table~\ref{tab:14-parity} compares the two positions that parity says are the same. An investor can own the stock and sell the call, receiving \$4.49, for a net cost of \$95.51. Or she can put \$99.00 in Treasury bills and sell the put, receiving \$3.49, for the same net cost of \$95.51. At expiry, the Treasury bills have grown to \$100, and the two positions are worth the same whatever the stock does.
+
+\begingroup
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.30\linewidth-0.30\linewidth-4\tabcolsep\relax}>{\centering\arraybackslash}p{0.30\linewidth}>{\centering\arraybackslash}p{0.30\linewidth}@{}}
+\caption{A covered call and a cash-secured put with a strike of \$100 are the same position. Both cost \$95.51 today and are worth the same at expiry.}
+\label{tab:14-parity} \\
+\toprule
+ & Covered call & Cash-secured put \\
+ & (own stock, sell call) & (hold bills, sell put) \\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+ & Covered call & Cash-secured put \\
+ & (own stock, sell call) & (hold bills, sell put) \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Cost today & $\$100 - \$4.49 = \$95.51$ & $\$99.00 - \$3.49 = \$95.51$ \\*
+\addlinespace[2pt]
+Value at expiry if the stock ends at \$120 & $\$120 - \$20 = \$100$ & $\$100 - \$0 = \$100$ \\*
+Value at expiry if the stock ends at \$90 & $\$90 - \$0 = \$90$ & $\$100 - \$10 = \$90$ \\*
+\end{longtable}
+\endgroup
+
+In both positions, the investor gives up any gain above \$100 in exchange for the premium, and she bears the loss if the stock falls below \$100. They differ only in how they are assembled.
+
+\subsection{Black--Scholes--Merton}
+\label{sec:14-bsm}
+
+Before 1973, economists who tried to price options ran into a problem. An option's value seemed to depend on how much the stock was expected to rise and on how much investors disliked risk, and neither can be observed. Two analysts who disagreed about the stock's prospects would disagree about the option's value, and there was no way to settle who was right.
+
+Black, Scholes and Merton removed the problem with the hedging argument of the story. The bank that sold the call holds delta shares, and over a short period the gain on the shares offsets the change in the option's value, so the combined position carries no risk. A position without risk must earn the risk-free rate, or traders could profit from the difference. That one condition is enough to pin down the option's price. Because the hedge removes the risk, the stock's expected return and investors' attitudes toward risk drop out, and the price depends only on quantities that can be observed or estimated: the stock price, the strike, the time to expiry, the interest rate and the volatility.
+
+In plain words, the resulting formula prices an option as the cost of the shares the hedger must hold, minus the money it borrows to buy them. The shaded box gives the formula and explains how to read it.
+
+\begin{technote}
+\textbf{Technical note: the Black--Scholes formula.} To make the argument precise, they assumed that the stock price follows a \term{geometric Brownian motion}\index{geometric Brownian motion|textbf}, meaning that it changes by small random percentages, with returns over any period normally distributed in logs and with a constant volatility $\sigma$. Under this assumption, an option can be replicated by trading the stock and a bond, which gives its price (Black and Scholes 1973; Merton 1973):
+\begin{equation}
+  C = S\,N(d_1) - K e^{-rT} N(d_2), \qquad P = K e^{-rT} N(-d_2) - S\,N(-d_1)
+  \label{eq:14-bs}
+\end{equation}
+\begin{equation}
+  d_1 = \frac{\ln(S/K) + (r + \sigma^2/2)\,T}{\sigma\sqrt{T}}, \qquad d_2 = d_1 - \sigma\sqrt{T}
+  \label{eq:14-d}
+\end{equation}
+where $N$ is the cumulative standard normal distribution\index{distribution!normal}.
+
+The call formula reads as a recipe. The first term, $S\,N(d_1)$, is the value of the shares the bank holds, because $N(d_1)$ is the option's delta. The second term, $K e^{-rT} N(d_2)$, is the amount the bank borrows to help pay for them, and $N(d_2)$ is the probability, in a world where investors do not demand a premium for bearing risk, that the call ends in the money. The option's price is the difference: the cost of the shares minus the borrowing.
+\end{technote}
+
+\textbf{Worked example.} For the call in the story, with $S = K = \$100$, $T = 0.25$, $r = 4\%$ and $\sigma = 20\%$, Equation~\eqref{eq:14-d} gives $d_1 = 0.15$ and $d_2 = 0.05$, so $N(d_1) = 0.56$ and $N(d_2) = 0.52$. Then
+\begin{equation}
+  C = 100 \times 0.56 - 99.00 \times 0.52 = 55.96 - 51.47 = \$4.49.
+  \label{eq:14-bs-example}
+\end{equation}
+The bank that sold the call buys 0.56 shares for \$55.96, borrows \$51.47, and pays the remaining \$4.49 out of the premium it received. This is the same 0.56 shares as in the story, now derived from the formula, and the premium is exactly the cost of setting up the hedge. This chapter tests whether the hedge, once set up, really delivers the option's payoff, which is the replication\index{replication} argument behind these formulas.
+
+Because the option can be copied, its price must equal the cost of the copy. If the option sold for \$5, a trader could sell it, build the copy for \$4.49 and keep \$0.51 with no risk, because the copy covers whatever the option owes at expiry. Such a riskless profit is called an \textbf{arbitrage}\index{arbitrage|textbf}, and traders competing for it would push the price back to \$4.49.
+
+% Black--Scholes call values: strike 100, rate 4%.
+% call     = 20% volatility, three months to expiry (the story's option)
+% vol30    = 30% volatility, three months to expiry (for vega)
+% onemonth = 20% volatility, one month to expiry   (for theta)
+\pgfplotstableread[row sep=\\]{
+  S      call    vol30   onemonth  payoff \\
+  75.0    0.01    0.16    0.00    0.00 \\
+  77.5    0.02    0.28    0.00    0.00 \\
+  80.0    0.05    0.47    0.00    0.00 \\
+  82.5    0.12    0.73    0.00    0.00 \\
+  85.0    0.25    1.11    0.00    0.00 \\
+  87.5    0.49    1.61    0.02    0.00 \\
+  90.0    0.86    2.25    0.08    0.00 \\
+  92.5    1.41    3.05    0.26    0.00 \\
+  95.0    2.19    4.01    0.64    0.00 \\
+  97.5    3.21    5.15    1.35    0.00 \\
+  100.0   4.49    6.46    2.47    0.00 \\
+  102.5   6.00    7.93    4.01    2.50 \\
+  105.0   7.75    9.56    5.92    5.00 \\
+  107.5   9.68   11.33    8.10    7.50 \\
+  110.0  11.78   13.22   10.44   10.00 \\
+  112.5  14.00   15.23   12.87   12.50 \\
+  115.0  16.31   17.33   15.35   15.00 \\
+  117.5  18.69   19.51   17.84   17.50 \\
+  120.0  21.11   21.77   20.33   20.00 \\
+  122.5  23.56   24.07   22.83   22.50 \\
+  125.0  26.03   26.43   25.33   25.00 \\
+}\bsdata
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.9}{%
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.87\linewidth, height=0.6\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=80, xmax=122, ymin=0, ymax=24,
+  xtick={80,85,...,120}, ytick={0,5,...,20},
+  xlabel={Stock price (\$)},
+  ylabel={Call value (\$)},
+  clip=false,
+  restrict x to domain=80:122,
+  legend style={at={(0.01,0.99)}, anchor=north west, draw=none,
+                font=\footnotesize, cells={anchor=west}},
+]
+  \addplot[fenavy, thick, densely dotted, smooth, mark=none] table[x=S, y=vol30] {\bsdata};
+  \addlegendentry{volatility 30\%, three months}
+  \addplot[fenavy, very thick, smooth, mark=none] table[x=S, y=call] {\bsdata};
+  \addlegendentry{the story's option: volatility 20\%, three months}
+  \addplot[gray, very thick, smooth, mark=none] table[x=S, y=onemonth] {\bsdata};
+  \addlegendentry{volatility 20\%, one month left}
+  \addplot[gray, thick, dashed, mark=none] table[x=S, y=payoff] {\bsdata};
+  \addlegendentry{payoff at expiry, $\max(S_T - 100, 0)$}
+
+  % Delta: tangent slopes on the story's curve at $90, $100 and $110
+  \addplot[black, thin, domain=86:94,  samples=2, forget plot] {0.858 + 0.183*(x-90)};
+  \addplot[black, thin, domain=94:106, samples=2, forget plot] {4.485 + 0.560*(x-100)};
+  \addplot[black, thin, domain=105:115, samples=2, forget plot] {11.779 + 0.865*(x-110)};
+  \fill (axis cs:90,0.858)   circle (2pt);
+  \fill (axis cs:100,4.485)  circle (2pt);
+  \fill (axis cs:110,11.779) circle (2pt);
+  \node[anchor=north west, align=left, font=\footnotesize]
+    at (axis cs:101,16) {\textbf{delta}: the slope of the curve,\\0.56 at \$100, so the price is \$4.49\\and rises 56 cents per \$1};
+  \draw[thin] (axis cs:102,12.4) -- (axis cs:100.2,4.9);
+
+  % Gamma: the curve bends, so the slope rises with the stock
+  \node[anchor=south west, align=left, font=\footnotesize]
+    at (axis cs:112.3,4.2) {\textbf{gamma}: the curve bends,\\so delta rises from 0.18\\at \$90 to 0.87 at \$110};
+
+  % Vega: higher volatility lifts the curve
+  \draw[-stealth, thick, fenavy] (axis cs:99.6,4.485) -- (axis cs:99.6,6.36);
+  \node[anchor=north west, align=left, font=\footnotesize, fenavy]
+    at (axis cs:81,14.5) {\textbf{vega}: volatility from 20\% to 30\%\\raises the price from \$4.49 to \$6.46};
+  \draw[thin, fenavy] (axis cs:91,12.1) -- (axis cs:99.4,6.6);
+
+  % Theta: time passing lowers the curve
+  \draw[-stealth, thick, gray] (axis cs:100.4,4.485) -- (axis cs:100.4,2.57);
+  \node[anchor=south west, align=left, font=\footnotesize]
+    at (axis cs:105.5,0.3) {\textbf{theta}: two months passing lowers\\the price from \$4.49 to \$2.47};
+  \draw[thin] (axis cs:105.5,1.4) -- (axis cs:100.7,3.2);
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{An option's value curve bends, which is why its hedge must keep changing. The Greeks of the call in the story, with a strike of \$100 and a 4\% interest rate. The solid navy curve is the option's Black--Scholes value with 20\% volatility and three months to expiry. Delta is its slope, 0.56 at a stock price of \$100, and gamma is how fast that slope changes: the curve bends, so delta rises from 0.18 at \$90 to 0.87 at \$110. Vega is how much the curve rises when volatility rises: at 30\% volatility, the dotted curve, the price at \$100 is \$1.97 higher. Theta is how much the curve falls as time passes: with one month left, the gray curve, the price at \$100 is \$2.02 lower. As expiry approaches, the curve falls toward the payoff at expiry.}
+\label{fig:14-bs}
+\end{figure}
+
+\subsection{The Greeks}
+\label{sec:14-greeks}
+
+The Black--Scholes formula, Equation~\eqref{eq:14-bs}, turns five inputs into a price: the stock price $S$, the strike $K$, the time to expiry $T$, the interest rate $r$ and the volatility $\sigma$. \term{The Greeks}\index{Greeks|textbf} measure how the price changes when one of these inputs changes, holding the others fixed. Each Greek is a derivative of the formula, and each has its own Black--Scholes expression. In the expressions below, $n$ is the standard normal density, the slope of $N$.
+
+\begin{itemize}
+  \item \textbf{Delta}\index{Greeks!delta}, $\Delta = \partial V/\partial S$, is the change in the option's value when the stock price moves by \$1. For a call it is $N(d_1)$, and for a put it is $N(d_1) - 1$. It is also the number of shares needed to hedge the option.
+  \item \term{Gamma}\index{Greeks!gamma|textbf}, $\Gamma = \partial^2 V/\partial S^2$, is how fast delta changes as the stock price moves. It measures the curvature of the curve in Figure~\ref{fig:14-bs}, and it equals $n(d_1)/(S\sigma\sqrt{T})$ for both calls and puts.
+  \item \term{Vega}\index{Greeks!vega|textbf}, $\partial V/\partial \sigma$, is the change in the option's value when volatility changes. It equals $S\,n(d_1)\sqrt{T}$ for both calls and puts.
+  \item \term{Theta}\index{Greeks!theta|textbf}, $\Theta = \partial V/\partial t$, is the change in the option's value as one day passes with nothing else changing. For a call it equals $-S\,n(d_1)\sigma/(2\sqrt{T}) - rKe^{-rT}N(d_2)$ per year. Dividing by 365 gives the change per calendar day, the convention used in this chapter.
+\end{itemize}
+
+Table~\ref{tab:14-greeks} gives the Greeks of the call in the story.
+
+\begingroup
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\centering\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.10\linewidth-0.10\linewidth-4\tabcolsep\relax}@{}}
+\caption{The Greeks of the call in the story, with $S = K = \$100$, three months to expiry, 20\% volatility and a 4\% interest rate. Theta is per calendar day.}
+\label{tab:14-greeks} \\
+\toprule
+Greek & Value & Meaning \\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Greek & Value & Meaning \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Delta & 0.56   & A \$1 rise in the stock raises the call's value by 56 cents. \\*
+Gamma & 0.039  & A \$1 rise in the stock raises delta by 0.039, from 0.56 to about 0.60. \\
+Vega  & 0.20   & A rise in volatility from 20\% to 21\% raises the call's value by 20 cents. \\*
+Theta & $-0.027$ & One day passing lowers the call's value by about 2.7 cents. \\
+\end{longtable}
+\endgroup
+
+The seller of an option holds the opposite of each Greek. The bank in the story loses when the stock makes large moves in either direction, because its option has positive gamma and the bank is \term{short gamma}: the hedge, which is adjusted only after the stock moves, always lags behind. It loses when volatility rises, because it is \textbf{short vega}. And it gains as time passes, because the option it owes loses value each day. Time works for the seller, and large moves work against it.
+
+\subsection{Implied volatility}
+\label{sec:14-iv}
+
+Section~\ref{sec:10-iv} introduced implied volatility as the volatility that makes an option's model price equal its market price. With Equation~\eqref{eq:14-bs} in hand, the definition becomes precise: implied volatility is the $\sigma$ at which the Black--Scholes price equals the market price. It is the market's price of volatility, not a statistical forecast. \textbf{Realized volatility}\index{volatility!realized|textbf} is the volatility, or standard deviation\index{standard deviation}, of the returns that actually occur over the option's life. Implied volatility also differs across strikes. For stock indexes, out-of-the-money puts trade at higher implied volatilities than at-the-money options, a pattern called the \textbf{skew}\index{volatility smile}.
+
+\subsection{Delta hedging}
+
+Delta hedging\index{delta hedging} is the replication recipe of Section~\ref{sec:14-bsm} run in reverse. A dealer who \term{sells an option} buys $\Delta$ shares to offset it. Over a short period, the option's value changes by about
+\begin{equation}
+  dV \approx \Delta\,dS + \tfrac{1}{2}\Gamma\,dS^2 + \Theta\,dt
+  \label{eq:14-taylor}
+\end{equation}
+where $\Delta$, $\Gamma$ and $\Theta$ are the delta\index{Greeks!delta}, gamma and theta of Section~\ref{sec:14-greeks}. The shares offset the first term. They cannot offset the second, which comes from gamma, the curvature of the option's value ($\partial^2 V/\partial S^2$). The third term, theta, is the time decay that the seller earns.
+
+\textbf{Worked example.} Return to the bank in the story, which sold the call and holds 0.56 shares. The call's delta is 0.56, its gamma is 0.039, and its theta is $-\$0.027$ a day. Table~\ref{tab:14-taylor} applies Equation~\eqref{eq:14-taylor} to three possible days.
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}lcccccc@{}}
+\caption{One day of the bank's delta hedge, by Equation~\eqref{eq:14-taylor}. The bank owes the option and holds 0.56 shares, so its net result is the change in its shares minus the change in the option.}
+\label{tab:14-taylor} \\
+\toprule
+ & \multicolumn{4}{c}{Change in the option's value} & & \\
+\cmidrule(lr){2-5}
+Stock move & Delta & Gamma & Theta & Total & Shares & Bank's net \\
+\midrule
+\endfirsthead
+\multicolumn{7}{@{}l}{\emph{(continued)}} \\
+\toprule
+ & \multicolumn{4}{c}{Change in the option's value} & & \\
+\cmidrule(lr){2-5}
+Stock move & Delta & Gamma & Theta & Total & Shares & Bank's net \\
+\midrule
+\endhead
+\midrule
+\multicolumn{7}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+None      & \$0.00     & \$0.00    & $-\$0.03$ & $-\$0.03$ & \$0.00     & $+\$0.03$ \\*
+Up \$3    & $+\$1.68$  & $+\$0.18$ & $-\$0.03$ & $+\$1.83$ & $+\$1.68$  & $-\$0.15$ \\*
+Down \$3  & $-\$1.68$  & $+\$0.18$ & $-\$0.03$ & $-\$1.53$ & $-\$1.68$  & $-\$0.15$ \\*
+\end{longtable}
+\endgroup
+
+The shares cancel the delta term in both directions, but the gamma term, \$0.18, is the same whichever way the stock moves, because it depends on the \emph{square} of the move. A large move in either direction therefore costs the hedged seller money, and time decay is what pays for it.
+
+
+\subsection{The hedging P\&L}
+
+For a seller who prices and hedges at the implied volatility\index{volatility!implied} $\sigma$, the profit over one day is about
+\begin{equation}
+  \text{P\&L} \approx \tfrac{1}{2}\,\Gamma S^2 \left(\sigma^2 \Delta t - R^2\right)
+  \label{eq:14-pnl}
+\end{equation}
+where $R$ is that day's return on the stock and $\Delta t$ is one day as a fraction of a year. This version counts the interest that the seller pays on the money borrowed to buy the shares, so it is a little smaller than the theta in the worked example above. The seller gains on quiet days and loses on days when the stock moves more than the implied volatility allows for. Added up over the option's life, the hedged profit and loss is a bet that realized variance\index{volatility!realized} will be lower than implied variance\index{variance}, weighted by gamma. If Black--Scholes is right, realized variance equals $\sigma^2$ on average, so the bet is fair, and with continuous hedging it carries no risk.
+
+\textbf{Worked example.} For the bank in the story, $\tfrac{1}{2}\Gamma S^2 = \tfrac{1}{2} \times 0.039 \times 100^2 \approx 197$. With $\sigma = 20\%$ and $\Delta t = 1/365$, the implied variance for one day is $\sigma^2 \Delta t \approx 0.00011$, which corresponds to a daily standard deviation of about 1.05\%, or \$1.05 on a \$100 stock. Table~\ref{tab:14-pnl} applies Equation~\eqref{eq:14-pnl} to four possible days.
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}lcccc@{}}
+\caption{The bank's hedged profit or loss over one day, by Equation~\eqref{eq:14-pnl}, with $\tfrac{1}{2}\Gamma S^2 \approx 197$ and $\sigma^2 \Delta t \approx 0.00011$.}
+\label{tab:14-pnl} \\
+\toprule
+Stock move & Return $R$ & $R^2$ & $\sigma^2 \Delta t - R^2$ & Bank's P\&L \\
+\midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\emph{(continued)}} \\
+\toprule
+Stock move & Return $R$ & $R^2$ & $\sigma^2 \Delta t - R^2$ & Bank's P\&L \\
+\midrule
+\endhead
+\midrule
+\multicolumn{5}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+None              & 0\%     & 0.00000 & $+0.00011$ & $+\$0.022$ \\*
+\$1               & 1\%     & 0.00010 & $+0.00001$ & $+\$0.002$ \\
+\$1.05 (break-even) & 1.05\% & 0.00011 & $\phantom{+}0.00000$ & \$0.000 \\*
+\$3               & 3\%     & 0.00090 & $-0.00079$ & $-\$0.156$ \\
+\end{longtable}
+\endgroup
+
+On a quiet day the bank earns \$0.022, the time decay of the previous example less about half a cent of interest on its \$51.47 loan. It breaks even on a move of about \$1.05, exactly the daily standard deviation that 20\% volatility implies, and loses on larger moves. Hedging pays off if the stock's daily moves are smaller than the implied volatility predicts, and loses if they are larger. Figure~\ref{fig:14-pnl} plots the bank's profit or loss for every daily move.
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.9}{%
+\begin{tikzpicture}[
+  % One-day hedged P&L of the bank in the story, Equation (14-pnl):
+  % 197 x (0.0001096 - (move/100)^2) = 0.0216 - 0.0197 x move^2,
+  % with break-even at a move of about $1.05
+  declare function={pnl(\d) = 0.0216 - 0.0197*\d*\d;}
+]
+\begin{axis}[
+  width=0.61\linewidth, height=0.34\linewidth,
+  axis lines=left, axis line style={-stealth},
+  xmin=-4, xmax=4, ymin=-0.34, ymax=0.08,
+  xtick={-4,...,4}, ytick={-0.3,-0.2,-0.1,0},
+  yticklabel style={/pgf/number format/fixed},
+  xlabel={Stock move over one day (\$)},
+  ylabel={Bank's hedged P\&L (\$)},
+  samples=150, domain=-4:4, clip=false,
+]
+  \addplot[gray, thin, samples=2] {0};
+  \addplot[fenavy, very thick] {pnl(x)};
+  \foreach \wfX in {-1.05,0,1.05,3} {
+    \edef\wfTmp{\noexpand\fill[fenavy] (axis cs:\wfX,{pnl(\wfX)}) circle (2.6pt);}
+    \wfTmp
+  }
+  \node[anchor=south] at (axis cs:0,0.03) {quiet day: $+\$0.022$};
+  \node[anchor=south west] at (axis cs:1.3,0.004) {break-even $\pm\$1.05$};
+  \node[anchor=west] at (axis cs:3.12,{pnl(3)}) {\$3 move: $-\$0.156$};
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{A hedged option seller earns a little on quiet days and loses on big moves in either direction. The bank's delta-hedged profit or loss over one day, by Equation~\eqref{eq:14-pnl}, for the call in the story. The bank earns \$0.022 if the stock is unchanged, breaks even on a move of about \$1.05 either way, and loses \$0.156 on a \$3 move. The loss grows with the square of the move.}
+\label{fig:14-pnl}
+\end{figure}
+
+
+
+\subsection{Discrete hedging}
+
+Real hedgers adjust their hedges at intervals, not continuously. Even when Black--Scholes is right, this leaves an error, whose standard deviation\index{standard deviation} falls with the square root of the number of adjustments. For a one-month option hedged once a day, the error is roughly a fifth of the premium, as the shaded box shows.
+
+\begin{technote}
+\textbf{Technical note: the size of the hedging error.} Kamal and Derman (1999) showed that for an at-the-money\index{option!moneyness} option hedged $N$ times, it is about
+\begin{equation}
+  \mathrm{sd}(\text{hedging error}) \approx \sqrt{\frac{\pi}{4}}\;\frac{\sigma \times \text{vega}}{\sqrt{N}}
+  \label{eq:14-kd}
+\end{equation}
+where vega\index{Greeks!vega} is measured per unit of $\sigma$. For a one-month option hedged daily, the error is about a fifth of the premium. Hedging four times as often halves it (Figure~\ref{fig:14-freq}).
+\end{technote}
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.9}{%
+\begin{tikzpicture}[
+  % Kamal--Derman: hedging error ~ 0.82 / sqrt(N) of the premium
+  declare function={err(\n) = 82/sqrt(\n);}
+]
+\begin{axis}[
+  width=0.64\linewidth, height=0.34\linewidth,
+  xmode=log,
+  axis lines=left, axis line style={-stealth},
+  xmin=1, xmax=200, ymin=0, ymax=95,
+  xtick={1,4,21,84},
+  xticklabels={1, 4\\(weekly), 21\\(daily), 84\\(4 a day)},
+  xticklabel style={align=center},
+  ytick={0,20,...,80},
+  xlabel={Rebalances over a one-month option's life, $N$},
+  ylabel={Hedging error (\% of premium)},
+  samples=100, domain=1:200, clip=false,
+]
+  \addplot[fenavy, very thick] {err(x)};
+  \fill[fenavy] (axis cs:4,41)  circle (2.6pt);
+  \fill[fenavy] (axis cs:21,{err(21)}) circle (2.6pt);
+  \fill[fenavy] (axis cs:84,{err(84)}) circle (2.6pt);
+  \node[anchor=south west] at (axis cs:4.4,41)  {41\%};
+  \node[anchor=south west] at (axis cs:23,{err(21)}) {18\%};
+  \node[anchor=south west] at (axis cs:92,{err(84)}) {9\%};
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{Hedging more often shrinks the error, but only slowly. Hedging error in the Black--Scholes world, by the Kamal--Derman approximation, for a one-month at-the-money option at 20\% volatility. Hedging weekly leaves an error of about 41\% of the premium, daily about 18\%, and four times a day about 9\%. Each quadrupling of the frequency halves the error.}
+\label{fig:14-freq}
+\end{figure}
+
+\subsection{The volatility smile}
+
+If Black--Scholes were right, every option on the same asset would have the same implied volatility. Section~\ref{sec:14-iv} described the skew: low-strike index puts have higher implied volatilities. When options at both high and low strikes have higher implied volatilities, the pattern is called a \term{smile}\index{volatility smile|textbf}. For this chapter, the skew matters because it is the market's admission that returns do not follow the model's assumptions, the very assumptions that delta hedging relies on.
+
+
+\section{Where the hedge breaks down}
+\label{sec:14-how}
+
+The replication argument can break down in four ways, and each leaves a different mark on the hedging profit and loss\index{hedging P\&L}.
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.2\linewidth-4\tabcolsep)/2\relax}>{\raggedright\arraybackslash}p{\dimexpr(0.9\linewidth-0.2\linewidth-4\tabcolsep)/2\relax}@{}}
+\toprule
+Assumption & What happens in practice & Effect on a hedged option seller \\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\emph{(continued)}} \\
+\toprule
+Assumption & What happens in practice & Effect on a hedged option seller \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Continuous trading & Hedgers rebalance daily or less often & Random errors that shrink with hedging frequency; present even when the model is right \\*
+Constant, known volatility & Volatility changes and clusters (Chapter~\ref{ch:07}) & P\&L tracks realized minus implied variance; losses when volatility rises \\
+Continuous price paths & Prices jump, as in October 1987 or March 2020 & Large losses on jump days that no rebalancing frequency can prevent \\*
+No trading costs & Every rebalance pays a spread & A steady drag that grows with hedging frequency \\
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
+
+The first breakdown comes from the model itself: it would happen even if Black--Scholes were exactly right. The other three come from assumptions that fail in real markets. A test of the claim must separate the two. The cleanest way is to run the same hedging strategy twice, once on real market paths and once on simulated paths that obey the model exactly. The difference between the two results is the cost of the model's being wrong.
+
+\textbf{Jumps are the hardest problem.} On a day when the market falls 20\%, the option's value changes far more than the hedge does. The gamma term $\tfrac{1}{2}\Gamma\,dS^2$ is huge, and hedging more often does not help, because the jump happens between adjustments. An option seller loses from large moves in either direction, so any jump is a loss.
+
+\textbf{Changes in volatility}\index{volatility|textbf} cause a related problem. If realized volatility over the month is twice the implied volatility used to price and hedge the option, the seller loses roughly vega times the gap, however often the hedge is adjusted.
+
+\textbf{The smile is the market's response.} After October 1987, dealers began to charge more for the risks that delta hedging cannot remove: crashes and spikes in volatility. They did so by raising the implied volatility of out-of-the-money puts, the options that pay off in crashes. The smile is therefore both evidence against the Black--Scholes assumptions and the price of the risk that delta hedging leaves behind\index{regression!residuals}.
+
+
+\section{The claim}
+\label{sec:14-claim}
+
+\begin{callout}
+\textbf{Claim.} An option seller who delta-hedges as Black--Scholes prescribes is left with little risk. Hedging removes most of the variance of the unhedged position, and what remains is small, symmetric, and shrinks as hedging becomes more frequent.
+\end{callout}
+
+This claim justifies treating an option's Black--Scholes price as its cost of production. Four points need to be settled:
+
+\begin{itemize}
+  \item \textbf{Little risk compared with what.} The benchmark is the unhedged short option. Removing 90\% of its variance and leaving errors of about a fifth of the premium, as daily hedging does when the model holds, meets the claim; occasional losses of several times the premium do not.
+  \item \textbf{Which volatility.} The test prices and hedges at the VIX\index{VIX}, the market's implied volatility.
+  \item \textbf{Which measure.} The standard deviation of the hedging error for everyday risk, and the worst 1\% of outcomes\index{quantile} and worst month for extreme losses. Both must be small.
+  \item \textbf{What would count against it.} Much more risk on real paths than on simulated Black--Scholes paths, occasional very large losses\index{fat tails}, or errors that do not shrink with more frequent hedging.
+\end{itemize}
+
+\section{The original evidence}
+\label{sec:14-evidence}
+
+\textbf{The model.} Black and Scholes (1973) derived the option price from a hedging argument, and Merton (1973) generalized it. Early tests, including the authors' own (Black and Scholes 1972), found it a useful approximation with systematic differences from market prices, and within a few years its prices and deltas were standard on trading floors.
+
+\textbf{Trading costs.}\index{transaction costs|textbf} Leland (1985) showed that with costs proportional to trading, continuous hedging would cost an infinite amount, so perfect replication is impossible. He proposed hedging at intervals and pricing at a higher volatility, so that even in theory the seller trades off hedging error against costs.
+
+\textbf{The smile after 1987.}\index{volatility smile} Rubinstein (1994) showed that before October 1987, S\&P 500 options at different strikes had roughly the same implied volatility, as Black--Scholes requires; after the crash, low-strike puts carried much higher implied volatilities, a skew that has lasted ever since. The market does not price options as if Black--Scholes held.
+
+\textbf{Better models.} Bakshi, Cao and Chen (1997) found that letting volatility change at random and allowing price jumps improved the pricing of S\&P 500 options. For hedging, changing volatility helped most, while jumps helped pricing but not hedging, because a jump cannot be hedged with the underlying asset.
+
+\textbf{Portfolio insurance.} The most important test of dynamic replication was not an academic study. In the 1980s, portfolio insurance programs traded index futures to copy a protective put, and \$60 to \$90 billion of stock portfolios were covered when the market crashed in October 1987 (Presidential Task Force on Market Mechanisms 1988). The What Failed box in Section~\ref{sec:14-investors} tells what happened.
+
+\section{Lab~\thechapter: Replicating the Black--Scholes hedge along real and simulated paths}
+\label{sec:14-lab}
+
+\textbf{Claim on trial\index{claims-on-trial method}:} an option seller who delta-hedges as Black--Scholes prescribes is left with little risk. The lab replicates the Black--Scholes (1973) hedge and the gains on delta-hedged options, in the spirit of Bakshi and Kapadia (2003), using daily market returns from the Kenneth French\index{Kenneth French data library} library and the VIX from FRED\index{FRED}, from 1990. At each month-end, the lab sells a one-month at-the-money call on the market at its Black--Scholes price, using the VIX as implied volatility, holds $\Delta$ units of the index with borrowed money, adjusts the hedge on a schedule and pays the payoff at expiry. What is left is the \term{hedging P\&L}\index{hedging P\&L|textbf}, as a share of the premium. The same strategy runs on simulated paths on which the Black--Scholes assumptions hold exactly.
+
+\textbf{Part A, the risk that remains.} The mean, standard deviation, skewness\index{skewness}, worst 1\% and worst month of the hedged P\&L at several hedging frequencies, on real and simulated paths (Lab Figure~\ref{ch:17}.1).
+
+\textbf{Part B, where it comes from.} The actual P\&L regressed on the gamma--theta approximation of Equation~\eqref{eq:14-pnl} (Lab Figure~\ref{ch:17}.3), and on the gap between implied and realized variance.
+
+\textbf{Part C, frictions.} Hedging frequency (Lab Figure~\ref{ch:17}.4) and costs of 0 to 10 basis points\index{basis point} per unit of index traded (Lab Figure~\ref{ch:17}.5).
+
+\textbf{Part D, the worst months.} Their market move, implied and realized volatility and largest daily move, and the share of all losses from the worst 5\% of months (Lab Figure~\ref{ch:17}.2).
+
+\label{sec:14-stress}
+\textbf{Robustness checks.} When Black--Scholes holds, hedging four times as often halves the error (Figure~\ref{fig:14-freq}), but on real paths this applies only to the part of the error from hedging at intervals\index{delta hedging!discrete rebalancing}, not to jumps and changing volatility. With costs\index{transaction costs} of a few basis points, daily hedging can eat a large share of the seller's profit, which is why dealers hedge less often than the model prescribes. Expect losses of several times the premium in crash months such as October 2008, August 2015 and March 2020 even with daily hedging. And when implied volatility exceeds realized, as in most months (Chapter~\ref{ch:18}), the seller's profit is the variance risk premium, earned by bearing the risk that remains, not evidence that hedging removed it. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:14-verdict}.
+
+\section{Where the evidence stands}
+\label{sec:14-verdict}
+
+The published studies point to a clear pattern: \textbf{delta hedging removes most of the everyday risk of an option position, but what remains is a bet on realized against implied volatility, with large losses in jumps and volatility spikes that more frequent hedging cannot remove.} The table summarizes the evidence as of November 2026.
+
+{\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.45\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Hedging when the model holds & \textbf{Yes} & Replication is exact with continuous, costless trading; daily hedging leaves an error of about a fifth of the premium. & Black and Scholes (1973); Merton (1973); Kamal and Derman (1999) \\*
+\addlinespace[3pt]
+Hedging with trading costs & \textbf{No} & Hedging often costs a great deal, and hedging rarely leaves risk. & Leland (1985) \\
+\addlinespace[3pt]
+Market prices consistent with the model & \textbf{No} & Since 1987 index options have shown a persistent skew. & Rubinstein (1994) \\
+\addlinespace[3pt]
+Hedged option positions earn zero & \textbf{No} & Delta-hedged positions have lost money on average for buyers, a premium for volatility risk. & Bakshi and Kapadia (2003) \\
+\addlinespace[3pt]
+Better hedges & \textbf{Partly} & Stochastic volatility and minimum-variance deltas improve hedging; jumps help pricing but not hedging. & Bakshi, Cao and Chen (1997); Hull and White (2017) \\*
+\addlinespace[3pt]
+Dynamic replication in a crash & \textbf{No} & Portfolio insurers could not trade at the prices their models assumed in October 1987. & Presidential Task Force on Market Mechanisms (1988) \\
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+}
+
+The gamma--theta approximation explains most of the hedged P\&L, so a trader knows what bet the hedged position contains. That is why delta hedging remains the industry's first step, and why dealers also hedge vega and gamma with other options.
+
+\textbf{What would change the picture.} The claim would gain support if a simple extension, such as a minimum-variance delta or a small position in other options, removed most of the large losses on real paths.
+
+\label{sec:14-open}
+\textbf{Open questions.} How much of the hedged seller's profit pays for jump risk, and do machine-learning ``deep hedging'' methods beat Black--Scholes out of sample\index{in-sample versus out-of-sample} and in crashes?
+
+\section{What practitioners and investors can use}
+\label{sec:14-investors}
+
+A bank selling a note with a capped stock-market return or a principal guarantee has sold options and hedges them dynamically, but keeps the jump, volatility and hedging-cost risks of this chapter and charges for them. A fund that sells options and delta-hedges them is not market-neutral\index{market-neutral} in the sense that matters: it bets against volatility, earning steadily in calm markets and losing heavily in jumps. The higher implied volatility of out-of-the-money index puts is the price of crash risk\index{crash risk}, which delta hedging cannot remove. Ask a manager what happens to the hedge if the market moves 10\% or 20\% in a day, and what the worst month was.
+
+\begin{callout}
+\textbf{What Failed: portfolio insurance, October 1987.} Portfolio insurance, developed by Hayne Leland and Mark Rubinstein, copied a protective put by selling stock-index futures as the market fell and buying them back as it rose, exactly as delta hedging prescribes, and by October 1987 covered \$60 to \$90 billion of stock portfolios, according to the Brady Commission. On October 19, 1987, the market fell more than 20\% in a single day. Portfolio insurers sold the equivalent of about \$4 billion of stock in index futures, prices moved faster than the trades, and the protection delivered fell short of the puts being copied. What failed was the replication assumption itself: continuous trading at smoothly moving prices. The skew that appeared after the crash has been the market's price for that lesson ever since.
+\end{callout}
+
+% Key terms that this chapter uses without defining them, for readers new to finance.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Option selling.] See Chapter~\ref{ch:18}, Section~\ref{sec:16-how}, page~\pageref{sec:16-how}.
+\end{description}
+\end{keyterms}

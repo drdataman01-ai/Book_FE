@@ -1,39 +1,38 @@
 % Chapter 13 infographic -- use right after \label{ch:13}: \input{chapters/ch13-infographic}
 \ifcsname FEinfoLoaded\endcsname\else\input{common/fe-infographic}\fi
-\begin{FEinfographic}{ch:13}{a strategy that is profitable in a backtest is profitable to trade}
+\begin{FEinfographic}{ch:13}{investors earn the returns their stocks earn, whatever rule they use to decide when to sell}
 
-\infopanel{1}{Three costs a backtest leaves out}{%
+\infopanel{1}{Three ways a selling rule matters}{%
 \infocards
-  {Turnover}{Every trade pays half the bid--ask spread, and fast strategies trade most of their portfolio each month.}
-  {Market impact}{Large trades move prices against the trader, and the cost grows with the size of the fund.}
-  {The short side}{Borrowing fees, recalls and bans make many anomalies costly to short.}}
+  {The experience}{Even in a fair game, a rule reshapes win rates, tails and the losers still held.}
+  {Predictable returns}{With momentum, selling winners and keeping losers collects the wrong returns.}
+  {Taxes}{Selling winners pays tax early; selling losers first earns the tax saving.}}
 
 \infopanel{2}{Evidence scoreboard}{%
 \begin{infoscore}
-\scoreitem{y}{Yes}{Slow strategies, such as value}
-\scoreitem{p}{Partly}{Momentum}
-\scoreitem{n}{No}{Short-term reversal}
-\scoreitem{n}{No}{High-turnover strategies in general}
-\scoreitem{y}{More often}{For a large, patient institution}
-\scoreitem{n}{Often not}{Strategies that rely on the short side}
-\scoreitem{n}{No}{The average anomaly}
+\scoreitem{y}{Yes}{Expected return when prices are a fair game}
+\scoreitem{n}{No}{The investor's experience}
+\scoreitem{n}{No}{Individual investors who sell winners and keep losers}
+\scoreitem{n}{No}{After taxes}
+\scoreitem{p}{Disputed}{Whole markets, through the timing of money flows}
+\scoreitem{y}{Yes}{Patient professional investors}
 \end{infoscore}}
 
-\infopanel{3}{Monthly turnover and what it costs}{%
+\infopanel{3}{The disposition effect in numbers}{%
 \infonumbers
-  {2\%}{monthly turnover of value}
-  {25\%}{monthly turnover of momentum}
-  {76\%}{monthly turnover of short-term reversal}
-  {4 bp}{a month: the average anomaly after costs and decay}}
+  {14.8\%}{of available gains realized (Odean 1998)}
+  {9.8\%}{of available losses realized}
+  {3.4 pts}{next-year return of winners sold over losers kept}
+  {1.3 pts}{a year: NYSE/AMEX dollar-weighted gap (Dichev 2007)}}
 
-\infopanel{4}{Lab: replicating Novy-Marx and Velikov (2016)}{%
+\infopanel{4}{Lab: six selling rules, one set of prices}{%
 \begin{infolab}
-\item \textbf{A.} Gross returns of value, momentum and short-term reversal. \textbf{B.} Turnover in a simulated universe.
-\item \textbf{C.} Net returns and break-even costs from 0 to 100 basis points.
-\item \textbf{D.} Capacity as assets grow to \$1 trillion. \textbf{E.} Buy/hold bands that cut momentum's turnover in half.
+\item \textbf{A.} Optional stopping in simulation. \textbf{B.} Comparing returns over random horizons.
+\item \textbf{C.} The rules on a century of 49 industry portfolios.
+\item \textbf{D.} Winners sold against losers held. \textbf{E.} Taxes and costs over 30 years.
 \end{infolab}}
 
 \infoverdict
-  {Whether a profitable backtest is profitable to trade depends on how much the strategy trades, what it trades and how much money is behind it: slow strategies in liquid stocks survive realistic costs, while fast strategies in small stocks often do not.}
-  {Ask for turnover, the break-even cost against what you will pay, the cost of the short side and the net return at your planned size.}
+  {A selling rule cannot change the expected return of a fair game, but real investors' rules change the experience, collect the wrong returns when returns are predictable, and pay taxes earlier than they need to.}
+  {Set the selling rule before buying, ignore the purchase price, realize losses before gains, and compare returns per year invested.}
 \end{FEinfographic}
