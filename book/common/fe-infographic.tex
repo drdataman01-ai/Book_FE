@@ -20,14 +20,14 @@
 \def\FEinfoLoaded{1}
 
 % Title band and page frame -----------------------------------------
-\newenvironment{FEinfographic}[2]{% #1 = chapter label, #2 = claim
+\newenvironment{FEinfographic}[2]{% #1 = chapter label, #2 = the chapter's question
   \clearpage\thispagestyle{plain}%
   \begingroup\sffamily\footnotesize\setlength{\parskip}{0pt}\setlength{\parindent}{0pt}%
   \linespread{1.0}\selectfont
   \begin{tcolorbox}[enhanced, colback=FEMaroon, colframe=FEMaroon, arc=3pt,
       boxrule=0pt, left=8pt, right=8pt, top=5pt, bottom=5pt, before skip=0pt, after skip=5pt]
     {\color{white}\bfseries\large Chapter~\ref{#1} at a glance\par}
-    \vspace{2pt}{\color{white}\small Claim on trial: \emph{#2}\par}
+    \vspace{2pt}{\color{white}\small The question: \emph{#2}\par}
   \end{tcolorbox}}
   {\par\endgroup\clearpage}
 
@@ -48,7 +48,7 @@
 \newcommand{\infocards}[6]{%
   \infocard{igRisk}{#1}{#2}\hfill\infocard{igLuck}{#3}{#4}\hfill\infocard{igSkill}{#5}{#6}\par}
 
-% Evidence scoreboard ---------------------------------------------------
+% Evidence summary ------------------------------------------------------
 \newcommand{\vchip}[2]{% #1 = y/n/p/o, #2 = label
   \edef\FEchipc{\ifx y#1igYes\else\ifx n#1igNo\else\ifx p#1igPart\else igOpen\fi\fi\fi}%
   \tcbox[on line, arc=2pt, boxrule=0pt, left=2pt, right=2pt, top=1pt, bottom=1pt,
@@ -81,7 +81,7 @@
 % Lab parts -------------------------------------------------------------
 \newenvironment{infolab}{\scriptsize\begin{itemize}[leftmargin=1.1em, itemsep=1pt, topsep=1pt, parsep=0pt]}{\end{itemize}}
 
-% Verdict band ----------------------------------------------------------
+% Summary band ----------------------------------------------------------
 \newcommand{\infoverdict}[2]{% #1 = where the evidence stands, #2 = what investors can use
   \begin{tcolorbox}[enhanced, colback=white, colframe=FEMaroon, boxrule=0.8pt, arc=3pt,
       leftrule=4pt, left=7pt, right=7pt, top=4pt, bottom=5pt, before skip=0pt, after skip=0pt]
@@ -90,3 +90,5 @@
     {\color{FEMaroon}\bfseries\small What investors can use\par}\vspace{2pt}
     {\scriptsize #2\par}
   \end{tcolorbox}}
+% Preferred name for the band; \infoverdict is kept so existing files still work.
+\newcommand{\infosummary}[2]{\infoverdict{#1}{#2}}
