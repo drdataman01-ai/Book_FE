@@ -23,6 +23,59 @@
 
 \input{common/glory-style}
 
+% ---------- Tighter vertical spacing in the chapters ----------
+% Boxes and figures in the chapters get \FEboxskip above and below.
+% Inside the FEinfographic environment the original spacing is kept.
+\newcommand{\FEboxskip}{8pt}
+\newif\ifFEtight \FEtighttrue
+\makeatletter
+% keep tcolorbox's original "balanced" skips for the infographic pages
+\pgfkeysgetvalue{/tcb/before skip balanced/.@cmd}\FE@tmp
+\pgfkeyslet{/tcb/FEorig before skip balanced/.@cmd}\FE@tmp
+\pgfkeysgetvalue{/tcb/after skip balanced/.@cmd}\FE@tmp
+\pgfkeyslet{/tcb/FEorig after skip balanced/.@cmd}\FE@tmp
+\tcbset{
+  before skip/.style={before={%
+    \ifnum\lastnodetype=-1\relax\else
+      \par
+      \ifvmode
+        \iftcb@minipage
+          \ifdim\parskip>\z@\relax\addvspace{-\parskip}\fi
+        \else
+          \addvspace{\glueexpr\ifFEtight\FEboxskip\else#1\fi-\parskip\relax}%
+        \fi
+        \nointerlineskip
+      \fi
+    \fi
+    \lineskip\z@skip\noindent}},
+  after skip/.style={after={%
+    \tcb@parfillskip@check\par
+    \ifvmode\nointerlineskip
+      \addvspace{\glueexpr\ifFEtight\FEboxskip\else#1\fi-\parskip\relax}%
+    \fi}},
+  before skip balanced/.code={\ifFEtight\pgfkeysalso{before skip={#1}}%
+    \else\pgfkeysalso{FEorig before skip balanced={#1}}\fi},
+  after skip balanced/.code={\ifFEtight\pgfkeysalso{after skip={#1}}%
+    \else\pgfkeysalso{FEorig after skip balanced={#1}}\fi},
+}
+% Figures and tables: save the original spacing, then tighten it.
+\newlength{\FEorigintextsep}\setlength{\FEorigintextsep}{\intextsep}
+\newlength{\FEorigtextfloatsep}\setlength{\FEorigtextfloatsep}{\textfloatsep}
+\newlength{\FEorigfloatsep}\setlength{\FEorigfloatsep}{\floatsep}
+\newlength{\FEorigabovecaptionskip}\setlength{\FEorigabovecaptionskip}{\abovecaptionskip}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}     % float placed with [h]
+\setlength{\textfloatsep}{10pt plus 2pt minus 4pt} % float at top or bottom of a page
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}      % between two floats
+\setlength{\abovecaptionskip}{4pt}
+% Infographic pages: switch everything back to the original spacing.
+\AddToHook{env/FEinfographic/begin}{%
+  \FEtightfalse
+  \setlength{\intextsep}{\FEorigintextsep}%
+  \setlength{\textfloatsep}{\FEorigtextfloatsep}%
+  \setlength{\floatsep}{\FEorigfloatsep}%
+  \setlength{\abovecaptionskip}{\FEorigabovecaptionskip}}
+\makeatother
+
 \begin{document}
 \frontmatter
 
