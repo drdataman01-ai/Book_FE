@@ -1,4 +1,4 @@
-% Chapter 17 -- Claim: A Profitable Backtest Is Profitable to Trade
+% Chapter 17 -- Is a Profitable Backtest Profitable to Trade?
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -23,19 +23,19 @@
 }{}
 \makeatother
 
-\chapter{Claim: A Profitable Backtest Is Profitable to Trade}
+\chapter{Is a Profitable Backtest Profitable to Trade?}
 \label{ch:14}
 \providecommand{\term}[1]{\emph{#1}}
 
 Many brokers now advertise commission-free trading, and it is easy to conclude that buying and selling shares costs nothing. It does not. Every purchase is made at a slightly higher price than every sale, and large orders push prices against the trader. These hidden costs are small on any one trade, but a strategy that trades often pays them again and again. This chapter asks how much of a strategy's backtested profit survives them.
 
-Most of the claims tested so far, from size and value to momentum and trend following, were documented with \textbf{paper returns}\index{return!paper versus implementable}: the returns of portfolios rebuilt every month at recorded closing prices, in any size, at no cost. Researchers have long known that this is a simplification. It matters because of how an efficient market is defined. Jensen (1978) argued that a market is efficient with respect to some information if no one can earn \emph{economic} profits by trading on it, meaning profits after all the costs of trading. Grossman and Stiglitz (1980) went further. They showed that prices cannot reflect all information perfectly, because then no one would be paid for the cost of collecting it. On this view, some patterns in returns should survive on paper but not after costs, since costs are exactly what stops investors from trading them away.
+Most of the results discussed so far, from size and value to momentum and trend following, were documented with \textbf{paper returns}\index{return!paper versus implementable}: the returns of portfolios rebuilt every month at recorded closing prices, in any size, at no cost. Researchers have long known that this is a simplification. It matters because of how an efficient market is defined. Jensen (1978) argued that a market is efficient with respect to some information if no one can earn \emph{economic} profits by trading on it, meaning profits after all the costs of trading. Grossman and Stiglitz (1980) went further. They showed that prices cannot reflect all information perfectly, because then no one would be paid for the cost of collecting it. On this view, some patterns in returns should survive on paper but not after costs, since costs are exactly what stops investors from trading them away.
 
 The question became pressing in the early 2000s, when researchers began to work out what it would cost to trade the best-known anomalies\index{anomaly}, the patterns in returns that standard risk models cannot explain (Chapter~\ref{ch:03}). Momentum, which trades often, was the natural first target. Lesmond, Schill and Zhou (2004) found that momentum\index{momentum} trades are concentrated in stocks that are expensive to trade, and concluded that most of its profits disappear after costs. Since a large fund also moves prices when it trades, Korajczyk and Sadka (2004) measured how much large orders move prices, and found that momentum profits shrink as the portfolio grows. To compare many strategies at once, Novy-Marx and Velikov (2016) then estimated trading costs for 23 well-known anomalies. Most strategies that replace more than half of their portfolio each month were no longer significant after costs. Because these estimates came from public data rather than an actual investor's trades, Frazzini, Israel and Moskowitz (2018) challenged their size. Using a large manager's own trading records, they found costs far below what the academic estimates assumed. The same patterns therefore look profitable or unprofitable depending on whose costs are used.
 
 This chapter continues Part VII. Chapter~\ref{ch:13} showed that an investor's own selling decisions can separate the return a stock earns from the return its holder receives. This chapter turns to the costs that every trade pays. The answer matters for research and for practice. For research, it decides whether an anomaly is evidence against market efficiency, or only a pattern that no investor could exploit. For practice, it decides which published strategies are worth running, how much money each can manage, and whether a fund that offers them can deliver its backtest. 
 
-The claim on trial\index{claims-on-trial method} is the assumption behind most published backtests\index{backtest}: \textbf{a strategy that is profitable in a backtest is profitable to trade.}
+The question of this chapter concerns the assumption behind most published backtests\index{backtest}: \textbf{is a strategy that is profitable in a backtest profitable to trade?}
 
 The lab in Section~\ref{sec:17-lab} repeats the main calculations of Novy-Marx and Velikov (2016) and Frazzini, Israel and Moskowitz (2018). It uses three free long--short factors from the \term{Kenneth R. French Data Library}, value, momentum and short-term reversal, together with a simulated market of individual stocks. The goal is to find out which strategies stay profitable after costs, what level of costs would wipe out each one, and how much money each can manage.
 
@@ -160,7 +160,7 @@ An \term{implementable return}, one an investor could actually have earned, diff
   \item \textbf{Scale.} A strategy that works with \$10 million may not work with \$10 billion, because the trades themselves change prices.
 \end{enumerate}
 
-None of these makes a paper return wrong. A pattern that cannot be traded profitably may still tell us something about risk or about how prices form. But a claim about profits needs an implementable return, and the two can differ by more than the whole premium.
+None of these makes a paper return wrong. A pattern that cannot be traded profitably may still tell us something about risk or about how prices form. But a statement about profits needs an implementable return, and the two can differ by more than the whole premium.
 
 The gap is largest for strategies that trade often, in small or illiquid stocks, or on the short side. It is smallest for slow strategies in large stocks, which is one reason the market portfolio itself is so hard to beat after costs: it barely trades at all.
 
@@ -464,13 +464,13 @@ Each rule trades a little signal for a lot less trading. The trade-off depends o
 
 
 \begin{callout}
-\textbf{What Failed: buying last month's losers.} Jegadeesh (1990) and Lehmann (1990) showed that stocks with low returns over the past week or month tended to rebound, and stocks with high returns tended to fall back. On paper the pattern is strong and statistically robust, and the Fama--French\index{Fama--French factors} short-term reversal factor still has a positive average return. The trouble is trading. The strategy replaces almost its whole portfolio every month. It buys and sells stocks that have just moved sharply, often small and illiquid ones, where spreads are widest. Novy-Marx and Velikov (2016) estimated that its costs were larger than its gross return by more than a percentage point a month. Nagel (2012) argued that much of the reversal is a reward for supplying liquidity to impatient traders. That reward goes to market makers, who trade cheaply, not to investors who must pay the spread. For an ordinary investor, the claim that buying recent losers is profitable \textbf{fails} once costs are counted.
+\textbf{What Failed: buying last month's losers.} Jegadeesh (1990) and Lehmann (1990) showed that stocks with low returns over the past week or month tended to rebound, and stocks with high returns tended to fall back. On paper the pattern is strong and statistically robust, and the Fama--French\index{Fama--French factors} short-term reversal factor still has a positive average return. The trouble is trading. The strategy replaces almost its whole portfolio every month. It buys and sells stocks that have just moved sharply, often small and illiquid ones, where spreads are widest. Novy-Marx and Velikov (2016) estimated that its costs were larger than its gross return by more than a percentage point a month. Nagel (2012) argued that much of the reversal is a reward for supplying liquidity to impatient traders. That reward goes to market makers, who trade cheaply, not to investors who must pay the spread. For an ordinary investor, the idea that buying recent losers is profitable does not hold up once costs are counted.
 \end{callout}
 
-\section{Lab~\thechapter: Replicating Novy-Marx and Velikov (2016)}
+\section{Lab~\thechapter: Paper Returns, Trading Costs and Capacity}
 \label{sec:17-lab}
 
-\textbf{Claim on trial:} a strategy that is profitable in a backtest is profitable to trade. The lab replicates Novy-Marx and Velikov (2016) and adds a capacity analysis in the spirit of Frazzini, Israel and Moskowitz (2018). It takes three long--short factors from the Kenneth R. French Data Library, value (HML), momentum (Mom) and short-term reversal (ST Rev), from July 1963, plus a simulated stock universe, and asks what each factor would have earned after costs. The code is in the repository folder \texttt{ch14-costs/}.
+\textbf{What you will explore:} how much of a backtest's profit remains once trading costs and capacity are counted. The lab follows the cost analysis of Novy-Marx and Velikov (2016) and adds a capacity analysis in the spirit of Frazzini, Israel and Moskowitz (2018). It takes three long--short factors from the Kenneth R. French Data Library, value (HML), momentum (Mom) and short-term reversal (ST Rev), from July 1963, plus a simulated stock universe, and asks what each factor would have earned after costs. The code is in the repository folder \texttt{ch14-costs/}.
 
 \textbf{Part A: gross performance.} Average returns, t-statistics and Sharpe ratios as published. On paper, all three look like discoveries.
 
@@ -482,7 +482,7 @@ Each rule trades a little signal for a lot less trading. The trade-off depends o
 
 \textbf{Part E: mitigation, with known truth.} For momentum at a one-way cost of 50 basis points, holding stocks until they leave the top 50\% cuts turnover roughly in half, gives up about a fifth of the expected gross return, and raises the expected net return from about 0.30\% to 0.41\% a month. For reversal, no band width rescues the strategy at that cost: the signal decays too fast for patience to pay.
 
-The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:17-verdict}.
+When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:17-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:17-verdict}
@@ -522,9 +522,9 @@ The average anomaly & \textbf{No} & After costs and post-publication decay, its 
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
 
-The claim holds only for strategies whose break-even costs sit well above what their investors actually pay, at the size they intend to run.
+In short, the published evidence suggests that a backtest's profit carries over to trading only for strategies whose break-even costs sit well above what their investors actually pay, at the size they intend to run.
 
-\textbf{What would change the picture.} The claim would gain support if many managers' trading records confirmed costs as low as those of Frazzini, Israel and Moskowitz (2018), and lose it if cost-saving designs fixed in advance failed out of sample.
+\textbf{What would change the picture.} The picture would become more favorable to paper returns if many managers' trading records confirmed costs as low as those of Frazzini, Israel and Moskowitz (2018), and less favorable if cost-saving designs fixed in advance failed out of sample.
 
 \section{What practitioners and investors can use}
 \label{sec:17-investors}

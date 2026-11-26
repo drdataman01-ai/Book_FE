@@ -1,6 +1,6 @@
 % Chapter 2 infographic -- use right after \label{ch:02}: \input{chapters/ch02-infographic}
 \ifcsname FEinfoLoaded\endcsname\else\input{common/fe-infographic}\fi
-\begin{FEinfographic}{ch:02}{free, public data can support a reliable backtest}
+\begin{FEinfographic}{ch:02}{can free, public data support a reliable backtest?}
 
 \infopanel{1}{Three ways data can mislead a backtest}{%
 \infocards
@@ -8,7 +8,7 @@
   {Look-ahead}{A signal or accounting figure used before it was known trades on information no investor had.}
   {Weighting}{Equal weights let tiny stocks that almost no one can trade drive the result.}}
 
-\infopanel{2}{Evidence scoreboard}{%
+\infopanel{2}{Where the evidence stands: what published studies found}{%
 \begin{infoscore}
 \scoreitem{y}{Yes}{Portfolio data from the French library and similar sources}
 \scoreitem{n}{No}{Today's stocks from a free price site}
@@ -25,7 +25,7 @@
   {$-1.2$\%}{true volatile-minus-calm return a year}
   {$t = 14.7$}{the same strategy on survivors only}}
 
-\infopanel{4}{Lab: replicating the size effect and the survivorship and delisting biases}{%
+\infopanel{4}{Lab: Data traps}{%
 \begin{infolab}
 \item \textbf{A.} Arithmetic against geometric averages, compared with the volatility drag $G \approx A - \sigma^2/2$.
 \item \textbf{B.} Survivorship and delisting bias in a simulated market where the truth is known.
@@ -33,7 +33,7 @@
 \item \textbf{D.} The size premium with value and equal weights, with and without micro-caps, before and after 1981.
 \end{infolab}}
 
-\infoverdict
+\infosummary
   {Free, public data can support a reliable backtest, but only when the data include failed companies and the backtest avoids hindsight and checks how its portfolios are weighted.}
   {Before trusting any backtest, check that it uses total returns, includes delisted companies, lags every signal and survives value weighting without micro-caps.}
 \end{FEinfographic}

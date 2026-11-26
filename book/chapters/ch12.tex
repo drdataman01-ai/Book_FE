@@ -1,4 +1,4 @@
-% Chapter 7 -- Claim: Forward Rates Predict Future Interest Rates
+% Chapter 7 -- What Do Forward Rates Say About Future Interest Rates?
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -23,13 +23,13 @@
 }{}
 \makeatother
 
-\chapter{Claim: Forward Rates Predict Future Interest Rates}
+\chapter{What Do Forward Rates Say About Future Interest Rates?}
 \label{ch:12}
 \providecommand{\term}[1]{\emph{#1}}
 
 Anyone who has compared a one-year and a five-year savings certificate, or a variable and a fixed mortgage, has faced the question behind this chapter: is it better to lock in today's long-term rate or to wait and see what short-term rates do? News reports add a related question whenever long-term interest rates fall below short-term ones, an ``\term{inverted yield curve}'' that is often read as a warning of rate cuts and recession. Both questions turn on whether today's interest rates contain a reliable forecast of tomorrow's.
 
-Forward rates predict future interest rates. Chapter~\ref{ch:11} tested a version of this claim in the currency market, where uncovered interest parity says that the forward exchange rate is an unbiased forecast of the future spot rate. The Fama regression rejected it, because high-interest currencies tended to rise rather than fall. This chapter puts the same claim on trial in the \textbf{bond market.}
+Do forward rates predict future interest rates? Chapter~\ref{ch:11} took up a version of this question in the currency market, where uncovered interest parity says that the forward exchange rate is an unbiased forecast of the future spot rate. The Fama regression rejected it, because high-interest currencies tended to rise rather than fall. This chapter asks the same question in the \textbf{bond market.}
 
 The \term{yield curve}\index{yield curve|textbf} plots the interest rates on government bonds against their maturities, from a few months to thirty years. Today's curve also implies a \textbf{forward rate}\index{forward rate} for each future period, which is the interest rate that an investor can lock in today for borrowing or lending over that period. The \term{expectations hypothesis}\index{expectations hypothesis|textbf}, the oldest theory of interest rates, says that each forward rate equals the short-term rate that investors expect for that period. A long-term rate is then the average of the short-term rates expected over the bond's life. A curve that slopes upward forecasts rising rates, and an \textbf{inverted} curve, on which long rates are below short rates, forecasts falling ones. Figure~\ref{fig:07-long-short} shows that both shapes have occurred since 2000. Its top panel plots a long-term and a short-term interest rate, and its bottom panel plots the \textbf{term spread}\index{term spread|textbf}, the difference between them, which is positive when the curve slopes upward and negative when it is inverted. The hypothesis also implies that a long bond earns the same expected return\index{return!expected} as \term{rolling over} short bonds, which means buying a short bond and reinvesting the proceeds in a new one each time it matures.
 
@@ -262,7 +262,7 @@ Both results point to a \term{term premium}\index{term premium|textbf}, an extra
 
 The question matters because markets and central banks read the yield curve every day. Commentators treat an inverted curve as a forecast of rate cuts and recession. Central banks extract \term{market-implied} paths for their policy rates, which are the future rates that today's forward rates would imply if they were pure forecasts. Bond investors choose maturities based on what the curve seems to promise. If the term premium is real, a forecaster who reads the curve as a pure forecast will be wrong in a predictable way, an investor can favor long bonds when the expected premium is high, and a central bank must remove the premium before it can read the market's view of future policy.
 
-The claim on trial\index{claims-on-trial method} is therefore the expectations hypothesis: \textbf{apart from a constant, each forward rate is an unbiased forecast of the future one-year interest rate, so a long-term bond earns, on average, the same return as a series of one-year bonds plus at most a constant premium.}
+The question of this chapter is therefore whether the expectations hypothesis holds: \textbf{apart from a constant, is each forward rate an unbiased forecast of the future one-year interest rate, so that a long-term bond earns, on average, the same return as a series of one-year bonds plus at most a constant premium?}
 
 The lab in Section~\ref{sec:07-lab} repeats the tests of Fama and Bliss (1987), Campbell and Shiller (1991) and Cochrane and Piazzesi (2005). In place of the commercial bond data that the original papers used, it uses the Federal Reserve's free zero-coupon Treasury yield curve since 1961, to check whether the hypothesis fails as clearly today as it did in the original samples.
 
@@ -442,14 +442,14 @@ The tests are statistically delicate, for reasons the shaded box explains.
 \end{technote}
 
 
-\section{The claim}
+\section{The question}
 \label{sec:07-claim}
 
 \begin{callout}
-\textbf{Claim (the expectations hypothesis).} Apart from a constant, each forward rate is an unbiased forecast of the future one-year interest rate. A long-term bond therefore earns, on average, the same return as a series of one-year bonds plus at most a constant premium, and a steep yield curve predicts rising one-year rates, not higher returns on long-term bonds.
+\textbf{The question (the expectations hypothesis).} Apart from a constant, is each forward rate an unbiased forecast of the future one-year interest rate? If so, a long-term bond earns, on average, the same return as a series of one-year bonds plus at most a constant premium, and a steep yield curve predicts rising one-year rates, not higher returns on long-term bonds.
 \end{callout}
 
-To test it, three points need to be settled:
+To answer it, three points need to be settled:
 
 \begin{itemize}
   \item \textbf{Up to a constant.} Long bonds have earned more than short ones on average, so the version tested here allows a constant term premium and denies only that the premium \emph{changes}.
@@ -468,10 +468,10 @@ To test it, three points need to be settled:
 
 \textbf{The skeptics.} That the EH fails is widely accepted; how strongly bond returns can be predicted is not. Bauer and Hamilton (2018) showed that standard tests are badly distorted when predictors move slowly and returns overlap\index{overlapping observations}, and with robust tests the evidence that anything beyond level, slope and curvature predicts returns, including the \term{Cochrane--Piazzesi factor}\index{Cochrane--Piazzesi factor}, became much weaker. Thornton and Valente (2012) found that forecasts from forward rates gave an investor little economic value out of sample.
 
-\section{Lab~\thechapter: Replicating Fama and Bliss (1987), Campbell and Shiller (1991) and Cochrane and Piazzesi (2005)}
+\section{Lab~\thechapter: Forward Rates and Bond Returns}
 \label{sec:07-lab}
 
-\textbf{Claim on trial\index{claims-on-trial method}:} forward rates are unbiased forecasts of future short rates. The lab uses the Federal Reserve's zero-coupon Treasury yield curve (G\"urkaynak, Sack and Wright 2007), month-end yields for maturities of one to ten years, which is free and updated regularly. The curve is fitted to bond prices, unlike the CRSP data of the classic studies, so results will be similar in spirit but not identical.
+\textbf{What you will explore:} whether forward rates are unbiased forecasts of future short rates, using the regressions of Fama and Bliss (1987), Campbell and Shiller (1991) and Cochrane and Piazzesi (2005). The lab uses the Federal Reserve's zero-coupon Treasury yield curve (G\"urkaynak, Sack and Wright 2007), month-end yields for maturities of one to ten years, which is free and updated regularly. The curve is fitted to bond prices, unlike the CRSP data of the classic studies, so results will be similar in spirit but not identical.
 
 \textbf{Part A, the classic tests.} \term{Fama--Bliss regressions}\index{Fama--Bliss regression} of excess returns, and of future changes in short rates, on forward spreads, and \term{Campbell--Shiller regressions}, for maturities of 2 to 10 years, with Newey--West standard errors\index{standard error} for the overlapping data (Lab Figures~\ref{ch:12}.2 and~\ref{ch:12}.3).
 
@@ -482,7 +482,7 @@ To test it, three points need to be settled:
 \textbf{Part D, the investor's view.} Average excess returns by maturity, and returns after steep and flat curves defined with past information only (Lab Figure~\ref{ch:12}.5).
 
 \label{sec:07-stress}
-\textbf{Robustness checks.} The sample spans the 1970s inflation, the Volcker disinflation, the long fall in rates, near-zero rates after 2008 and the rapid rises of 2022--23, so Part C shows whether the rejection comes from one era. Slow-moving predictors and overlapping returns inflate in-sample $R^2$, so a negative out-of-sample $R^2$\index{out-of-sample $R^2$} would mean the historical mean did better\index{in-sample versus out-of-sample|textbf}. Standard errors can also badly understate the uncertainty in these regressions (Bauer and Hamilton 2018), so treat $t$-statistics near 2 with suspicion. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:07-verdict}.
+\textbf{Robustness checks.} The sample spans the 1970s inflation, the Volcker disinflation, the long fall in rates, near-zero rates after 2008 and the rapid rises of 2022--23, so Part C shows whether the rejection comes from one era. Slow-moving predictors and overlapping returns inflate in-sample $R^2$, so a negative out-of-sample $R^2$\index{out-of-sample $R^2$} would mean the historical mean did better\index{in-sample versus out-of-sample|textbf}. Standard errors can also badly understate the uncertainty in these regressions (Bauer and Hamilton 2018), so treat $t$-statistics near 2 with suspicion. When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:07-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:07-verdict}
@@ -522,7 +522,7 @@ Value to an investor out of sample & \textbf{Partly} & Forecasts gave little eco
 
 The evidence that the term premium changes is strong; the evidence that anyone can track it in real time is weaker. Neither rescues the expectations hypothesis, which needs the premium to be constant.
 
-\textbf{What would change the picture.} The claim would gain support if its rejection came from one monetary regime and disappeared in the others.
+\textbf{What would change the picture.} The picture would become more favorable to the expectations hypothesis if its rejection came from one monetary regime and disappeared in the others.
 
 \section{What practitioners and investors can use}
 \label{sec:07-investors}

@@ -1,10 +1,10 @@
 """Lab 5: Do Simple Trading Rules Beat Buy-and-Hold?
 
-Chapter 5 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 5 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "Simple trend rules beat buy-and-hold after correcting for the number of
-  rules tried."
+WHAT YOU WILL EXPLORE
+  How trend rules perform against buy-and-hold, and how much of their
+  apparent success remains after correcting for the number of rules tried.
 
 WHAT THE LAB DOES
   Part A  The 26 rules of Brock, Lakonishok and LeBaron (1992) on the daily
@@ -594,7 +594,7 @@ def write_report(out, d, a, b, c, dd, e, sim):
     md = ["# Lab 5 results: Do Simple Trading Rules Beat Buy-and-Hold?", ""]
     if sim:
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
-    md += ["**Claim on trial:** simple trend rules beat buy-and-hold after correcting for the number of rules tried.",
+    md += ["**What you will explore:** how trend rules perform against buy-and-hold, and how much of their apparent success remains after correcting for the number of rules tried.",
            ""]
     md += [f"> {n}" for n in d.get("notes", [])] + ([""] if d.get("notes") else [])
     md += ["## Part A: The 26 rules of Brock, Lakonishok and LeBaron (1992)", "",
@@ -642,7 +642,7 @@ def write_report(out, d, a, b, c, dd, e, sim):
                f"Correlation {e['corr']:.2f}; alpha of TSM on TSH {e['alpha_tsm_on_tsh_annual']:+.1%} a year "
                f"(t = {e['alpha_t']:.2f}).", "",
                "![Lab Figure 5.4](fig5_4_assets.png)", "", "![Lab Figure 5.5](fig5_5_tsm_tsh.png)", ""]
-    md += ["## Your verdict", "",
+    md += ["## Questions to think about", "",
            "1. Did the 26 rules beat buy-and-hold before 1987? After?",
            "2. Once the search over many rules is counted, is the best rule better than luck?",
            "3. Does trend following earn a premium across asset classes, and is it time-series momentum or just "

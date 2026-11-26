@@ -1,8 +1,8 @@
 # Lab 18: Does Delta Hedging Remove Option Risk?
 
-Companion lab for **Chapter 18** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 18** of *Financial Engineering in Practice*.
 
-**Claim on trial:** an option seller who delta-hedges as Black–Scholes prescribes is left with little risk.
+**What you will explore:** how much risk is left for an option seller who delta-hedges as Black–Scholes prescribes.
 
 ## Quick start
 
@@ -47,7 +47,7 @@ At each month end since 1990 the lab sells a one-month at-the-money call on the 
 - **The underlying** is the CRSP value-weighted total-return index, a proxy for the S&P 500, with no dividend yield in the model (consistent with a total-return index). The VIX includes a skew premium, so pricing at the VIX overstates at-the-money implied volatility; this shifts the *mean* P&L up but has little effect on its spread.
 - **Black–Scholes benchmark.** With daily hedging, the standard deviation of the hedging error is about √(π/4)·σ·vega/√N (Kamal and Derman 1999), about a fifth of the premium for a one-month at-the-money option with 21 rebalances.
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

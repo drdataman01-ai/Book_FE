@@ -84,7 +84,7 @@ def test_full_lab_runs_on_simulated_data():
         s = lab16.main(["--source", "sim", "--out", tmp])
         assert len(list(Path(tmp).glob("fig16_*.png"))) == 4
         rep = (Path(tmp) / "lab16_report.md").read_text()
-        assert "Simulated data" in rep and "Your verdict" in rep
+        assert "Simulated data" in rep and "Questions to think about" in rep
         assert s["n_signals"] > 100
 
 

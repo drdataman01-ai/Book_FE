@@ -104,7 +104,7 @@ def test_full_lab_runs_on_simulated_data():
                         "1955-01", "--out", tmp])
         assert len(list(Path(tmp).glob("fig20_*.png"))) == 5
         rep = (Path(tmp) / "lab20_report.md").read_text()
-        assert "Simulated data" in rep and "Your verdict" in rep
+        assert "Simulated data" in rep and "Questions to think about" in rep
         assert len(s["main"]) == 5 and len(s["seeds"]) == 2
 
 

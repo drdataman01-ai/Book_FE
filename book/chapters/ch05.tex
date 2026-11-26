@@ -1,4 +1,4 @@
-% Chapter 8 -- Claim: Simple Trading Rules Beat Buy-and-Hold
+% Chapter 8 -- Can Simple Trading Rules Beat Buy-and-Hold?
 % Requires: amsmath, amssymb, booktabs, array, tabularx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -18,7 +18,7 @@
 }{}
 \makeatother
 
-\chapter{Claim: Simple Trading Rules Beat Buy-and-Hold}
+\chapter{Can Simple Trading Rules Beat Buy-and-Hold?}
 \label{ch:05}
 \providecommand{\term}[1]{\emph{#1}}
 
@@ -84,11 +84,11 @@ Across 26 versions of these rules, the days that followed a buy signal earned mu
 
 The finding mattered because it challenged the weak form of market efficiency (Section~\ref{sec:01-efficient-markets}), the idea that past prices cannot predict future returns, with rules anyone could follow, and because a large industry already traded on such rules. It also raised a methodological problem that became central to empirical finance. Trend rules come in thousands of variants, and any of them can be tuned on the past, so the rules of Brock, Lakonishok and LeBaron might simply be the best survivors of a long search. Sullivan, Timmermann and White (1999) applied White's \term{Reality Check}\index{Reality Check}, a test that accounts for the whole universe of rules a researcher might have tried, and found that the best rule's success on the Dow did not carry into the following decade. Moskowitz, Ooi and Pedersen (2012) then asked whether trends exist across markets in general and documented \emph{time-series momentum} in 58 futures markets. Because that evidence came mainly from a pooled test, Huang, Li, Wang and Zhou (2020) questioned how strong it is once each market is tested on its own.
 
-The implications are practical. Managed-futures funds, often called commodity trading advisors, which are professional funds that trade futures contracts in many markets, run large sums on trend rules and market them as protection in crises, so whether trends are real decides whether their investors are paid for anything. For research, the chapter shows how to judge a claim that was found by searching. 
+The implications are practical. Managed-futures funds, often called commodity trading advisors, which are professional funds that trade futures contracts in many markets, run large sums on trend rules and market them as protection in crises, so whether trends are real decides whether their investors are paid for anything. For research, the chapter shows how to judge a result that was found by searching. 
 
-The claim on trial\index{claims-on-trial method} is: \textbf{simple trend rules on an asset's own past prices earn returns that survive a full accounting for the number of rules tried.}
+The question of this chapter is: \textbf{do simple trend rules on an asset's own past prices earn returns that survive a full accounting for the number of rules tried?}
 
-The lab in Section~\ref{sec:08-lab} replicates the 26 rules of Brock, Lakonishok and LeBaron (1992) on the free daily U.S. market series of the Kenneth R. French Data Library since 1926, applies the Reality Check of Sullivan, Timmermann and White (1999) to the full rule universe, and rebuilds the time-series momentum of Moskowitz, Ooi and Pedersen (2012) with AQR's free factor data and FRED series, in order to check whether trend signals still predict returns after data snooping, costs and publication.
+The lab in Section~\ref{sec:08-lab} applies the 26 rules of Brock, Lakonishok and LeBaron (1992) to the free daily U.S. market series of the Kenneth R. French Data Library since 1926, applies the Reality Check of Sullivan, Timmermann and White (1999) to the full rule universe, and constructs time-series momentum in the manner of Moskowitz, Ooi and Pedersen (2012) with AQR's free factor data and FRED series, in order to see whether trend signals still predict returns after data snooping, costs and publication.
 
 
 \section{Foundations}
@@ -175,16 +175,16 @@ The Reality Check has one weakness. Adding many hopeless rules to the universe m
 The straddle pattern explains the appeal of trend following as a \term{diversifier}\index{diversification}. It tends to do well when a stock portfolio does badly over several months. The pattern has a limit: a straddle profits from large moves that last long enough for the rule to react. A sudden one-day crash, such as October 1987, or a sharp turn, such as March 2009, can hurt a trend follower who was positioned the other way.
 
 
-\section{The claim}
+\section{The question}
 \label{sec:08-claim}
 
-Stated so that it can fail:
+Stated precisely:
 
 \begin{callout}
-\textbf{Simple trend rules, which buy assets whose prices have been rising and sell assets whose prices have been falling, earn returns above a buy-and-hold benchmark, and the best of them remain significant after accounting for the number of rules tried, after publication, and after trading costs.}
+\textbf{Do simple trend rules, which buy assets whose prices have been rising and sell assets whose prices have been falling, earn returns above a buy-and-hold benchmark, and do the best of them remain significant after accounting for the number of rules tried, after publication, and after trading costs?}
 \end{callout}
 
-The claim has a \textbf{strong form}, that classic technical rules on a single stock index such as the Dow beat buy-and-hold, and a \textbf{weak form}, that a diversified time-series momentum portfolio across many asset classes earns a positive risk-adjusted return. The tests are:
+The question has a \textbf{strong form}, whether classic technical rules on a single stock index such as the Dow beat buy-and-hold, and a \textbf{weak form}, whether a diversified time-series momentum portfolio across many asset classes earns a positive risk-adjusted return. The evidence turns on four further questions:
 
 \begin{itemize}
   \item \textbf{Search.} Is the best rule still significant after the Reality Check and the SPA test?
@@ -214,10 +214,10 @@ Hurst, Ooi and Pedersen (2017) simulated a similar strategy in 67 markets from 1
 
 Huang, Li, Wang and Zhou\index{time-series momentum!critique} challenged the statistics. A pooled regression that stacks all assets together can find a significant slope even when no single asset is predictable, and with a bootstrap the pooled $t$-statistic was no longer significant. Asset by asset, most of their 55 slopes were insignificant. And a simpler ``time-series history'' strategy, long an asset whose average past return is positive and short otherwise, earned about as much without any predictability, by holding assets such as stocks and bonds that tend to rise. Defenders reply that the strategy's value lies in its behavior in crises, and that many weak signals can be valuable together even when each is hard to detect (Section~\ref{sec:08-stress}).
 
-\section{Lab~\thechapter: Replicating Brock--Lakonishok--LeBaron and Moskowitz--Ooi--Pedersen}
+\section{Lab~\thechapter: Trend Rules and the Cost of Searching}
 \label{sec:08-lab}
 
-\textbf{Claim on trial\index{claims-on-trial method}:} simple trend rules beat buy-and-hold after correcting for the number of rules tried. The lab replicates Brock, Lakonishok and LeBaron (1992), Sullivan, Timmermann and White (1999) and Moskowitz, Ooi and Pedersen (2012). It uses the daily U.S. market index from the Kenneth R. French Data Library\index{Kenneth French data library} from July 1926, AQR's free \emph{Time Series Momentum: Factors, Monthly} data set and, for a small multi-asset test, bond yields, exchange rates, interest rates and oil prices from FRED\index{FRED}. Each signal uses only prices up to the day, or month, before the position is taken.
+\textbf{What you will explore:} how trend rules perform against buy-and-hold, and how much of their apparent success remains after correcting for the number of rules tried. The lab draws on Brock, Lakonishok and LeBaron (1992), Sullivan, Timmermann and White (1999) and Moskowitz, Ooi and Pedersen (2012). It uses the daily U.S. market index from the Kenneth R. French Data Library\index{Kenneth French data library} from July 1926, AQR's free \emph{Time Series Momentum: Factors, Monthly} data set and, for a small multi-asset test, bond yields, exchange rates, interest rates and oil prices from FRED\index{FRED}. Each signal uses only prices up to the day, or month, before the position is taken.
 
 \begin{itemize}
   \item \textbf{Part A, the 26 rules.} Brock, Lakonishok and LeBaron's rules on the daily U.S. market, with the buy--sell difference and its $t$-statistic, for 1926--1986 and for 1987 to the present (Lab Figure~\ref{ch:05}.1).
@@ -230,7 +230,7 @@ Huang, Li, Wang and Zhou\index{time-series momentum!critique} challenged the sta
 % [Draft note: the figures and numbers are generated by running the lab on data at the time of publication. The book prints the results; the text above does not anticipate them.]
 
 \label{sec:08-stress}
-\textbf{Robustness checks.} For the stock-index rules the clean test begins in 1987, and for time-series momentum in 2010; diversified trend strategies had a weak decade after 2009, then a strong 2022, when stocks and bonds fell together. The stock-index rules switch positions many times a year, and Bajgrowicz and Scaillet (2012) found that even low costs offset the best Dow rules' in-sample gains, so the lab measures the effect of a 0.1\% cost per switch or a one-day delay. An investor trading one market needs that market to be predictable, while an investor holding fifty markets benefits from many weak signals combined, so the lab reports both views. Finally, the look-back windows and volatility target were chosen by researchers who knew the history, and the lab lets you vary each choice. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:08-verdict}.
+\textbf{Robustness checks.} For the stock-index rules the clean test begins in 1987, and for time-series momentum in 2010; diversified trend strategies had a weak decade after 2009, then a strong 2022, when stocks and bonds fell together. The stock-index rules switch positions many times a year, and Bajgrowicz and Scaillet (2012) found that even low costs offset the best Dow rules' in-sample gains, so the lab measures the effect of a 0.1\% cost per switch or a one-day delay. An investor trading one market needs that market to be predictable, while an investor holding fifty markets benefits from many weak signals combined, so the lab reports both views. Finally, the look-back windows and volatility target were chosen by researchers who knew the history, and the lab lets you vary each choice. When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:08-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:08-verdict}
@@ -280,7 +280,7 @@ In long market declines & \textbf{Yes} & Made money in most long equity drawdown
 \textbf{Use trend as a diversifier, not a stand-alone bet.} A modest allocation to diversified trend following has historically reduced the drawdowns of a stock--bond portfolio, but it can go years without gains. Many markets and slow signals are more robust than one market and fast signals, and simple rules on liquid futures are cheap to run, so judge a fund's fee against what a transparent rule would deliver. Ask a trend-following manager how many signal variants were tested before the backtest\index{backtest}, how the strategy did after 2009 and in 2022, and what the return is after costs and fees.
 
 \begin{callout}
-\textbf{What Failed: fast trend rules on a single stock index.} For decades, newsletters and trading systems sold moving-average rules for timing the stock market, backed by Dow backtests reaching into the early twentieth century. Sullivan, Timmermann and White showed what happened next: from 1987 to 1996 the best rules were no longer significant, and on S\&P 500 futures, where they could be traded cheaply, no rule beat the benchmark. The claim that a fast moving-average rule on a single index beats buy-and-hold \textbf{fails}.
+\textbf{What Failed: fast trend rules on a single stock index.} For decades, newsletters and trading systems sold moving-average rules for timing the stock market, backed by Dow backtests reaching into the early twentieth century. Sullivan, Timmermann and White showed what happened next: from 1987 to 1996 the best rules were no longer significant, and on S\&P 500 futures, where they could be traded cheaply, no rule beat the benchmark. The idea that a fast moving-average rule on a single index beats buy-and-hold did not hold up.
 \end{callout}
 
 % Key terms of the chapter, in alphabetical order, for readers new to finance.

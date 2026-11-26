@@ -1,8 +1,8 @@
 # Lab 13: When Do Investors Sell, and What Does It Cost Them?
 
-Companion lab for **Chapter 13** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 13** of *Financial Engineering in Practice*.
 
-**Claim on trial:** investors earn the returns their stocks earn, whatever rule they use to decide when to sell.
+**What you will explore:** how the rule an investor uses to decide when to sell changes what the investor experiences and keeps.
 
 ## Quick start
 
@@ -74,7 +74,7 @@ python lab13.py --source sim
 
 ## Outputs (`report/`)
 
-- `lab13_report.md`: all results, with a "Your verdict" prompt
+- `lab13_report.md`: all results, with questions to think about
 - `fig13_1_distributions.png` to `fig13_5_taxes.png`
 - `table_optional_stopping.csv`, `table_per_year.csv`, `table_real_prices.csv`, `table_disposition_by_decade.csv`, `table_taxes.csv`
 - `summary.json`: headline numbers for grading or automated checks
@@ -96,7 +96,7 @@ ch13-holding-periods/
 
 Run the tests with `python tests/test_lab13.py` (or `pytest tests/`).
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

@@ -1,4 +1,4 @@
-% Chapter 14 -- Claim: Delta Hedging Removes Option Risk
+% Chapter 14 -- How Much Option Risk Does Delta Hedging Remove?
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -24,7 +24,7 @@
 }{}
 \makeatother
 
-\chapter{Claim: Delta Hedging Removes Option Risk}
+\chapter{How Much Option Risk Does Delta Hedging Remove?}
 \label{ch:18}
 \providecommand{\term}[1]{\emph{#1}}
 
@@ -123,7 +123,7 @@ When the stock moves from \$99 to \$101, the option's value rises by about \$1.1
 
 The delta does not stay fixed, so the bank must keep adjusting its holding. When the stock rises, the option becomes more likely to be used, so the bank buys more shares. When the stock falls, the option becomes less likely to be used, so the bank sells some. By the expiry date, the bank holds one full share per option if the stock is above \$100 and none if it is below, which is exactly what it needs to keep its promise to the fund manager. This strategy is called \term{delta hedging}\index{delta hedging|textbf}. If it works perfectly, the net cost of all the buying and selling along the way equals the premium the bank received. The bank has then reproduced the option with shares alone and carries no risk.
 
-In 1973 Fischer Black and Myron Scholes, together with a closely related paper by Robert Merton, turned this idea into a striking claim: an option can be \term{replicated}\index{replication|textbf}, meaning that its payoff can be reproduced exactly by trading the stock and borrowing or lending cash. The trader only has to hold the right number of shares and adjust that number continuously, whatever the market does. If that is true, an option's price is not a matter of opinion about where the market is going. It is simply the cost of replicating the option. The Chicago Board Options Exchange opened the same year, and within a few years traders were pricing options with the formula on handheld calculators. The work earned Scholes and Merton the 1997 Nobel Prize in economics. Black had died in 1995 and was not eligible, because the prize is not awarded after death.
+In 1973 Fischer Black and Myron Scholes, together with a closely related paper by Robert Merton, turned this idea into a striking result: an option can be \term{replicated}\index{replication|textbf}, meaning that its payoff can be reproduced exactly by trading the stock and borrowing or lending cash. The trader only has to hold the right number of shares and adjust that number continuously, whatever the market does. If that is true, an option's price is not a matter of opinion about where the market is going. It is simply the cost of replicating the option. The Chicago Board Options Exchange opened the same year, and within a few years traders were pricing options with the formula on handheld calculators. The work earned Scholes and Merton the 1997 Nobel Prize in economics. Black had died in 1995 and was not eligible, because the prize is not awarded after death.
 
 
 The argument rests on assumptions that no real market meets: continuous trading, constant volatility and no trading costs. Researchers soon asked how much these assumptions matter. Leland (1985) asked what trading costs do to the hedge, and showed that with trading costs, a hedger who adjusts the hedge often pays a great deal, while one who adjusts it rarely is left with risk (Figure~\ref{fig:14-freq}), so perfect replication is impossible. After the crash of 1987, option prices showed a lasting \emph{volatility smile}\index{volatility smile}, a sign that the market does not believe the model's assumptions (Section~\ref{sec:14-iv}). To estimate what hedged option sellers are paid for bearing the risk the model leaves, Bakshi and Kapadia (2003) measured the gains on hedged option positions and found them consistently negative for option buyers, a sign that hedged option sellers are paid for bearing volatility risk (Section~\ref{sec:14-verdict}). Because volatility tends to rise when the market falls, Hull and White (2017) proposed a better hedge that allows for the way volatility tends to move with the market (Section~\ref{sec:14-stress}).
@@ -131,7 +131,7 @@ The argument rests on assumptions that no real market meets: continuous trading,
 
 The answer matters well beyond option traders. The replication argument underlies the pricing of almost every derivative, and it is why banks can sell structured products, investments that package a bond with options, such as a note that pays part of the stock market's gain while guaranteeing the original investment, and hedge them instead of betting on them. 
 
-The claim on trial\index{claims-on-trial method} is: \textbf{a trader who sells an option and delta-hedges it as Black--Scholes prescribes is left with little risk.}
+The question of this chapter is: \textbf{how much risk is left for a trader who sells an option and delta-hedges it as Black--Scholes prescribes?}
 
 The lab in Section~\ref{sec:14-lab} repeats the Black--Scholes hedge, in the spirit of Bakshi and Kapadia (2003), on simulated price paths where the model holds exactly and on real index paths since 1990. It uses free daily U.S. market returns and the VIX as the implied volatility, to measure how much risk is left after hedging, where it comes from, and how large the losses are in the worst months.
 
@@ -260,7 +260,7 @@ The call formula reads as a recipe. The first term, $S\,N(d_1)$, is the value of
   C = 100 \times 0.56 - 99.00 \times 0.52 = 55.96 - 51.47 = \$4.49.
   \label{eq:14-bs-example}
 \end{equation}
-The bank that sold the call buys 0.56 shares for \$55.96, borrows \$51.47, and pays the remaining \$4.49 out of the premium it received. This is the same 0.56 shares as in the story, now derived from the formula, and the premium is exactly the cost of setting up the hedge. This chapter tests whether the hedge, once set up, really delivers the option's payoff, which is the replication\index{replication} argument behind these formulas.
+The bank that sold the call buys 0.56 shares for \$55.96, borrows \$51.47, and pays the remaining \$4.49 out of the premium it received. This is the same 0.56 shares as in the story, now derived from the formula, and the premium is exactly the cost of setting up the hedge. This chapter asks whether the hedge, once set up, really delivers the option's payoff, which is the replication\index{replication} argument behind these formulas.
 
 Because the option can be copied, its price must equal the cost of the copy. If the option sold for \$5, a trader could sell it, build the copy for \$4.49 and keep \$0.51 with no risk, because the copy covers whatever the option owes at expiry. Such a riskless profit is called an \textbf{arbitrage}\index{arbitrage|textbf}, and traders competing for it would push the price back to \$4.49.
 
@@ -601,7 +601,7 @@ No trading costs & Every rebalance pays a spread & A steady drag that grows with
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 \endgroup
 
-The first breakdown comes from the model itself: it would happen even if Black--Scholes were exactly right. The other three come from assumptions that fail in real markets. A test of the claim must separate the two. The cleanest way is to run the same hedging strategy twice, once on real market paths and once on simulated paths that obey the model exactly. The difference between the two results is the cost of the model's being wrong.
+The first breakdown comes from the model itself: it would happen even if Black--Scholes were exactly right. The other three come from assumptions that fail in real markets. Any answer to the question must separate the two. The cleanest way is to run the same hedging strategy twice, once on real market paths and once on simulated paths that obey the model exactly. The difference between the two results is the cost of the model's being wrong.
 
 \textbf{Jumps are the hardest problem.} On a day when the market falls 20\%, the option's value changes far more than the hedge does. The gamma term $\tfrac{1}{2}\Gamma\,dS^2$ is huge, and hedging more often does not help, because the jump happens between adjustments. An option seller loses from large moves in either direction, so any jump is a loss.
 
@@ -610,17 +610,17 @@ The first breakdown comes from the model itself: it would happen even if Black--
 \textbf{The smile is the market's response.} After October 1987, dealers began to charge more for the risks that delta hedging cannot remove: crashes and spikes in volatility. They did so by raising the implied volatility of out-of-the-money puts, the options that pay off in crashes. The smile is therefore both evidence against the Black--Scholes assumptions and the price of the risk that delta hedging leaves behind\index{regression!residuals}.
 
 
-\section{The claim}
+\section{The question}
 \label{sec:14-claim}
 
 \begin{callout}
-\textbf{Claim.} An option seller who delta-hedges as Black--Scholes prescribes is left with little risk. Hedging removes most of the variance of the unhedged position, and what remains is small, symmetric, and shrinks as hedging becomes more frequent.
+\textbf{The question.} Is an option seller who delta-hedges as Black--Scholes prescribes left with little risk? That is, does hedging remove most of the variance of the unhedged position, leaving a remainder that is small, symmetric, and shrinks as hedging becomes more frequent?
 \end{callout}
 
-This claim justifies treating an option's Black--Scholes price as its cost of production. Four points need to be settled:
+A yes answer would justify treating an option's Black--Scholes price as its cost of production. Four points need to be settled:
 
 \begin{itemize}
-  \item \textbf{Little risk compared with what.} The benchmark is the unhedged short option. Removing 90\% of its variance and leaving errors of about a fifth of the premium, as daily hedging does when the model holds, meets the claim; occasional losses of several times the premium do not.
+  \item \textbf{Little risk compared with what.} The benchmark is the unhedged short option. Removing 90\% of its variance and leaving errors of about a fifth of the premium, as daily hedging does when the model holds, would count as yes; occasional losses of several times the premium do not.
   \item \textbf{Which volatility.} The test prices and hedges at the VIX\index{VIX}, the market's implied volatility.
   \item \textbf{Which measure.} The standard deviation of the hedging error for everyday risk, and the worst 1\% of outcomes\index{quantile} and worst month for extreme losses. Both must be small.
   \item \textbf{What would count against it.} Much more risk on real paths than on simulated Black--Scholes paths, occasional very large losses\index{fat tails}, or errors that do not shrink with more frequent hedging.
@@ -639,10 +639,10 @@ This claim justifies treating an option's Black--Scholes price as its cost of pr
 
 \textbf{Portfolio insurance.} The most important test of dynamic replication was not an academic study. In the 1980s, portfolio insurance programs traded index futures to copy a protective put, and \$60 to \$90 billion of stock portfolios were covered when the market crashed in October 1987 (Presidential Task Force on Market Mechanisms 1988). The What Failed box in Section~\ref{sec:14-investors} tells what happened.
 
-\section{Lab~\thechapter: Replicating the Black--Scholes hedge along real and simulated paths}
+\section{Lab~\thechapter: Delta Hedging Along Real and Simulated Paths}
 \label{sec:14-lab}
 
-\textbf{Claim on trial\index{claims-on-trial method}:} an option seller who delta-hedges as Black--Scholes prescribes is left with little risk. The lab replicates the Black--Scholes (1973) hedge and the gains on delta-hedged options, in the spirit of Bakshi and Kapadia (2003), using daily market returns from the Kenneth French\index{Kenneth French data library} library and the VIX from FRED\index{FRED}, from 1990. At each month-end, the lab sells a one-month at-the-money call on the market at its Black--Scholes price, using the VIX as implied volatility, holds $\Delta$ units of the index with borrowed money, adjusts the hedge on a schedule and pays the payoff at expiry. What is left is the \term{hedging P\&L}\index{hedging P\&L|textbf}, as a share of the premium. The same strategy runs on simulated paths on which the Black--Scholes assumptions hold exactly.
+\textbf{What you will explore:} how much risk is left for an option seller who delta-hedges as Black--Scholes prescribes. The lab runs the Black--Scholes (1973) hedge and measures the gains on delta-hedged options, following the approach of Bakshi and Kapadia (2003), using daily market returns from the Kenneth French\index{Kenneth French data library} library and the VIX from FRED\index{FRED}, from 1990. At each month-end, the lab sells a one-month at-the-money call on the market at its Black--Scholes price, using the VIX as implied volatility, holds $\Delta$ units of the index with borrowed money, adjusts the hedge on a schedule and pays the payoff at expiry. What is left is the \term{hedging P\&L}\index{hedging P\&L|textbf}, as a share of the premium. The same strategy runs on simulated paths on which the Black--Scholes assumptions hold exactly.
 
 \textbf{Part A, the risk that remains.} The mean, standard deviation, skewness\index{skewness}, worst 1\% and worst month of the hedged P\&L at several hedging frequencies, on real and simulated paths (Lab Figure~\ref{ch:18}.1).
 
@@ -653,7 +653,7 @@ This claim justifies treating an option's Black--Scholes price as its cost of pr
 \textbf{Part D, the worst months.} Their market move, implied and realized volatility and largest daily move, and the share of all losses from the worst 5\% of months (Lab Figure~\ref{ch:18}.2).
 
 \label{sec:14-stress}
-\textbf{Robustness checks.} When Black--Scholes holds, hedging four times as often halves the error (Figure~\ref{fig:14-freq}), but on real paths this applies only to the part of the error from hedging at intervals\index{delta hedging!discrete rebalancing}, not to jumps and changing volatility. With costs\index{transaction costs} of a few basis points, daily hedging can eat a large share of the seller's profit, which is why dealers hedge less often than the model prescribes. Expect losses of several times the premium in crash months such as October 2008, August 2015 and March 2020 even with daily hedging. And when implied volatility exceeds realized, as in most months (Chapter~\ref{ch:19}), the seller's profit is the variance risk premium, earned by bearing the risk that remains, not evidence that hedging removed it. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:14-verdict}.
+\textbf{Robustness checks.} When Black--Scholes holds, hedging four times as often halves the error (Figure~\ref{fig:14-freq}), but on real paths this applies only to the part of the error from hedging at intervals\index{delta hedging!discrete rebalancing}, not to jumps and changing volatility. With costs\index{transaction costs} of a few basis points, daily hedging can eat a large share of the seller's profit, which is why dealers hedge less often than the model prescribes. Expect losses of several times the premium in crash months such as October 2008, August 2015 and March 2020 even with daily hedging. And when implied volatility exceeds realized, as in most months (Chapter~\ref{ch:19}), the seller's profit is the variance risk premium, earned by bearing the risk that remains, not evidence that hedging removed it. When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:14-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:14-verdict}
@@ -693,7 +693,7 @@ Dynamic replication in a crash & \textbf{No} & Portfolio insurers could not trad
 
 The gamma--theta approximation explains most of the hedged P\&L, so a trader knows what bet the hedged position contains. That is why delta hedging remains the industry's first step, and why dealers also hedge vega and gamma with other options.
 
-\textbf{What would change the picture.} The claim would gain support if a simple extension, such as a minimum-variance delta or a small position in other options, removed most of the large losses on real paths.
+\textbf{What would change the picture.} The answer would shift toward little risk if a simple extension, such as a minimum-variance delta or a small position in other options, removed most of the large losses on real paths.
 
 \section{What practitioners and investors can use}
 \label{sec:14-investors}

@@ -1,8 +1,8 @@
 # Lab 8: Value at Risk and Its Backtests
 
-Companion lab for **Chapter 8** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 8** of *Financial Engineering in Practice*.
 
-**Claim on trial:** a 99% one-day VaR model is breached on about 1% of days, and the breaches do not cluster.
+**What you will explore:** how often losses exceed a 99% VaR, in calm markets and in crises, for six common models.
 
 ## Quick start
 
@@ -45,7 +45,7 @@ The simulation draws GJR-GARCH returns with Student-t shocks, so the GJR-t model
 - **Basel zones** apply to 99% VaR over 250 days: green 0–4 breaches, yellow 5–9, red 10 or more. The lab classifies each calendar year, scaled to 250 days.
 - **Tests have low power** at deep quantiles. At 99.9% only about 24 breaches are expected over the whole sample; one bad week moves the ratio a lot.
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

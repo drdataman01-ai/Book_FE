@@ -78,7 +78,7 @@ def test_full_lab_runs_on_simulated_data():
         s = lab04.main(["--source", "sim", "--out", tmp])
         assert len(list(Path(tmp).glob("fig4_*.png"))) == 5
         rep = (Path(tmp) / "lab04_report.md").read_text()
-        assert "Simulated data" in rep and "Your verdict" in rep
+        assert "Simulated data" in rep and "Questions to think about" in rep
         vs = pd.DataFrame(s["vol_scaled"])
         assert vs.iloc[2]["max_drawdown"] > vs.iloc[1]["max_drawdown"]  # scaling reduces the worst drawdown
 

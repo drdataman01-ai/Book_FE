@@ -1,10 +1,10 @@
 """Lab 10: Does Diversification Fail When You Need It Most?
 
-Chapter 10 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 10 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "Correlations rise in crises, so diversification fails exactly when
-   investors need it most."
+WHAT YOU WILL EXPLORE
+  How correlations behave in falling and volatile markets, and how much
+  protection diversification gives when it is needed most.
 
 WHAT THE LAB DOES
   Part A  Correlations of US stocks with international stocks, Treasury bonds
@@ -401,7 +401,7 @@ def write_report(out, a, b, c, dd, sim, missing):
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
     if missing:
         md += ["Not loaded: " + "; ".join(missing), ""]
-    md += ["**Claim on trial:** correlations rise in crises, so diversification fails when investors need it most.", "",
+    md += ["**What you will explore:** how correlations behave in falling and volatile markets, and how much protection diversification gives when it is needed most.", "",
            "## Part A: Conditional correlations", "",
            "High volatility: top 20% of months by trailing 12-month US stock volatility. Adjusted: Forbes–Rigobon "
            "correction for the higher variance of US stocks in those months.", "",
@@ -435,7 +435,7 @@ def write_report(out, a, b, c, dd, sim, missing):
     if dd["div_ratio_6040"]:
         md += [f"Diversification ratio of 60/40: calm months {dd['div_ratio_6040']['calm']:.2f}, high-volatility months "
                f"{dd['div_ratio_6040']['high_vol']:.2f} (1.00 = no diversification).", ""]
-    md += ["## Your verdict", "", "1. Do correlations really rise in turbulent markets once the volatility bias is removed?",
+    md += ["## Questions to think about", "", "1. Do correlations really rise in turbulent markets once the volatility bias is removed?",
            "2. Which diversifiers held up in the worst months, and which did not?",
            "3. Is the failure of bonds in 2022 the rule or the exception?", ""]
     (out / "lab10_report.md").write_text("\n".join(md))

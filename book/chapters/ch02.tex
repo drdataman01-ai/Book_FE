@@ -1,4 +1,4 @@
-% Chapter 2 -- Claim: Historical Data Show What a Strategy Would Have Earned
+% Chapter 2 -- Can Historical Data Show What a Strategy Would Have Earned?
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -18,7 +18,7 @@
 }{}
 \makeatother
 
-\chapter{Claim: Historical Data Show What a Strategy Would Have Earned}
+\chapter{Can Historical Data Show What a Strategy Would Have Earned?}
 \label{ch:02}
 \providecommand{\term}[1]{\emph{#1}}
 
@@ -38,11 +38,11 @@ The problems are rarely dramatic. Each one looks like a small technical detail, 
   \item an average return that is quoted in a way that overstates what an investor actually earned.
 \end{itemize}
 
-The implications are practical. Every lab in this book uses free data, and most readers will build their own backtests with free data too. If free data are reliable, students and small investors can test published claims for themselves; if not, the work belongs only to those who can pay for commercial databases. 
+The implications are practical. Every lab in this book uses free data, and most readers will build their own backtests with free data too. If free data are reliable, students and small investors can work with published results themselves; if not, the work belongs only to those who can pay for commercial databases. 
 
-The claim on trial\index{claims-on-trial method} is: \textbf{free, public data can support a reliable backtest.} Because every lab relies on it, we test it first, and the answer comes with a checklist that shows how to make it true in your own work.
+The question of this chapter is: \textbf{can free, public data support a reliable backtest?} Because every lab relies on free data, the book takes up this question first, and the answer comes with a checklist that shows how to make free data reliable in your own work.
 
-The lab in Section~\ref{sec:02-lab} replicates the size-effect evidence of Banz (1981), Horowitz, Loughran and Savin (2000) and Schwert (2003) on the free size portfolios of the Kenneth R. French Data Library, in order to see how the effect looks before and after publication. Because stock-level data with \term{delisting returns} are not free, it reproduces the survivorship and delisting results of Brown et al.\ (1992) and Shumway (1997) in a simulated market, in order to measure how much each data trap changes the return a strategy appears to have earned.
+The lab in Section~\ref{sec:02-lab} borrows the size-effect comparisons of Banz (1981), Horowitz, Loughran and Savin (2000) and Schwert (2003) and applies them to the free size portfolios of the Kenneth R. French Data Library, in order to see how the effect looks before and after publication. Because stock-level data with \term{delisting returns} are not free, it illustrates the survivorship and delisting problems studied by Brown et al.\ (1992) and Shumway (1997) in a simulated market, in order to measure how much each data trap changes the return a strategy appears to have earned.
 
 
 In the lab you will use nearly a century of real market data, together with one controlled simulation, to measure four of these problems. You will see how much each problem can inflate a strategy's apparent performance and how much of that inflation\index{inflation} each fix removes.
@@ -122,7 +122,7 @@ Companies report their accounting results for a \term{fiscal year}\index{fiscal 
 \section{Measuring returns: choosing the right measure}
 \label{sec:02-returns}
 
-Every claim in this book is ultimately a statement about returns, so the way a return is measured determines what the claim actually says. The same investment can produce quite different numbers depending on whether dividends are included, whether the risk-free rate\index{risk-free rate} is subtracted and how the returns are averaged. If you choose the wrong measure, a strategy can appear to beat the market by several percentage points a year without earning anything extra.
+Every question in this book is ultimately a question about returns, so the way a return is measured determines what the question actually asks. The same investment can produce quite different numbers depending on whether dividends are included, whether the risk-free rate\index{risk-free rate} is subtracted and how the returns are averaged. If you choose the wrong measure, a strategy can appear to beat the market by several percentage points a year without earning anything extra.
 
 Section~\ref{sec:01-foundations} defined the simple return\index{return!simple} (Equation~\eqref{eq:01-return}), the log return\index{return!log}, total and price returns, and excess returns\index{return!excess}. This section explains which of these measures to use for each task, and four rules cover most cases.
 
@@ -478,15 +478,15 @@ Lo and MacKinlay (1990) called this \term{data-snooping bias}\index{data snoopin
 Three defenses work, and later chapters use all of them.
 
 \begin{enumerate}
-  \item \textbf{New data.} Test the claim in periods or markets that played no part in its discovery, such as the years before the original sample, the years after publication, or other countries (Chapters~\ref{ch:04} and~\ref{ch:16}).
-  \item \textbf{Higher hurdles.} Require stronger evidence for claims that are tested on heavily used data, such as a t-statistic\index{t-statistic} above 3 (Harvey, Liu and Zhu 2016; Chapter~\ref{ch:16}). The t-statistic, introduced in Chapter~\ref{ch:01}, measures how far a result stands above the noise, and the usual bar is about 2.
+  \item \textbf{New data.} Check the result in periods or markets that played no part in its discovery, such as the years before the original sample, the years after publication, or other countries (Chapters~\ref{ch:04} and~\ref{ch:16}).
+  \item \textbf{Higher hurdles.} Require stronger evidence for results found in heavily used data, such as a t-statistic\index{t-statistic} above 3 (Harvey, Liu and Zhu 2016; Chapter~\ref{ch:16}). The t-statistic, introduced in Chapter~\ref{ch:01}, measures how far a result stands above the noise, and the usual bar is about 2.
     \item \textbf{Economic reasoning stated in advance.} Before running a test, state why the pattern should exist. A story written after a pattern is found proves little, because a clever explanation can be invented for almost any result, including one produced by chance. A reason stated beforehand turns the test into a genuine check, because the data can prove it wrong.
 \end{enumerate}
 
-\section{Lab~\thechapter: Replicating the size effect and the survivorship and delisting biases}
+\section{Lab~\thechapter: Data Traps}
 \label{sec:02-lab}
 
-\textbf{Claim on trial:} free, public data can support a reliable backtest. Each part of the lab follows one study that showed how a feature of the data can change a result. Brown, Goetzmann, Ibbotson and Ross (1992) showed by simulation that dropping funds that disappear can create false persistence, and Shumway (1997) measured the missing delisting losses. Brock, Lakonishok and LeBaron (1992) made moving-average rules famous, and Sullivan, Timmermann and White (1999) showed how much of their success came from searching across many rules. Banz (1981) discovered the size effect, and Horowitz, Loughran and Savin (2000) and Schwert (2003) found that it weakened after publication and depended on the smallest stocks. The data are monthly and daily U.S. market returns and size-sorted portfolios\index{portfolio sort} since 1926 from the Kenneth R. French Data Library\index{Kenneth French data library}, plus a simulated stock market, and the code is in the repository folder \texttt{ch02-data-traps/}. Survivorship is measured with a simulation because it requires the same backtest with and without the failed companies, and free sources do not let us take the failures out.
+\textbf{What you will explore:} how features of the data, such as missing failures, missing delisting losses, repeated searching and tiny stocks, change the return a backtest appears to earn. Each part of the lab draws on one study that showed how a feature of the data can change a result. Brown, Goetzmann, Ibbotson and Ross (1992) showed by simulation that dropping funds that disappear can create false persistence, and Shumway (1997) measured the missing delisting losses. Brock, Lakonishok and LeBaron (1992) made moving-average rules famous, and Sullivan, Timmermann and White (1999) showed how much of their success came from searching across many rules. Banz (1981) discovered the size effect, and Horowitz, Loughran and Savin (2000) and Schwert (2003) found that it weakened after publication and depended on the smallest stocks. The data are monthly and daily U.S. market returns and size-sorted portfolios\index{portfolio sort} since 1926 from the Kenneth R. French Data Library\index{Kenneth French data library}, plus a simulated stock market, and the code is in the repository folder \texttt{ch02-data-traps/}. Survivorship is measured with a simulation because it requires the same backtest with and without the failed companies, and free sources do not let us take the failures out.
 
 \textbf{Part A: Arithmetic versus geometric averages.} The lab computes both averages for Treasury bills, the market, and the largest and smallest 10\% of stocks, and compares each gap with the volatility-drag approximation $G \approx A - \sigma^2/2$\index{variance} of Section~\ref{sec:02-returns} (Lab Figure~\ref{ch:02}.1). Expect almost no gap for Treasury bills, about 2 percentage points a year for the market, and several points for the smallest stocks.
 
@@ -521,11 +521,11 @@ Leaving out only the delisting returns flips the strategy's loss into a gain, an
 
 \textbf{Part C: Look-ahead bias.} A rule holds stocks when the market closes above its 200-day \textbf{moving average}\index{moving average|textbf} and Treasury bills otherwise. The correct version decides at yesterday's close; the look-ahead version decides at today's close but is still credited with today's return (Lab Figure~\ref{ch:02}.3). The lab then tests windows from 20 to 300 days and compares the window chosen with hindsight over the whole period with one chosen each January from the results so far (Lab Figure~\ref{ch:02}.4). The gap measures the inflation from choosing settings after seeing the results.
 
-\textbf{Part D: Micro-caps, weighting and the size premium.} The lab measures the \term{size premium}\index{size premium|textbf}, the smallest tenth of stocks minus the largest tenth, with value and equal weights, each with and without the smallest tenth, before and after Banz's 1981 publication (Lab Figure~\ref{ch:02}.5). If the premium lives mainly in tiny stocks or disappeared after publication, the claim weakens.
+\textbf{Part D: Micro-caps, weighting and the size premium.} The lab measures the \term{size premium}\index{size premium|textbf}, the smallest tenth of stocks minus the largest tenth, with value and equal weights, each with and without the smallest tenth, before and after Banz's 1981 publication (Lab Figure~\ref{ch:02}.5). If the premium lives mainly in tiny stocks or disappeared after publication, you will see how much a backtest's answer depends on these choices.
 
 % [Draft note: figures and numbers for Parts A, C and D are generated from the Kenneth R. French data at the time of publication; the book prints those results. The Part B simulation is fixed by design and its results can be printed as they stand.]
 
-The lab ends by asking you to write one sentence for each problem, reach your own verdict on the scale of Section~\ref{sec:01-method}, and compare it with Section~\ref{sec:02-verdict}.
+The lab ends by asking you to write one sentence about each problem and to compare what you saw with the published evidence summarized in Section~\ref{sec:02-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:02-verdict}
@@ -567,7 +567,7 @@ Findings tested only on the data where they were found & \textbf{Partly} & The w
 
 A backtest built on free data can therefore be trusted only if it uses the right returns, includes the failures, uses only what was known at the time and checks its weighting. The checklist in Section~\ref{sec:02-checklist} turns these conditions into questions.
 
-\textbf{What would change the picture.} The claim would gain broader support if free sources published stock-level data that include delisted companies, and would weaken if the CRSP-based portfolio data were found to contain errors that change published results.
+\textbf{What would change the picture.} The picture would become more favorable to free data if free sources published stock-level data that include delisted companies, and less favorable if the CRSP-based portfolio data were found to contain errors that change published results.
 
 \section{What practitioners and investors can use: a data checklist}
 \label{sec:02-checklist}

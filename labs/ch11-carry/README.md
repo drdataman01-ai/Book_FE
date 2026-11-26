@@ -1,8 +1,8 @@
 # Lab 11: Do High-Interest Currencies Depreciate Enough to Offset Their Yield?
 
-Companion lab for **Chapter 11** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 11** of *Financial Engineering in Practice*.
 
-**Claim on trial (uncovered interest parity, UIP):** the currency of a high-interest country is expected to fall by its interest advantage, so borrowing low and lending high earns nothing on average.
+**What you will explore:** whether high-interest currencies fall enough to cancel their extra yield, as uncovered interest parity says they should.
 
 ## Quick start
 
@@ -56,7 +56,7 @@ All exchange rates are converted to dollars per unit of foreign currency. A U.S.
 - **Forward discount.** The lab uses interbank rate differentials instead of forward rates, which are not free. Covered interest parity held closely before 2008 and has shown small deviations since (Du, Tepper and Verdelhan 2018).
 - **Costs.** Bid–ask spreads on G10 currencies are a few basis points; the lab's cost table shows the effect.
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

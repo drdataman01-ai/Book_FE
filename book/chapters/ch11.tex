@@ -1,4 +1,4 @@
-% Chapter 6 -- Claim: High-Interest Currencies Depreciate Enough to Offset Their Yield
+% Chapter 6 -- Do High-Interest Currencies Depreciate Enough to Offset Their Yield?
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -24,7 +24,7 @@
 }{}
 \makeatother
 
-\chapter{Claim: High-Interest Currencies Depreciate Enough to Offset Their Yield}
+\chapter{Do High-Interest Currencies Depreciate Enough to Offset Their Yield?}
 \label{ch:11}
 \providecommand{\term}[1]{\emph{#1}}
 
@@ -160,7 +160,7 @@ The forward rate comes from covered interest parity. It lies below the spot rate
 
 The answer matters to central banks, companies and investors. If interest parity fails, a central bank that raises rates may see its currency rise rather than fall. A company that leaves its foreign revenue unhedged is taking a predictable bet. And an investor in the carry trade is being paid to bear crash risk, not collecting a free lunch. 
 
-The claim on trial\index{claims-on-trial method} is the textbook one: \textbf{high-interest currencies fall enough to cancel their extra yield, so the carry trade earns nothing on average.}
+The question of this chapter is the textbook one: \textbf{do high-interest currencies fall enough to cancel their extra yield, so that the carry trade earns nothing on average?}
 
 The lab in Section~\ref{sec:06-lab} repeats Fama's (1984) test for nine currencies against the dollar, using free exchange rates and interest rates from FRED. It then builds the carry portfolios of Lustig, Roussanov and Verdelhan (2011). The goal is to check whether uncovered interest parity holds today, and what the carry trade's returns and crashes look like.
 
@@ -354,7 +354,7 @@ UIP can be tested in two ways: one currency at a time, or across many currencies
 The test is a regression of how much each currency actually moved on how much its interest rate differed from the dollar's. If UIP holds, the slope of that regression should be 1. The shaded box explains why.
 
 \begin{technote}
-\textbf{Technical note: from expectations to a regression.} Testing UIP runs into a measurement problem. UIP is a claim about the depreciation that investors expect:
+\textbf{Technical note: from expectations to a regression.} Testing UIP runs into a measurement problem. UIP is a statement about the depreciation that investors expect:
 \begin{equation}
   E_t[\Delta s_{t+1}] = i_t - i^*_t,
   \label{eq:06-uip-expected}
@@ -369,7 +369,7 @@ where the forecast error $e_{t+1}$ cannot be predicted from anything known at ti
   \Delta s_{t+1} = a + b\,(i_t - i^*_t) + e_{t+1},
   \label{eq:06-fama}
 \end{equation}
-should therefore find $a = 0$ and $b = 1$. The regression turns an untestable statement about expectations into a testable claim about data.
+should therefore find $a = 0$ and $b = 1$. The regression turns an untestable statement about expectations into a testable statement about data.
 \end{technote}
 
 Fama (1984) also had an important question in mind. Because $i_t - i^*_t \approx f_t - s_t$ by covered interest parity, the regression asks whether the forward rate is an unbiased forecast of the future spot rate, which was a central question about market efficiency. If the answer is no, the forward discount must contain something besides expected depreciation, namely a risk premium. Fama used the estimated $b$ to show that this premium must be large, must vary over time, and must move opposite to expected depreciation.
@@ -452,14 +452,14 @@ Under UIP, $a = 0$ and $b = 1$, so the interest-rate differential cannot predict
 The three explanations leave different fingerprints. A risk premium should show up as losses in bad times for the world economy. Crash risk should show up as negative skewness, with losses concentrated in a few episodes. Slow adjustment should show up as a premium that shrinks over time and does not depend on market conditions.
 
 
-\section{The claim}
+\section{The question}
 \label{sec:06-claim}
 
 \begin{callout}
-\textbf{Claim (uncovered interest parity).} The currency of a high-interest country is expected to fall by its interest advantage, so borrowing in low-interest currencies and lending in high-interest ones earns nothing on average.
+\textbf{The question (uncovered interest parity).} Is the currency of a high-interest country expected to fall by its interest advantage, so that borrowing in low-interest currencies and lending in high-interest ones earns nothing on average?
 \end{callout}
 
-To test it, three points need to be settled:
+To answer it, three points need to be settled:
 
 \begin{itemize}
   \item \textbf{Over what period.} Over a few months, random exchange-rate moves swamp everything, so the test needs decades of data and many currencies.
@@ -478,10 +478,10 @@ To test it, three points need to be settled:
 
 \textbf{Peso problems.}\index{peso problem|textbf} The premium might pay for rare disasters not yet in the data, a \term{peso problem}. Burnside, Eichenbaum, Kleshchelski and Rebelo (2011) protected carry positions with currency options and still found a substantial return, so unseen disasters could explain the premium only if priced far above their likely cost.
 
-\section{Lab~\thechapter: Replicating Fama (1984) and Lustig, Roussanov and Verdelhan (2011)}
+\section{Lab~\thechapter: Uncovered Interest Parity and the Carry Trade}
 \label{sec:06-lab}
 
-\textbf{Claim on trial\index{claims-on-trial method}:} high-interest currencies fall enough to cancel their extra yield. The lab replicates the Fama (1984) regression and the carry portfolios of Lustig, Roussanov and Verdelhan (2011), using free monthly data from FRED\index{FRED}: the Federal Reserve's exchange rates for nine developed-market currencies and OECD three-month interbank rates for each country and the United States. The interest gap stands in for the forward discount, which covered interest parity makes nearly equal, and FRED's monthly averages smooth returns and make crashes look milder.
+\textbf{What you will explore:} whether high-interest currencies fall enough to cancel their extra yield. The lab runs the Fama (1984) regression and builds carry portfolios in the manner of Lustig, Roussanov and Verdelhan (2011), using free monthly data from FRED\index{FRED}: the Federal Reserve's exchange rates for nine developed-market currencies and OECD three-month interbank rates for each country and the United States. The interest gap stands in for the forward discount, which covered interest parity makes nearly equal, and FRED's monthly averages smooth returns and make crashes look milder.
 
 \textbf{Part A, Fama regressions.} For each currency and for all together, the monthly change in the log exchange rate regressed on last month's U.S.-minus-foreign interest gap, with Newey--West\index{standard error!Newey--West (HAC)} standard errors (Lab Figure~\ref{ch:11}.1).
 
@@ -492,7 +492,7 @@ To test it, three points need to be settled:
 \textbf{Part D, the investor's view.} Drawdowns\index{drawdown}, recovery times and carry returns against changes in the VIX (Lab Figures~\ref{ch:11}.4 and~\ref{ch:11}.5).
 
 \label{sec:06-stress}
-\textbf{Robustness checks.} Carry earns most of its return in long calm stretches and gives much back in a few months, so the start and end of the sample matter, and the period since 2008 matters most, because developed-country interest rates were close together for years. Major currencies have spreads\index{bid--ask spread} of a few basis points, so costs rarely eliminate the premium in developed markets. Traders call carry ``going up the stairs and down the elevator\index{skewness|textbf},'' and the lab's worst months should cluster in 1992, 1998, 2008 and August 2024. If carry is a risk premium\index{risk premium}, it should fall with stocks and with rises in the VIX. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:06-verdict}.
+\textbf{Robustness checks.} Carry earns most of its return in long calm stretches and gives much back in a few months, so the start and end of the sample matter, and the period since 2008 matters most, because developed-country interest rates were close together for years. Major currencies have spreads\index{bid--ask spread} of a few basis points, so costs rarely eliminate the premium in developed markets. Traders call carry ``going up the stairs and down the elevator\index{skewness|textbf},'' and the lab's worst months should cluster in 1992, 1998, 2008 and August 2024. If carry is a risk premium\index{risk premium}, it should fall with stocks and with rises in the VIX. When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:06-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:06-verdict}
@@ -532,7 +532,7 @@ Carry after 2008 & \textbf{Unclear} & Narrow interest gaps shrank the carry avai
 
 The premium looks like payment for risk, not an arbitrage: carry investors provide money and insurance to the rest of the world at the moments when both are scarce.
 
-\textbf{What would change the picture.} The claim would gain support if carry returns since 2008 had been consistently close to zero, as small interest gaps and crowded trades\index{crowding} might imply.
+\textbf{What would change the picture.} The picture would become more favorable to uncovered interest parity if carry returns since 2008 had been consistently close to zero, as small interest gaps and crowded trades\index{crowding} might imply.
 
 \section{What practitioners and investors can use}
 \label{sec:06-investors}

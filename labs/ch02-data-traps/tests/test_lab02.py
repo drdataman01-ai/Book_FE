@@ -134,7 +134,7 @@ def test_full_lab_runs_on_simulated_data():
         out = Path(tmp)
         assert len(list(out.glob("fig2_*.png"))) == 5
         report = (out / "lab02_report.md").read_text()
-        assert "Simulated data" in report and "Your verdict" in report
+        assert "Simulated data" in report and "Questions to think about" in report
         assert summary["simulated"] is True
         assert pd.read_csv(out / "table_size_premium.csv").shape[0] == 4
 

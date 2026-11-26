@@ -1,8 +1,8 @@
 # Lab 4: Momentum and Its Crashes
 
-Companion lab for **Chapter 4** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 4** of *Financial Engineering in Practice*.
 
-**Claim on trial:** past winners keep outperforming past losers.
+**What you will explore:** whether momentum has earned a premium throughout a century of U.S. data, when its crashes occur, and whether volatility scaling can make it holdable.
 
 ## Quick start
 
@@ -39,7 +39,7 @@ Simulated results are not evidence about markets; the report and figures are lab
 
 | Part | Question | Method | Output |
 |---|---|---|---|
-| A. Replication | Do winners keep winning? | Mom from 1927 by decade, before, during and after the Jegadeesh–Titman (1965–1989) sample; average returns of the ten momentum deciles | Lab Figures 4.1–4.2 |
+| A. The momentum premium | Do winners keep winning? | Mom from 1927 by decade, before, during and after the Jegadeesh–Titman (1965–1989) sample; average returns of the ten momentum deciles | Lab Figures 4.1–4.2 |
 | B. Crashes | When does momentum lose? | Worst months; regression of Mom on the market with bear-market and bear-market-rebound interactions (Daniel and Moskowitz 2016), Newey–West t | Lab Figure 4.3 |
 | C. Volatility scaling | Can the crashes be managed? | Weight = 12% / annualized volatility of daily Mom returns over the prior 126 trading days (Barroso and Santa-Clara 2015), compared with raw Mom at the same average volatility | Lab Figure 4.4 |
 | D. Time-series momentum | Does trend following work? | Long or short each of 10 industry portfolios and the market by the sign of its past 12-month excess return, each scaled to 40% volatility (Moskowitz, Ooi and Pedersen 2012, equity-only) | Lab Figure 4.5 |
@@ -51,7 +51,7 @@ Simulated results are not evidence about markets; the report and figures are lab
 - **Volatility forecast** uses daily data up to the end of the previous month only; a test checks that changing later data leaves earlier weights unchanged. Weights are uncapped by default (`--weight-cap` to limit leverage).
 - **Time-series momentum** here uses only U.S. equity portfolios, which are highly correlated; Moskowitz, Ooi and Pedersen's 58 futures span four asset classes. Treat Part D as an illustration of the method, not a replication.
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

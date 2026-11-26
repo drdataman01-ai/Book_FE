@@ -1,6 +1,6 @@
 % Chapter 21 infographic -- use right after \label{ch:21}: \input{chapters/ch20-infographic}
 \ifcsname FEinfoLoaded\endcsname\else\input{common/fe-infographic}\fi
-\begin{FEinfographic}{ch:21}{time-series foundation models, used zero-shot, forecast financial and economic series better than classical models}
+\begin{FEinfographic}{ch:21}{can time-series foundation models, used zero-shot, forecast financial and economic series better than classical models?}
 
 \infopanel{1}{What to know about foundation models}{%
 \infocards
@@ -8,7 +8,7 @@
   {Strong benchmarks}{Beating a naive forecast is easy; beating AR and HAR is the real test.}
   {Contamination}{Only data published after a model's training cutoff give a clean test.}}
 
-\infopanel{2}{Evidence scoreboard}{%
+\infopanel{2}{Where the evidence stands: what published studies found}{%
 \begin{infoscore}
 \scoreitem{p}{Partly}{The developers' benchmarks}
 \scoreitem{n}{No}{Daily stock returns}
@@ -25,14 +25,14 @@
   {$-1.37\%$}{zero-shot out-of-sample $R^2$ on daily returns}
   {\$304.4 m}{Zillow's write-down on homes bought by its model}}
 
-\infopanel{4}{Lab: replicating the zero-shot claim on six series}{%
+\infopanel{4}{Lab: Zero-shot forecasts on six series}{%
 \begin{infolab}
 \item \textbf{A.} Each model's error relative to AR, and $R^2$ against the historical mean.
 \item \textbf{B.} Diebold--Mariano tests and cumulative squared-error plots.
 \item \textbf{C.} Before and after the training cutoff, with a deliberately contaminated model. \textbf{D.} Interval coverage.
 \end{infolab}}
 
-\infoverdict
+\infosummary
   {Zero-shot foundation models beat naive forecasts easily and sometimes match well-specified classical models, but they rarely beat them by a meaningful margin. The evidence is new and thin.}
   {Benchmark against the historical mean, AR and HAR, treat any test before the training cutoff as possibly contaminated, and use a foundation model as a second opinion.}
 \end{FEinfographic}

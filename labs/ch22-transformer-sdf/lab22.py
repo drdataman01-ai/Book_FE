@@ -1,15 +1,15 @@
 """Lab 22: Does Attention Across Assets Price Returns Better?
 
-Chapter 22 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 22 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "Attention across assets improves an SDF's out-of-sample pricing and
-  Sharpe ratio."
+WHAT YOU WILL EXPLORE
+  Whether attention across assets improves an SDF's out-of-sample pricing
+  and Sharpe ratio.
 
 WHAT THE LAB DOES
   The original study (Kelly, Kuznetsov, Malamud and Xu 2025) uses stock-level
   characteristics, which need paid CRSP and Compustat data. This lab
-  replicates the mechanism one level up: its assets are the 153 U.S. factors of
+  illustrates the mechanism one level up: its assets are the 153 U.S. factors of
   Jensen, Kelly and Pedersen (JKP), each described every month by five numbers
   known at the end of the month (past 1-, 3- and 12-month returns, 12-month
   volatility, 36-month average return). Every model is re-estimated each
@@ -450,7 +450,7 @@ def write_report(out, p, sc, cst, rob, att, tim, torch_ok, sim, split, args):
     md = ["# Lab 22 results: Does Attention Across Assets Price Returns Better?", ""]
     if sim:
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
-    md += ["**Claim on trial:** attention across assets improves an SDF's out-of-sample pricing and Sharpe ratio.", "",
+    md += ["**What you will explore:** whether attention across assets improves an SDF's out-of-sample pricing and Sharpe ratio.", "",
            f"Assets: {p['R'].shape[1]} JKP factors, {p['dates'][0]} to {p['dates'][-1]}; window {args.window} months.",
            "", "## Parts A to C and E: models and scores", "",
            _md(sc["table"], {c: _num(".2f") for c in sc["table"].columns if "sharpe" in c} |
@@ -473,7 +473,7 @@ def write_report(out, p, sc, cst, rob, att, tim, torch_ok, sim, split, args):
            f"low volatility) {tim['corr']:.2f}; R² {tim['r2']:.2f}; alpha t after controlling for it "
            f"{tim['alpha_t']:.2f}; the rule's own Sharpe ratio {tim['timing_sharpe']:.2f}.", "",
            "![Lab Figure 22.3](fig22_3_attention.png)", ""]
-    md += ["## Your verdict", "",
+    md += ["## Questions to think about", "",
            "1. Does attention add a significant alpha over the best model without attention, out of sample and after "
            f"{split[:4]}?",
            "2. Does the advantage survive the placebo, costs and a 120-month window?",

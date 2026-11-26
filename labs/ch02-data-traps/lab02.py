@@ -1,10 +1,10 @@
 """Lab 2: Four Data Traps.
 
-Chapter 2 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 2 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "The data I am testing on represents what an investor could actually
-  have done."
+WHAT YOU WILL EXPLORE
+  How the way returns are averaged, missing failures, look-ahead and tiny
+  stocks change the return a backtest appears to earn.
 
 WHAT THE LAB DOES
   Part A  Averages. Arithmetic versus geometric returns for the market and
@@ -513,7 +513,7 @@ def write_report(out: Path, a, b, c, d, simulated: bool, args):
     if simulated:
         md += ["> **Simulated data.** Parts A, C and D used simulated returns, so their numbers test the code "
                "only. Run without `--source sim` for real results. (Part B is always a simulation, by design.)", ""]
-    md += ["**Claim on trial:** the data I am testing on represents what an investor could actually have done.", ""]
+    md += ["**What you will explore:** how the way returns are averaged, missing failures, look-ahead and tiny stocks change the return a backtest appears to earn.", ""]
 
     md += ["## Part A: Arithmetic versus geometric averages", "",
            _md(a.rename(columns={"series": "Series", "arithmetic": "Arithmetic", "geometric": "Geometric",
@@ -559,9 +559,9 @@ def write_report(out: Path, a, b, c, d, simulated: bool, args):
            _md(t[cols].rename(columns={"weighting": "Weighting", "comparison": "Comparison"}), fmt), "",
            "![Lab Figure 2.5](fig2_5_size_deciles.png)", ""]
 
-    md += ["## Your verdict", "",
+    md += ["## Questions to think about", "",
            "For each trap, write one sentence: how much did it change the result, and in which direction? "
-           "Then answer the claim: does a typical free dataset represent what an investor could have done? "
+           "Then answer the question: does a typical free dataset represent what an investor could have done? "
            "What would you check first in someone else's backtest?", ""]
     (out / "lab02_report.md").write_text("\n".join(md))
 

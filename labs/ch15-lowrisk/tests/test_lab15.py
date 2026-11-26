@@ -98,7 +98,7 @@ def test_full_lab_runs_on_simulated_data():
         s = lab15.main(["--source", "sim", "--out", tmp])
         assert len(list(Path(tmp).glob("fig15_*.png"))) == 5
         rep = (Path(tmp) / "lab15_report.md").read_text()
-        assert "Simulated data" in rep and "Your verdict" in rep
+        assert "Simulated data" in rep and "Questions to think about" in rep
         assert s["sml_slopes"]["beta_vw"] < s["market_premium"]  # flat SML built into the simulation
         bab = [r for r in s["long_short"] if r["construction"].startswith("BAB") and r["sort"] == "Market beta"][0]
         assert abs(bab["capm_beta_mkt"]) < 0.1 and bab["capm_alpha_annual"] > 0

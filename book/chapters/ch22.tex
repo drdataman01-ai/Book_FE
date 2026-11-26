@@ -1,4 +1,4 @@
-% Chapter 22 -- Claim: Transformers Price Stocks Better Than Factor Models
+% Chapter 22 -- Can Transformers Price Stocks Better Than Factor Models?
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -22,7 +22,7 @@
 }{}
 \makeatother
 
-\chapter{Claim: Transformers Price Stocks Better Than Factor Models}
+\chapter{Can Transformers Price Stocks Better Than Factor Models?}
 \label{ch:22}
 \providecommand{\term}[1]{\emph{#1}}
 
@@ -34,9 +34,9 @@ The newest step comes from the technology behind large language models. A \textb
 
 The stakes are large if the result holds. It would mean that the price of a stock depends on information about other stocks in ways that factor models cannot capture. It would also mean that the methods behind chatbots can improve one of the central models of finance. 
 
-The claim on trial\index{claims-on-trial method} is: \textbf{an asset-pricing model that places a transformer inside the stochastic discount factor prices the cross-section with much smaller errors than earlier models, and its tangency portfolio earns a higher Sharpe ratio out of sample.}
+The question of this chapter is: \textbf{does an asset-pricing model that places a transformer inside the stochastic discount factor price the cross-section with much smaller errors than earlier models, and does its tangency portfolio earn a higher Sharpe ratio out of sample?}
 
-The lab in Section~\ref{sec:22-lab} replicates the linear-transformer pricing model of Kelly et al.\ (2025) on free anomaly portfolios from the Jensen--Kelly--Pedersen data. It compares the model with the shrinkage baseline of Kozak, Nagel and Santosh (2020). The goal is to check whether attention across assets really prices returns better than a well-built factor model. The original study uses stock-level data from paid databases, so the lab replicates the mechanism one level up, with portfolios as the assets.
+The lab in Section~\ref{sec:22-lab} applies the linear-transformer pricing model of Kelly et al.\ (2025) to free anomaly portfolios from the Jensen--Kelly--Pedersen data. It compares the model with the shrinkage baseline of Kozak, Nagel and Santosh (2020). The goal is to see whether attention across assets really prices returns better than a well-built factor model. The original study uses stock-level data from paid databases, so the lab illustrates the mechanism one level up, with portfolios as the assets.
 
 
 \section{Foundations}
@@ -130,16 +130,16 @@ where $X_t$ stacks all stocks' characteristics in rows, $W$ is a matrix of atten
 
 \textbf{More parameters than months.} The full transformer has around a million parameters, estimated in rolling windows of 60 months. Classical statistics would expect such a model to overfit. Chapter~\ref{ch:20} described the ``virtue of complexity'' argument, in which very large models with shrinkage can still forecast well. It also described Nagel's (2025) warning that such models may simply reproduce a simple strategy. Kelly, Kuznetsov, Malamud, Xu and Zhang (2024), in ``Large and Deep Factor Models,'' studied deep networks trained to build an SDF. They showed that such a network splits into two parts. One part discovers useful nonlinear characteristics. The other part prices them and behaves like a linear factor model with ridge shrinkage. Their analysis gives a theoretical reason why very large networks need not overfit, and a way to see what they have learned.
 
-\section{The claim}
+\section{The question}
 \label{sec:22-claim}
 
-Stated so that it can fail:
+Stated precisely:
 
 \begin{callout}
-\textbf{An asset-pricing model that uses a transformer to share information across stocks prices the cross-section of U.S. stock returns with smaller out-of-sample pricing errors than factor models and earlier machine-learning models, and the portfolio it implies earns a higher out-of-sample Sharpe ratio, among large stocks and after trading costs.}
+\textbf{Does an asset-pricing model that uses a transformer to share information across stocks price the cross-section of U.S. stock returns with smaller out-of-sample pricing errors than factor models and earlier machine-learning models, and does the portfolio it implies earn a higher out-of-sample Sharpe ratio, among large stocks and after trading costs?}
 \end{callout}
 
-The \textbf{statistical form} asks for smaller pricing errors and a higher Sharpe ratio before costs; the \textbf{economic form} requires the advantage to survive among stocks an investor can trade in size and after costs. The tests are whether the gains appear \textbf{out of sample}, including after the early decades; whether the transformer beats both simple factor models and strong machine-learning \textbf{benchmarks}; whether the gains hold among mega and large stocks (\textbf{size}); and how much remains after \textbf{costs}.
+The \textbf{statistical form} asks for smaller pricing errors and a higher Sharpe ratio before costs; the \textbf{economic form} requires the advantage to survive among stocks an investor can trade in size and after costs. The evidence turns on whether the gains appear \textbf{out of sample}, including after the early decades; whether the transformer beats both simple factor models and strong machine-learning \textbf{benchmarks}; whether the gains hold among mega and large stocks (\textbf{size}); and how much remains after \textbf{costs}.
 
 \section{The original evidence}
 \label{sec:22-evidence}
@@ -196,10 +196,10 @@ The transformer had the highest Sharpe ratio and the smallest pricing error, abo
   \item \textbf{Replication.} The result comes from one team's working paper and has not been reproduced independently. Every model in Table~\ref{tab:22-aipm} reports a Sharpe ratio far above what investors have earned, a reminder that these returns are hypothetical and frictionless.
 \end{itemize}
 
-\section{Lab~\thechapter: Replicating the linear-transformer SDF on anomaly portfolios}
+\section{Lab~\thechapter: A Linear-Transformer SDF on Anomaly Portfolios}
 \label{sec:22-lab}
 
-\textbf{Claim on trial\index{claims-on-trial method}:} attention across assets improves an SDF's out-of-sample pricing and Sharpe ratio. The lab replicates Kelly, Kuznetsov, Malamud and Xu (2025) against the baseline of Kozak, Nagel and Santosh (2020). Stock-level characteristics require paid CRSP and Compustat data, so the lab replicates the mechanism one level up: its assets are the 153 free monthly JKP factors of Jensen, Kelly and Pedersen, each described each month by its past 1-, 3- and 12-month returns, its 12-month volatility and its 36-month average return. Every model is re-estimated monthly on the previous 60 months and judged on the next month; Part D needs PyTorch, and the other parts run on a laptop in minutes.
+\textbf{What you will explore:} whether attention across assets improves an SDF's out-of-sample pricing and Sharpe ratio. The lab compares the model of Kelly, Kuznetsov, Malamud and Xu (2025) with the baseline of Kozak, Nagel and Santosh (2020). Stock-level characteristics require paid CRSP and Compustat data, so the lab illustrates the mechanism one level up: its assets are the 153 free monthly JKP factors of Jensen, Kelly and Pedersen, each described each month by its past 1-, 3- and 12-month returns, its 12-month volatility and its 36-month average return. Every model is re-estimated monthly on the previous 60 months and judged on the next month; Part D needs PyTorch, and the other parts run on a laptop in minutes.
 
 \begin{itemize}
   \item \textbf{Part A, simple baselines.} The SDF from the Fama--French five factors plus momentum, and the shrinkage SDF of Equation~\eqref{eq:22-kns} on all 153 factors.
@@ -212,7 +212,7 @@ The transformer had the highest Sharpe ratio and the smallest pricing error, abo
 % [Draft note: the figures and numbers are generated by running the lab on data at the time of publication. The book prints the results; the text above does not anticipate them.]
 
 \label{sec:22-stress}
-\textbf{Robustness checks.} As a placebo, the lab shuffles characteristics across factors each month; if attention still adds alpha, it is fitting noise. Part E is repeated with factors built from large stocks only and with an assumed cost for each change in factor weights. Finally, following Nagel's (2025) test in Chapter~\ref{ch:20}, the lab compares the transformer with a simple rule that overweights factors with high recent returns and low volatility. If the rule explains the transformer's returns, attention has rediscovered a simple strategy. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:22-verdict}.
+\textbf{Robustness checks.} As a placebo, the lab shuffles characteristics across factors each month; if attention still adds alpha, it is fitting noise. Part E is repeated with factors built from large stocks only and with an assumed cost for each change in factor weights. Finally, following Nagel's (2025) test in Chapter~\ref{ch:20}, the lab compares the transformer with a simple rule that overweights factors with high recent returns and low volatility. If the rule explains the transformer's returns, attention has rediscovered a simple strategy. When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:22-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:22-verdict}
@@ -257,7 +257,7 @@ Independent replication & \textbf{Untested} & A working paper by a single team. 
 \section{What practitioners and investors can use}
 \label{sec:22-investors}
 
-Read Sharpe ratios above three as research results, not as returns: they are hypothetical, frictionless and long--short, include hard-to-trade stocks, and no fund has delivered them for long. The lasting lesson is about information. Stocks are not independent, and an investor can use that idea without a transformer, for example by watching a company's suppliers, customers and competitors. Treat ``AI-powered'' as a claim to test, and ask a manager for the Sharpe ratio after costs among stocks the fund can trade, and how the model compares with a simple factor-timing rule.
+Read Sharpe ratios above three as research results, not as returns: they are hypothetical, frictionless and long--short, include hard-to-trade stocks, and no fund has delivered them for long. The lasting lesson is about information. Stocks are not independent, and an investor can use that idea without a transformer, for example by watching a company's suppliers, customers and competitors. Treat ``AI-powered'' as a promise to check, and ask a manager for the Sharpe ratio after costs among stocks the fund can trade, and how the model compares with a simple factor-timing rule.
 
 \begin{callout}
 \textbf{What Failed: the quant quake of August 2007.} In the first two weeks of August 2007, many quantitative equity funds suffered large, sudden losses, followed by a partial rebound. They held long--short portfolios built from similar characteristics such as value, momentum and quality, and Khandani and Lo (2011) traced the episode to the rapid sale of one or more large portfolios. The models were not wrong about average returns but about risk: funds that thought they held different strategies held nearly the same portfolio. A model that learns from the same public characteristics as everyone else may end up in the same crowded trades.

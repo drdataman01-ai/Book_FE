@@ -9,7 +9,7 @@
 }{}
 \makeatother
 
-\chapter{Claim: Valuations Predict the Equity Premium Out of Sample}
+\chapter{Can Valuations Predict the Equity Premium Out of Sample?}
 \label{ch:06}
 \providecommand{\term}[1]{\emph{#1}}
 
@@ -17,16 +17,16 @@ Every year, market strategists on television tell viewers whether stocks look ch
 
 In the 1980s the view that stock returns are unpredictable gave way to a new consensus. When prices are high relative to dividends, either dividends must grow quickly or future returns must be low, and Fama and French (1988) and Campbell and Shiller (1988) asked which actually happens. They found that the \term{dividend--price ratio}, which is the dividends that companies pay in a year divided by their share prices and is a simple measure of how cheap the market is, predicts the stock market's return over the following years, and later papers added interest rates, yield spreads (the gaps between the interest rates on different kinds of bonds), inflation, corporate issuance (how many new shares companies sell) and other variables. By the early 2000s predictability of the equity premium, the extra return of stocks over safe Treasury bills (Chapter~\ref{ch:01}), was widely taught as a fact, and it had reshaped asset-pricing theory: if expected returns vary over time, then risk premiums, not only cash flows, move prices.
 
-Almost all of that evidence came from regressions fitted to the whole history. Goyal and Welch (2008) asked a sharper question: would an investor who had used these variables in real time, knowing only what was known at each date, have forecast better than someone who simply assumed the average past return? For most predictors the answer was no, and several did worse than the \term{historical mean}. In other words, a forecaster who ignored all the clever variables and simply expected stocks to do as well as they had on average would usually have been more accurate. Campbell and Thompson (2008) replied that small, sensible restrictions, such as ruling out negative forecasts of the premium, recover a modest but useful predictability. The debate turned on method as much as on data, and it established the out-of-sample test as the standard for every forecasting claim.
+Almost all of that evidence came from regressions fitted to the whole history. Goyal and Welch (2008) asked a sharper question: would an investor who had used these variables in real time, knowing only what was known at each date, have forecast better than someone who simply assumed the average past return? For most predictors the answer was no, and several did worse than the \term{historical mean}. In other words, a forecaster who ignored all the clever variables and simply expected stocks to do as well as they had on average would usually have been more accurate. Campbell and Thompson (2008) replied that small, sensible restrictions, such as ruling out negative forecasts of the premium, recover a modest but useful predictability. The debate turned on method as much as on data, and it established the out-of-sample test as the standard for every forecasting result.
 
-The implications reach investors and researchers. An investor who times the market on valuation ratios is betting that in-sample predictability survives out of sample; a pension fund that sets contributions on an estimate of the equity premium needs to know which estimate is reliable; and every later claim in this book about forecasting, from volatility to machine learning, is judged with the tools this chapter builds. 
+The implications reach investors and researchers. An investor who times the market on valuation ratios is betting that in-sample predictability survives out of sample; a pension fund that sets contributions on an estimate of the equity premium needs to know which estimate is reliable; and every later question in this book about forecasting, from volatility to machine learning, is judged with the tools this chapter builds. 
 
-The claim on trial\index{claims-on-trial method} is: \textbf{a predictor that is statistically significant in sample will forecast the equity premium better than the historical mean out of sample, and well enough to be worth using.}
+The question of this chapter is: \textbf{will a predictor that is statistically significant in sample forecast the equity premium better than the historical mean out of sample, and well enough to be worth using?}
 
-The lab in Section~\ref{sec:09-lab} replicates the horse race of Goyal and Welch (2008) with their free, updated predictor file, applies the sign restrictions of Campbell and Thompson (2008), and uses White's Reality Check to account for the number of predictors tried, in order to check whether any predictor beats the historical mean when it is used as an investor would have used it.
+The lab in Section~\ref{sec:09-lab} runs the horse race of Goyal and Welch (2008) on their free, updated predictor file, applies the sign restrictions of Campbell and Thompson (2008), and uses White's Reality Check to account for the number of predictors tried, in order to see whether any predictor beats the historical mean when it is used as an investor would have used it.
 
 
-In the lab you will replicate Goyal and Welch's study with updated data, evaluating 14 classic predictors walk-forward from 1965 to the present, and apply White's Reality Check to a universe of predictive rules.
+In the lab you will follow Goyal and Welch's approach with updated data, evaluating 14 classic predictors walk-forward from 1965 to the present, and apply White's Reality Check to a universe of predictive rules.
 
 
 \section{Foundations}
@@ -164,7 +164,7 @@ Macroeconomic Variables & Survey Consensus / Last Value & Professional surveys a
 \end{longtable}
 \endgroup
 
-A random walk forecast simply says that tomorrow's value will equal today's. It sounds naive, but it is remarkably hard to beat. Meese and Rogoff (1983) found that the economic models of exchange rates used by professionals could not forecast better than this naive guess, a result that has proved durable. The lesson for any forecasting claim is to ask first what the simplest sensible forecast would have achieved.
+A random walk forecast simply says that tomorrow's value will equal today's. It sounds naive, but it is remarkably hard to beat. Meese and Rogoff (1983) found that the economic models of exchange rates used by professionals could not forecast better than this naive guess, a result that has proved durable. The lesson for any forecast is to ask first what the simplest sensible forecast would have achieved.
 
 \section{Measuring Forecast Accuracy: Diebold--Mariano and Clark--West}
 \label{sec:09-accuracy}
@@ -242,10 +242,10 @@ The dividend-price ratio exhibited strong in-sample predictive performance throu
 \end{callout}
 
 
-\section{Lab~\thechapter: Replicating Goyal and Welch (2008) and White's Reality Check}
+\section{Lab~\thechapter: Out-of-Sample Forecasts of the Equity Premium}
 \label{sec:09-lab}
 
-\textbf{Claim on trial:} in-sample significant predictors beat the historical mean out of sample. The lab replicates Goyal and Welch (2008), Campbell and Thompson (2008) and White (2000), using Goyal and Welch's updated dataset (\texttt{PredictorData.xlsx}), free from Amit Goyal's website. It contains 14 macro predictors: valuation ratios such as the dividend--price and \term{earnings--price ratios}; interest-rate variables such as the Treasury-bill rate and the \term{term spread}, the gap between long- and short-term government yields; the \term{default yield spread} between Baa and Aaa corporate bonds; and stock variance, \term{net equity expansion} and inflation. The code is in the repository folder \texttt{ch06-out-of-sample/}.
+\textbf{What you will explore:} whether predictors that are significant in sample beat the historical mean out of sample. The lab draws on Goyal and Welch (2008), Campbell and Thompson (2008) and White (2000), using Goyal and Welch's updated dataset (\texttt{PredictorData.xlsx}), free from Amit Goyal's website. It contains 14 macro predictors: valuation ratios such as the dividend--price and \term{earnings--price ratios}; interest-rate variables such as the Treasury-bill rate and the \term{term spread}, the gap between long- and short-term government yields; the \term{default yield spread} between Baa and Aaa corporate bonds; and stock variance, \term{net equity expansion} and inflation. The code is in the repository folder \texttt{ch06-out-of-sample/}.
 
 \begin{itemize}
   \item \textbf{Part A: In-sample regressions.} Univariate regressions for all 14 predictors, with the slope, White $t$-statistic and $R^2$.
@@ -255,7 +255,7 @@ The dividend-price ratio exhibited strong in-sample predictive performance throu
   \item \textbf{Part E: White's Reality Check.} The search bias in a simulated universe of technical trading rules.
 \end{itemize}
 
-The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:09-verdict}.
+When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:09-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:09-verdict}
@@ -297,7 +297,7 @@ Published return patterns in general & \textbf{Weaker} & Returns fall by about a
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 \endgroup
 
-\textbf{What would change the picture.} The claim would gain support if a predictor chosen in advance kept beating the historical mean after publication, by enough to raise an investor's certainty-equivalent return after costs, and would weaken further if the modest gains from restrictions and combinations disappeared in new data.
+\textbf{What would change the picture.} The picture would become more favorable to prediction if a predictor chosen in advance kept beating the historical mean after publication, by enough to raise an investor's certainty-equivalent return after costs, and would weaken further if the modest gains from restrictions and combinations disappeared in new data.
 
 \section{What practitioners and investors can use}
 \label{sec:09-investors}

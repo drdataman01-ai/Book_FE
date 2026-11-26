@@ -110,7 +110,7 @@ def test_full_lab_runs_on_simulated_data():
         s = lab07.main(["--source", "sim", "--out", tmp])
         assert len(list(Path(tmp).glob("fig7_*.png"))) == 5
         rep = (Path(tmp) / "lab07_report.md").read_text()
-        assert "Simulated data" in rep and "Your verdict" in rep
+        assert "Simulated data" in rep and "Questions to think about" in rep
         assert s["acf_abs_lag1"] > 0.1 and abs(s["acf_r_lag1"]) < 0.1
         ev = {(e["horizon"], e["model"]): e for e in s["evaluation"]}
         assert ev[(1, "GARCH")]["qlike_gain_vs_rw"] > 0  # GARCH beats the random walk on GARCH data

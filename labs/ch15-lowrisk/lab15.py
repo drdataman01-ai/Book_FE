@@ -1,10 +1,10 @@
 """Lab 15: The Low-Risk Anomaly.
 
-Chapter 15 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 15 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "Low-beta and low-volatility stocks earn higher risk-adjusted returns than
-   the CAPM predicts: the security market line is too flat."
+WHAT YOU WILL EXPLORE
+  Whether low-risk stocks earn more than the CAPM predicts, and how much the
+  answer depends on how the portfolios are built.
 
 WHAT THE LAB DOES
   Part A  The security market line: average excess returns, realized betas
@@ -519,8 +519,7 @@ def write_report(out, d, a, b, c, dd, sim):
     md = ["# Lab 15 results: The Low-Risk Anomaly", ""]
     if sim:
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
-    md += ["**Claim on trial:** low-beta and low-volatility stocks earn higher risk-adjusted returns than the CAPM "
-           "predicts.", "", f"Sample: {a['period']}. Market premium {a['market_premium']:+.1%} a year.", "",
+    md += ["**What you will explore:** whether low-risk stocks earn more than the CAPM predicts, and how much the answer depends on how the portfolios are built.", "", f"Sample: {a['period']}. Market premium {a['market_premium']:+.1%} a year.", "",
            "## Part A: The security market line", ""]
     for (key, w), v in a["sorts"].items():
         md += [f"**Sorted on {SORTS[key].lower()}, {'value' if w == 'vw' else 'equal'}-weighted** · slope of average "
@@ -569,7 +568,7 @@ def write_report(out, d, a, b, c, dd, sim):
                {"Mean excess": PCT1, "Volatility": _num(".1%"), "Sharpe": F2, "Beta": F2, "CAPM α": PCT1, "t": T2,
                 "Max drawdown": _num(".0%"), "Tracking error": _num(".1%"), "Information ratio": _num("+.2f"),
                 "Years behind market": _num(".0%")}), "",
-           "![Lab Figure 15.5](fig15_5_investor.png)", "", "## Your verdict", "",
+           "![Lab Figure 15.5](fig15_5_investor.png)", "", "## Questions to think about", "",
            "1. Is the security market line flatter than the CAPM predicts? Does the answer depend on beta or volatility "
            "sorts, and on weighting?",
            "2. Do the low-risk alphas survive the four-factor model, recent decades and interest-rate controls?",

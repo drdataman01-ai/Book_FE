@@ -1,10 +1,9 @@
 """Lab 21: Do Foundation Models Beat Classical Forecasts?
 
-Chapter 21 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 21 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "Pretrained time-series foundation models, used zero-shot, forecast
-   financial and economic series better than classical models."
+WHAT YOU WILL EXPLORE
+  How foundation models, used zero-shot, compare with classical forecasts.
 
 WHAT THE LAB DOES
   Part A  One-month-ahead forecasts from every month since 2000 for six
@@ -289,8 +288,7 @@ def write_report(out, a, c, sim, notes, args, fm_names):
         md += ["Notes: " + "; ".join(notes), ""]
     fmt = {"mse": _num(".3g"), f"mse_ratio_vs_{BENCH}": _num(".3f"), "r2_vs_mean": _num("+.3f"),
            f"dm_t_vs_{BENCH}": _num("+.2f"), f"win_rate_vs_{BENCH}": _num(".0%"), "coverage_80": _num(".0%")}
-    md += ["**Claim on trial:** pretrained time-series foundation models, used zero-shot, forecast financial and "
-           "economic series better than classical models.", "",
+    md += ["**What you will explore:** how foundation models, used zero-shot, compare with classical forecasts.", "",
            f"## Parts A, B and D: one month ahead, from {args.eval_start}", "",
            "MSE ratio below 1 and positive DM t: better than AR (BIC). R² against the historical mean. Coverage: share "
            "of outcomes inside the model's 80% interval.", "", _md(a["table"], fmt), "",
@@ -301,7 +299,7 @@ def write_report(out, a, c, sim, notes, args, fm_names):
            "with the real models'.", ""]
     if not c.empty:
         md += [_md(c, {f"mse_ratio_vs_{BENCH}": _num(".3f")}), "", "![Lab Figure 21.3](fig21_3_contamination.png)", ""]
-    md += ["## Your verdict", "", "1. Does any foundation model beat AR or HAR on a series by a significant margin?",
+    md += ["## Questions to think about", "", "1. Does any foundation model beat AR or HAR on a series by a significant margin?",
            "2. Do the gains hold after the cutoff, when the model cannot have seen the data?",
            "3. Are the foundation models' intervals better calibrated than the classical ones?", ""]
     (out / "lab21_report.md").write_text("\n".join(md))

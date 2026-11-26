@@ -98,7 +98,7 @@ def test_full_lab_runs_on_simulated_data():
         s = lab09.main(["--source", "sim", "--fast", "--out", tmp])
         assert len(list(Path(tmp).glob("fig9_*.png"))) == 5
         rep = (Path(tmp) / "lab09_report.md").read_text()
-        assert "Simulated data" in rep and "Your verdict" in rep
+        assert "Simulated data" in rep and "Questions to think about" in rep
         m = {r["rule"]: r for r in s["main"]}
         assert m["Mean-variance (sample)"]["turnover_monthly"] > 5 * m["1/N"]["turnover_monthly"]
 

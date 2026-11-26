@@ -1,5 +1,4 @@
-"""fintest: the analysis module for *Financial Engineering and the Evidence:
-Active Learning by Verifying Famous Claims*.
+"""fintest: the analysis module for *Financial Engineering in Practice*.
 
 This copy contains the parts Lab 1 uses:
 

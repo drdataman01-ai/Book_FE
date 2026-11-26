@@ -1,8 +1,8 @@
 # Lab 3: Do Size and Value Explain Returns That Beta Cannot?
 
-Companion lab for **Chapter 3** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 3** of *Financial Engineering in Practice*.
 
-**Claim on trial:** additional factors improve our ability to explain differences in portfolio returns, but testing many candidate factors can produce false discoveries.
+**What you will explore:** how much additional factors add to the CAPM in explaining differences in portfolio returns, and how testing many candidate factors can produce false discoveries.
 
 ## Quick start
 
@@ -60,7 +60,7 @@ Simulated results are not evidence about markets; the report and figures are lab
 
 ## Outputs (`report/`)
 
-- `lab03_report.md`: all results, with a "Your verdict" prompt
+- `lab03_report.md`: all results, with questions to think about
 - `fig3_1_alpha_grid.png` to `fig3_5_premiums.png`
 - `table_*.csv`: regressions for each model, false discoveries, premiums, break-even costs
 - `summary.json`: headline numbers for grading or automated checks
@@ -80,7 +80,7 @@ ch03-multifactor-models/
 
 Run the tests with `python tests/test_lab03.py` (or `pytest tests/`).
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

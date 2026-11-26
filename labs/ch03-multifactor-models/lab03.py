@@ -1,13 +1,14 @@
 """Lab 3: Do Size and Value Explain Returns That Beta Cannot?
 
-Chapter 3 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 3 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "Additional factors improve our ability to explain differences in portfolio
-  returns, but testing many candidate factors can produce false discoveries."
+WHAT YOU WILL EXPLORE
+  How much additional factors add to the CAPM in explaining differences in
+  portfolio returns, and how testing many candidate factors can produce
+  false discoveries.
 
 WHAT THE LAB DOES
-  Part A  Replication of Fama and French (1993). The CAPM and the three-factor
+  Part A  The regressions of Fama and French (1993). The CAPM and the three-factor
           model on the 25 portfolios formed on size and book-to-market: alphas,
           loadings, R-squared and the GRS test.
   Part B  A multiple-testing experiment after Harvey, Liu and Zhu (2016).
@@ -373,10 +374,9 @@ def write_report(out: Path, a, b, c, sim: bool):
     md = ["# Lab 3 results: Do Size and Value Explain Returns That Beta Cannot?", ""]
     if sim:
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
-    md += ["**Claim on trial:** additional factors improve our ability to explain differences in portfolio returns, "
-           "but testing many candidate factors can produce false discoveries.", "",
+    md += ["**What you will explore:** how much additional factors add to the CAPM in explaining differences in portfolio returns, and how testing many candidate factors can produce false discoveries.", "",
            f"Sample for Parts A and C: {s['start']} to {s['end']} ({s['months']} months), {s['n_portfolios']} "
-           "value-weighted portfolios.", "", "## Part A: Replicating Fama and French (1993)", ""]
+           "value-weighted portfolios.", "", "## Part A: The regressions of Fama and French (1993)", ""]
     rows = []
     for m in MODELS:
         sm, g = a[m]["summary"], a[m]["grs"]
@@ -413,7 +413,7 @@ def write_report(out: Path, a, b, c, sim: bool):
                {"premium_annual": _num("+.2%"), "assumed_turnover": _num(".0%"),
                 "break_even_one_way_cost": _num(".2%")}), "",
            "![Lab Figure 3.5](fig3_5_premiums.png)", ""]
-    md += ["## Your verdict", "",
+    md += ["## Questions to think about", "",
            "1. Do SMB and HML explain the returns of the 25 portfolios better than the market alone? Look at the alphas "
            "and the GRS test, not only the R².",
            "2. How many of 1,000 useless factors cleared |t| > 1.96, and how many cleared 3.0?",

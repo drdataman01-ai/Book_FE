@@ -1,8 +1,8 @@
 # Lab 1: Brilliant by Chance
 
-Companion lab for **Chapter 1** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 1** of *Financial Engineering in Practice*.
 
-**Claim on trial:** a strategy with an impressive backtest has skill.
+**What you will explore:** how good a track record luck alone can produce, and how high the bar must be before a record counts as evidence of skill.
 
 You build 1,000 market-timing strategies that switch between U.S. stocks and Treasury bills **at random**, so every one has zero skill by construction. You backtest them on the first half of nearly a century of real market data, pick the winners, and follow them into the second half.
 
@@ -62,7 +62,7 @@ This uses simulated returns with realistic averages and volatility. **Results fr
 
 ## Outputs (`report/`)
 
-- `lab01_report.md`: all results, with a "Your verdict" prompt
+- `lab01_report.md`: all results, with questions to think about
 - `fig1_1_rolling_sharpe.png` to `fig1_5_search_cost.png`
 - `table_years_to_detect.csv`, `table_top10.csv`, `table_search_cost.csv`, `table_all_strategies.csv`
 - `summary.json`: every headline number, for grading or automated checks
@@ -89,7 +89,7 @@ ch01-brilliant-by-chance/
 
 Run the tests with `python tests/test_lab01.py` (or `pytest tests/`).
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

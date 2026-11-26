@@ -1,8 +1,8 @@
 # Lab 19: Does Selling Options Earn a Reliable Premium?
 
-Companion lab for **Chapter 19** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 19** of *Financial Engineering in Practice*.
 
-**Claim on trial:** implied volatility exceeds the volatility that follows, on average, so option sellers, for example covered-call and put-writing strategies, earn a reliable premium.
+**What you will explore:** whether selling index options earns a reliable premium.
 
 ## Quick start
 
@@ -49,7 +49,7 @@ The simulation prices a VIX 12% above the volatility the model expects, so a pre
 - **Realized volatility** is measured on the CRSP value-weighted market, a close proxy for the S&P 500, over the next 21 trading days (the VIX covers 30 calendar days).
 - **The variance swap** payoff is (VIX/100)² × 21/252 minus the sum of squared daily returns over the next 21 trading days; VIX² approximates the variance swap rate.
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

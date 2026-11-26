@@ -1,4 +1,4 @@
-% Chapter 5 -- Claim: Past Winners Keep Winning
+% Chapter 5 -- Do Past Winners Keep Winning?
 % Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -18,7 +18,7 @@
 }{}
 \makeatother
 
-\chapter{Claim: Past Winners Keep Winning}
+\chapter{Do Past Winners Keep Winning?}
 \label{ch:04}
 \providecommand{\term}[1]{\emph{#1}}
 
@@ -33,9 +33,9 @@ Daniel and Moskowitz (2016), seeking to explain momentum's rare but enormous los
 
 The implications reach from theory to practice. For theory, momentum is evidence that prices adjust slowly to news, or that investors bear a risk that the standard models miss. For practice, it shapes how fund managers are evaluated and how factor funds are built, and its crashes\index{momentum!crashes} decide whether anyone can hold it long enough to collect the premium. 
 
-The claim on trial\index{claims-on-trial method} is: \textbf{stocks that rose most over the past 12 months, skipping the latest month, continue to outperform past losers, and the premium survives its crashes.}
+The question of this chapter is: \textbf{do stocks that rose most over the past 12 months, skipping the latest month, continue to outperform past losers, and does the premium survive its crashes?}
 
-The lab in Section~\ref{sec:05-lab} replicates the winner-minus-loser returns of Jegadeesh and Titman (1993) on the free momentum portfolios of the Kenneth R. French Data Library from 1927, in their original sample and after it, in order to check whether the premium has lasted. It then replicates the crash regressions of Daniel and Moskowitz (2016) and the volatility scaling of Barroso and Santa-Clara (2015), in order to see whether momentum's crashes can be predicted and managed.
+The lab in Section~\ref{sec:05-lab} computes the winner-minus-loser returns studied by Jegadeesh and Titman (1993) from the free momentum portfolios of the Kenneth R. French Data Library from 1927, in their original sample and after it, in order to see whether the premium has lasted. It then follows the crash regressions of Daniel and Moskowitz (2016) and the volatility scaling of Barroso and Santa-Clara (2015), in order to see whether momentum's crashes can be predicted and managed.
 
 
 \section{Foundations}
@@ -134,7 +134,7 @@ Here $w$ is the size of the position relative to a normal, full-sized position, 
 The forecast must use only data available before the position is set. Using later data would let the strategy ``know'' about turbulence before it happened, which no investor can do.
 
 Volatility scaling is part of how time-series momentum is built: each market's position is scaled so that a volatile market does not dominate a calm one. 
-Also, volatility scaling is the main tool for managing momentum's crashes. Momentum's own returns become unusually volatile before and during its worst losses, which come when the market rebounds after a long decline. Barroso and Santa-Clara (2015) scaled the momentum strategy to a 12\% volatility target, using its daily returns over the previous six months to forecast its volatility. The scaled strategy cut its exposure as turbulence rose, avoided much of the 1932 and 2009 crashes, and nearly doubled momentum's Sharpe ratio. Part~C of the lab tests whether that improvement holds up.
+Also, volatility scaling is the main tool for managing momentum's crashes. Momentum's own returns become unusually volatile before and during its worst losses, which come when the market rebounds after a long decline. Barroso and Santa-Clara (2015) scaled the momentum strategy to a 12\% volatility target, using its daily returns over the previous six months to forecast its volatility. The scaled strategy cut its exposure as turbulence rose, avoided much of the 1932 and 2009 crashes, and nearly doubled momentum's Sharpe ratio. Part~C of the lab lets you see whether that improvement holds up.
 
 \subsection{Underreaction and overreaction}
 \label{sec:05-behavior}
@@ -200,22 +200,22 @@ Momentum at horizons of a few months to a year fits underreaction or delayed ove
 \textbf{Managing the crashes.} Because momentum's volatility rises sharply before and during crashes, scaling the position by forecast volatility, as in Equation~\eqref{eq:05-volscale}, cuts exposure when crashes are most likely. Barroso and Santa-Clara (2015) found that this nearly doubled momentum's Sharpe ratio\index{Sharpe ratio} and largely eliminated its crashes in U.S. data. Daniel and Moskowitz (2016) proposed a dynamic version that also uses a forecast of momentum's mean return.
 
 
-\section{The claim}
+\section{The question}
 \label{sec:05-claim}
 
-Stated so that it can fail:
+Stated precisely:
 
 \begin{callout}
-\textbf{Stocks with high returns over the past year continue to outperform stocks with low past returns over the following months, by enough to survive costs, in data beyond the samples that established the result, and with risks an investor can manage.}
+\textbf{Do stocks with high returns over the past year continue to outperform stocks with low past returns over the following months, by enough to survive costs, in data beyond the samples that established the result, and with risks an investor can manage?}
 \end{callout}
 
-The last clause matters: a premium that is real on average but brings losses of 50\% or more in a few months may be one few investors can collect. The tests are:
+The last clause matters: a premium that is real on average but brings losses of 50\% or more in a few months may be one few investors can collect. The evidence turns on four further questions:
 
 \begin{itemize}
   \item \textbf{Time.} Is the premium present after Jegadeesh and Titman's 1965--1989 sample, and in every era?
   \item \textbf{Breadth.} Is it found in other countries and asset classes?
   \item \textbf{Costs.} Momentum trades far more than value. Does its premium exceed its costs?
-  \item \textbf{Crashes.} How large are they, can they be anticipated, and does managing them change the verdict?
+  \item \textbf{Crashes.} How large are they, can they be anticipated, and does managing them change the answer?
 \end{itemize}
 
 \section{The original evidence}
@@ -229,13 +229,13 @@ The last clause matters: a premium that is real on average but brings losses of 
 
 \textbf{Crashes.} Daniel and Moskowitz (2016) showed that momentum's worst losses come when the market rebounds after a decline, as in 1932 and the spring of 2009, when battered past losers rose far more than past winners. These crashes give momentum negative skewness\index{skewness} and extreme \term{drawdowns}\index{drawdown}. Barroso and Santa-Clara (2015) showed that scaling by forecast volatility removed much of this risk in U.S. data.
 
-\section{Lab~\thechapter: Replicating Jegadeesh and Titman (1993) and Daniel and Moskowitz (2016)}
+\section{Lab~\thechapter: Momentum and Its Crashes}
 \label{sec:05-lab}
 
-The lab asks whether momentum has earned a premium throughout a century of U.S. data, when its crashes occur, and whether volatility scaling can make it holdable. It replicates Jegadeesh and Titman (1993), the crash regressions of Daniel and Moskowitz (2016) and the volatility scaling of Barroso and Santa-Clara (2015). The data come from Kenneth French\index{Kenneth French data library}'s library: the monthly and daily momentum factor from the 1920s, the market factor and risk-free rate\index{risk-free rate}, ten portfolios sorted on past returns and ten industry portfolios. The code is in the repository folder \texttt{ch04-momentum/}.
+The lab asks whether momentum has earned a premium throughout a century of U.S. data, when its crashes occur, and whether volatility scaling can make it holdable. It draws on Jegadeesh and Titman (1993), the crash regressions of Daniel and Moskowitz (2016) and the volatility scaling of Barroso and Santa-Clara (2015). The data come from Kenneth French\index{Kenneth French data library}'s library: the monthly and daily momentum factor from the 1920s, the market factor and risk-free rate\index{risk-free rate}, ten portfolios sorted on past returns and ten industry portfolios. The code is in the repository folder \texttt{ch04-momentum/}.
 
 \begin{itemize}
-  \item \textbf{Part A, replication\index{replication}.} Momentum's average return, t-statistic\index{t-statistic}, Sharpe ratio, skewness, worst month and \textbf{maximum drawdown}\index{maximum drawdown|textbf} (the largest fall from a previous peak), over the full sample, by decade and after publication.
+  \item \textbf{Part A, the momentum premium.} Momentum's average return, t-statistic\index{t-statistic}, Sharpe ratio, skewness, worst month and \textbf{maximum drawdown}\index{maximum drawdown|textbf} (the largest fall from a previous peak), over the full sample, by decade and after publication.
   \item \textbf{Part B, crashes.} The ten worst months, and a regression of momentum on the market with extra terms for \textbf{bear markets} (when the market's past 24-month return is negative) and for bear-market months in which the market rises.
   \item \textbf{Part C, volatility scaling.} Momentum scaled each month to a 12\% annual volatility target, compared with raw momentum levered to the same average volatility, so the comparison is about timing, not leverage\index{leverage}.
   \item \textbf{Part D, time-series momentum.} Ten industry portfolios and the market, each held long or short by the sign of its past twelve-month excess return\index{return!excess}.
@@ -243,7 +243,7 @@ The lab asks whether momentum has earned a premium throughout a century of U.S. 
 \end{itemize}
 
 \label{sec:05-stress}
-\textbf{Robustness checks.} Momentum's record since 1993 is one of the longest out-of-sample tests of any anomaly, and the lab extends it through the 2009 crash. With turnover of about 35\% a month, costs absorb roughly 3 percentage points of the annual premium at 20 basis points and about 8 at 50 (Equation~\eqref{eq:17-net}), while Novy-Marx and Velikov (2016) still found a significant net premium (Chapter~\ref{ch:14}). The crash signals use only information available at the start of each month, and volatility scaling is itself a claim that can be overfit\index{overfitting}, so the lab lets you change its six-month window and 12\% target. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:05-verdict}.
+\textbf{Robustness checks.} Momentum's record since 1993 is one of the longest out-of-sample tests of any anomaly, and the lab extends it through the 2009 crash. With turnover of about 35\% a month, costs absorb roughly 3 percentage points of the annual premium at 20 basis points and about 8 at 50 (Equation~\eqref{eq:17-net}), while Novy-Marx and Velikov (2016) still found a significant net premium (Chapter~\ref{ch:14}). The crash signals use only information available at the start of each month, and volatility scaling is itself a rule that can be overfit\index{overfitting}, so the lab lets you change its six-month window and 12\% target. When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:05-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:05-verdict}
@@ -278,12 +278,12 @@ After trading costs & \textbf{Yes, smaller} & Costs are large but below the gros
 \addlinespace[3pt]
 Through its crashes & \textbf{Partly} & Rare, severe losses come when beaten-down markets rebound, as in 1932 and 2009. & Grundy and Martin (2001); Daniel and Moskowitz (2016) \\*
 \addlinespace[3pt]
-With volatility scaling & \textbf{Partly} & Scaling reduced the crashes and raised the Sharpe ratio, but the improvement is itself a claim to test. & Barroso and Santa-Clara (2015) \\
+With volatility scaling & \textbf{Partly} & Scaling reduced the crashes and raised the Sharpe ratio, but the improvement itself needs to hold up on new data. & Barroso and Santa-Clara (2015) \\
 \end{longtable}
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 \endgroup
 
-\textbf{What would change the picture.} The claim would hold fully if volatility scaling, fixed in advance and tested on new data, removed the crashes without removing the premium. It would weaken if the premium kept shrinking until it no longer covered realistic costs.
+\textbf{What would change the picture.} The picture would become more favorable to momentum if volatility scaling, fixed in advance and checked on new data, removed the crashes without removing the premium. It would become less favorable if the premium kept shrinking until it no longer covered realistic costs.
 
 \section{What practitioners and investors can use}
 \label{sec:05-investors}
@@ -291,7 +291,7 @@ With volatility scaling & \textbf{Partly} & Scaling reduced the crashes and rais
 Time-series momentum across asset classes, the core of managed-futures funds, has tended to do well in long market declines, which makes it a candidate \textbf{diversifier} for a stock-heavy portfolio. Cross-sectional momentum is best held alongside value, with which it is negatively correlated (Asness, Moskowitz and Pedersen 2013). Either way, sizing a momentum allocation so that a 50\% loss in a few months is survivable matters more than any refinement of the signal. Ask a momentum manager how the strategy did from March to May 2009, whether its volatility sizing was fixed before the backtest\index{backtest}, and what costs were assumed.
 
 \begin{callout}
-\textbf{What Failed: holding raw momentum through the 2009 rebound.} Through the financial crisis momentum did well, long defensive winners and short collapsing financial and cyclical stocks. When the market turned in March 2009, the most beaten-down stocks rebounded hardest, and within months the strategy lost much of a decade's gains (Daniel and Moskowitz 2016). The failure was treating momentum's average return as the whole story and sizing positions as if the risk were constant. The claim that momentum's return could be harvested without managing its crash risk \textbf{fails}.
+\textbf{What Failed: holding raw momentum through the 2009 rebound.} Through the financial crisis momentum did well, long defensive winners and short collapsing financial and cyclical stocks. When the market turned in March 2009, the most beaten-down stocks rebounded hardest, and within months the strategy lost much of a decade's gains (Daniel and Moskowitz 2016). The failure was treating momentum's average return as the whole story and sizing positions as if the risk were constant. The idea that momentum's return could be harvested without managing its crash risk did not hold up.
 \end{callout}
 
 % Key terms of the chapter, in alphabetical order, for readers new to finance.

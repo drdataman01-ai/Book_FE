@@ -1,4 +1,4 @@
-% Chapter 4 -- Claim: Size and Value Explain Returns That Beta Cannot
+% Chapter 4 -- Can Size and Value Explain Returns That Beta Cannot?
 % Figures need tikz and pgfplots (with the fillbetween library) in the preamble.
 \providecolor{fenavy}{HTML}{1B2A6B}
 \providecolor{fegray}{HTML}{4D4D4D}
@@ -12,7 +12,7 @@
 }{}
 \makeatother
 
-\chapter{Claim: Size and Value Explain Returns That Beta Cannot}
+\chapter{Can Size and Value Explain Returns That Beta Cannot?}
 \label{ch:03}
 \providecommand{\term}[1]{\emph{#1}}
 
@@ -33,12 +33,12 @@ Lakonishok, Shleifer and Vishny (1994) offered the opposite reading, and with it
 
 The answer has large practical consequences. It decides what counts as skill when a fund manager beats the market, since a manager who simply holds small value stocks may earn a high CAPM alpha and no alpha at all against three factors. It affects the discount rate companies use for new projects (Graham and Harvey 2001), and it underpins the factor and smart-beta funds that now manage large sums for ordinary investors. A smart-beta fund is an index-like fund that deliberately tilts toward stocks with certain characteristics, such as small size or low prices relative to earnings. As researchers have since proposed several hundred factors, the question has also become a statistical one: how many of these factors are real, and how many are the product of searching through the same data? 
 
-The claim on trial\index{claims-on-trial method} in this chapter is therefore: \textbf{additional factors such as size and value explain differences in portfolio returns that beta cannot, but testing many candidate factors produces false discoveries, so a new factor must clear a higher bar.}
+The question of this chapter is therefore: \textbf{can additional factors such as size and value explain differences in portfolio returns that beta cannot, and how high a bar must a new factor clear when many candidate factors have been tried?}
 
-The chapter is built around Fama and French (1993, 2015), who showed that size, value, profitability and \term{investment factors} explain differences in returns that beta alone cannot. It also draws on Harvey, Liu and Zhu (2016), who warn that testing hundreds of candidate factors produces false discoveries. The lab in Section~\ref{sec:04-lab} replicates the Fama--French (1993) time-series regressions on their 25 size and book-to-market portfolios, in order to check whether the added factors really explain returns better than the CAPM, and then runs a factor-zoo experiment in order to see how many factors chance alone would appear to discover.
+The chapter is built around Fama and French (1993, 2015), who showed that size, value, profitability and \term{investment factors} explain differences in returns that beta alone cannot. It also draws on Harvey, Liu and Zhu (2016), who warn that testing hundreds of candidate factors produces false discoveries. The lab in Section~\ref{sec:04-lab} estimates the Fama--French (1993) time-series regressions on the current version of their 25 size and book-to-market portfolios, in order to see how much better the added factors explain returns than the CAPM, and then runs a factor-zoo experiment in order to see how many factors chance alone would appear to discover.
 
 
-In the lab you will replicate the main regressions of Fama and French (1993), decompose the risk of their 25 classic portfolios, measure the stylized facts of returns on real data, compute the portfolios' alphas under four standard error methods, and run a controlled experiment showing how overlapping long-horizon regressions find predictability that is not there.
+In the lab you will estimate the main regressions of Fama and French (1993), decompose the risk of their 25 classic portfolios, measure the stylized facts of returns on real data, compute the portfolios' alphas under four standard error methods, and run a controlled experiment showing how overlapping long-horizon regressions find predictability that is not there.
 
 
 \section{Foundations}
@@ -722,18 +722,18 @@ such as heteroskedasticity (volatility that changes over time), autocorrelation,
 errors.
 
 
-\section{Lab~\thechapter: Replicating Fama and French (1993) and the factor zoo}
+\section{Lab~\thechapter: Multifactor Models and the Factor Zoo}
 \label{sec:04-lab}
 
-\textbf{Claim on trial:} additional factors improve our ability to explain differences in portfolio returns, but testing many candidate factors can produce false discoveries. Part~A replicates Fama and French (1993), Part~B runs a multiple-testing experiment inspired by Harvey, Liu and Zhu (2016), and Part~C asks whether statistically significant premiums are also economically attractive. The data are monthly returns on the 25 Fama--French portfolios formed on size and book-to-market, together with the market, size and value factors, from the Kenneth R. French Data Library\index{Kenneth French data library}, and the code is in the repository folder \texttt{ch03-multifactor-models/}.
+\textbf{What you will explore:} how much additional factors add to the CAPM in explaining differences in portfolio returns, and how testing many candidate factors can produce false discoveries. Part~A follows the regressions of Fama and French (1993), Part~B runs a multiple-testing experiment inspired by Harvey, Liu and Zhu (2016), and Part~C asks whether statistically significant premiums are also economically attractive. The data are monthly returns on the 25 Fama--French portfolios formed on size and book-to-market, together with the market, size and value factors, from the Kenneth R. French Data Library\index{Kenneth French data library}, and the code is in the repository folder \texttt{ch03-multifactor-models/}.
 
-\textbf{Part A: Replicating the Fama--French three-factor model.} The 25 portfolios formed on size and book-to-market are the classic \textbf{test assets}\index{factor!test assets|textbf} of Fama and French (1993), the portfolios a model is meant to explain. Using monthly data from July 1963, the lab estimates the CAPM and the three-factor model for each portfolio and reports the alpha, the factor loadings and the $R^2$. Adding $SMB$ and $HML$ should raise the $R^2$, but a higher $R^2$ means only that the model explains more of the variation in returns, not that it explains differences in average returns; the alphas show what remains unexplained.
+\textbf{Part A: The Fama--French three-factor model.} The 25 portfolios formed on size and book-to-market are the classic \textbf{test assets}\index{factor!test assets|textbf} of Fama and French (1993), the portfolios a model is meant to explain. Using monthly data from July 1963, the lab estimates the CAPM and the three-factor model for each portfolio and reports the alpha, the factor loadings and the $R^2$. Adding $SMB$ and $HML$ should raise the $R^2$, but a higher $R^2$ means only that the model explains more of the variation in returns, not that it explains differences in average returns; the alphas show what remains unexplained.
 
-\textbf{Part B: A multiple-testing experiment.} The lab simulates 1,000 factors whose true premium is zero, so every rejection is a false discovery, and tests each premium at the conventional $|t|>1.96$ and at the stricter $|t|>3.0$ suggested by Harvey, Liu and Zhu (2016). At 1.96, about 50 of the 1,000 should look significant on average; at 3.0, far fewer. The simulation is not a replication of Harvey, Liu and Zhu but a demonstration of the problem that motivates their higher hurdle.
+\textbf{Part B: A multiple-testing experiment.} The lab simulates 1,000 factors whose true premium is zero, so every rejection is a false discovery, and tests each premium at the conventional $|t|>1.96$ and at the stricter $|t|>3.0$ suggested by Harvey, Liu and Zhu (2016). At 1.96, about 50 of the 1,000 should look significant on average; at 3.0, far fewer. The simulation illustrates the problem that motivates their higher hurdle; it does not repeat their study.
 
 \textbf{Part C: Statistical and economic significance.} For each factor the lab computes the annualized premium, $12\bar{f}$, and the annualized Sharpe ratio, $\sqrt{12}\,\bar{f}/s_f$. Readers then ask whether each premium is large enough to matter once trading costs, turnover and illiquid stocks are taken into account.
 
-The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:04-verdict}.
+When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:04-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:04-verdict}
@@ -781,7 +781,7 @@ A factor should therefore meet three conditions before it is accepted:
   \item \textbf{It matters economically:} the premium must survive risk, trading costs and implementation constraints, with a convincing reason why it exists.
 \end{enumerate}
 
-\textbf{What would change the picture.} The claim would gain support if the size and value premiums held up in other countries and after publication, with a settled explanation of why they exist, and would weaken if the profitability and investment factors faded once published, like many others in the zoo.
+\textbf{What would change the picture.} The case for size and value would strengthen if their premiums held up in other countries and after publication, with a settled explanation of why they exist, and the case for the newer factors would weaken if the profitability and investment factors faded once published, like many others in the zoo.
 
 \section{What practitioners and investors can use}
 \label{sec:04-investors}
@@ -812,7 +812,7 @@ The most useful habit is to \textbf{separate alpha from factor exposure.} Index 
   \item[Autocorrelation.] See Chapter~\ref{ch:01}, Section~\ref{sec:01-signal-noise}, page~\pageref{kt:autocorrelated}.
   \item[Diversification.] Diversification means spreading money across many investments, so that risks unique to each one largely cancel out.
   \item[Factor loadings.] Factor loadings are the regression slopes that measure how strongly a portfolio is exposed to each factor.
-  \item[Factor zoo.] The factor zoo is the hundreds of published factors that claim to explain stock returns, many of them probably false discoveries.
+  \item[Factor zoo.] The factor zoo is the hundreds of published factors proposed to explain stock returns, many of them probably false discoveries.
   \item[Fat tails.] Fat tails mean that extreme returns occur far more often than a normal distribution predicts.
   \item[Idiosyncratic variance.] Idiosyncratic variance is the part of an asset's variance that belongs to the asset alone, which diversification can remove.
   \item[Investment factor.] The investment factor is the return of companies that invest conservatively minus the return of companies that invest aggressively.

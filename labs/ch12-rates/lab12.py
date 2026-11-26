@@ -1,10 +1,10 @@
 """Lab 12: Do Forward Rates Predict Future Interest Rates?
 
-Chapter 12 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 12 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL (the expectations hypothesis)
-  "Forward rates are unbiased forecasts of future short-term rates, so a
-   steep yield curve predicts rising rates, not higher bond returns."
+WHAT YOU WILL EXPLORE
+  Whether forward rates are unbiased forecasts of future short rates, as the
+  expectations hypothesis says they should be.
 
 WHAT THE LAB DOES
   Part A  Fama-Bliss (1987) and Campbell-Shiller (1991) regressions on the
@@ -258,7 +258,7 @@ def write_report(out, ts, a, b, c, dd, sim):
     md = ["# Lab 12 results: Do Forward Rates Predict Future Interest Rates?", ""]
     if sim:
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
-    md += ["**Claim on trial (expectations hypothesis):** forward rates are unbiased forecasts of future short rates.", "",
+    md += ["**What you will explore:** whether forward rates are unbiased forecasts of future short rates, as the expectations hypothesis says they should be.", "",
            f"Data: month-end zero yields, {y.index[0]} to {y.index[-1]}. One-year holding periods overlap; standard "
            "errors are Newey–West with 18 lags.", "", "![Lab Figure 12.1](fig12_1_yields.png)", "",
            "## Part A: Fama–Bliss and Campbell–Shiller", "", "**Excess returns on forward spreads (hypothesis: slope 0)**", "",
@@ -299,7 +299,7 @@ def write_report(out, ts, a, b, c, dd, sim):
                                                  "after_flat": "After flat curve"}),
                {"After steep curve": _num("+.2%"), "After flat curve": _num("+.2%")}), "",
            "Steep/flat: the 5-year forward spread above or below its median up to the previous month.", "",
-           "![Lab Figure 12.5](fig12_5_conditional.png)", "", "## Your verdict", "",
+           "![Lab Figure 12.5](fig12_5_conditional.png)", "", "## Questions to think about", "",
            "1. Do forward spreads forecast future short rates one for one, as the hypothesis requires?",
            "2. Do they forecast excess bond returns instead? Does the evidence hold out of sample and across subperiods?",
            "3. What does this imply for reading forward rates as the market's forecast of policy rates?", ""]

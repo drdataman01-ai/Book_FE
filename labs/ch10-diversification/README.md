@@ -1,8 +1,8 @@
 # Lab 10: Does Diversification Fail When You Need It Most?
 
-Companion lab for **Chapter 10** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 10** of *Financial Engineering in Practice*.
 
-**Claim on trial:** correlations rise in crises, so diversification fails exactly when investors need it most.
+**What you will explore:** how correlations behave in falling and volatile markets, and how much protection diversification gives when it is needed most.
 
 ## Quick start
 
@@ -52,7 +52,7 @@ All returns are monthly and in excess of the one-month Treasury bill rate. Bond 
 - **Bond returns** from constant-maturity yields ignore the difference between the yield on a par bond and on bonds actually traded, and use month-end rather than total-return data. They are close to, but not the same as, index returns.
 - **Oil** is a single commodity and a volatile one; it stands in for commodities because long free commodity index series are hard to find.
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

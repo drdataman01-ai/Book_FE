@@ -165,7 +165,7 @@ def test_full_lab_runs_on_simulated_data():
         out = Path(tmp)
         assert len(list(out.glob("fig14_*.png"))) == 5
         report = (out / "lab14_report.md").read_text()
-        assert "Simulated factor data" in report and "Your verdict" in report
+        assert "Simulated factor data" in report and "Questions to think about" in report
         assert summary["simulated"] is True
         be = summary["break_even_one_way"]
         assert be["value"] > be["momentum"] > be["reversal"]

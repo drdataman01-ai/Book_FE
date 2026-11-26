@@ -1,8 +1,8 @@
 # Lab 17: Do Credit Spreads Compensate Mainly for Expected Default Losses?
 
-Companion lab for **Chapter 17** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 17** of *Financial Engineering in Practice*.
 
-**Claim on trial:** the yield spread of corporate bonds over Treasuries mostly reflects the losses investors expect from default.
+**What you will explore:** how much of the credit spread expected default losses can explain, and how the remainder behaves over the business cycle.
 
 ## Quick start
 
@@ -52,7 +52,7 @@ The defaults come from Moody's *Corporate Default and Recovery Rates, 1920–200
 - **Taxes.** Interest on corporate bonds is subject to state income tax; Treasury interest is not. Elton, Gruber, Agrawal and Mann (2001) found that this explains a large part of corporate–Treasury spreads.
 - **One-period approximation.** The expected-loss spread treats the annual default rate as constant over the bond's life. Cumulative default rates rise faster than linearly as ratings migrate, so long-horizon Baa losses can be somewhat higher per year than the annual average suggests; Part D's grid covers that range.
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

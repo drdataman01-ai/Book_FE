@@ -1,8 +1,8 @@
-# Lab 16: Put the Factor Zoo on Trial
+# Lab 16: Two Standards of Evidence for Published Anomalies
 
-Companion lab for **Chapter 16** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 16** of *Financial Engineering in Practice*.
 
-**Claim on trial:** most published return predictors are products of data mining.
+**What you will explore:** how the share of published predictors that hold up changes when each side's standards of evidence are applied to the same data.
 
 ## Quick start
 
@@ -36,7 +36,7 @@ python lab16.py --source sim
 
 | Part | Question | Method | Output |
 |---|---|---|---|
-| A. Replication | How strong was the original evidence? | t-statistic of each long-short return over the paper's own sample; shares clearing t > 1.96, t > 3 and Benjamini–Hochberg at 2.5% | Lab Figure 16.1 |
+| A. Original samples | How strong was the original evidence? | t-statistic of each long-short return over the paper's own sample; shares clearing t > 1.96, t > 3 and Benjamini–Hochberg at 2.5% | Lab Figure 16.1 |
 | B. Decay | What happened afterward? | Returns after the sample ended (before publication) and after publication; pooled regression of returns scaled by each signal's in-sample mean on post-sample and post-publication indicators, month-clustered errors (McLean and Pontiff 2016) | Lab Figures 16.2–15.3 |
 | C. Methodology | Does the construction change the answer? | The same statistics for a second construction (optional) | Table |
 | D. Shrinkage | How much to believe each estimate? | Empirical Bayes: each in-sample mean shrunk toward the cross-sectional average by its noise; posterior probability of a positive true mean; accuracy for post-publication returns | Lab Figure 16.4 |
@@ -48,7 +48,7 @@ python lab16.py --source sim
 - **Decay regression.** Only signals with positive in-sample means enter, and each signal's returns are divided by its in-sample mean, so coefficients read as proportional changes.
 - **Shrinkage** uses a normal prior estimated from the signals themselves. Because published signals were selected for strong in-sample results, this reduces noise but does not undo selection; Jensen, Kelly and Pedersen (2023) use a richer hierarchical model with factor themes and many countries.
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

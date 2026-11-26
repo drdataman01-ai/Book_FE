@@ -1,8 +1,8 @@
 # Lab 15: The Low-Risk Anomaly
 
-Companion lab for **Chapter 15** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 15** of *Financial Engineering in Practice*.
 
-**Claim on trial:** low-beta and low-volatility stocks earn higher risk-adjusted returns than the CAPM predicts: the security market line is too flat.
+**What you will explore:** whether low-risk stocks earn more than the CAPM predicts, and how much the answer depends on how the portfolios are built.
 
 ## Quick start
 
@@ -52,7 +52,7 @@ The simulation builds in a flat security market line and low-risk portfolios tha
 - **The interest-rate test** uses the monthly change in the 10-year yield, in decimals. A coefficient of −5 means a 1-percentage-point rise in yields costs 5% that month, like a bond with duration 5.
 - **Column layout.** The lab looks for the columns `Lo 10` … `Hi 10` (deciles) and `Lo 20` … `Hi 20` (quintiles) and for tables titled with "Value" and "Equal". **Confirm at first run** that the live files use these names; the parser is tested on a file in the documented layout.
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

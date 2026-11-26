@@ -1,4 +1,4 @@
-% Chapter 20 -- Claim: Machine Learning Predicts Returns Better Than Linear Models
+% Chapter 20 -- Can Machine Learning Predict Returns Better Than Linear Models?
 % Placed directly after ch05.tex (Out-of-Sample Evaluation) in fe.tex.
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tikz, pgfplots, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
@@ -25,7 +25,7 @@
 }{}
 \makeatother
 
-\chapter{Claim: Machine Learning Predicts Returns Better Than Linear Models}
+\chapter{Can Machine Learning Predict Returns Better Than Linear Models?}
 \label{ch:20}
 \providecommand{\term}[1]{\emph{#1}}
 
@@ -37,7 +37,7 @@ The study changed both research and practice. \term{Machine learning} became a s
 
 The stakes are practical. If machine learning finds predictability that linear models miss, it belongs in every quantitative toolkit. If its gains vanish in tradable stocks after costs, the label promises more than it delivers. 
 
-The claim on trial\index{claims-on-trial method} is: \textbf{machine-learning models find return predictability\index{return predictability} that traditional linear models miss, and it can be turned into profitable portfolios.}
+The question of this chapter is: \textbf{do machine-learning models find return predictability\index{return predictability} that traditional linear models miss, and can it be turned into profitable portfolios?}
 
 This chapter explains the essentials of regularized regression, random forests, gradient boosting and neural networks. Readers who want a fuller, step-by-step introduction to these methods, with code, can consult the chapters on supervised learning and regularization in Kuo (2024a). The lab in Section~\ref{sec:20-lab} repeats the horse race of Gu, Kelly and Xiu (2020) on 149 free portfolios from the Kenneth R. French Data Library, with the Goyal--Welch predictors of Chapter~\ref{ch:06}. It checks whether machine learning beats linear models out of sample, and whether the gain survives trading costs.
 
@@ -695,7 +695,7 @@ Because the two statistics use different benchmarks, they cannot be compared dir
 \section{Where machine learning works in finance}
 \label{sec:20-applications}
 
-Return prediction is the most publicized use of machine learning in finance, but it is far from the only one, and it is among the hardest. Before putting the claim on trial, it helps to see where the methods succeed and where they struggle, because the contrast explains why return prediction is such a demanding test. Table~\ref{tab:20-applications} lists the main applications and where this book treats them.
+Return prediction is the most publicized use of machine learning in finance, but it is far from the only one, and it is among the hardest. Before turning to the question, it helps to see where the methods succeed and where they struggle, because the contrast explains why return prediction is such a demanding test. Table~\ref{tab:20-applications} lists the main applications and where this book treats them.
 
 \begingroup
 \small
@@ -758,20 +758,20 @@ Stability & stable: images and borrowers do not change because a model exists & 
 \end{longtable}
 \endgroup
 
-\term{Credit scoring}\index{credit scoring} shows the favorable case. Khandani, Kim and Lo (2010) trained models on the transaction and credit-bureau data of a large bank's customers. Their forecasts of consumer delinquencies were good enough to reduce losses substantially, and lenders now use gradient-boosted trees routinely. Return prediction is the unfavorable case. In the terms of Figure~\ref{fig:09-biasvar}, little data and a faint signal push the best model far toward the simple end. The flexibility that makes machine learning powerful elsewhere becomes a source of variance here. This is why the claim on trial is the hardest test the methods face in finance.
+\term{Credit scoring}\index{credit scoring} shows the favorable case. Khandani, Kim and Lo (2010) trained models on the transaction and credit-bureau data of a large bank's customers. Their forecasts of consumer delinquencies were good enough to reduce losses substantially, and lenders now use gradient-boosted trees routinely. Return prediction is the unfavorable case. In the terms of Figure~\ref{fig:09-biasvar}, little data and a faint signal push the best model far toward the simple end. The flexibility that makes machine learning powerful elsewhere becomes a source of variance here. This is why this chapter's question is the hardest test the methods face in finance.
 
 \subsection{Machine learning inside economic models}
 
 One response to these difficulties is to use machine learning inside an economic model rather than in place of one. \term{Instrumented principal components}\index{IPCA (instrumented principal components)} analysis, or IPCA (Kelly, Pruitt and Su 2019), keeps the structure of a factor model while letting the data choose the factors. It lets stocks' exposures to a few factors depend on their characteristics. It finds that a handful of such factors explains the cross-section\index{cross-section of returns} of returns better than the standard factors. Gu, Kelly and Xiu (2021) extended the idea with an \term{autoencoder}\index{autoencoder}, a neural network that compresses many returns into a few factors. Chen, Pelger and Zhu (2024) used deep networks with the added condition, required by economic theory, that they must price all assets. Other studies use shrinkage to tame the factor zoo directly. Asking how many characteristics are really needed, Freyberger, Neuhierl and Weber (2020) found that only a small set of characteristics carries independent information about returns. Kozak, Nagel and Santosh (2020) questioned that goal and found that a model with many small exposures priced the cross-section better than one with a few characteristics. Economic structure makes these results easier to interpret, and it reduces the variance that pure prediction suffers from.
 
-\section{The claim}
+\section{The question}
 \label{sec:20-claim}
 
 \begin{callout}
-\textbf{Claim.} Machine-learning models find return predictability that traditional linear models miss, and it can be turned into profitable portfolios.
+\textbf{The question.} Do machine-learning models find return predictability that traditional linear models miss, and can it be turned into profitable portfolios?
 \end{callout}
 
-The claim has three parts, each of which can fail on its own. The \textbf{statistical} part: flexible models forecast returns out of sample better than linear models with the same inputs. The \textbf{hidden} part: the gain comes from interactions or nonlinear effects, not just from using more known characteristics. The \textbf{economic} part: the gain survives trading costs and holds among stocks large enough to trade.
+The question has three parts, and the answer to each can be no on its own. The \textbf{statistical} part: flexible models forecast returns out of sample better than linear models with the same inputs. The \textbf{hidden} part: the gain comes from interactions or nonlinear effects, not just from using more known characteristics. The \textbf{economic} part: the gain survives trading costs and holds among stocks large enough to trade.
 
 \section{The original evidence and the debate it started}
 \label{sec:20-evidence}
@@ -813,7 +813,7 @@ A long--short portfolio of the top and bottom deciles of neural-network forecast
 
 \subsection{Where the gains come from}
 
-Leippold, Wang and Zhou (2022) found stronger predictability in China's retail-dominated market, concentrated in small stocks and significant after costs. Avramov, Cheng and Metzker (2023) found that in the U.S. much of the profit came from stocks that are hard to arbitrage\index{arbitrage}: excluding microcaps\index{micro-caps} and distressed firms, or volatile periods, cut profits considerably, and high turnover\index{turnover} eroded them further after costs. The evidence therefore supports the statistical part of the claim, is weaker on the hidden part, and is weakest on the economic part.
+Leippold, Wang and Zhou (2022) found stronger predictability in China's retail-dominated market, concentrated in small stocks and significant after costs. Avramov, Cheng and Metzker (2023) found that in the U.S. much of the profit came from stocks that are hard to arbitrage\index{arbitrage}: excluding microcaps\index{micro-caps} and distressed firms, or volatile periods, cut profits considerably, and high turnover\index{turnover} eroded them further after costs. The evidence therefore favors a yes on the statistical part, is weaker on the hidden part, and is weakest on the economic part.
 
 \subsection{The virtue of complexity, and a second look}
 \label{sec:20-complexity}
@@ -880,10 +880,10 @@ Kelly, Malamud and Zhou (2024) argued that simple models understate predictabili
 
 Two lessons follow for any complex model: compare it with the simple strategy it may be reproducing, and test it on simulated data with a known truth (Section~\ref{sec:09-insample}). As Chapter~\ref{ch:06} showed, in-sample fit is a poor guide: the methods that worked build shrinkage and validation into the estimator, and their gains are largest in the cross-section and in hard-to-trade corners of the market, and smallest and most disputed for the market as a whole.
 
-\section{Lab~\thechapter: Replicating Gu, Kelly and Xiu (2020) on a portfolio panel}
+\section{Lab~\thechapter: Machine Learning on a Portfolio Panel}
 \label{sec:20-lab}
 
-\textbf{Claim on trial:} machine learning finds return predictability that linear models miss, and it survives costs. Because CRSP is not free, the lab replicates Gu, Kelly and Xiu (2020) on 149 value-weighted portfolios from the Kenneth R. French Data Library\index{Kenneth French data library}, 100 sorted on size and book-to-market and 49 industries, with the Fama--French\index{Fama--French factors} factors and the Goyal--Welch predictors from Lab~\ref{ch:06}. Portfolios average away single-stock noise and leave out microcaps, a test closer to what a large investor can trade. Each month the lab ranks ten characteristics covering size, value, past returns and risk, adds two market variables, and forecasts each portfolio's next-month return relative to the average. Five models compete: OLS-3, OLS on all twelve inputs, an elastic net, gradient-boosted trees and a three-layer neural network, retrained every five years, tuned on the preceding ten and tested from 1975.
+\textbf{What you will explore:} whether machine learning finds return predictability that linear models miss, and whether it survives costs. Because CRSP is not free, the lab follows the approach of Gu, Kelly and Xiu (2020) on 149 value-weighted portfolios from the Kenneth R. French Data Library\index{Kenneth French data library}, 100 sorted on size and book-to-market and 49 industries, with the Fama--French\index{Fama--French factors} factors and the Goyal--Welch predictors from Lab~\ref{ch:06}. Portfolios average away single-stock noise and leave out microcaps, a test closer to what a large investor can trade. Each month the lab ranks ten characteristics covering size, value, past returns and risk, adds two market variables, and forecasts each portfolio's next-month return relative to the average. Five models compete: OLS-3, OLS on all twelve inputs, an elastic net, gradient-boosted trees and a three-layer neural network, retrained every five years, tuned on the preceding ten and tested from 1975.
 
 \begin{itemize}
   \item \textbf{Part A} compares out-of-sample $R^2$, Diebold--Mariano tests against OLS-3, and top-minus-bottom 10\% long--short portfolios.
@@ -893,7 +893,7 @@ Two lessons follow for any complex model: compare it with the simple strategy it
 \end{itemize}
 
 \label{sec:20-stress}
-\textbf{Robustness checks.} Which assets are included matters most: Gu, Kelly and Xiu's equal-weighted Sharpe ratio was almost twice the value-weighted one, and excluding microcaps and distressed firms weakened profits (Avramov, Cheng and Metzker 2023). Flexible models trade more, so report turnover\index{transaction costs|textbf} with every Sharpe ratio (Chapter~\ref{ch:14}), and a result that holds for one seed or configuration only is closer to luck than skill. Validation controls overfitting within one design, not the choice among many designs\index{researcher degrees of freedom|textbf} (Section~\ref{sec:01-backtests}). The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:20-verdict}.
+\textbf{Robustness checks.} Which assets are included matters most: Gu, Kelly and Xiu's equal-weighted Sharpe ratio was almost twice the value-weighted one, and excluding microcaps and distressed firms weakened profits (Avramov, Cheng and Metzker 2023). Flexible models trade more, so report turnover\index{transaction costs|textbf} with every Sharpe ratio (Chapter~\ref{ch:14}), and a result that holds for one seed or configuration only is closer to luck than skill. Validation controls overfitting within one design, not the choice among many designs\index{researcher degrees of freedom|textbf} (Section~\ref{sec:01-backtests}). When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:20-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:20-verdict}
@@ -933,7 +933,7 @@ Very large models for market timing & \textbf{Disputed} & Timing improved with t
 
 Machine learning is a better tool for an old job, not a source of hidden alpha.
 
-\textbf{What would change the picture.} The economic part of the claim would gain support if value-weighted, net-of-cost machine-learning portfolios beat regularized linear ones among large stocks, out of sample after 2016, by a significant margin. Chapters~\ref{ch:21} to~\ref{ch:23} ask the same question of transformers and time-series foundation models\index{foundation models}.
+\textbf{What would change the picture.} The answer on the economic part would shift toward yes if value-weighted, net-of-cost machine-learning portfolios beat regularized linear ones among large stocks, out of sample after 2016, by a significant margin. Chapters~\ref{ch:21} to~\ref{ch:23} ask the same question of transformers and time-series foundation models\index{foundation models}.
 
 \section{What practitioners and investors can use}
 \label{sec:20-investors}
@@ -1010,7 +1010,7 @@ Machine learning is a better blender, not a crystal ball: expect a modest improv
   \item[Supervised learning.] In supervised learning a model learns from examples whose outcomes are known.
   \item[Underfitting.] Underfitting means using a model too simple to capture the real effects in the data.
   \item[Variance (of a model).] A model's variance is how widely its estimates scatter from one training sample to the next.
-  \item[Virtue of complexity.] The virtue of complexity is the claim that very large models can predict returns better than small ones.
+  \item[Virtue of complexity.] The virtue of complexity is the idea that very large models can predict returns better than small ones.
   \item[Volatility-timed momentum.] Volatility-timed momentum is a strategy whose position is a weighted average of recent returns, scaled down when volatility is high.
   \item[Weak learners.] Weak learners are very simple models, such as trees only one or two questions deep, that boosting combines.
   \item[Weights (of a network).] A network's weights play the role of regression coefficients, multiplying the inputs to each neuron.

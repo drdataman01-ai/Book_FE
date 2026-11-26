@@ -1,4 +1,4 @@
-% Chapter 21 -- Claim: Foundation Models Forecast Better Than Classical Methods
+% Chapter 21 -- Can Foundation Models Forecast Better Than Classical Methods?
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -23,7 +23,7 @@
 }{}
 \makeatother
 
-\chapter{Claim: Foundation Models Forecast Better Than Classical Methods}
+\chapter{Can Foundation Models Forecast Better Than Classical Methods?}
 \label{ch:21}
 \providecommand{\term}[1]{\emph{#1}}
 
@@ -35,7 +35,7 @@ For finance and economics the promise is striking. One pretrained model, applied
 
 The stakes are high for forecasting practice in finance. If a pretrained model forecasts as well as a carefully built one, much of the craft of time-series econometrics becomes unnecessary. If not, the benchmarks of Chapters~\ref{ch:06} and~\ref{ch:07} remain the standard. 
 
-The claim on trial\index{claims-on-trial method} is: \textbf{general-purpose time-series foundation models, used zero-shot, forecast financial and economic series more accurately than classical models.}
+The question of this chapter is: \textbf{can general-purpose time-series foundation models, used zero-shot, forecast financial and economic series more accurately than classical models?}
 
 The lab in Section~\ref{sec:21-lab} repeats the zero-shot comparison of these papers on six free series from the Kenneth R. French Data Library and FRED, using the open model weights of Chronos and TimesFM. It checks whether foundation models, used out of the box, forecast better than classical methods.
 
@@ -168,11 +168,11 @@ It also has limits that bite hardest in finance:
 
 Classical models are the opposite: narrow, but fitted to the target series and transparent about what they assume. The question is whether breadth beats fit.
 
-\section{The claim}
+\section{The question}
 \label{sec:21-claim}
 
 \begin{callout}
-\textbf{Claim.} Pretrained time-series foundation models, used zero-shot, forecast financial and economic series better than classical models.
+\textbf{The question.} Do pretrained time-series foundation models, used zero-shot, forecast financial and economic series better than classical models?
 \end{callout}
 
 To count as evidence, a test must compare against strong classical benchmarks for each series (the historical mean for returns, AR models for macroeconomic series, HAR for realized volatility\index{volatility!realized}), not only naive forecasts; use rolling origins with only data available at the time; report significance, not just average losses; and hold on data the model cannot have seen during pretraining.
@@ -190,10 +190,10 @@ To count as evidence, a test must compare against strong classical benchmarks fo
 
 The pattern is consistent: zero-shot foundation models beat naive forecasts easily, sometimes match well-specified classical models, and rarely beat them by a meaningful margin. Where they do, combining them with a classical model helps more than replacing it.
 
-\section{Lab~\thechapter: Replicating the zero-shot claim on six series}
+\section{Lab~\thechapter: Zero-Shot Forecasts on Six Series}
 \label{sec:21-lab}
 
-\textbf{Claim on trial\index{claims-on-trial method}:} foundation models, used zero-shot, beat classical forecasts. The lab replicates the zero-shot evaluations of Ansari et al.\ (2024) and Das et al.\ (2024) and the finance re-test of Rahimikia, Ni and Wang (2025). It forecasts six free series one month ahead from every month since January 2000, with each model seeing only data up to that month: the U.S. market's excess return and its log realized variance (Kenneth R. French Data Library\index{Kenneth French data library}), and inflation, industrial production growth, and the changes in the unemployment rate and in the 10-year Treasury yield (FRED\index{FRED}). The classical models are the historical mean, the last value, an AR model chosen by BIC, which is \textbf{the benchmark}, a HAR-type model and GARCH(1,1); the foundation models are Chronos-Bolt and TimesFM, which are optional because they need PyTorch and large downloads.
+\textbf{What you will explore:} how foundation models, used zero-shot, compare with classical forecasts. The lab follows the zero-shot evaluation design of Ansari et al.\ (2024) and Das et al.\ (2024) and the finance study of Rahimikia, Ni and Wang (2025). It forecasts six free series one month ahead from every month since January 2000, with each model seeing only data up to that month: the U.S. market's excess return and its log realized variance (Kenneth R. French Data Library\index{Kenneth French data library}), and inflation, industrial production growth, and the changes in the unemployment rate and in the 10-year Treasury yield (FRED\index{FRED}). The classical models are the historical mean, the last value, an AR model chosen by BIC, which is \textbf{the benchmark}, a HAR-type model and GARCH(1,1); the foundation models are Chronos-Bolt and TimesFM, which are optional because they need PyTorch and large downloads.
 
 \begin{itemize}
   \item \textbf{Part A} reports each model's MSE relative to AR and its $R^2$ against the historical mean (Lab Figures~\ref{ch:21}.1 and~\ref{ch:21}.5).
@@ -203,7 +203,7 @@ The pattern is consistent: zero-shot foundation models beat naive forecasts easi
 \end{itemize}
 
 \label{sec:21-stress}
-\textbf{Robustness checks.} Against the historical mean, AR and HAR rather than naive or untuned models, the gap narrows or disappears. Only data published after the training cutoff give a clean test\index{contamination|textbf}, and a year or two of monthly data gives tests little power. A few series with large errors can decide a pooled comparison, as Brini found, so report results per series and horizon, and name the exact model version and context length. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:21-verdict}.
+\textbf{Robustness checks.} Against the historical mean, AR and HAR rather than naive or untuned models, the gap narrows or disappears. Only data published after the training cutoff give a clean test\index{contamination|textbf}, and a year or two of monthly data gives tests little power. A few series with large errors can decide a pooled comparison, as Brini found, so report results per series and horizon, and name the exact model version and context length. When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:21-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:21-verdict}
@@ -241,9 +241,9 @@ Macroeconomic series, after the cutoff & \textbf{Untested} & Clean post-cutoff e
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
 
-The evidence does not yet support the claim, but it is too new to reject it. That financial pretraining helps suggests the problem is the domain, not the architecture.
+The published evidence does not yet support a yes answer, but it is too new to rule one out. That financial pretraining helps suggests the problem is the domain, not the architecture.
 
-\textbf{What would change the picture.} The claim would gain support if a foundation model beat AR and HAR significantly on unseen data over several years, and lose it if successive generations kept falling short.
+\textbf{What would change the picture.} The answer would shift toward yes if a foundation model beat AR and HAR significantly on unseen data over several years, and toward no if successive generations kept falling short.
 
 \section{What practitioners and investors can use}
 \label{sec:21-investors}

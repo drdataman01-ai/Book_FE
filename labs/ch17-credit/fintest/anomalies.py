@@ -1,4 +1,4 @@
-"""Anomaly replication tools (Chapter 16).
+"""Tools for measuring published anomalies (Chapter 16).
 
 * Readers for the Open Source Asset Pricing data (Chen and Zimmermann 2022):
   long-short portfolio returns in wide or long format, and the signal

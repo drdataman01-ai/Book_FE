@@ -1,8 +1,8 @@
 # Lab 2: Four Data Traps
 
-Companion lab for **Chapter 2** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 2** of *Financial Engineering in Practice*.
 
-**Claim on trial:** the data I am testing on represents what an investor could actually have done.
+**What you will explore:** how the way returns are averaged, missing failures, look-ahead and tiny stocks change the return a backtest appears to earn.
 
 The lab measures four ways data can flatter a result. Three use nearly a century of real U.S. market data. One, survivorship, uses a simulated market where the right answer is known, because free data sources do not include delisted stocks.
 
@@ -75,7 +75,7 @@ This uses simulated returns for Parts A, C and D. **Results from simulated data 
 
 ## Outputs (`report/`)
 
-- `lab02_report.md`: all results, with a "Your verdict" prompt
+- `lab02_report.md`: all results, with questions to think about
 - `fig2_1_averages.png` to `fig2_5_size_deciles.png`
 - `table_*.csv`: every table in the report, plus the windows chosen each year in Part C2
 - `summary.json`: headline numbers for grading or automated checks
@@ -98,7 +98,7 @@ ch02-data-traps/
 
 Run the tests with `python tests/test_lab02.py` (or `pytest tests/`). In the book's repository, `fintest/` is shared by all labs; this folder carries its own copy so it runs on its own.
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

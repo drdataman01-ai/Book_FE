@@ -1,10 +1,10 @@
 """Lab 18: Does Delta Hedging Remove Option Risk?
 
-Chapter 18 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 18 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "An option seller who delta-hedges as Black-Scholes prescribes is left
-   with little risk."
+WHAT YOU WILL EXPLORE
+  How much risk is left for an option seller who delta-hedges as
+  Black–Scholes prescribes.
 
 WHAT THE LAB DOES
   Each month since 1990, sell a one-month at-the-money call on the U.S.
@@ -322,7 +322,7 @@ def write_report(out, res, a, b, c, d4, sim):
     md = ["# Lab 18 results: Does Delta Hedging Remove Option Risk?", ""]
     if sim:
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
-    md += ["**Claim on trial:** an option seller who delta-hedges as Black–Scholes prescribes is left with little risk.", "",
+    md += ["**What you will explore:** how much risk is left for an option seller who delta-hedges as Black–Scholes prescribes.", "",
            f"Months: {len(m)} ({m.index[0]} to {m.index[-1]}). Each month: sell a one-month at-the-money call priced at "
            f"the VIX (average premium {m['premium'].mean():.2%} of the index), hedge with Black–Scholes deltas at the same "
            "volatility. P&L is shown as a share of the premium.", "", "## Part A: How much risk is left?", "",
@@ -352,7 +352,7 @@ def write_report(out, res, a, b, c, d4, sim):
                 "Implied vol": _num(".0%"), "Realized vol": _num(".0%"), "Largest daily move": _num(".1%")}), "",
            f"Mean daily-hedged P&L {d4['mean_pnl']:+.1%} of premium; positive in {d4['share_months_positive']:.0%} of "
            f"months; the worst 5% of months account for {d4['share_of_losses_in_worst_5pct']:.0%} of all losses.", "",
-           "![Lab Figure 18.2](fig18_2_monthly.png)", "", "## Your verdict", "",
+           "![Lab Figure 18.2](fig18_2_monthly.png)", "", "## Questions to think about", "",
            "1. How much of the unhedged risk does daily hedging remove on real paths, compared with Black–Scholes paths?",
            "2. What is left, and when does it show up?",
            "3. Does hedging more often, or more cheaply, change the answer?", ""]

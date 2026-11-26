@@ -1,4 +1,4 @@
-% Chapter 10 -- Claim: Volatility Is Predictable
+% Chapter 10 -- How Predictable Is Volatility?
 % Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -18,7 +18,7 @@
 }{}
 \makeatother
 
-\chapter{Claim: Volatility Is Predictable}
+\chapter{How Predictable Is Volatility?}
 \label{ch:07}
 \providecommand{\term}[1]{\emph{#1}}
 
@@ -88,13 +88,13 @@ ARCH needed many lags to capture volatility that stays high for weeks. Engle's d
 \end{figure}
 
 
-The claim carries a great deal of weight. Option prices, risk limits, \term{Value at Risk}\index{Value at Risk (VaR)}\label{kt:value-at-risk}, \term{margin} requirements\index{margin} (the deposits that brokers demand from investors who borrow or trade futures) and volatility-targeting\index{volatility targeting} funds all assume that volatility\index{volatility} can be forecast. If it could not, a risk manager would have no better guess for tomorrow's risk than the long-run average, and none of these tools would work as intended.
+The question carries a great deal of weight. Option prices, risk limits, \term{Value at Risk}\index{Value at Risk (VaR)}\label{kt:value-at-risk}, \term{margin} requirements\index{margin} (the deposits that brokers demand from investors who borrow or trade futures) and volatility-targeting\index{volatility targeting} funds all assume that volatility\index{volatility} can be forecast. If it could not, a risk manager would have no better guess for tomorrow's risk than the long-run average, and none of these tools would work as intended.
 
 Yet in the 1990s the evidence looked weak. Researchers judged a GARCH forecast by how well it predicted the next day's squared return, and by that test the forecasts explained only a few percent of the variation. It seemed that the models, though popular, had little real forecasting power.
 
-The claim on trial\index{claims-on-trial method} is: \textbf{tomorrow's volatility can be forecast well from today's information, and the forecasts are good enough to improve a portfolio.}
+The question of this chapter is: \textbf{how well can tomorrow's volatility be forecast from today's information, and are the forecasts good enough to improve a portfolio?}
 
-The lab in Section~\ref{sec:10-lab} replicates the proxy result of Andersen and Bollerslev (1998) and the model comparison of Hansen and Lunde (2005) on free daily U.S. market returns since 1926 and the VIX since 1990, and then rebuilds the volatility-managed portfolios of Moreira and Muir (2017), in order to check how predictable volatility is, which model forecasts it best, and whether the forecasts are useful to an investor.
+The lab in Section~\ref{sec:10-lab} applies the proxy argument of Andersen and Bollerslev (1998) and the model comparison of Hansen and Lunde (2005) to free daily U.S. market returns since 1926 and the VIX since 1990, and then constructs volatility-managed portfolios in the manner of Moreira and Muir (2017), in order to see how predictable volatility is, which model forecasts it best, and whether the forecasts are useful to an investor.
 
 
 \section{Foundations}
@@ -368,14 +368,14 @@ Three regularities in daily stock returns, which Part A of this chapter's lab me
 Lab Figure~\ref{ch:07}.1 shows the first fact on U.S. data. The bars for returns hover near zero at every lag, while the bars for absolute returns are positive at lag 1 and still clearly positive after 50 trading days.
 
 
-\section{The claim}
+\section{The question}
 \label{sec:10-claim}
 
 \begin{callout}
-\textbf{Claim.} Today's volatility forecasts tomorrow's. Forecasts built from past returns, or from option prices, beat a constant forecast by a wide margin, out of sample\index{in-sample versus out-of-sample}, at horizons from one day to one month.
+\textbf{The question.} Does today's volatility forecast tomorrow's? Do forecasts built from past returns, or from option prices, beat a constant forecast by a wide margin, out of sample\index{in-sample versus out-of-sample}, at horizons from one day to one month?
 \end{callout}
 
-To test the claim, four points need to be settled.
+To answer the question, four points need to be settled.
 
 \begin{itemize}
   \item \textbf{What is forecast.} The variance of the market's return over the next $h$ days, for $h = 1$, 5 and 22. True variance is never observed, so we use a \term{proxy}, an observable stand-in: the sum of squared daily returns over those days.
@@ -384,7 +384,7 @@ To test the claim, four points need to be settled.
   \item \textbf{What would count against it.} Forecasts that beat the long-run average only in sample or only in calm periods, a gain that disappears beyond a few days, or no model beating the random walk.
 \end{itemize}
 
-A separate claim is that an investor who holds less of the market when forecast volatility is high earns a higher Sharpe ratio\index{Sharpe ratio}. Forecastable volatility is necessary for it but not sufficient, because expected returns\index{return!expected} may rise with volatility and trading has costs.
+A separate question is whether an investor who holds less of the market when forecast volatility is high earns a higher Sharpe ratio\index{Sharpe ratio}. Forecastable volatility is necessary for it but not sufficient, because expected returns\index{return!expected} may rise with volatility and trading has costs.
 
 \section{The original evidence}
 \label{sec:10-evidence}
@@ -452,10 +452,10 @@ Mean absolute error, and MSE on volatility rather than variance, are not robust 
 
 Every parameter must be estimated only on data available at the forecast date, as in the walk-forward\index{walk-forward evaluation} design of Chapter~\ref{ch:06}.
 
-\section{Lab~\thechapter: Replicating Andersen and Bollerslev (1998), Hansen and Lunde (2005) and Moreira and Muir (2017)}
+\section{Lab~\thechapter: Forecasting Volatility}
 \label{sec:10-lab}
 
-\textbf{Claim on trial\index{claims-on-trial method}:} volatility is predictable. The lab uses U.S. market returns since 1926 from the daily factors in the Kenneth French\index{Kenneth French data library} library and, from 1990, the VIX from FRED\index{FRED}; both are free.
+\textbf{What you will explore:} how predictable volatility is, which models forecast it best, and whether the forecasts help an investor. The lab draws on Andersen and Bollerslev (1998), Hansen and Lunde (2005) and Moreira and Muir (2017), and uses U.S. market returns since 1926 from the daily factors in the Kenneth French\index{Kenneth French data library} library and, from 1990, the VIX from FRED\index{FRED}; both are free.
 
 \textbf{Part A, stylized facts\index{stylized facts of returns}.} Autocorrelations of daily returns and absolute returns at lags 1 to 50, and the correlation\index{correlation} between today's return and tomorrow's absolute return (Lab Figure~\ref{ch:07}.1). Expect the first near zero, the second positive for months, and the third negative: the leverage effect.
 
@@ -466,7 +466,7 @@ Every parameter must be estimated only on data available at the forecast date, a
 \textbf{Part D, use.} A \textbf{volatility-managed portfolio}\index{volatility targeting|textbf} holds the market with weight proportional to 1 / last month's realized variance, as in Moreira and Muir (2017). The lab reports its Sharpe ratio, drawdown\index{drawdown} and alpha\index{alpha}, net of costs and with an optional leverage cap (Lab Figure~\ref{ch:07}.5).
 
 \label{sec:10-stress}
-\textbf{Robustness checks.} Every GARCH forecast converges to the long-run level, so beyond a few months a constant is hard to beat. In the first days of October 2008 and March 2020, every forecast built from past returns was far too low, while the VIX, a market price, could react within the day. In 2022 stocks fell by about a fifth while realized volatility stayed moderate, a reminder that volatility and losses are different things. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:10-verdict}.
+\textbf{Robustness checks.} Every GARCH forecast converges to the long-run level, so beyond a few months a constant is hard to beat. In the first days of October 2008 and March 2020, every forecast built from past returns was far too low, while the VIX, a market price, could react within the day. In 2022 stocks fell by about a fifth while realized volatility stayed moderate, a reminder that volatility and losses are different things. When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:10-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:10-verdict}
@@ -512,7 +512,7 @@ Using forecasts to time the market & \textbf{Weakly} & The gains from volatility
 
 Forecastable volatility predicts risk, not returns, so it does not contradict market efficiency.
 
-\textbf{What would change the picture.} The claim about using the forecasts would gain support if volatility-managed portfolios built only with real-time information kept beating the market after costs and with realistic leverage. The forecasting claim would weaken only if simple models stopped beating the long-run average in new data, which no study so far has found.
+\textbf{What would change the picture.} The case for using the forecasts would strengthen if volatility-managed portfolios built only with real-time information kept beating the market after costs and with realistic leverage. The case for forecastability would weaken only if simple models stopped beating the long-run average in new data, which no study so far has found.
 
 \section{What practitioners and investors can use}
 \label{sec:10-investors}

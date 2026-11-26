@@ -1,10 +1,10 @@
 """Lab 20: Does Machine Learning Find Hidden Alpha?
 
-Chapter 20 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 20 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "Machine-learning models find return predictability that traditional
-   linear models miss, and it can be turned into profitable portfolios."
+WHAT YOU WILL EXPLORE
+  Whether machine learning finds return predictability that linear models
+  miss, and whether it survives costs.
 
 WHAT THE LAB DOES
   Part A  A horse race on a panel of 149 portfolios (100 size/book-to-market,
@@ -348,8 +348,7 @@ def write_report(out, a, b, c, d, sim, notes, args):
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
     if notes:
         md += ["Notes: " + "; ".join(notes), ""]
-    md += ["**Claim on trial:** machine-learning models find return predictability that linear models miss, and it can "
-           "be turned into profitable portfolios.", "",
+    md += ["**What you will explore:** whether machine learning finds return predictability that linear models miss, and whether it survives costs.", "",
            f"## Part A: The horse race (forecasts from {args.test_start}, refit every {args.refit_years} years)", "",
            "Target: next month's excess return minus that month's cross-sectional average. R² is pooled against a "
            "forecast of zero. Long–short: top 10% minus bottom 10% by forecast.", "",
@@ -370,7 +369,7 @@ def write_report(out, a, b, c, d, sim, notes, args):
                _md(d, {"P": lambda v: str(int(v)), "months": lambda v: str(int(v)), "complexity_P_over_T": _num(".2f"),
                        "ridge": _num("g"), "r2_oos": _num("+.2%"), "timing_sharpe": _num(".2f"), "alpha_t": _num("+.2f")}),
                "", "![Lab Figure 20.5](fig20_5_complexity.png)", ""]
-    md += ["## Your verdict", "", "1. Do the nonlinear models beat the linear ones out of sample, and by how much?",
+    md += ["## Questions to think about", "", "1. Do the nonlinear models beat the linear ones out of sample, and by how much?",
            "2. Does the edge survive large portfolios, recent years and trading costs?",
            "3. Is the gain hidden alpha, or a better way of combining characteristics everyone already knows?", ""]
     (out / "lab20_report.md").write_text("\n".join(md))

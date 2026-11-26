@@ -1,10 +1,10 @@
 """Lab 9: Do Optimized Portfolios Beat Naive Ones?
 
-Chapter 9 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 9 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "Optimized portfolios deliver better out-of-sample risk-adjusted returns
-   than simple rules."
+WHAT YOU WILL EXPLORE
+  How optimized portfolio strategies compare with equal weighting (1/N) out
+  of sample.
 
 WHAT THE LAB DOES
   Part A  Nine allocation rules on ten industry portfolios, walk-forward from
@@ -277,7 +277,7 @@ def write_report(out, label, a, b, c, dd, sim, cost):
     md = ["# Lab 9 results: Do Optimized Portfolios Beat Naive Ones?", ""]
     if sim:
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
-    md += ["**Claim on trial:** optimized portfolios deliver better out-of-sample risk-adjusted returns than simple rules.",
+    md += ["**What you will explore:** how optimized portfolio strategies compare with equal weighting (1/N) out of sample.",
            "", f"## Part A: Nine rules on {label}", "",
            "Weights estimated each month from the previous 120 months of excess returns and held for one month. CE: "
            "certainty-equivalent return for risk aversion 1. Sharpe-ratio test against 1/N: Jobson–Korkie with Memmel's "
@@ -292,7 +292,7 @@ def write_report(out, label, a, b, c, dd, sim, cost):
            "## Part D: Weight stability", "",
            _md(dd, {"avg_gross_exposure": _num(".2f"), "avg_max_weight": _num(".2f"), "share_negative_weights": _num(".0%"),
                     "weight_volatility": _num(".3f"), "avg_turnover": _num(".2f")}), "",
-           "![Lab Figure 9.5](fig9_5_weights.png)", "", "## Your verdict", "",
+           "![Lab Figure 9.5](fig9_5_weights.png)", "", "## Questions to think about", "",
            "1. Does any optimized rule beat 1/N significantly, before and after costs?",
            "2. Which repairs (shrinkage, constraints, risk-based rules) help most, and by how much?",
            "3. Would you replace a simple rule with an optimizer, given this evidence?", ""]

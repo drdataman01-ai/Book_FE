@@ -59,7 +59,7 @@ def test_full_lab_runs_on_simulated_data():
         s = lab17.main(["--source", "sim", "--out", tmp])
         assert len(list(Path(tmp).glob("fig17_*.png"))) == 5
         rep = (Path(tmp) / "lab17_report.md").read_text()
-        assert "Simulated data" in rep and "Your verdict" in rep
+        assert "Simulated data" in rep and "Questions to think about" in rep
         dec = {r["spread"]: r for r in s["decomposition"]}
         assert dec["Baa–Aaa"]["share_expected_loss"] < 0.5  # simulation: a premium on top of 0.15% expected loss
         sp = {r["spread"]: r for r in s["spreads"]}

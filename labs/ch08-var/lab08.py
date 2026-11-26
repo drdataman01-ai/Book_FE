@@ -1,10 +1,10 @@
 """Lab 8: Value at Risk and Its Backtests.
 
-Chapter 8 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 8 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "A 99% one-day VaR model is breached on about 1% of days, and the breaches
-   do not cluster."
+WHAT YOU WILL EXPLORE
+  How often losses exceed a 99% VaR, in calm markets and in crises, for six
+  common models.
 
 WHAT THE LAB DOES
   Part A  Backtest six VaR models on daily U.S. market returns from 1930:
@@ -437,7 +437,7 @@ def write_report(out, fc, a, b, c, dd, sim):
     md = ["# Lab 8 results: Value at Risk and Its Backtests", ""]
     if sim:
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
-    md += ["**Claim on trial:** a 99% one-day VaR is breached on about 1% of days, and the breaches do not cluster.", "",
+    md += ["**What you will explore:** how often losses exceed a 99% VaR, in calm markets and in crises, for six common models.", "",
            f"Backtest period: {p}. Forecasts use only data available the day before.", "",
            "## Part A: 99% VaR backtests", "",
            _md(a["table"][["model", "days", "breaches", "expected", "rate", "kupiec_p", "independence_p", "cc_p",
@@ -482,7 +482,7 @@ def write_report(out, fc, a, b, c, dd, sim):
                {"Tail loss / ES": _num(".2f"), "Mean scaled exceedance": _num("+.3f"), "t": _num(".2f"),
                 "p (one-sided)": _num(".3f")}), "",
            "A positive t (small p) means the model understated the average loss on its worst days.", "",
-           "![Lab Figure 8.5](fig8_5_es.png)", "", "## Your verdict", "",
+           "![Lab Figure 8.5](fig8_5_es.png)", "", "## Questions to think about", "",
            "1. Which models deliver about 1% breaches at 99%? Which pass the independence test?",
            "2. How do the models fare in crises and deeper in the tail (99.5%, 99.9%)?",
            "3. Does expected shortfall fix the weaknesses of VaR, or inherit them?", ""]

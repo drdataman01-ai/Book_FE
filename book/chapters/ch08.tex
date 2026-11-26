@@ -1,4 +1,4 @@
-% Chapter 11 -- Claim: Value-at-Risk Models Measure Risk Reliably
+% Chapter 11 -- How Reliably Do Value-at-Risk Models Measure Risk?
 % Requires: amsmath, amssymb, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -18,13 +18,13 @@
 }{}
 \makeatother
 
-\chapter{Claim: Value-at-Risk Models Measure Risk Reliably}
+\chapter{How Reliably Do Value-at-Risk Models Measure Risk?}
 \label{ch:08}
 \providecommand{\term}[1]{\emph{#1}}
 
 A weather forecast that gives a 1\% chance of a severe storm tomorrow makes a promise that can be checked: over many days, severe storms should arrive on about one day in a hundred. Banks make the same kind of promise about their losses every day, and regulators check it. This chapter asks whether those promises are kept, especially in the storms that matter most.
 
-In the early 1990s large banks needed a single number that summarized the market risk of a trading book, the stocks, bonds and other securities a bank buys and sells for profit. J.P. Morgan's RiskMetrics system, made public in 1994, popularized one: \textbf{Value at Risk}\index{Value at Risk (VaR)}, the loss that should be exceeded only on a stated fraction of days. A bank that reports a one-day 99\% VaR of \$50 million is claiming that it will lose more than \$50 million on about one trading day in a hundred. In 1996 the \term{Basel Committee} on Banking Supervision, the international group of bank regulators, allowed banks to set their capital for market risk, the money of their own that they must hold to absorb losses, with their own VaR models, provided the models passed a regular backtest.
+In the early 1990s large banks needed a single number that summarized the market risk of a trading book, the stocks, bonds and other securities a bank buys and sells for profit. J.P. Morgan's RiskMetrics system, made public in 1994, popularized one: \textbf{Value at Risk}\index{Value at Risk (VaR)}, the loss that should be exceeded only on a stated fraction of days. A bank that reports a one-day 99\% VaR of \$50 million is stating that it will lose more than \$50 million on about one trading day in a hundred. In 1996 the \term{Basel Committee} on Banking Supervision, the international group of bank regulators, allowed banks to set their capital for market risk, the money of their own that they must hold to absorb losses, with their own VaR models, provided the models passed a regular backtest.
 
 
 The question matters beyond banks. Every investor who sets a risk limit, a stop-loss or a leverage ratio from a model is relying on the same kind of forecast. A day on which the loss is larger than the VaR is called a \term{breach}\index{VaR exceedance}. If a bank's 99\% VaR is \$50 million, a breach is a day on which it loses more than \$50 million, and a good model should produce about one such day in every hundred. The timing matters as well as the count. The breaches should be scattered randomly through the years, not bunched together in a few bad weeks, because a model whose breaches all arrive during a crisis fails exactly when it is needed most.
@@ -61,13 +61,13 @@ The question matters beyond banks. Every investor who sets a risk limit, a stop-
 \end{figure}
 
 
-That decision raised a statistical question with real money attached: how can anyone tell whether a VaR model is right? VaR is unusual among the claims in this book because it is a forecast that checks itself. Every day produces a test, because either the loss exceeded the VaR or it did not. To check banks' models from the outside, \term{Kupiec}\index{Kupiec test} (1995) proposed a test of whether breaches occur as often as the model promises, and \term{Christoffersen} (1998) added a test of whether they arrive independently or in clusters, since a model that is right on average but wrong in every crisis is of little use. The crisis of 2007--09, when breaches came in runs, led regulators to replace VaR with \term{expected shortfall (ES)}, the average loss on the worst days, in the Fundamental Review of the Trading Book, Basel's overhaul of the rules for market risk.
+That decision raised a statistical question with real money attached: how can anyone tell whether a VaR model is right? VaR is unusual among the subjects of this book because it is a forecast that checks itself. Every day produces a test, because either the loss exceeded the VaR or it did not. To check banks' models from the outside, \term{Kupiec}\index{Kupiec test} (1995) proposed a test of whether breaches occur as often as the model promises, and \term{Christoffersen} (1998) added a test of whether they arrive independently or in clusters, since a model that is right on average but wrong in every crisis is of little use. The crisis of 2007--09, when breaches came in runs, led regulators to replace VaR with \term{expected shortfall (ES)}, the average loss on the worst days, in the Fundamental Review of the Trading Book, Basel's overhaul of the rules for market risk.
 Since the Fundamental Review of the Trading Book (2016), banks set market-risk capital with 97.5\% ES, not 99\% VaR. 
 
 
-The claim on trial\index{claims-on-trial method} is therefore: \textbf{Value-at-Risk models measure risk reliably. Losses exceed a 99\% VaR on about 1\% of trading days, in calm markets and in crises alike.}
+The question of this chapter is therefore: \textbf{how reliably do Value-at-Risk models measure risk? Do losses exceed a 99\% VaR on about 1\% of trading days, in calm markets and in crises alike?}
 
-The lab in Section~\ref{sec:11-lab} replicates the backtests of Kupiec (1995) and Christoffersen (1998) on six common VaR models, using free daily U.S. market returns since 1930, in order to check whether any of them measures risk reliably and how they fail in crises.
+The lab in Section~\ref{sec:11-lab} applies the backtests of Kupiec (1995) and Christoffersen (1998) to six common VaR models, using free daily U.S. market returns since 1930, in order to see whether any of them measures risk reliably and how they fail in crises.
 
 
 \section{Foundations}
@@ -242,20 +242,20 @@ Filtered historical simulation (FHS) & GJR-GARCH & Empirical quantile of past \e
 \term{Filtered historical simulation}\index{Value at Risk (VaR)!filtered historical simulation|textbf} (Barone-Adesi, Giannopoulos and Vosper 1999; Hull and White 1998) combines the strengths of both approaches. It first divides each past return by that day's volatility forecast, which puts calm and turbulent days on the same scale; these rescaled returns are called standardized returns. It then reads the VaR from the worst of these rescaled returns, as historical simulation does, which captures the fat tails\index{fat tails} without assuming a distribution. Finally, it multiplies by today's volatility forecast, so the VaR reacts quickly. The GJR\index{GARCH!GJR}-$t$ model follows the same idea but uses a Student-$t$ distribution, a bell-shaped curve with fatter tails than the normal, for the tail.
 
 
-\section{The claim}
+\section{The question}
 \label{sec:11-claim}
 
 \begin{callout}
-\textbf{Claim.} A well-built 99\% one-day VaR model is breached on about 1\% of trading days, and its breaches are independent over time. Breaches neither cluster in turbulent periods nor become more likely after a breach.
+\textbf{The question.} Is a well-built 99\% one-day VaR model breached on about 1\% of trading days, with breaches that are independent over time, neither clustering in turbulent periods nor becoming more likely after a breach?
 \end{callout}
 
-This claim is implicit in every VaR number a bank reports and in the Basel rules that used VaR to set capital. Christoffersen (1998) called its two parts \term{unconditional coverage}\index{coverage test!unconditional|textbf} and \term{independence}. Together they form \term{conditional coverage}\index{coverage test!conditional|textbf}: given everything known the day before, the chance of a breach is exactly 1\%. Four points need to be settled.
+A yes answer is implicit in every VaR number a bank reports and in the Basel rules that used VaR to set capital. Christoffersen (1998) called the two parts of that answer \term{unconditional coverage}\index{coverage test!unconditional|textbf} and \term{independence}. Together they form \term{conditional coverage}\index{coverage test!conditional|textbf}: given everything known the day before, the chance of a breach is exactly 1\%. Four points need to be settled.
 
 \begin{itemize}
-  \item \textbf{Which models.} The claim is that some models, built on the evidence of Chapter~\ref{ch:07}, achieve conditional coverage. We test six, from the simplest to filtered historical simulation.
+  \item \textbf{Which models.} The question is whether some models, built on the evidence of Chapter~\ref{ch:07}, achieve conditional coverage. The chapter examines six, from the simplest to filtered historical simulation.
   \item \textbf{Which portfolio.} The U.S. stock market, a single liquid position with daily data back to 1926. Bank portfolios are more complex, and their own backtests (Section~\ref{sec:11-evidence}) are the stronger test of practice.
-  \item \textbf{Which confidence level.} The claim is stated at the Basel level of 99\%, but a model that fails at 99.9\% is of limited use for the tail events that matter.
-  \item \textbf{What would count against it.} A breach rate significantly different from 1\%, or significantly clustered breaches. The claim weakens if every model fails in crises.
+  \item \textbf{Which confidence level.} The question is posed at the Basel level of 99\%, but a model that fails at 99.9\% is of limited use for the tail events that matter.
+  \item \textbf{What would count against it.} A breach rate significantly different from 1\%, or significantly clustered breaches. The case for VaR weakens further if every model fails in crises.
 \end{itemize}
 
 \section{The original evidence}
@@ -320,10 +320,10 @@ Even a correct model lands in the yellow zone about one year in nine and almost 
 
 \textbf{Backtesting expected shortfall.}\index{expected shortfall (ES)|textbf} Since 2016, banks have set capital with 97.5\% ES. ES is an average size of loss, so no simple count can check it; statisticians say it is not \term{elicitable}\index{elicitability|textbf} (Gneiting 2011). The \term{exceedance-residual test} of McNeil and Frey (2000) checks whether losses on breach days match the ES forecast on average, and Part D of the lab applies it. Because ES is hard to test, Basel still backtests VaR at 97.5\% and 99\%.
 
-\section{Lab~\thechapter: Replicating the Kupiec and Christoffersen backtests}
+\section{Lab~\thechapter: Backtesting Value at Risk}
 \label{sec:11-lab}
 
-\textbf{Claim on trial\index{claims-on-trial method}:} losses exceed a 99\% VaR on about 1\% of trading days, in calm markets and in crises alike. The lab replicates the backtests of Kupiec (1995) and Christoffersen (1998) on daily U.S. market returns from the Kenneth French\index{Kenneth French data library} library, from 1930 to the present, about 24,000 trading days. It backtests the six models of Section~\ref{sec:11-how}, using only data available the day before and re-estimating the GARCH models yearly on the previous ten years. A single liquid stock-market position is the simplest setting for VaR, so if the models struggle here, they will not do better with a bank's options, credit and hard-to-value positions.
+\textbf{What you will explore:} how often losses exceed a 99\% VaR, in calm markets and in crises, for six common models. The lab applies the backtests of Kupiec (1995) and Christoffersen (1998) to daily U.S. market returns from the Kenneth French\index{Kenneth French data library} library, from 1930 to the present, about 24,000 trading days. It backtests the six models of Section~\ref{sec:11-how}, using only data available the day before and re-estimating the GARCH models yearly on the previous ten years. A single liquid stock-market position is the simplest setting for VaR, so if the models struggle here, they will not do better with a bank's options, credit and hard-to-value positions.
 
 \textbf{Part A, the number of breaches.} Breaches of the 99\% VaR against the roughly 240 expected, with Kupiec's test, the worst loss as a multiple of VaR, and the share of years in the yellow or red zone (Lab Figures~\ref{ch:08}.1 and~\ref{ch:08}.2).
 
@@ -346,12 +346,12 @@ The studies and records cited in this chapter point to a clear pattern: \textbf{
 \setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.14\linewidth}>{\raggedright\arraybackslash}p{0.35\linewidth}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.13\linewidth-0.12\linewidth-0.33\linewidth-6\tabcolsep\relax}@{}}
 \toprule
-Situation & Does the claim hold? & Why & Evidence \\
+Situation & Holds? & Why & Evidence \\
 \midrule
 \endfirsthead
 \multicolumn{4}{@{}l}{\emph{(continued)}} \\
 \toprule
-Situation & Does the claim hold? & Why & Evidence \\
+Situation & Holds? & Why & Evidence \\
 \midrule
 \endhead
 \midrule

@@ -72,7 +72,7 @@ def test_full_lab_runs_on_simulated_data():
         s = lab18.main(["--source", "sim", "--n-sims", "2", "--out", tmp])
         assert len(list(Path(tmp).glob("fig18_*.png"))) == 5
         rep = (Path(tmp) / "lab18_report.md").read_text()
-        assert "Simulated data" in rep and "Your verdict" in rep
+        assert "Simulated data" in rep and "Questions to think about" in rep
         he = {(r["paths"][:4], r["hedging"]): r for r in s["hedging_error"]}
         assert he[("Real", "Daily")]["risk_removed"] > 0.5
         assert abs(he[("Blac", "Daily")]["mean"]) < 0.05  # no premium on Black-Scholes paths

@@ -1,8 +1,8 @@
 # Lab 9: Do Optimized Portfolios Beat Naive Ones?
 
-Companion lab for **Chapter 9** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 9** of *Financial Engineering in Practice*.
 
-**Claim on trial:** portfolios built by optimization deliver better out-of-sample risk-adjusted returns than simple rules such as equal weighting (1/N).
+**What you will explore:** how optimized portfolio strategies compare with equal weighting (1/N) out of sample.
 
 ## Quick start
 
@@ -65,7 +65,7 @@ Every rule is estimated on the previous `--window` months (default 120) and held
 - **The Sharpe-difference test** assumes returns are serially uncorrelated and roughly normal; with fat tails it overstates precision somewhat. Ledoit and Wolf (2008) give a robust alternative.
 - **Industry and size/book-to-market portfolios** are already diversified. Results with individual stocks, where estimation error is worse, are typically less favourable to optimization.
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

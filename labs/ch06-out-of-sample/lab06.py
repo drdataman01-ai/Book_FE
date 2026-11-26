@@ -1,9 +1,10 @@
 """Lab 6: Do Valuations Predict the Equity Premium Out of Sample?
 
-Chapter 6 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 6 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "In-sample significant predictors beat the historical mean out of sample."
+WHAT YOU WILL EXPLORE
+  Whether predictors that are significant in sample beat the historical mean
+  out of sample.
 
 WHAT THE LAB DOES
   Part A  In-sample regressions of next month's equity premium on each of the
@@ -377,7 +378,7 @@ def write_report(out, df, a, b, c, d, e, sim, period, oos_start):
     if sim:
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets. In "
                "the simulation only the dividend-price ratio truly predicts the premium.", ""]
-    md += ["**Claim on trial:** in-sample significant predictors beat the historical mean out of sample.", "",
+    md += ["**What you will explore:** whether predictors that are significant in sample beat the historical mean out of sample.", "",
            f"Sample: {period}. Target: next month's equity premium (S&P 500 total return minus the Treasury bill rate).",
            "", "## Part A: In-sample regressions", "",
            _md(a[["predictor", "description", "start", "months", "slope", "t_white", "r2", "adj_r2"]],
@@ -408,7 +409,7 @@ def write_report(out, df, a, b, c, d, e, sim, period, oos_start):
            f"nominal p = {e['p_nominal']:.3f}. {e['rules_nominal_5pct']} rules are 'significant' at 5% on their own. "
            f"Reality Check p = {e['p_reality_check']:.3f}; SPA p = {e['p_spa']:.3f}.", "",
            "![Lab Figure 6.5](fig6_5_reality_check.png)", "",
-           "## Your verdict", "",
+           "## Questions to think about", "",
            "1. How many predictors were significant in sample, and how many beat the historical mean out of sample?",
            "2. Do the Campbell–Thompson restrictions or the combination recover a gain an investor would value?",
            "3. Did any predictor keep working after 2005?", ""]

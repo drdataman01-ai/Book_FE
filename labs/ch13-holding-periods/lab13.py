@@ -1,12 +1,10 @@
 """Lab 13: When Do Investors Sell, and What Does It Cost Them?
 
-Chapter 13 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 13 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "Investors earn the returns their stocks earn."
-  More precisely: an investor who holds a stock earns, on average and per
-  year invested, the return that fixed-period studies report for it,
-  whatever rule the investor uses to decide when to sell.
+WHAT YOU WILL EXPLORE
+  How the rule an investor uses to decide when to sell changes what the
+  investor experiences and keeps.
 
 WHAT THE LAB DOES
   Part A  Optional stopping. Six selling rules applied to the same simulated
@@ -340,8 +338,7 @@ def write_report(out, period, a, b, c, d, dec, e, args, sim):
     if sim:
         md += ["> **Simulated industry data.** Parts C and D test that the code runs; they say nothing about real "
                "markets. Parts A, B and E use simulated prices by design.", ""]
-    md += ["**Claim on trial:** investors earn the returns their stocks earn, whatever rule they use to decide "
-           "when to sell.", "",
+    md += ["**What you will explore:** how the rule an investor uses to decide when to sell changes what the investor experiences and keeps.", "",
            f"Thresholds: profit target +{args.up:.0%}, stop-loss -{args.down:.0%}. Longest hold {args.sim_cap} months "
            f"in Parts A and B and {args.cap} months in Parts C and D.", ""]
     pct, pct1 = _num("+.2%"), _num(".0%")
@@ -404,7 +401,7 @@ def write_report(out, period, a, b, c, d, dec, e, args, sim):
            f"{args.sigma:.0%}, tax {args.tax:.0%} on realized gains (losses earn a credit), one-way cost "
            f"{args.cost * 1e4:.0f} bp. Wealth is the average final wealth per $1 invested; all rules see the same "
            "price shocks.", "", "![Lab Figure 13.5](fig13_5_taxes.png)", ""]
-    md += ["## Your verdict", "",
+    md += ["## Questions to think about", "",
            "1. Part A: which rule would an investor most enjoy following, judged by its win rate? Which rule leaves the "
            "most losers still held at the cap? Did any rule change the expected return?",
            "2. Part B: why does the average annualized return rank the rules so differently from the log return per "
@@ -413,7 +410,7 @@ def write_report(out, period, a, b, c, d, dec, e, args, sim):
            "If so, what property of real returns, absent from Part A, could explain it?",
            "4. Part D: do the winners sold beat the losers held? How does your answer compare with Odean (1998), who "
            "used individual stocks rather than industries?",
-           "5. Part E: rank the rules after tax. Which part of the claim, if any, survives taxes?", ""]
+           "5. Part E: rank the rules after tax. Which rules hold up best after tax, and why?", ""]
     (out / "lab13_report.md").write_text("\n".join(md))
 
 

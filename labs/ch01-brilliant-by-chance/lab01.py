@@ -1,9 +1,10 @@
 """Lab 1: Brilliant by Chance.
 
-Chapter 1 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 1 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "A strategy with an impressive backtest has skill."
+WHAT YOU WILL EXPLORE
+  How good a track record luck alone can produce, and how high the bar must
+  be before a record counts as evidence of skill.
 
 WHAT THE LAB DOES
   Part A  Signal and noise. Measures the U.S. market's Sharpe ratio and how
@@ -379,7 +380,7 @@ def write_report(out: Path, a: dict, s: dict, c: pd.DataFrame, simulated: bool, 
         md += ["> **Simulated data.** These numbers test that the lab runs. They are produced from random draws "
                "and say nothing about real markets. Run without `--source sim` for real results.", ""]
     md += [
-        "**Claim on trial:** a strategy with an impressive backtest has skill.", "",
+        "**What you will explore:** how good a track record luck alone can produce, and how high the bar must be before a record counts as evidence of skill.", "",
         "## Part A: Signal and noise", "",
         f"- Sample: {a['start']} to {a['end']} ({a['years']:.0f} years).",
         f"- Market excess return {a['mean_excess_ann']:.1%} a year, volatility {a['vol_ann']:.1%}, "
@@ -422,7 +423,7 @@ def write_report(out: Path, a: dict, s: dict, c: pd.DataFrame, simulated: bool, 
             {"Strategies tried": ",d", "Best t (median)": ".2f", "5th pct": ".2f", "95th pct": ".2f",
              "Approximation sqrt(2 ln k)": ".2f"}), "",
         "![Lab Figure 1.5](fig1_5_search_cost.png)", "",
-        "## Your verdict", "",
+        "## Questions to think about", "",
         "Write two or three sentences: does an impressive backtest, on its own, show skill? "
         "Use the numbers above. Then name one piece of information you would ask for before believing a backtest.",
         "",

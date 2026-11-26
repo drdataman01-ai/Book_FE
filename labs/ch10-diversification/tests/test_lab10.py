@@ -72,7 +72,7 @@ def test_full_lab_runs_on_simulated_data():
         s = lab10.main(["--source", "sim", "--out", tmp])
         assert len(list(Path(tmp).glob("fig10_*.png"))) == 5
         rep = (Path(tmp) / "lab10_report.md").read_text()
-        assert "Simulated data" in rep and "Your verdict" in rep
+        assert "Simulated data" in rep and "Questions to think about" in rep
         c = {r["pair"]: r for r in s["conditional"]}
         assert c["US stocks vs Intl stocks"]["high_vol"] > c["US stocks vs Intl stocks"]["calm"]
         assert s["infl_fit"]["slope_per_1pt_inflation"] > 0      # built in: higher inflation, higher stock-bond corr

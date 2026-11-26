@@ -1,9 +1,10 @@
 """Lab 14: What Survives the Trip from Paper to Portfolio?
 
-Chapter 14 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 14 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "A strategy that is profitable in a backtest is profitable to trade."
+WHAT YOU WILL EXPLORE
+  How much of a backtest's profit remains once trading costs and capacity
+  are counted.
 
 WHAT THE LAB DOES
   Part A  Gross performance of three classic long-short factors from the
@@ -416,7 +417,7 @@ def write_report(out, df, a, b, c, sens, d, e, args, sim):
     if sim:
         md += ["> **Simulated factor data.** Parts A, C and D test that the code runs; they say nothing about real "
                "markets. Parts B and E use a simulated stock universe by design.", ""]
-    md += ["**Claim on trial:** a strategy that is profitable in a backtest is profitable to trade.", "",
+    md += ["**What you will explore:** how much of a backtest's profit remains once trading costs and capacity are counted.", "",
            f"Sample {period}. Headline one-way cost {args.cost * 1e4:.0f} basis points; short-borrowing fee "
            f"{args.borrow_fee:.2%} a year; turnover source: {args.turnover}.", ""]
     md += ["## Part A: Gross performance", "",
@@ -466,7 +467,7 @@ def write_report(out, df, a, b, c, sens, d, e, args, sim):
                 "Net at 50 bp": _num("+.2%")}), "",
            "Expected gross: the true expected long-short return in the simulation (no sampling noise), per month.", "",
            "![Lab Figure 14.5](fig14_5_banding.png)", ""]
-    md += ["## Your verdict", "",
+    md += ["## Questions to think about", "",
            "1. Which strategies are profitable to trade at realistic costs, and which only on paper? Use the "
            "break-even costs and the cost sensitivity table.",
            "2. How does the ranking change after costs, and why?",

@@ -1,8 +1,8 @@
 # Lab 20: Does Machine Learning Find Hidden Alpha?
 
-Companion lab for **Chapter 20** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 20** of *Financial Engineering in Practice*.
 
-**Claim on trial:** machine-learning models find return predictability that traditional linear models miss, and it can be turned into profitable portfolios.
+**What you will explore:** whether machine learning finds return predictability that linear models miss, and whether it survives costs.
 
 ## Quick start
 
@@ -63,7 +63,7 @@ The simulation builds 150 portfolios whose expected returns depend linearly on v
 - **Part D** is a compact version of the random-feature design, not a replication: one bandwidth, three ridge penalties and a few feature counts. Nagel (2025) argues that in short windows these models reduce to volatility-timed momentum; Exercise 5 tests that.
 - **Run time** is dominated by the neural network. Use `--fast` while exploring and `--skip-c` to drop Part C.
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

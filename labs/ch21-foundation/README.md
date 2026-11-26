@@ -1,8 +1,8 @@
 # Lab 21: Do Foundation Models Beat Classical Forecasts?
 
-Companion lab for **Chapter 21** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 21** of *Financial Engineering in Practice*.
 
-**Claim on trial:** pretrained time-series foundation models, used zero-shot, forecast financial and economic series better than classical models.
+**What you will explore:** how foundation models, used zero-shot, compare with classical forecasts.
 
 ## Quick start
 
@@ -74,7 +74,7 @@ Every month from `--eval-start`, each model forecasts the next month's value of 
 - **GARCH** sees one monthly return per month, while the realized-variance models see a variance built from daily data, so it is handicapped on this task; it is included because it is the classical volatility model.
 - **Adapters.** The Chronos adapter is written for the `BaseChronosPipeline.predict_quantiles` interface of `chronos-forecasting`; the TimesFM adapter tries the 2.5 interface and then the 1.x/2.0 interface. Both packages change between releases. If an adapter fails, the lab says so and continues; fixing it usually means following the package's current quick-start.
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

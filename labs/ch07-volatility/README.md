@@ -1,8 +1,8 @@
 # Lab 7: Forecasting Volatility
 
-Companion lab for **Chapter 7** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 7** of *Financial Engineering in Practice*.
 
-**Claim on trial:** today's volatility forecasts tomorrow's, even though returns themselves are close to unforecastable.
+**What you will explore:** how predictable volatility is, which models forecast it best, and whether the forecasts help an investor.
 
 ## Quick start
 
@@ -50,7 +50,7 @@ This simulates GJR-GARCH returns with fat-tailed shocks and a VIX-like series. R
 - **The VIX** is the market's 30-day implied volatility for the S&P 500 under the risk-neutral measure, so it includes a variance risk premium; expect it to overpredict on average (Mincer–Zarnowitz slope below 1).
 - **Part D** scales weights using the full-sample volatility of the market, as Moreira and Muir do; this uses information not available in real time (Cederburg et al. 2020). Exercise 4 removes it.
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

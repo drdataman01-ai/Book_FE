@@ -106,7 +106,7 @@ def test_full_lab_runs_on_simulated_data():
         s = lab08.main(["--source", "sim", "--out", tmp])
         assert len(list(Path(tmp).glob("fig8_*.png"))) == 5
         rep = (Path(tmp) / "lab08_report.md").read_text()
-        assert "Simulated data" in rep and "Your verdict" in rep
+        assert "Simulated data" in rep and "Questions to think about" in rep
         bt = {r["model"]: r for r in s["backtest_99"]}
         # the simulation is GJR-GARCH with t shocks, so the matching model should pass and the normal one fail
         assert bt["GJR-GARCH, Student-t"]["kupiec_p"] > 0.01 and bt["Normal, 250-day"]["kupiec_p"] < 0.01

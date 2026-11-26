@@ -113,7 +113,7 @@ def test_full_lab_runs_on_simulated_data():
         s = lab19.main(["--source", "sim", "--out", tmp])
         assert len(list(Path(tmp).glob("fig19_*.png"))) == 5
         rep = (Path(tmp) / "lab19_report.md").read_text()
-        assert "Simulated data" in rep and "Your verdict" in rep
+        assert "Simulated data" in rep and "Questions to think about" in rep
         assert s["vrp"]["mean_gap_vol_points"] > 0 and s["vrp"]["share_months_positive"] > 0.6  # built-in premium
         pw = [r for r in s["strategies"] if r["strategy"].startswith("Put-write") and r["sample"] == "Common period"][0]
         assert 0.3 < pw["beta"] < 0.8 and pw["skewness"] < 0 and pw["beta_down"] > pw["beta_up"] + 0.3

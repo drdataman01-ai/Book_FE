@@ -129,7 +129,7 @@ def test_full_lab_runs_on_simulated_data():
         out = Path(tmp)
         assert len(list(out.glob("fig1_*.png"))) == 5
         report = (out / "lab01_report.md").read_text()
-        assert "Simulated data" in report and "Your verdict" in report
+        assert "Simulated data" in report and "Questions to think about" in report
         assert json.loads((out / "summary.json").read_text())["simulated"] is True
         assert summary["n_strategies"] == 300
 

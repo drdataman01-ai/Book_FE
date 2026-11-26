@@ -1,8 +1,8 @@
 # Lab 5: Do Simple Trading Rules Beat Buy-and-Hold?
 
-Companion lab for **Chapter 5** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 5** of *Financial Engineering in Practice*.
 
-**Claim on trial:** simple trend rules beat buy-and-hold after correcting for the number of rules tried.
+**What you will explore:** how trend rules perform against buy-and-hold, and how much of their apparent success remains after correcting for the number of rules tried.
 
 ## Quick start
 
@@ -64,7 +64,7 @@ Simulated results are not evidence about markets; the report and figures are lab
 
 ## Outputs (`report/`)
 
-- `lab05_report.md`: all results, with a "Your verdict" prompt
+- `lab05_report.md`: all results, with questions to think about
 - `fig5_1_rules.png` to `fig5_5_tsm_tsh.png`
 - `table_*.csv` and `summary.json`
 
@@ -82,7 +82,7 @@ ch05-trading-rules/
 └── tests/test_lab05.py      # runs offline
 ```
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

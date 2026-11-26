@@ -1,8 +1,8 @@
 # Lab 6: Do Valuations Predict the Equity Premium Out of Sample?
 
-Companion lab for **Chapter 6** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 6** of *Financial Engineering in Practice*.
 
-**Claim on trial:** in-sample significant predictors beat the historical mean out of sample.
+**What you will explore:** whether predictors that are significant in sample beat the historical mean out of sample.
 
 ## Quick start
 
@@ -59,7 +59,7 @@ Dividend–price ratio, dividend yield, earnings–price ratio and dividend payo
 
 ## Outputs (`report/`)
 
-- `lab06_report.md`: all results, with a "Your verdict" prompt
+- `lab06_report.md`: all results, with questions to think about
 - `fig6_1_in_sample.png` to `fig6_5_reality_check.png`
 - `table_*.csv` and `summary.json`
 
@@ -76,7 +76,7 @@ ch06-out-of-sample/
 └── tests/test_lab06.py      # runs offline
 ```
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

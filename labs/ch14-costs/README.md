@@ -1,8 +1,8 @@
 # Lab 14: What Survives the Trip from Paper to Portfolio?
 
-Companion lab for **Chapter 14** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 14** of *Financial Engineering in Practice*.
 
-**Claim on trial:** a strategy that is profitable in a backtest is profitable to trade.
+**What you will explore:** how much of a backtest's profit remains once trading costs and capacity are counted.
 
 ## Quick start
 
@@ -75,7 +75,7 @@ python lab14.py --source sim
 
 ## Outputs (`report/`)
 
-- `lab14_report.md`: all results, with a "Your verdict" prompt
+- `lab14_report.md`: all results, with questions to think about
 - `fig14_1_net_vs_cost.png` to `fig14_5_banding.png`
 - `table_gross.csv`, `table_turnover.csv`, `table_costs.csv`, `table_cost_sensitivity.csv`, `table_capacity.csv`, `table_banding.csv`
 - `summary.json`: headline numbers for grading or automated checks
@@ -97,7 +97,7 @@ ch14-costs/
 
 Run the tests with `python tests/test_lab14.py` (or `pytest tests/`).
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

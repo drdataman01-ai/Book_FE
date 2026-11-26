@@ -1,10 +1,10 @@
 """Lab 7: Forecasting Volatility.
 
-Chapter 7 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 7 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "Today's volatility forecasts tomorrow's, even though returns themselves
-   are close to unforecastable."
+WHAT YOU WILL EXPLORE
+  How predictable volatility is, which models forecast it best, and whether
+  the forecasts help an investor.
 
 WHAT THE LAB DOES
   Part A  Stylized facts: returns have little memory; their squares have a
@@ -363,8 +363,7 @@ def write_report(out, a, fc, ev, crisis, vm, sim, has_vix):
     md = ["# Lab 7 results: Forecasting Volatility", ""]
     if sim:
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
-    md += ["**Claim on trial:** today's volatility forecasts tomorrow's, even though returns are close to "
-           "unforecastable.", "",
+    md += ["**What you will explore:** how predictable volatility is, which models forecast it best, and whether the forecasts help an investor.", "",
            "## Part A: Stylized facts", "",
            f"- Autocorrelation of daily returns at lag 1: {a['acf_r'][0]:+.3f}; average over lags 1–10: "
            f"{np.mean(a['acf_r'][:10]):+.3f}.",
@@ -395,7 +394,7 @@ def write_report(out, a, fc, ev, crisis, vm, sim, has_vix):
            f"Alpha of the net managed portfolio against the market: {vm['alpha_annual']:+.1%} a year (t = "
            f"{vm['alpha_t']:.2f}), beta {vm['beta']:.2f}. Average weight {vm['avg_weight']:.2f}, maximum "
            f"{vm['max_weight']:.1f}.", "", "![Lab Figure 7.5](fig7_5_managed.png)", ""]
-    md += ["## Your verdict", "",
+    md += ["## Questions to think about", "",
            "1. Does past volatility forecast future volatility better than a constant? At which horizons?",
            "2. Do the more complex models beat a simple EWMA or random walk? Does the VIX add information?",
            "3. Does volatility timing improve a market investor's results after costs and with realistic leverage?", ""]

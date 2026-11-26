@@ -1,12 +1,13 @@
-"""Lab 16: Put the Factor Zoo on Trial.
+"""Lab 16: Two Standards of Evidence for Published Anomalies.
 
-Chapter 16 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 16 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "Most published return predictors are products of data mining."
+WHAT YOU WILL EXPLORE
+  How the share of published predictors that hold up changes when each
+  side's standards of evidence are applied to the same data.
 
 WHAT THE LAB DOES
-  Part A  Replication in the original samples: how many published
+  Part A  Original samples: how many published
           predictors clear t > 1.96, t > 3 and a false-discovery-rate test.
   Part B  Out of sample: returns after each paper's sample ended and after
           it was published (McLean and Pontiff 2016).
@@ -140,7 +141,7 @@ def fig_tstats(a, out, sim):
     ax.set_xlabel("t-statistic of the long-short return in the original paper's sample")
     ax.set_ylabel("Signals")
     plots.titles(fig, "Lab Figure 16.1  How strong was the original evidence?",
-                 _sub(sim, f"{a['n']} published predictors, replicated over each paper's own sample period"))
+                 _sub(sim, f"{a['n']} published predictors, measured over each paper's own sample period"))
     plots.finish(fig, out / "fig16_1_tstats.png")
     plt.close(fig)
 
@@ -223,11 +224,11 @@ def _num(spec):
 
 
 def write_report(out, a, b, c, d, e, sim, labels):
-    md = ["# Lab 16 results: Put the Factor Zoo on Trial", ""]
+    md = ["# Lab 16 results: Two Standards of Evidence for Published Anomalies", ""]
     if sim:
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
-    md += ["**Claim on trial:** most published return predictors are products of data mining.", "",
-           "## Part A: Replication in the original samples", "", f"{a['n']} predictors.", "",
+    md += ["**What you will explore:** how the share of published predictors that hold up changes when each side's standards of evidence are applied to the same data.", "",
+           "## Part A: The original samples", "", f"{a['n']} predictors.", "",
            _md(a["table"], {"share": _num(".0%")}), "", "![Lab Figure 16.1](fig16_1_tstats.png)", ""]
     mp = b["mp"]
     md += ["## Part B: After the sample, after publication", "",
@@ -261,10 +262,10 @@ def write_report(out, a, b, c, d, e, sim, labels):
                    "share_t_gt_3": _num(".0%")}), "",
            "Even with no true decay, published signals appear to decline out of sample: selection on significance "
            "inflates in-sample means.", ""]
-    md += ["## Your verdict", "",
+    md += ["## Questions to think about", "",
            "1. Under which standard (t > 1.96, t > 3, FDR, shrinkage) do most predictors survive? Under which do most fail?",
            "2. How much of the post-publication decline is data mining (post-sample) and how much is something else?",
-           "3. Write your own verdict on the claim, and state which methodological choices drive it.", ""]
+           "3. Which standard of evidence would you apply, and which methodological choices drive the answer?", ""]
     (out / "lab16_report.md").write_text("\n".join(md))
 
 

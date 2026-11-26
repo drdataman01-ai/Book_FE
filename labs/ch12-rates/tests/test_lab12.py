@@ -80,7 +80,7 @@ def test_full_lab_runs_on_simulated_data():
         s = lab12.main(["--source", "sim", "--out", tmp])
         assert len(list(Path(tmp).glob("fig12_*.png"))) == 5
         rep = (Path(tmp) / "lab12_report.md").read_text()
-        assert "Simulated data" in rep and "Your verdict" in rep
+        assert "Simulated data" in rep and "Questions to think about" in rep
         assert s["fama_bliss"][3]["slope"] > 0.2  # time-varying premium built into the simulation
         assert s["campbell_shiller"][-1]["slope"] < 1
 

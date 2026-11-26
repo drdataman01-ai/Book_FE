@@ -1,8 +1,8 @@
 # Lab 12: Do Forward Rates Predict Future Interest Rates?
 
-Companion lab for **Chapter 12** of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Companion lab for **Chapter 12** of *Financial Engineering in Practice*.
 
-**Claim on trial (the expectations hypothesis):** forward rates are unbiased forecasts of future short-term rates, so a steep yield curve predicts rising rates, not higher bond returns.
+**What you will explore:** whether forward rates are unbiased forecasts of future short rates, as the expectations hypothesis says they should be.
 
 ## Quick start
 
@@ -48,7 +48,7 @@ Notation follows Cochrane and Piazzesi (2005): y(n) is the n-year zero yield, p(
 - **Ten-year yields** start in 1971 in the Fed file, so regressions at maturities above 7 years use a shorter sample.
 - **Out of sample**, the 11-month gap ensures no training target overlaps the forecast date (Chapter 6).
 
-## Verification status
+## Code testing status
 
 | Part | Status |
 |---|---|

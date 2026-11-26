@@ -1,12 +1,14 @@
 """Lab 4: Momentum and Its Crashes.
 
-Chapter 4 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 4 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "Past winners keep outperforming past losers."
+WHAT YOU WILL EXPLORE
+  Whether momentum has earned a premium throughout a century of U.S. data,
+  when its crashes occur, and whether volatility scaling can make it
+  holdable.
 
 WHAT THE LAB DOES
-  Part A  Replication. The momentum factor (Mom) from 1927 by decade and
+  Part A  The premium. The momentum factor (Mom) from 1927 by decade and
           before and after Jegadeesh and Titman (1993); average returns of
           the ten momentum-sorted portfolios.
   Part B  Crashes. The worst months, the worst drawdowns, and when they
@@ -130,7 +132,7 @@ def _slice(s, a=None, b=None):
 
 
 # ---------------------------------------------------------------------------
-# Part A: replication
+# Part A: the momentum premium
 # ---------------------------------------------------------------------------
 
 
@@ -426,8 +428,8 @@ def write_report(out, d, a, b, c, dd, e, sim):
     md = ["# Lab 4 results: Momentum and Its Crashes", ""]
     if sim:
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
-    md += ["**Claim on trial:** past winners keep outperforming past losers.", "",
-           "## Part A: Replication", "", _md(_stat_cols(a["table"], "period"), STATFMT), "",
+    md += ["**What you will explore:** whether momentum has earned a premium throughout a century of U.S. data, when its crashes occur, and whether volatility scaling can make it holdable.", "",
+           "## Part A: The momentum premium", "", _md(_stat_cols(a["table"], "period"), STATFMT), "",
            "**By decade**", "", _md(_stat_cols(a["decades"], "decade"), STATFMT), "",
            f"Decile spread (winners minus losers, value-weighted deciles): {a['decile_spread']['mean_annual']:+.1%} a "
            f"year, t = {a['decile_spread']['t']:.2f}.", "",
@@ -461,10 +463,10 @@ def write_report(out, d, a, b, c, dd, e, sim):
     if "jkp" in e:
         md += ["**Jensen–Kelly–Pedersen momentum factor (ret_12_1) by country**", "",
                _md(e["jkp"], {"mean_annual": _num("+.1%"), "t": _num(".2f"), "skewness": _num("+.2f")}), ""]
-    md += ["## Your verdict", "",
+    md += ["## Questions to think about", "",
            "1. Do past winners keep beating past losers across the century, after publication and after costs?",
            "2. How severe are momentum's crashes, and can they be anticipated from the state of the market?",
-           "3. Does volatility scaling change the verdict, and would you trust it out of sample?", ""]
+           "3. Does volatility scaling change the answer, and would you trust it out of sample?", ""]
     (out / "lab04_report.md").write_text("\n".join(md))
 
 

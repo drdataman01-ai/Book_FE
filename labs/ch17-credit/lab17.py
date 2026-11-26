@@ -1,10 +1,10 @@
 """Lab 17: Do Credit Spreads Compensate Mainly for Expected Default Losses?
 
-Chapter 17 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 17 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "The yield spread of corporate bonds over Treasuries mostly reflects the
-   losses investors expect from default."
+WHAT YOU WILL EXPLORE
+  How much of the credit spread expected default losses can explain, and how
+  the remainder behaves over the business cycle.
 
 WHAT THE LAB DOES
   Part A  Spreads since 1919 (Baa-Aaa) and 1953 (Baa and Aaa over the 10-year
@@ -307,7 +307,7 @@ def write_report(out, a, b, c, dd, sim):
     md = ["# Lab 17 results: Do Credit Spreads Compensate Mainly for Expected Default Losses?", ""]
     if sim:
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
-    md += ["**Claim on trial:** the yield spread of corporate bonds over Treasuries mostly reflects expected default losses.",
+    md += ["**What you will explore:** how much of the credit spread expected default losses can explain, and how the remainder behaves over the business cycle.",
            "", "## Part A: Spreads", "",
            _md(a["table"].rename(columns={"spread": "Spread", "from": "From", "mean": "Mean", "median": "Median",
                                           "min": "Min", "max": "Max", "max_date": "Max date",
@@ -347,7 +347,7 @@ def write_report(out, a, b, c, dd, sim):
                                            "peak_baa_tsy": "Peak Baa–Treasury"}),
                {"Peak Baa–Aaa": P2, "Peak Baa–Treasury": P2}), "", "**Subperiods**", "",
            _md(dd["subperiods"].rename(columns={"period": "Period", "baa_aaa": "Baa–Aaa", "baa_tsy": "Baa–Treasury"}),
-               {"Baa–Aaa": P2, "Baa–Treasury": P2}), "", "## Your verdict", "",
+               {"Baa–Aaa": P2, "Baa–Treasury": P2}), "", "## Questions to think about", "",
            "1. Under reasonable default and recovery assumptions, what share of the Baa spread is expected default loss?",
            "2. What default rate would be needed to justify the whole spread? Has it ever been observed?",
            "3. Does the residual behave like a risk premium: rising in recessions and forecasting weaker activity?", ""]

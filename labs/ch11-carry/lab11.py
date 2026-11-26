@@ -1,11 +1,10 @@
 """Lab 11: Do High-Interest Currencies Depreciate Enough to Offset Their Yield?
 
-Chapter 11 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 11 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL (uncovered interest parity)
-  "The currency of a high-interest country is expected to fall by its
-   interest advantage, so borrowing low and lending high earns nothing on
-   average."
+WHAT YOU WILL EXPLORE
+  Whether high-interest currencies fall enough to cancel their extra yield,
+  as uncovered interest parity says they should.
 
 WHAT THE LAB DOES
   Part A  Fama (1984) regressions of exchange-rate changes on interest
@@ -267,7 +266,7 @@ def write_report(out, d, a, b, c, dd, sim):
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
     if d.get("missing"):
         md += ["> Series not loaded: " + "; ".join(d["missing"]), ""]
-    md += ["**Claim on trial (uncovered interest parity):** high-rate currencies depreciate by their interest advantage.",
+    md += ["**What you will explore:** whether high-interest currencies fall enough to cancel their extra yield, as uncovered interest parity says they should.",
            "", "## Part A: Fama regressions", "",
            _md(a.rename(columns={"currency": "Currency", "slope": "Slope", "se": "s.e.", "t_vs_1": "t (vs 1)",
                                  "t_vs_0": "t (vs 0)", "months": "Months", "start": "From"}),
@@ -293,7 +292,7 @@ def write_report(out, d, a, b, c, dd, sim):
            f"Largest drawdown {dd['max_drawdown']:.0%} from {dd['peak']} to {dd['trough']}; recovered: {dd['recovered']}. "
            f"Positive in {dd['share_months_positive']:.0%} of months; the worst 5% of months produced "
            f"{dd['share_losses_worst_5pct']:.0%} of all losses.", "", "![Lab Figure 11.4](fig11_4_drawdown.png)", "",
-           "![Lab Figure 11.5](fig11_5_vix.png)", "", "## Your verdict", "",
+           "![Lab Figure 11.5](fig11_5_vix.png)", "", "## Questions to think about", "",
            "1. Do high-rate currencies depreciate by their interest advantage, as UIP requires?",
            "2. Does the carry portfolio earn a premium after costs? How is it distributed over time?",
            "3. When does carry lose money, and what does that suggest about why it pays?", ""]

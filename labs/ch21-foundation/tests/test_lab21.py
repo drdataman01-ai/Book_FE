@@ -90,7 +90,7 @@ def test_full_lab_runs_on_simulated_data():
         s = lab21.main(["--source", "sim", "--models", "standin", "--out", tmp])
         assert len(list(Path(tmp).glob("fig21_*.png"))) == 5
         rep = (Path(tmp) / "lab21_report.md").read_text()
-        assert "Simulated data" in rep and "Your verdict" in rep
+        assert "Simulated data" in rep and "Questions to think about" in rep
         sc = pd.DataFrame(s["scores"])
         lrv = sc[sc.series == "Log realized variance"].set_index("model")
         assert lrv.loc["Historical mean", "mse_ratio_vs_AR (BIC)"] > 2        # persistent series: the mean is poor

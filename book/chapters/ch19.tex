@@ -1,4 +1,4 @@
-% Chapter 16 -- Claim: Selling Options Earns a Reliable Premium
+% Chapter 16 -- Does Selling Options Earn a Reliable Premium?
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -23,7 +23,7 @@
 }{}
 \makeatother
 
-\chapter{Claim: Selling Options Earns a Reliable Premium}
+\chapter{Does Selling Options Earn a Reliable Premium?}
 \label{ch:19}
 \providecommand{\term}[1]{\emph{#1}}
 
@@ -66,7 +66,7 @@ Buy the stock only if it falls to the strike. \\*
 \endgroup
 
 
-A put option\index{option!put} is insurance against a market fall. Its seller collects a premium up front and pays out when the market drops. If the insurance is priced above the expected claims, the seller earns a steady profit, with an occasional very bad year. Carr and Wu (2009) measured the \textbf{variance risk premium}\index{variance risk premium}, the gap between the volatility priced into options and the volatility that follows, and found it large and persistent. Figure~\ref{fig:18-vrp} shows the same pattern from 1990 to 2025: in almost every year, the volatility priced into index options was higher than the volatility the market then delivered, but in 2008 and 2020 the market moved far more than option prices had allowed for.
+A put option\index{option!put} is insurance against a market fall. Its seller collects a premium up front and pays out when the market drops. If the insurance is priced above the expected payouts, the seller earns a steady profit, with an occasional very bad year. Carr and Wu (2009) measured the \textbf{variance risk premium}\index{variance risk premium}, the gap between the volatility priced into options and the volatility that follows, and found it large and persistent. Figure~\ref{fig:18-vrp} shows the same pattern from 1990 to 2025: in almost every year, the volatility priced into index options was higher than the volatility the market then delivered, but in 2008 and 2020 the market moved far more than option prices had allowed for.
 
 % Figure: implied versus realized volatility, approximate annual averages.
 % NOTE: the numbers below are APPROXIMATE annual averages (VIX, and realized
@@ -166,10 +166,10 @@ A put option\index{option!put} is insurance against a market fall. Its seller co
 Option income can be a reliable reward for bearing a risk that others want to shed, or it can be small gains in most months paid for by large losses in a few, and the two can look alike in a backtest\index{backtest}. The evidence has to separate them, and the crashes of 2008, February 2018 and March 2020 show what the losses look like when they come. 
 
 
-The claim on trial is: \textbf{put-writing (selling index puts) or writing covered calls earns more than the risk taken, because implied volatility is higher than the volatility that follows.}
+The question of this chapter is: \textbf{does put-writing (selling index puts) or writing covered calls earn more than the risk taken, because implied volatility is higher than the volatility that follows?}
 
 
-The lab in Section~\ref{sec:16-lab} repeats Carr and Wu's (2009) measurement of the variance risk premium with the free VIX and daily U.S. market returns. It also rebuilds \term{put-writing} and covered-call strategies that can be compared with Cboe's published PUT and \term{BXM} indexes, to check whether selling options earns a reliable premium, and how much of that premium is simply stock-market risk.
+The lab in Section~\ref{sec:16-lab} applies Carr and Wu's (2009) measurement of the variance risk premium with the free VIX and daily U.S. market returns. It also constructs \term{put-writing} and covered-call strategies that can be compared with Cboe's published PUT and \term{BXM} indexes, to see whether selling options earns a reliable premium, and how much of that premium is simply stock-market risk.
 
 
 \section{Foundations}
@@ -223,14 +223,14 @@ The VIX,  plotted in Figure~\ref{fig:18-vrp}, measures the volatility priced int
 That shape creates a measurement problem. The Sharpe ratio uses only the average return and the standard deviation, so it cannot see skewness. Selling out-of-the-money options can raise a portfolio's Sharpe ratio while making its worst losses much larger. Section~\ref{sec:16-measure} sets out measures that are harder to game.
 
 
-\section{The claim}
+\section{The question}
 \label{sec:16-claim}
 
 \begin{callout}
-\textbf{Claim.} Implied volatility is higher than the volatility that follows, on average, so option sellers earn a reliable premium. Strategies that sell index options, such as covered calls and put-writing, deliver better risk-adjusted returns than holding the index.
+\textbf{The question.} Is implied volatility higher than the volatility that follows, on average, so that option sellers earn a reliable premium? Do strategies that sell index options, such as covered calls and put-writing, deliver better risk-adjusted returns than holding the index?
 \end{callout}
 
-The claim has two parts, and each can succeed or fail on its own:
+The question has two parts, and the answer to each can differ:
 
 \begin{itemize}
   \item \textbf{The variance risk premium.} Implied variance is, on average, higher than the variance that follows. This is a statement about prices, and it can be tested directly by comparing the VIX with the volatility that follows.
@@ -242,7 +242,7 @@ To test it, three points need to be settled:
 \begin{itemize}
   \item \textbf{What counts as risk.} A strategy with a beta of 0.5 should be compared with a portfolio holding half the market and half Treasury bills, not with the whole market. Its negative skewness should be counted, not ignored.
   \item \textbf{What counts as reliable.} A premium that is positive in most months but wiped out in a few is reliable in one sense and not in another. The tests report both the share of months with a gain and the size of the worst losses.
-  \item \textbf{What would count against it.} The variance risk premium fails if implied volatility is not significantly above realized volatility on average. The strategy claim fails if covered calls and put-writing earn no extra return after adjusting for beta, or if their advantage disappears once skewness is taken into account.
+  \item \textbf{What would count against it.} The variance risk premium fails if implied volatility is not significantly above realized volatility on average. The answer for the strategies is no if covered calls and put-writing earn no extra return after adjusting for beta, or if their advantage disappears once skewness is taken into account.
 \end{itemize}
 
 \section{The original evidence}
@@ -279,10 +279,10 @@ where $r_t$ and $r_{f,t}$ are the returns of the strategy and of the risk-free a
 \textbf{Use a long enough sample.} A strategy that loses heavily once a decade needs several decades of data (Section~\ref{sec:01-foundations}), and even twenty years of put returns are very noisy (Broadie, Chernov and Johannes 2009). A backtest from 2010 to 2019 would miss both of the big losses since 1990.
 
 
-\section{Lab~\thechapter: Replicating Carr and Wu (2009) and the Cboe put-write and buy-write indices}
+\section{Lab~\thechapter: The Variance Risk Premium and Option-Selling Strategies}
 \label{sec:16-lab}
 
-\textbf{Claim on trial:} selling index options earns a reliable premium. The lab replicates the variance risk premium of Carr and Wu (2009) and the put-write and buy-write strategies studied by Whaley (2002), using daily market returns from the Kenneth French library and the VIX from FRED, which starts in 1990. Pricing the options at the VIX overstates the premium, because the VIX includes the extra price of out-of-the-money puts, so the \texttt{-{}-iv-shift} option prices them a few points lower, and Cboe's PUT and BXM histories can be added for comparison.
+\textbf{What you will explore:} whether selling index options earns a reliable premium. The lab measures the variance risk premium as Carr and Wu (2009) did and builds the put-write and buy-write strategies studied by Whaley (2002), using daily market returns from the Kenneth French library and the VIX from FRED, which starts in 1990. Pricing the options at the VIX overstates the premium, because the VIX includes the extra price of out-of-the-money puts, so the \texttt{-{}-iv-shift} option prices them a few points lower, and Cboe's PUT and BXM histories can be added for comparison.
 
 \textbf{Part A, the variance risk premium.} At each month-end, the VIX against the market's realized volatility over the next 21 trading days, with a Newey--West $t$-statistic, the share of months with implied volatility above realized, and the worst months (Lab Figures~\ref{ch:19}.1 and~\ref{ch:19}.2).
 
@@ -293,7 +293,7 @@ where $r_t$ and $r_{f,t}$ are the returns of the strategy and of the risk-free a
 \textbf{Part D, stocks versus volatility.} Each strategy's return split into the part explained by beta and the alpha that remains, compared with the market scaled to the same beta and with a pure short variance swap (Lab Figure~\ref{ch:19}.5).
 
 \label{sec:16-stress}
-\textbf{Robustness checks.} A few months decide the outcome: October 1987, August 1998, September 2008 to February 2009, and February and March 2020. In each, option sellers lost most of what the market lost, softened only by one month's premium of 1--3\%. Put-writing and covered calls often beat the market on the Sharpe ratio\index{Sharpe ratio}, but the advantage should shrink under the MPPM, and a beta of 0.6 alone can explain most of their return\index{skewness|textbf}. A strategy whose edge disappears after these adjustments is being paid for crash risk\index{crash risk} and stock-market risk, not earning alpha. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:16-verdict}.
+\textbf{Robustness checks.} A few months decide the outcome: October 1987, August 1998, September 2008 to February 2009, and February and March 2020. In each, option sellers lost most of what the market lost, softened only by one month's premium of 1--3\%. Put-writing and covered calls often beat the market on the Sharpe ratio\index{Sharpe ratio}, but the advantage should shrink under the MPPM, and a beta of 0.6 alone can explain most of their return\index{skewness|textbf}. A strategy whose edge disappears after these adjustments is being paid for crash risk\index{crash risk} and stock-market risk, not earning alpha. When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:16-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:16-verdict}

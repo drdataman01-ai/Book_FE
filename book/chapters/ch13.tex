@@ -1,4 +1,4 @@
-% Chapter 13 -- Claim: Investors Earn the Returns Their Stocks Earn
+% Chapter 13 -- Do Investors Earn the Returns Their Stocks Earn?
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tikz, pgfplots, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -19,21 +19,21 @@
 }{}
 \makeatother
 
-\chapter{Claim: Investors Earn the Returns Their Stocks Earn}
+\chapter{Do Investors Earn the Returns Their Stocks Earn?}
 \label{ch:13}
 \providecommand{\term}[1]{\emph{#1}}
 
 Ask an investor why they still own a stock that has fallen by a third, and a common answer is that they will sell it ``once it gets back to what I paid.'' Ask the same investor about a stock that has risen by a fifth, and they may say they sold it to ``lock in the gain.'' Neither answer mentions a calendar. Real investors do not hold every position for exactly one month or one year; they decide when to sell by watching the price, and the price they paid often shapes that decision. This chapter asks whether those decisions change what investors earn.
 
-Almost every claim tested so far was judged by \term{fixed-period returns}\index{return!fixed-period|textbf}: the return of a portfolio over the next month, or the next year, measured on a calendar grid whether or not anyone traded on those dates. The models behind them, from the CAPM to the momentum factor, describe how prices move from one date to the next. They are silent about when investors buy and sell. A natural reading is that it does not matter: an investor who holds a stock earns the stock's return, whatever the holding period turns out to be.
+Almost every question so far was studied with \term{fixed-period returns}\index{return!fixed-period|textbf}: the return of a portfolio over the next month, or the next year, measured on a calendar grid whether or not anyone traded on those dates. The models behind them, from the CAPM to the momentum factor, describe how prices move from one date to the next. They are silent about when investors buy and sell. A natural reading is that it does not matter: an investor who holds a stock earns the stock's return, whatever the holding period turns out to be.
 
 Behavioral economists challenged that reading in the 1980s. Shefrin and Statman (1985) gave a name, the \term{disposition effect}\index{disposition effect|textbf}, to the tendency to ``sell winners too early and ride losers too long,'' and argued that it followed from Kahneman and Tversky's (1979) prospect theory, in which people judge outcomes as gains and losses from a reference point such as the purchase price. Odean (1998) then obtained the trading records of 10,000 accounts at a large discount broker and found that investors sold stocks that had risen far more readily than stocks that had fallen. Worse for the investors, the winners they sold went on to beat the losers they kept. Dichev (2007) took the question to whole markets: because money tends to flow into stocks after they have risen, the average dollar invested in U.S. stocks earned less than the market's published return. If these findings hold, the fixed-period returns reported in the earlier chapters describe the stocks correctly but overstate what their holders actually received.
 
 This chapter opens Part VII, which returns to the classic findings with the tools of the last two decades. The answer matters for three groups. For researchers, it decides whether a return measured on a calendar grid is the right yardstick for investors' welfare. For investors, it decides whether their own selling habits cost them money. For anyone judging a fund, a trading system or an adviser, it decides how to compare returns earned over holding periods of different lengths. 
 
-The claim on trial\index{claims-on-trial method} is: \textbf{investors earn the returns their stocks earn, whatever rule they use to decide when to sell.}
+The question of this chapter is: \textbf{do investors earn the returns their stocks earn, whatever rule they use to decide when to sell?}
 
-The lab in Section~\ref{sec:hp-lab} tests the claim in three settings. It first applies six selling rules to the same simulated prices, where the true expected return is known. It then applies the same rules to a century of returns on the 49 industry portfolios of the Kenneth R. French Data Library, replicates the spirit of Odean's test of sold winners against held losers, and finally adds taxes and trading costs.
+The lab in Section~\ref{sec:hp-lab} lets you work with these ideas directly. You will apply six selling rules to simulated prices whose expected return is known, apply the same rules to a century of returns on the 49 industry portfolios of the Kenneth R. French Data Library, look at those industries through the comparison Odean made between the winners investors sell and the losers they keep, and finally see how taxes and trading costs change what each rule leaves the investor.
 
 
 \section{Foundations}
@@ -189,16 +189,16 @@ which is the growth rate of money while it is invested under the rule. By Wald's
 \end{figure}
 
 
-\section{The claim}
+\section{The question}
 \label{sec:hp-claim}
 
-Stated so that it can fail:
+Stated precisely:
 
 \begin{callout}
-\textbf{An investor who holds a stock earns, on average and per year invested, the return that fixed-period studies report for that stock, whatever rule the investor uses to decide when to sell, and after the taxes and costs that the rule itself causes.}
+\textbf{Does an investor who holds a stock earn, on average and per year invested, the return that fixed-period studies report for that stock, whatever rule the investor uses to decide when to sell, and after the taxes and costs that the rule itself causes?}
 \end{callout}
 
-The claim has a strong theoretical defense, the optional stopping theorem, and so the tests ask where that defense ends:
+A yes answer has a strong theoretical basis, the optional stopping theorem, so the published studies ask where that basis ends:
 
 \begin{itemize}
   \item \textbf{Fair games.} When prices are unpredictable, do all selling rules earn the same expected return, and do they produce the same experience?
@@ -223,10 +223,10 @@ The claim has a strong theoretical defense, the optional stopping theorem, and s
 \textbf{Patient investors.} The longest holding periods belong to some professional managers. Cremers and Pareek (2016) found that fund managers who both deviate from their benchmark and trade infrequently outperformed, while frequent traders did not. Lan, Moneta and Wermers (2024) measured each mutual fund's holding horizon from its portfolio history and found that funds with long horizons earned positive long-term alphas.
 
 
-\section{Lab~\thechapter: Replicating Odean (1998) and testing the optional stopping theorem}
+\section{Lab~\thechapter: What Selling Rules Do to an Investor's Returns}
 \label{sec:hp-lab}
 
-\textbf{Claim on trial:} investors earn the returns their stocks earn, whatever rule they use to decide when to sell. The lab applies six selling rules, a fixed 12-month hold, a 120-month hold, a $+$20\% profit target, a $-$20\% stop-loss, a bracket and the get-even rule, to the same prices. Parts A, B and E use simulated prices with known properties; Parts C and D use the 49 value-weighted industry portfolios of the Kenneth R. French Data Library\index{Kenneth French data library}, monthly from July 1926. The code is in the repository folder \texttt{ch13-holding-periods/}.
+\textbf{What you will explore:} how the rule an investor uses to decide when to sell changes what the investor experiences and keeps. The lab applies six selling rules, a fixed 12-month hold, a 120-month hold, a $+$20\% profit target, a $-$20\% stop-loss, a bracket and the get-even rule, to the same prices. Parts A, B and E use simulated prices with known properties; Parts C and D use the 49 value-weighted industry portfolios of the Kenneth R. French Data Library\index{Kenneth French data library}, monthly from July 1926. The code is in the repository folder \texttt{ch13-holding-periods/}. The simulated parts show each mechanism in a setting where the answer is known in advance, and the industry data give you a first look at how the rules behave on real prices. The chapter's conclusions rest on the published evidence of Section~\ref{sec:hp-evidence}; the lab is a place to see why that evidence looks the way it does.
 
 \textbf{Part A: optional stopping.} The six rules are applied to 50,000 simulated price paths with zero expected return and 30\% volatility, roughly the volatility of a single stock. Every rule's mean holding-period return is within two standard errors of zero, as Equation~\eqref{eq:hp-ost} requires. The experiences, however, could hardly differ more (Lab Figure~\ref{ch:13}.1). The profit target wins 71\% of the time, but its average loss is 63\%, and 29\% of its positions are still below cost when the ten-year cap forces a sale. The get-even rule wins 79\% of the time, with an average loss of 67\%. The stop-loss wins only 12\% of the time, but its average win is 165\%.
 
@@ -234,12 +234,12 @@ The claim has a strong theoretical defense, the optional stopping theorem, and s
 
 \textbf{Part C: real prices.} A position is bought every month in every industry, tens of thousands of positions in all, and each rule is applied with a five-year cap. The lab compares each rule's log return per year invested with the industries' own average, with a block bootstrap over entry months for the standard errors (Lab Figure~\ref{ch:13}.3). On unpredictable prices the gaps would be zero; a gap on real prices points to momentum or reversal in industry returns.
 
-\textbf{Part D: the disposition test.} For an investor who sells at $+$20\% and never sells below cost before the cap, the lab compares the next 12-month return of the winners sold with that of the losers held, month by month, with Newey--West standard errors for the overlapping horizons (Lab Figure~\ref{ch:13}.4). Industry portfolios are far less volatile than single stocks and capture only industry momentum (Moskowitz and Grinblatt 1999), so the gap should be smaller than Odean's.
+\textbf{Part D: sold winners and held losers.} For an investor who sells at $+$20\% and never sells below cost before the cap, the lab compares the next 12-month return of the winners sold with that of the losers held, month by month, using the comparison Odean (1998) made with real brokerage accounts (Lab Figure~\ref{ch:13}.4). The investor here is a mechanical rule rather than a person, and the assets are industry portfolios rather than single stocks. Industries are far less volatile than single stocks and capture only industry momentum (Moskowitz and Grinblatt 1999), so you should expect a smaller gap than Odean's.
 
 \textbf{Part E: taxes and costs.} Twenty thousand simulated investors follow four rules for 30 years, with a 20\% tax on realized gains, a credit for realized losses and a one-way cost of 10 basis points. Before tax, the rules end with nearly the same expected wealth, growing at 8.0\% to 8.2\% a year. After tax, selling losers to harvest the tax credit grows at 7.7\% a year and buying and holding at 7.5\%, while selling every year falls to 6.5\% and the disposition investor, who sells winners at $+$20\%, to 6.1\% (Lab Figure~\ref{ch:13}.5). Over 30 years, the disposition investor ends with about a third less expected wealth than the investor who harvests losses.
 
 \label{sec:hp-stress}
-\textbf{Robustness checks.} The thresholds, the cap and the sample are parameters, and Part C tests six rules at once, so a single significant gap should be read with the multiple-testing\index{multiple testing} caution of Chapter~\ref{ch:16}. The lab lets you change the thresholds, shorten the cap, start the sample in 1963, and turn taxes and costs off to see which part of each result they drive. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:hp-verdict}.
+\textbf{Robustness checks.} The thresholds, the cap and the sample are parameters, so you can change the thresholds, shorten the cap, start the sample in 1963, and turn taxes and costs off to see which part of each result they drive. Part C compares six rules at once, so a single large gap deserves the multiple-testing\index{multiple testing} caution of Chapter~\ref{ch:16}. When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:hp-verdict}.
 
 
 \section{Where the evidence stands}
@@ -267,7 +267,7 @@ Situation & Holds? & Why & Evidence \\
 \endlastfoot
 Expected return when prices are a fair game & \textbf{Yes} & No bounded selling rule can change the expected value of a martingale. & Optional stopping theorem; Wald's identity \\*
 \addlinespace[3pt]
-The investor's experience & \textbf{No} & Rules reshape win rates, tails and the losers still held, even when the expected return is unchanged. & Lab Part A \\
+The investor's experience & \textbf{No} & Rules reshape win rates, tails and the losers still held, even when the expected return is unchanged. & Optional stopping theorem; the coin-flip example of Section~\ref{sec:hp-foundations} \\
 \addlinespace[3pt]
 Individual investors who sell winners and keep losers & \textbf{No} & The winners sold beat the losers kept by about 3.4 points over the next year. & Odean (1998); Grinblatt and Keloharju (2001) \\
 \addlinespace[3pt]
@@ -280,9 +280,9 @@ Patient professional investors & \textbf{Yes, or better} & Funds that hold for l
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 \endgroup
 
-On the book's verdict scale, the claim \textbf{weakens}. It holds for the stock and for investors whose selling decisions do not depend on their purchase price, but not for the many investors whose decisions do.
+In short, the published evidence suggests that the answer is yes for investors whose selling decisions do not depend on their purchase price, but no for the many investors whose decisions do.
 
-\textbf{What would change the picture.} The claim would regain ground if new account-level data, such as the records of commission-free trading apps, showed that the winners investors sell no longer beat the losers they keep once momentum is accounted for. It would weaken further if the dollar-weighted gap survived Hayley's (2014) correction in markets other than the United States.
+\textbf{What would change the picture.} The picture would become more favorable to investors if new account-level data, such as the records of commission-free trading apps, showed that the winners investors sell no longer beat the losers they keep once momentum is accounted for. It would become less favorable if the dollar-weighted gap survived Hayley's (2014) correction in markets other than the United States.
 
 
 \section{What practitioners and investors can use}
@@ -291,7 +291,7 @@ On the book's verdict scale, the claim \textbf{weakens}. It holds for the stock 
 Write the selling rule down before buying, and make it depend on what you expect the stock to do next, not on what you paid for it. A useful test for any position is to ask whether you would buy it today at today's price; if not, the purchase price is not a reason to keep it. In a taxable account, the tax code rewards the opposite of the natural instinct: realize losses, which earn a tax saving, and let gains run, which defers the tax. When comparing your own results with a fund's, or one trading system with another, compare returns per year invested, as in Equation~\eqref{eq:hp-peryear}, never the average of annualized short trades, and ask for the win rate together with the average loss. A strategy that wins nine times out of ten may be selling insurance against the tenth.
 
 \begin{callout}
-\textbf{What Failed: waiting to get back to even.} The most natural selling rule for a losing position is to wait until the price returns to what was paid. Odean's (1998) investors followed something close to it, and the losers they kept went on to underperform the winners they sold by about 3.4 percentage points over the following year, before counting the tax savings they gave up by not realizing the losses. The rule failed because the purchase price carries no information about the stock's future: the market does not know or care what any one investor paid. The claim that holding a loser until it recovers costs nothing \textbf{fails}.
+\textbf{What Failed: waiting to get back to even.} The most natural selling rule for a losing position is to wait until the price returns to what was paid. Odean's (1998) investors followed something close to it, and the losers they kept went on to underperform the winners they sold by about 3.4 percentage points over the following year, before counting the tax savings they gave up by not realizing the losses. The rule failed because the purchase price carries no information about the stock's future: the market does not know or care what any one investor paid. The idea that holding a loser until it recovers costs nothing did not hold up.
 \end{callout}
 
 % Key terms of the chapter, in alphabetical order, for readers new to finance.

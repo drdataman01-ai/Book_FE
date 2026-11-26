@@ -1,4 +1,4 @@
-% Chapter 15 -- Claim: Credit Spreads Mainly Reflect Expected Defaults
+% Chapter 15 -- What Do Credit Spreads Reflect?
 % Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -23,7 +23,7 @@
 }{}
 \makeatother
 
-\chapter{Claim: Credit Spreads Mainly Reflect Expected Defaults}
+\chapter{What Do Credit Spreads Reflect?}
 \label{ch:17}
 \providecommand{\term}[1]{\emph{#1}}
 
@@ -221,14 +221,14 @@ The usual explanation for this gap is \textbf{credit risk}\index{credit risk}, w
 chance of defaulting in a given year, and investors lose half of their money when it does\index{loss given default}. On average, investors then lose $0.01 \times 0.5 = 0.005$, or half a percentage point, each year. 
 
 Many investors think about credit risk this way, and credit ratings\index{credit rating} are designed around it, since they rank bonds by their expected losses from default.
-\textbf{If the credit spread\index{credit spread} is only compensation for credit risk, it should be close to this expected loss\index{credit spread!expected-loss component}, much like an insurance premium that just covers the expected claims. Is that the case?}
+\textbf{If the credit spread\index{credit spread} is only compensation for credit risk, it should be close to this expected loss\index{credit spread!expected-loss component}, much like an insurance premium that just covers the expected payouts. Is that the case?}
 
 
 The view can be tested, because a century of default data shows how often bonds of each rating have defaulted and how much investors got back. When researchers ran the test, the numbers did not add up. Elton, Gruber, Agrawal and Mann (2001) checked whether expected default losses account for most of the spread, and found that they explain only a small part of corporate spreads, with taxes and a risk premium making up much of the rest. Collin-Dufresne, Goldstein and Martin (2001) tested whether spreads move with each firm's own finances, as models of default predict, and found that changes in spreads are driven mostly by a common force that has little to do with the default risk of individual firms. Huang and Huang (2012) showed that even models of default risk carefully fitted to actual default rates explain only a small fraction of investment-grade spreads, the spreads on bonds that rating agencies judge relatively safe (rated Baa or BBB and above). This gap became known as the \term{credit spread puzzle}\index{credit spread puzzle}. Gilchrist and Zakraj\v{s}ek (2012), suspecting that the rest of the spread reflects investors' appetite for risk, then split the spread into a part that reflects default risk and a remainder, the excess bond premium, and found that the remainder predicts recessions.
 
 The answer bears on what credit investors are really paid for, why spreads widen in recessions, and why highly rated structured securities proved so dangerous in 2007--08, when products designed around expected losses met a collapse in investors' appetite for risk. 
 
-The claim on trial\index{claims-on-trial method} is: \textbf{the extra yield on corporate bonds over Treasuries is mostly payment for expected default losses.}
+The question of this chapter is: \textbf{what does the extra yield on corporate bonds over Treasuries reflect, and is it mostly payment for expected default losses?}
 
 The lab in Section~\ref{sec:15-lab} repeats the analysis of Elton et al.\ (2001) on a century of Moody's corporate bond yields from FRED, using published default and recovery rates. It adds the excess bond premium of Gilchrist and Zakraj\v{s}ek (2012), which the Federal Reserve publishes free, to check how much of the spread reflects expected defaults and what the rest pays for.
 
@@ -509,23 +509,23 @@ Tax premium & State taxes on corporate interest & Tax rates applied to the yield
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 \endgroup
 
-The claim is that the first piece dominates. The test has two steps. First, estimate expected losses from historical default and recovery data, and compare them with actual spreads. If they explain most of the spread, the claim survives. Second, examine what is left over\index{regression!residuals}. If the remainder is small and stable, it might be liquidity or measurement error. If it is large, rises in recessions and predicts economic activity, it behaves like a risk premium.
+The question is whether the first piece dominates. Answering it takes two steps. First, estimate expected losses from historical default and recovery data, and compare them with actual spreads. If they explain most of the spread, the answer is yes. Second, examine what is left over\index{regression!residuals}. If the remainder is small and stable, it might be liquidity or measurement error. If it is large, rises in recessions and predicts economic activity, it behaves like a risk premium.
 
 \textbf{Why the timing of defaults matters.} Two bonds with the same expected loss can deserve very different spreads. A bond whose defaults happen at random times adds little risk to a diversified\index{diversification} portfolio. A bond whose defaults all arrive in recessions, when stocks are falling and jobs are at risk, is much less attractive and should pay more. Defaults on investment-grade bonds are rare in normal times and concentrated in severe downturns, which is exactly the pattern that should demand a large premium.
 
 
-\section{The claim}
+\section{The question}
 \label{sec:15-claim}
 
 \begin{callout}
-\textbf{Claim.} The extra yield on corporate bonds over Treasuries mostly reflects the losses investors expect from default. Under reasonable assumptions about default and recovery rates, expected losses account for most of the average spread.
+\textbf{The question.} Does the extra yield on corporate bonds over Treasuries mostly reflect the losses investors expect from default? That is, under reasonable assumptions about default and recovery rates, do expected losses account for most of the average spread?
 \end{callout}
 
-To test it, three points need to be settled:
+To answer it, three points need to be settled:
 
 \begin{itemize}
-  \item \textbf{What ``mostly'' means.} More than half of the average spread on investment-grade bonds. The claim could hold for junk bonds and fail for investment-grade bonds, or the reverse.
-  \item \textbf{Reasonable assumptions.} Long-run default and recovery rates from the rating agencies, and how far they would have to be stretched to rescue the claim.
+  \item \textbf{What ``mostly'' means.} More than half of the average spread on investment-grade bonds. The answer could be yes for junk bonds and no for investment-grade bonds, or the reverse.
+  \item \textbf{Reasonable assumptions.} Long-run default and recovery rates from the rating agencies, and how far they would have to be stretched to make the answer yes.
   \item \textbf{What would count against it.} Expected losses explaining less than half of investment-grade spreads under any plausible assumptions, with a remainder that rises in recessions and predicts weaker economic activity, like a payment for risk.
 \end{itemize}
 
@@ -534,10 +534,10 @@ To test it, three points need to be settled:
 
 \textbf{Elton, Gruber, Agrawal and Mann (2001)} found that expected default losses explained only a small part of corporate spreads; state taxes explained a large part, and the rest moved with the risk factors that explain stock returns. \textbf{Collin-Dufresne, Goldstein and Martin (2001)} found that a firm's borrowing, asset volatility and interest rates explained only about a quarter of changes in spreads, with most of the rest driven by one force common to all bonds. \textbf{Huang and Huang (2012)} found that default models fitted to historical losses explained only a small share of investment-grade spreads, though much more of high-yield spreads, a gap known as the \term{credit spread puzzle}\index{credit spread puzzle|textbf}. \textbf{Gilchrist and Zakraj\v{s}ek (2012)} called the part of spreads not explained by expected default the \term{excess bond premium}\index{excess bond premium|textbf}, and found that a rise in it predicted lower output and employment, suggesting it measures investors' appetite for risk.
 
-\section{Lab~\thechapter: Replicating the Elton et al.\ (2001) spread decomposition}
+\section{Lab~\thechapter: Decomposing Credit Spreads}
 \label{sec:15-lab}
 
-\textbf{Claim on trial\index{claims-on-trial method}:} credit spreads mainly reflect expected default losses. The lab replicates the spread decomposition of Elton, Gruber, Agrawal and Mann (2001) and the excess bond premium of Gilchrist and Zakraj\v{s}ek (2012), using free monthly data from FRED\index{FRED}: Moody's yields on Aaa and Baa bonds from 1919, the 10-year Treasury yield from 1953, the NBER recession indicator and industrial production. Because Moody's yields are for long bonds and state taxes\index{taxes|textbf} widen corporate--Treasury spreads, the Baa--Aaa spread is the cleanest measure.
+\textbf{What you will explore:} how much of the credit spread expected default losses can explain, and how the remainder behaves over the business cycle. The lab follows the spread decomposition of Elton, Gruber, Agrawal and Mann (2001) and the excess bond premium of Gilchrist and Zakraj\v{s}ek (2012), using free monthly data from FRED\index{FRED}: Moody's yields on Aaa and Baa bonds from 1919, the 10-year Treasury yield from 1953, the NBER recession indicator and industrial production. Because Moody's yields are for long bonds and state taxes\index{taxes|textbf} widen corporate--Treasury spreads, the Baa--Aaa spread is the cleanest measure.
 
 \textbf{Part A, spreads.} The Baa--Aaa, Baa--Treasury and Aaa--Treasury spreads, overall, by decade, and in recessions and expansions (Lab Figure~\ref{ch:17}.1).
 
@@ -548,7 +548,7 @@ To test it, three points need to be settled:
 \textbf{Part D, robustness checks.} A grid of default rates from 0.1\% to 2\% and recovery rates from 20\% to 60\% (Lab Figure~\ref{ch:17}.5), spread peaks in six crises, and subperiod averages.
 
 \label{sec:15-stress}
-\textbf{Robustness checks.} To explain most of a spread of one to two percentage points, Baa bonds would have to default at well over 1\% a year with low recoveries, the long-run record of Ba bonds, not Baa. Expected losses explain much more of the spread in the 1930s, but the claim must also explain the many decades with almost no defaults, and in 2008--09 and 2020 investment-grade defaults stayed far below what peak spreads implied. Part of the remainder pays for the difficulty of trading corporate bonds\index{liquidity|textbf}, which also rises in crises. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:15-verdict}.
+\textbf{Robustness checks.} To explain most of a spread of one to two percentage points, Baa bonds would have to default at well over 1\% a year with low recoveries, the long-run record of Ba bonds, not Baa. Expected losses explain much more of the spread in the 1930s, but any answer must also account for the many decades with almost no defaults, and in 2008--09 and 2020 investment-grade defaults stayed far below what peak spreads implied. Part of the remainder pays for the difficulty of trading corporate bonds\index{liquidity|textbf}, which also rises in crises. When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:15-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:15-verdict}
@@ -586,7 +586,7 @@ Ranking of spreads by rating & \textbf{Yes} & Ratings rank spreads correctly, th
 \addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
 }
 
-\textbf{What would change the picture.} The claim would gain support if a liquidity measure explained most of the remainder and that premium did not change with economic conditions. So far, both rise in bad times.
+\textbf{What would change the picture.} The picture would become more favorable to the expected-loss view if a liquidity measure explained most of the remainder and that premium did not change with economic conditions. So far, both rise in bad times.
 
 \section{What practitioners and investors can use}
 \label{sec:15-investors}
@@ -594,7 +594,7 @@ Ranking of spreads by rating & \textbf{Yes} & Ratings rank spreads correctly, th
 Investment-grade bonds earn a spread well above expected losses, but as pay for losses that arrive together with stock-market losses and recessions, so corporate bonds are no substitute for Treasuries as protection. Moving into lower-rated or longer-dated bonds for extra yield means bearing more of the same recession risk, and a rating ranks how likely a bond is to default, not whether losses will arrive in a recession. Ask a credit manager how much of the extra yield would be lost in a recession with 2009-style defaults, and how closely returns move with stocks in bad months.
 
 \begin{callout}
-\textbf{What Failed: highly rated structured credit before 2008.} Issuers pooled mortgages and other loans and sliced each pool into \textbf{tranches}\index{tranches|textbf}, claims with different priority on the pool's losses. By 2007 roughly 60\% of global structured products were rated AAA, against less than 1\% of corporate bonds (Coval, Jurek and Stafford 2009), and they were priced with similar spreads. But senior tranches lose money only when many loans default together in a severe recession, so they deserved much larger risk premiums. In 2007 Moody's downgraded 31\% of the asset-backed CDO tranches it rated, including 14\% of those first rated AAA.
+\textbf{What Failed: highly rated structured credit before 2008.} Issuers pooled mortgages and other loans and sliced each pool into \textbf{tranches}\index{tranches|textbf}, securities with different priority on the pool's losses. By 2007 roughly 60\% of global structured products were rated AAA, against less than 1\% of corporate bonds (Coval, Jurek and Stafford 2009), and they were priced with similar spreads. But senior tranches lose money only when many loans default together in a severe recession, so they deserved much larger risk premiums. In 2007 Moody's downgraded 31\% of the asset-backed CDO tranches it rated, including 14\% of those first rated AAA.
 \end{callout}
 
 % Key terms of the chapter, in alphabetical order, for readers new to finance.

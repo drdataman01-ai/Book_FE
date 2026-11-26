@@ -1,11 +1,9 @@
 """Lab 19: Does Selling Options Earn a Reliable Premium?
 
-Chapter 19 of *Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims*.
+Chapter 19 of *Financial Engineering in Practice*.
 
-CLAIM ON TRIAL
-  "Implied volatility exceeds the volatility that follows, on average, so
-   option sellers, for example covered-call and put-writing strategies, earn
-   a reliable premium."
+WHAT YOU WILL EXPLORE
+  Whether selling index options earns a reliable premium.
 
 WHAT THE LAB DOES
   Part A  The variance risk premium: the VIX against the market's realized
@@ -383,8 +381,7 @@ def write_report(out, a, b, c, dd, sim, iv_shift):
     md = ["# Lab 19 results: Does Selling Options Earn a Reliable Premium?", ""]
     if sim:
         md += ["> **Simulated data.** These results test that the code runs; they say nothing about real markets.", ""]
-    md += ["**Claim on trial:** implied volatility exceeds later realized volatility on average, so option sellers earn "
-           "a reliable premium.", "", "## Part A: The variance risk premium", "",
+    md += ["**What you will explore:** whether selling index options earns a reliable premium.", "", "## Part A: The variance risk premium", "",
            f"Months: {s['months']} ({s['start']} to {s['end']}). Average VIX {s['mean_implied_vol']:.1%}; average "
            f"realized volatility over the next 21 trading days {s['mean_realized_vol']:.1%}.", "",
            f"- Average gap: {s['mean_gap_vol_points']:.2f} vol points (Newey–West t = {s['t_nw']:.2f}); median "
@@ -437,7 +434,7 @@ def write_report(out, a, b, c, dd, sim, iv_shift):
            f"worst month {vs['worst_month']:.0%} ({vs['worst_month_date']}), maximum drawdown {vs['max_drawdown']:.0%}, "
            f"positive in {vs['share_months_positive']:.0%} of months, correlation with the market "
            f"{vs['corr_with_market']:+.2f}. VIX² approximates the variance swap rate; trading costs are ignored.", "",
-           "![Lab Figure 19.5](fig19_5_decomposition.png)", "", "## Your verdict", "",
+           "![Lab Figure 19.5](fig19_5_decomposition.png)", "", "## Questions to think about", "",
            "1. Is implied volatility reliably above realized volatility? How often, and by how much?",
            "2. Do put-writing and covered calls beat the market once you account for beta and skewness?",
            "3. How much of an option-income strategy's return is equity, and how much is a volatility premium?", ""]

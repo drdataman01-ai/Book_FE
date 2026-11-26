@@ -9,7 +9,7 @@
 }{}
 \makeatother
 
-\chapter{Claim: Optimized Portfolios Beat an Equal Split Across Assets}
+\chapter{Can Optimized Portfolios Beat an Equal Split Across Assets?}
 \label{ch:09}
 \providecommand{\term}[1]{\emph{#1}}
 
@@ -27,9 +27,9 @@ DeMiguel, Garlappi and Uppal (2009) then put the whole approach to the test. The
 
 The implications are large for anyone who builds portfolios. If optimization cannot beat equal weighting, the sophisticated models used in practice add \term{estimation error} rather than value, and an investor should prefer simple rules unless the inputs are unusually reliable. 
 
-The claim on trial\index{claims-on-trial method} is: \textbf{optimized portfolio strategies achieve higher out-of-sample risk-adjusted returns than equal weighting ($1/N$).}
+The question of this chapter is: \textbf{can optimized portfolio strategies achieve higher out-of-sample risk-adjusted returns than equal weighting ($1/N$)?}
 
-The lab in Section~\ref{sec:12-lab} replicates the comparison of DeMiguel, Garlappi and Uppal (2009) on the free industry and size--value portfolios of the Kenneth R. French Data Library, in order to check whether optimization still loses to equal weighting, how long an estimation window it would need to win, and which repairs narrow the gap.
+The lab in Section~\ref{sec:12-lab} runs the comparison of DeMiguel, Garlappi and Uppal (2009) on the free industry and size--value portfolios of the Kenneth R. French Data Library, in order to see whether optimization still loses to equal weighting, how long an estimation window it would need to win, and which repairs narrow the gap.
 
 
 \section{Foundations}
@@ -191,7 +191,7 @@ Solving this problem with Lagrange multipliers shows that every solution has the
 
 \textbf{Applying the theory is inherently out of sample.} Mean-variance optimization assumes the expected returns $\boldsymbol{\mu}$ and covariance matrix $\boldsymbol{\Sigma}$ are known, but in reality they must be estimated from historical data. Investors use past returns to estimate these inputs and then hold the resulting portfolio in future periods. Any valid test of the theory must therefore evaluate performance on data not used in estimation.
 
-\textbf{The theory's claims can only be tested out of sample.} In sample, the optimizer is designed to produce the highest Sharpe ratio tangency portfolio and the lowest-variance minimum-variance portfolio. These results hold by construction and therefore provide no evidence about future performance. Because optimized portfolios exploit patterns in the estimation sample, their reported efficiency is often overly optimistic. 
+\textbf{The theory's promises can only be checked out of sample.} In sample, the optimizer is designed to produce the highest Sharpe ratio tangency portfolio and the lowest-variance minimum-variance portfolio. These results hold by construction and therefore provide no evidence about future performance. Because optimized portfolios exploit patterns in the estimation sample, their reported efficiency is often overly optimistic. 
 
 \textbf{How the test works.} Following DeMiguel, Garlappi, and Uppal (2009), the chapter uses a rolling walk-forward evaluation:
 \begin{enumerate}
@@ -479,14 +479,14 @@ Despite these weaknesses, optimization is widely used. Practitioners protect it 
 \end{enumerate}
 
 Each of these approaches accepts that the inputs are uncertain and builds a portfolio that can survive that uncertainty. The practical lesson is the same in every case. Optimization is most useful when the number of assets is small, the inputs are constrained or shrunk, and the user understands which market conditions the portfolio is built to handle.
-\section{The claim}
+\section{The question}
 \label{sec:12-claim}
 
 \begin{callout}
-\textbf{Claim.} Optimized portfolio strategies achieve higher out-of-sample risk-adjusted returns than equal weighting ($1/N$), which puts the same amount of money in every asset.
+\textbf{The question.} Can optimized portfolio strategies achieve higher out-of-sample risk-adjusted returns than equal weighting ($1/N$), which puts the same amount of money in every asset?
 \end{callout}
 
-The \textbf{strong form} says that classic mean--variance optimization, using estimates from past data, beats 1/N out of sample. The \textbf{weak form} says that some disciplined version of optimization, using constraints, \term{shrinkage}, risk budgeting or grouping similar assets, beats 1/N reliably after trading costs\index{transaction costs}. A result counts as evidence only if it uses data available when each portfolio was formed, reports the Sharpe ratio or \term{certainty equivalent} after realistic costs, shows an advantage larger than chance, and holds for more than one set of assets.
+The \textbf{strong form} asks whether classic mean--variance optimization, using estimates from past data, beats 1/N out of sample. The \textbf{weak form} asks whether some disciplined version of optimization, using constraints, \term{shrinkage}, risk budgeting or grouping similar assets, beats 1/N reliably after trading costs\index{transaction costs}. A result counts as evidence only if it uses data available when each portfolio was formed, reports the Sharpe ratio or \term{certainty equivalent} after realistic costs, shows an advantage larger than chance, and holds for more than one set of assets.
 
 \section{The original evidence}
 \label{sec:12-evidence}
@@ -503,10 +503,10 @@ The \textbf{strong form} says that classic mean--variance optimization, using es
 
 The literature therefore agrees that sample mean--variance loses to 1/N, and disagrees on the weak form, where the answer depends on costs, turnover and the assets used.
 
-\section{Lab~\thechapter: Replicating DeMiguel, Garlappi and Uppal (2009)}
+\section{Lab~\thechapter: Optimized Portfolios Against 1/N}
 \label{sec:12-lab}
 
-\textbf{Claim on trial\index{claims-on-trial method}:} optimized portfolio strategies beat equal weighting ($1/N$) out of sample. The lab repeats DGU's test on the 10 and 30 industry portfolios and the 25 portfolios sorted on size and book-to-market\index{book-to-market ratio}, from the Kenneth R. French Data Library\index{Kenneth French data library}, using the walk-forward design of Chapter~\ref{ch:06}. Each month, every rule estimates what it needs from the previous 120 months of value-weighted\index{index weighting!value-weighted} excess returns, holds the portfolio for one month and records its return. The nine rules are 1/N, sample mean--variance with and without short sales, minimum variance in three versions (sample, long-only and \term{Ledoit--Wolf}), inverse-volatility risk parity, equal risk contribution and hierarchical risk parity. Each rule's out-of-sample returns (Section~\ref{sec:12-oos}) are summarized by the Sharpe ratio and by the certainty equivalent of Section~\ref{sec:09-accuracy}, $CE = \mu_p - \frac{\gamma}{2}\sigma_p^2$, and the \term{Jobson--Korkie test}\index{Jobson--Korkie test|textbf} (Jobson and Korkie 1981), with Memmel's (2003) correction, checks whether two Sharpe ratios differ by more than chance.
+\textbf{What you will explore:} how optimized portfolio strategies compare with equal weighting ($1/N$) out of sample. The lab runs DGU's comparison on the 10 and 30 industry portfolios and the 25 portfolios sorted on size and book-to-market\index{book-to-market ratio}, from the Kenneth R. French Data Library\index{Kenneth French data library}, using the walk-forward design of Chapter~\ref{ch:06}. Each month, every rule estimates what it needs from the previous 120 months of value-weighted\index{index weighting!value-weighted} excess returns, holds the portfolio for one month and records its return. The nine rules are 1/N, sample mean--variance with and without short sales, minimum variance in three versions (sample, long-only and \term{Ledoit--Wolf}), inverse-volatility risk parity, equal risk contribution and hierarchical risk parity. Each rule's out-of-sample returns (Section~\ref{sec:12-oos}) are summarized by the Sharpe ratio and by the certainty equivalent of Section~\ref{sec:09-accuracy}, $CE = \mu_p - \frac{\gamma}{2}\sigma_p^2$, and the \term{Jobson--Korkie test}\index{Jobson--Korkie test|textbf} (Jobson and Korkie 1981), with Memmel's (2003) correction, checks whether two Sharpe ratios differ by more than chance.
 
 \begin{itemize}
   \item \textbf{Part A} runs the nine rules on the 10 industries and reports each rule's Sharpe ratio, certainty equivalent, turnover, most extreme weights and maximum drawdown\index{maximum drawdown}, tested against 1/N (Lab Figures~\ref{ch:09}.1 and~\ref{ch:09}.2).
@@ -516,7 +516,7 @@ The literature therefore agrees that sample mean--variance loses to 1/N, and dis
 \end{itemize}
 
 \label{sec:12-stress}
-\textbf{Robustness checks.} A longer window reduces estimation errors but relies on older data. Turnover\index{transaction costs|textbf} matters: in a simulated run, sample mean--variance turned over 74\% of its portfolio each month against 3\% for 1/N, which costs about 2\% a year at 25 basis points (Chapter~\ref{ch:14}). Part C also checks the predictions of Section~\ref{sec:12-regimes} and Table~\ref{tab:12-regimes} in 2008, 2020 and 2022, since losing less in a crisis can be valuable even without a higher Sharpe ratio. Finally, even over 90 years a Sharpe ratio has a standard error of about 0.1, so failing to find a significant difference does not prove that two rules are equally good\index{statistical power|textbf}. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:12-verdict}.
+\textbf{Robustness checks.} A longer window reduces estimation errors but relies on older data. Turnover\index{transaction costs|textbf} matters: in a simulated run, sample mean--variance turned over 74\% of its portfolio each month against 3\% for 1/N, which costs about 2\% a year at 25 basis points (Chapter~\ref{ch:14}). Part C also checks the predictions of Section~\ref{sec:12-regimes} and Table~\ref{tab:12-regimes} in 2008, 2020 and 2022, since losing less in a crisis can be valuable even without a higher Sharpe ratio. Finally, even over 90 years a Sharpe ratio has a standard error of about 0.1, so failing to find a significant difference does not prove that two rules are equally good\index{statistical power|textbf}. When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:12-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:12-verdict}
