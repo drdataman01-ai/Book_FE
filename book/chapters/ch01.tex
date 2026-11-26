@@ -1,4 +1,4 @@
-% Chapter 1 -- Claim: A Strong Track Record Proves Skill
+% Chapter 1 -- Does a Strong Track Record Prove Skill?
 % Requires: amsmath, booktabs, array, tabularx, graphicx, tcolorbox (breakable, skins), hyperref or url.
 % Defines the callout box only if the preamble has not.
 \providecolor{fenavy}{HTML}{1B2A6B}
@@ -21,7 +21,7 @@
 }{}
 \makeatother
 
-\chapter{Claim: A Strong Track Record Proves Skill}
+\chapter{Does a Strong Track Record Prove Skill?}
 \label{ch:01}
 
 Most people meet the question of this chapter long before they study finance. A friend mentions that he doubled his money on a stock he picked himself, a coworker swears by a newsletter that called the last market crash, and you may also have seen a \term{mutual fund} advertise that it has beaten the market five years in a row.
@@ -32,9 +32,9 @@ Whether a good record reveals skill is also one of the oldest questions in empir
 
 The question matters because the answer decides how money is managed. If a long record reveals skill, investors can find good managers by studying their past returns, and paying a manager to pick stocks, which is called \term{active management}, is sensible. If it does not, much of what investors pay for is luck, and a low-cost \term{index fund}, which simply holds every stock in a \term{market index} such as the \term{S\&P~500}, is the better choice. The statistics are harder than they look. Returns are noisy, histories are short, and thousands of managers and strategies are compared at once, so the best record among many is mostly the product of chance. A simple analogy shows why. If a thousand people each flip a coin ten times, chances are that one of them will flip ten heads in a row, yet nobody would call that person a skilled coin flipper. When thousands of fund managers compete, some of them will produce dazzling records in the same way. Fama and French (2010) returned to Jensen's question for this reason, asking whether the stars among thousands of modern funds outnumber what luck alone would produce, and they confirmed that few fund managers show enough skill to cover their costs. Bailey, Borwein, L\'opez de Prado and Zhu (2014) saw the same danger in \term{backtests}, which apply a trading rule to historical prices to see how it would have performed. They showed that because a researcher can try thousands of variations of a rule and report only the best one, the winning backtest can look impressive even when the rule has no value. Harvey, Liu and Zhu (2016) noted that the field had by then tested hundreds of \term{factors} against the usual bar, and argued that it should therefore demand stronger evidence before accepting a new result.
 
-The implications run through the rest of this book. Every claim that follows is supported by some record of past returns, and every one of them faces the same question: how much of the record is luck? The \term{claim on trial}\index{claims-on-trial method} in this chapter is the one every strategy builder hopes is true: \textbf{a long enough track record can reveal real skill.} Testing it means learning how long ``long enough'' is, and what else a record must show. The chapter also introduces the method the rest of the book uses: state the claim, understand it, verify it, judge it, and apply what survives.
+The implications run through the rest of this book. Every question that follows is studied with some record of past returns, and every one of them meets the same difficulty: how much of the record is luck? The question of this chapter is the one every strategy builder hopes has the answer yes: \textbf{can a long enough track record reveal real skill?} Answering it means learning how long ``long enough'' is, and what else a record must show. The chapter also explains how every chapter of the book is organized (Section~\ref{sec:01-method}).
 
-The chapter draws on four papers. Jensen (1968) and Fama and French (2010) test whether fund managers beat chance; their fund data are not free, so their results are discussed rather than rerun. Bailey et al.\ (2014) show how the best of many backtests misleads, and Harvey, Liu and Zhu (2016) ask how high the statistical bar must be. The lab in Section~\ref{sec:01-lab} replicates the logic of these papers with free data: it runs 1,000 strategies with no skill at all on the U.S. market since 1926, in order to measure how good a track record luck alone can produce, and how much higher the bar must be before a record counts as evidence of skill. A \term{strategy} here is simply a rule that decides, month by month, whether to own the stock market or to keep the money in safe \term{Treasury bills}.
+The chapter draws on four papers. Jensen (1968) and Fama and French (2010) test whether fund managers beat chance; their fund data are not free, so their results are discussed rather than rerun. Bailey et al.\ (2014) show how the best of many backtests misleads, and Harvey, Liu and Zhu (2016) ask how high the statistical bar must be. The lab in Section~\ref{sec:01-lab} borrows the central idea of these papers and works with free data: it runs 1,000 strategies with no skill at all on the U.S. market since 1926, in order to measure how good a track record luck alone can produce, and how much higher the bar must be before a record counts as evidence of skill. A \term{strategy} here is simply a rule that decides, month by month, whether to own the stock market or to keep the money in safe \term{Treasury bills}.
 
 
 In the lab you will generate 1,000 trading strategies that are random by construction, run them on nearly a century of real U.S. market data, and watch several of them look like the work of a genius. Because you know that every one of them is pure luck, you will see exactly what a real record must do to stand out from luck. That is the best preparation for judging and building the strategies you will meet in the rest of the book and in your career.
@@ -457,7 +457,7 @@ needs about 15 years of data before the t-statistic of its mean return reaches 1
 \section{Efficient markets and the random walk}
 \label{sec:01-efficient-markets}
 
-The starting point for any claim about beating the market is the \term{efficient market hypothesis}. In Eugene Fama's (1970) formulation, a market is efficient if prices fully reflect available information. The intuition comes from competition. If a predictable profit existed, traders would act on it, and their trading would push prices until the profit disappeared.
+The starting point for any question about beating the market is the \term{efficient market hypothesis}. In Eugene Fama's (1970) formulation, a market is efficient if prices fully reflect available information. The intuition comes from competition. If a predictable profit existed, traders would act on it, and their trading would push prices until the profit disappeared.
 
 Fama distinguished three versions by the information set\index{forecasting!information set}:
 
@@ -488,7 +488,7 @@ Version & Prices reflect & Implication if true \\
 
 An \term{abnormal return} in the table means a return above what the investment's risk would justify, which is the alpha of Section~\ref{sec:01-foundations}. Everyday examples make the three versions concrete. A trader who studies price charts to spot patterns is betting against the weak form. An investor who reads company earnings reports and news stories to pick stocks is betting against the semi-strong form. A company executive who buys shares before a merger is announced, using news the public does not yet have, is betting against the strong form, and in most countries that trade is illegal insider trading.
 
-Few economists believe the strong form\index{efficient market hypothesis!strong form}, and insider-trading laws exist because it fails. The weak and semi-strong forms are where the empirical debate happens, and where most claims in this book live.
+Few economists believe the strong form\index{efficient market hypothesis!strong form}, and insider-trading laws exist because it fails. The weak and semi-strong forms are where the empirical debate happens, and where most questions in this book live.
 
 \textbf{What efficiency does not imply.} Efficiency is often misread, so three clarifications matter:
 
@@ -500,12 +500,12 @@ Few economists believe the strong form\index{efficient market hypothesis!strong 
 
 \textbf{The random walk\index{random walk} as a benchmark.} If prices respond only to new, unpredictable information, price changes should look approximately like a random walk, in which tomorrow's change is unrelated to today's. Samuelson (1965) showed that properly anticipated prices fluctuate randomly. In plain words, if today's price already reflects everything investors expect, then only surprises can move it, and surprises by definition cannot be predicted from today's price change. Lo and MacKinlay (1988) later rejected a strict random walk for weekly U.S. returns, finding small but measurable patterns from one week to the next, so the model is not literally true. Even so, it remains the right benchmark, and any strategy must beat what a random walk, or a simple buy-and-hold position, would deliver.
 
-For this book, the practical lesson is a prior belief that we bring to every claim. Before seeing any evidence, we should treat a claim that a simple rule beats the market as unlikely. Such a claim is not impossible, since the following chapters find some rules that survive, but it is unlikely enough to demand strong evidence.
+For this book, the practical lesson is a prior belief that we bring to every question. Before seeing any evidence, we should treat the idea that a simple rule beats the market as unlikely. It is not impossible, since the published evidence reviewed in later chapters finds some rules that hold up, but it is unlikely enough to demand strong evidence.
 
 \section{Signal and noise}
 \label{sec:01-signal-noise}
 
-The deeper reason claims are hard to verify is statistical. In finance, the signal is small and the noise is large. The differences between good and bad strategies are a few percent a year in expected return, while their returns move by fifteen or twenty percent a year at random.
+The deeper reason these questions are hard to answer is statistical. In finance, the signal is small and the noise is large. The differences between good and bad strategies are a few percent a year in expected return, while their returns move by fifteen or twenty percent a year at random.
 
 \textbf{The Sharpe ratio, again.}\index{Sharpe ratio|textbf} The yardstick for a strategy is the Sharpe ratio of Equation~\eqref{eq:01-sr}. In this section we write $\mu = E[R^{e}]$ for the strategy's expected excess return, so that $\mathrm{SR} = \mu/\sigma$, with all quantities annualized. The rest of the book uses $\mu$ in the same way. Against the stock market's long-run Sharpe ratio of 0.3 to 0.4 (Section~\ref{sec:01-foundations}), a strategy with a true Sharpe ratio of 0.5 after costs would be a valuable discovery, and 1.0 would be exceptional.
 
@@ -616,9 +616,9 @@ Going from annual to monthly data gives 12 times as many observations, but each 
 \begin{equation}
   \bar{r} = \frac{\ln P_T - \ln P_0}{T}, \nonumber
 \end{equation}
-because every price in between is added once and subtracted once. Dividing a century into days rather than months adds no information about the mean, and its standard error stays at about $20/\sqrt{100} = 2$\%, as in Section~\ref{sec:01-foundations}. The same holds for every claim about \emph{average} returns, such as the equity premium, value, momentum\index{momentum} and published anomalies\index{anomaly}, which is why Chapters~\ref{ch:03} to~\ref{ch:16} can test them on monthly data without losing anything.
+because every price in between is added once and subtracted once. Dividing a century into days rather than months adds no information about the mean, and its standard error stays at about $20/\sqrt{100} = 2$\%, as in Section~\ref{sec:01-foundations}. The same holds for every question about \emph{average} returns, such as the equity premium, value, momentum\index{momentum} and published anomalies\index{anomaly}, which is why Chapters~\ref{ch:03} to~\ref{ch:16} can study them on monthly data without losing anything.
 
-Claims about \emph{risk} are different. Each additional observation adds information about how much returns vary, so the precision of an estimated volatility grows with the number of returns $N$, not just the number of years:
+Questions about \emph{risk} are different. Each additional observation adds information about how much returns vary, so the precision of an estimated volatility grows with the number of returns $N$, not just the number of years:
 \begin{equation}
   \mathrm{SE}(\hat{\sigma}) \approx \frac{\sigma}{\sqrt{2N}} \nonumber
 \end{equation}
@@ -633,7 +633,7 @@ The rule ``the mean needs a long history, risk needs frequent data'' is a good g
 \end{itemize}
 \end{technote}
 
-The practical lesson is to match the data to the claim. To measure an expected return more precisely, you need a longer history, not more frequent data. To measure risk, more frequent data do help.
+The practical lesson is to match the data to the question. To measure an expected return more precisely, you need a longer history, not more frequent data. To measure risk, more frequent data do help.
 
 \textbf{What a ten-year record can tell you.} The ``10 years'' here is not how long the strategy holds its positions, since the strategy may trade daily or monthly. It is the length of the track record you look at when you judge the strategy. A thought experiment shows how noisy that judgment is.
 
@@ -737,57 +737,35 @@ These problems compound. A backtest can be honest in every visible detail, using
 \textbf{What Failed: butter in Bangladesh.} To show how easy \term{data mining}\index{data mining} is, David Leinweber searched a United Nations database for series that tracked the S\&P 500. Butter production in Bangladesh fit well. Adding U.S. cheese production and the sheep population of Bangladesh and the United States raised the fit further, until the $R^2$ looked like a breakthrough. The relationship, of course, predicted nothing afterward. The example was a joke with a serious point: if you search enough series, you are guaranteed to find a near-perfect fit. Leinweber later wrote it up as ``Stupid Data Miner Tricks'' (2007).
 \end{callout}
 
-\section{The claims-on-trial method and the verdict scale}
+\section{How each chapter is organized}
 \label{sec:01-method}
 
-Every claim chapter and every lab opens with a line labelled \textbf{Claim on trial}\index{claims-on-trial method|textbf}. The label is a reminder of who does the work. You are not told whether the claim is true; you test it yourself. The book's subtitle, \emph{Active Learning by Verifying Famous Claims}, describes the bargain. Each trial needs a method (a regression, a backtest, a volatility model, a hedge), and you learn that method in order to reach a verdict, then use it again in later trials until it is second nature.
+Every chapter of this book is organized around one question\index{chapter structure|textbf}, such as the question of this chapter: can a long enough track record reveal real skill? A question gives the methods a purpose. To answer it, you need the model behind it, the data used to study it, and an understanding of why researchers have answered it differently. Each chapter teaches the methods its question requires, such as a regression, a backtest, a volatility model or a hedge, and later chapters use the same methods again until they are second nature.
 
-The rest of this book applies one method to every claim. It is simple enough to remember and strict enough to protect against the problems in Section~\ref{sec:01-backtests}.
+A question is useful only when it is stated precisely. ``Does momentum work?'' is vague. ``Do the stocks with the highest 12-month returns, skipping the last month, outperform those with the lowest by a positive average return after costs?'' is precise, because it says what is compared, over what horizon and after what costs. Each chapter therefore states its question in this precise form before it reviews the evidence.
+
+This first chapter lays the statistical groundwork for all the others, so its middle sections are longer than usual. Every later chapter follows the same structure:
 
 \begin{enumerate}
-  \item \textbf{Claim} --- State what is asserted in one testable sentence. ``Momentum works'' is vague; ``stocks with the highest 12-month returns, skipping the last month, outperform the lowest by a positive average return after costs'' can be tested.
-  \item \textbf{Understand} --- Learn how the idea works and how the original evidence was produced, including the data, the sample period, the method and the number of alternatives the authors tried.
-  \item \textbf{Verify} --- Rebuild the result yourself, then stress-test it \term{out of sample}\index{in-sample versus out-of-sample}\label{kt:out-of-sample}, in other markets, after costs and after publication.
-  \item \textbf{Judge} --- Compare your results with the published evidence, which each chapter summarizes in a section called \emph{Where the evidence stands}. Then reach your own verdict on the scale below, and date it with the sample period you tested.
-  \item \textbf{Apply} --- State what an investor or practitioner can actually use, and what remains open.
+  \item \textbf{Foundations.} The core model and the background the chapter needs, explained in plain language.
+  \item \textbf{How it works.} How the model turns into the measurements and methods that researchers use.
+  \item \textbf{The question.} The chapter's question, stated precisely.
+  \item \textbf{The original evidence.} What the founding studies found, including their data, sample period, method and the number of alternatives they tried, and how later researchers responded.
+  \item \textbf{Lab.} The chapter's methods in your own hands, in Python, on free data and on simulations in which the right answer is known in advance.
+  \item \textbf{Where the evidence stands.} A summary of the published findings and whose evidence supports each one.
+  \item \textbf{What practitioners and investors can use.} The lessons that matter in practice, and what remains open.
 \end{enumerate}
 
-\textbf{The verdict scale}\index{verdict scale|textbf}
+\textbf{Reading the evidence summaries.} Each \emph{Where the evidence stands} section ends with a table. Its rows are situations, such as mutual funds as a group or the best of many backtests, and its column \emph{Holds?} reports what the published studies found for each situation, for example \textbf{Yes}, \textbf{No} or \textbf{Disputed}. The last column names the studies behind each entry. Each summary is dated, because new evidence keeps arriving. The table reports what researchers have found; it is not a ruling by this book, and the labs are not designed to settle it.
 
-\begingroup
-\small
-\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
-\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.162\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.9\linewidth-0.162\linewidth-2\tabcolsep\relax}@{}}
-\toprule
-Verdict & Meaning \\
-\midrule
-\endfirsthead
-\multicolumn{2}{@{}l}{\emph{(continued)}} \\
-\toprule
-Verdict & Meaning \\
-\midrule
-\endhead
-\midrule
-\multicolumn{2}{r@{}}{\emph{(continued on the next page)}} \\
-\endfoot
-\bottomrule
-\endlastfoot
-Survives & The result replicates, holds out of sample and in other markets, and remains economically meaningful after costs. \\*
-Weakens & The result is real but smaller, less reliable, or narrower than claimed, for example only in small stocks or before publication. \\
-Fails & The result does not replicate, or disappears out of sample or after costs. \\*
-Provisional & The evidence is too new or too mixed for a firm verdict. \\
-\end{longtable}
-\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
-\endgroup
+Three habits help in every chapter, and together they form the question this book hopes you will ask of any result. First, \textbf{decide what would count as evidence before seeing the result}. Each lab asks you to write down what you expect, and how you will judge the outcome, before you run a step, so that the result cannot be bent to fit your hopes. Second, \textbf{always ask ``compared to what?''} Every result should be judged against a simple benchmark, such as the market, the historical average\index{historical-mean benchmark} or a naive rule, and never against zero. Third, \textbf{ask whether the result holds \term{out of sample}\index{in-sample versus out-of-sample}\label{kt:out-of-sample} and after costs}, that is, on data that played no part in finding it and after the spreads, fees and taxes that an investor would actually pay.
 
-Two habits make the method work. First, \textbf{decide the test before seeing the result}. Write down the claim, the data and the pass criteria in advance, so that the test cannot be bent to fit the outcome. Second, \textbf{always ask ``compared to what?''} Every claim is judged against a simple benchmark, such as the market, the historical average\index{historical-mean benchmark} or a naive rule, and never against zero.
+This chapter's lab applies these habits to the question at the root of the whole field: how good a track record can luck alone produce?
 
-This chapter's lab applies the method to a claim at the root of the whole field: whether a track record can reveal real skill.
-
-\section{Lab~\thechapter: Replicating Bailey et al.\ (2014) and Harvey, Liu and Zhu (2016)}
+\section{Lab~\thechapter: Brilliant by Chance}
 \label{sec:01-lab}
 
-\textbf{Claim on trial:} a long enough track record can reveal real skill. Bailey, Borwein, L\'opez de Prado and Zhu (2014) show that the best of many backtests can look impressive by chance alone, and Harvey, Liu and Zhu (2016) argue that the usual $t > 2$ hurdle is far too low when many strategies are tried. The lab therefore first measures what luck alone can do. It builds 1,000 strategies with no skill at all: each month, each one is either in the stock market or in Treasury bills, switching at random with an average holding period of 3 to 24 months, so that they look like real market-timing rules. The data are monthly U.S. market excess returns and Treasury bill rates since 1926 from the Kenneth R. French Data Library\index{Kenneth French data library}, and the code is in the repository folder \texttt{ch01-brilliant-by-chance/}.
+\textbf{What you will explore:} how good a track record luck alone can produce, and how high the bar must be before a record counts as evidence of skill. The lab draws on two papers. Bailey, Borwein, L\'opez de Prado and Zhu (2014) show that the best of many backtests can look impressive by chance alone, and Harvey, Liu and Zhu (2016) argue that the usual $t > 2$ hurdle is far too low when many strategies are tried. The lab borrows their central idea and measures what luck alone can do. It builds 1,000 strategies with no skill at all: each month, each one is either in the stock market or in Treasury bills, switching at random with an average holding period of 3 to 24 months, so that they look like real market-timing rules. The data are monthly U.S. market excess returns and Treasury bill rates since 1926 from the Kenneth R. French Data Library\index{Kenneth French data library}, and the code is in the repository folder \texttt{ch01-brilliant-by-chance/}.
 
 The first half of the sample, roughly 1926 to 1975, is the backtest\index{backtest|textbf}, in which a researcher would test the strategies and choose the best. The second half, roughly 1976 to today, is the period \textbf{after selection}, which shows what an investor who adopted the chosen strategy would have experienced. Skill is measured as alpha against buy-and-hold (Section~\ref{sec:01-foundations}), whose true value is zero for every strategy here. Its significance is the \term{one-sided}\index{hypothesis testing!one-sided and two-sided} t-statistic $t_\alpha$, computed with \term{Newey--West}\index{standard error!Newey--West (HAC)}\label{kt:newey-west} standard errors (Chapter~\ref{ch:03}).
 
@@ -798,7 +776,7 @@ The lab has three parts:
   \item \textbf{The cost of searching.} Show how the best backtest $t_\alpha$ rises as the number of strategies tried grows from 1 to 1,000 (Lab Figure~\ref{ch:01}.5).
 \end{enumerate}
 
-Because every strategy has zero skill, statistics tells us roughly what to expect. About 25 of the 1,000 strategies (2.5\%) should show a significant alpha in the backtest, and the highest backtest $t_\alpha$ should be about 3.2. The \term{Bonferroni threshold}, which divides the usual 5\% chance of a false alarm among all 1,000 tries, is $t_\alpha > 3.89$. After selection, the backtest ``winners'' should have an average $t_\alpha$ of about zero. The lab ends by asking you to write your own verdict on the claim, using the scale of Section~\ref{sec:01-method} and the numbers from your own run, and to compare it with Section~\ref{sec:01-verdict}.
+Because every strategy has zero skill, statistics tells us roughly what to expect. About 25 of the 1,000 strategies (2.5\%) should show a significant alpha in the backtest, and the highest backtest $t_\alpha$ should be about 3.2. The \term{Bonferroni threshold}, which divides the usual 5\% chance of a false alarm among all 1,000 tries, is $t_\alpha > 3.89$. After selection, the backtest ``winners'' should have an average $t_\alpha$ of about zero. When you have finished, compare what you saw with the published evidence summarized in Section~\ref{sec:01-verdict}.
 
 \section{Where the evidence stands}
 \label{sec:01-verdict}
@@ -840,7 +818,7 @@ A record therefore counts as evidence of skill only if it meets three conditions
   \item \textbf{It keeps working on data that played no part in choosing it}, such as the period after the strategy was selected.
 \end{enumerate}
 
-\textbf{What would change the picture.} The claim would gain broader support if large groups of managers, chosen in advance, kept beating cheap alternatives after fees over long periods. It would be rejected if even the managers singled out by Kosowski and colleagues and by Berk and van Binsbergen lost their edge in later data.
+\textbf{What would change the picture.} The picture would shift toward skill if large groups of managers, chosen in advance, kept beating cheap alternatives after fees over long periods. It would shift further against skill if even the managers singled out by Kosowski and colleagues and by Berk and van Binsbergen lost their edge in later data.
 
 \section{What practitioners and investors can use}
 \label{sec:01-investors}
@@ -879,7 +857,6 @@ The most important lesson is to judge evidence by \textbf{how it was produced}, 
   \item[Bootstrap.] A bootstrap reshuffles the data many times to see what results could arise by chance alone.
   \item[Buy-and-hold.] Buy-and-hold means buying an investment and keeping it, without trying to time when to get in or out.
   \item[Capital Asset Pricing Model (CAPM).] The CAPM says that an investment's expected return should depend only on how strongly it moves with the overall market.
-  \item[Claim on trial.] A claim on trial is a popular belief about markets that a chapter states in one sentence and then tests with data.
   \item[Data mining.] Data mining means searching through many variables or rules until one happens to fit the past, which usually means it was found by luck.
   \item[Dividend.] A dividend is the part of a company's profit that it pays out in cash to its shareholders.
   \item[Earnings announcement.] An earnings announcement is the date on which a company publicly reports its profits for the latest quarter or year.
@@ -887,7 +864,7 @@ The most important lesson is to judge evidence by \textbf{how it was produced}, 
   \item[Equity premium.] The equity premium is the extra average return that stocks have earned over safe Treasury bills.
   \item[Excess return.] An excess return is an investment's return minus the risk-free rate.
   \item[Expected return.] The expected return is the average return an investor anticipates, which must be estimated because it is never observed directly.
-  \item[Factors.] Factors are characteristics, such as company size or cheapness, that are claimed to explain why some stocks earn more than others.
+  \item[Factors.] Factors are characteristics, such as company size or cheapness, that are proposed to explain why some stocks earn more than others.
   \item[High-frequency trading.] High-frequency trading uses computers to buy and sell within fractions of a second.
   \item[Index fund.] An index fund simply holds all the stocks in a market index and charges a low fee.
   \item[Insider trades.] Insider trades are purchases or sales of a company's shares by its own executives and directors.
