@@ -113,7 +113,7 @@ An overfit model looks best on the very data it was fitted to, so the training e
 
 Using every available predictor does not necessarily produce better forecasts, as the previous subsection showed. The reason lies in the bias--variance trade-off, which describes the two different ways a forecast can go wrong.
 
-Archery helps explain the two kinds of error (Figure~\ref{fig:20-targets}). Imagine that the same model is estimated many times, each time on a different sample of training data, and that each estimate takes one shot at the target. \term{Bias}\index{bias (of an estimator)|textbf} is how far the average shot lands from the bullseye. A model that \term{leaves} out a real effect is biased: however many samples it sees, it misses in the same direction. \term{Variance}\index{variance|textbf} is how widely the shots are scattered around their own average. A model with many parameters has high variance, because each new sample moves its estimates, and its forecasts, a long way.
+Archery helps explain the two kinds of error (Figure~\ref{fig:20-targets}). Imagine that the same model is estimated many times, each time on a different sample of training data, and that each estimate takes one shot at the target. \term{Bias}\index{bias (of an estimator)|textbf} is how far the average shot lands from the bullseye. A model that leaves out a real effect is biased: however many samples it sees, it misses in the same direction. \term{Variance}\index{variance|textbf} is how widely the shots are scattered around their own average. A model with many parameters has high variance, because each new sample moves its estimates, and its forecasts, a long way.
 
 \begin{figure}[htbp]
   \centering
@@ -351,7 +351,7 @@ Figure~\ref{fig:20-tree} shows a small regression tree for next-month stock retu
   \label{fig:20-tree}
 \end{figure}
 
-The tree has its own vocabulary. The first question is the \emph{root}, later questions are \emph{internal nodes}, and the final boxes are \emph{leaves}. The number of questions asked in sequence, two in Figure~\ref{fig:20-tree}, is the tree's \term{depth}.
+The tree has its own vocabulary. The first question is the \term{root}, later questions are \term{internal nodes}, and the final boxes are \term{leaves}. The number of questions asked in sequence, two in Figure~\ref{fig:20-tree}, is the tree's \term{depth}.
 
 \subsection{How a tree is grown}
 
@@ -953,7 +953,8 @@ Machine learning is a better blender, not a crystal ball: expect a modest improv
 \textbf{What Failed: the AI fund that trailed the index.} In 2017 the AI Powered Equity ETF (ticker AIEQ\index{AI Powered Equity ETF (AIEQ)}) launched as the first exchange-traded fund run by artificial intelligence, with its manager, EquBot, using IBM Watson to process news, filings and market data. By January 2022 it was up 57\% since launch, against 84\% for the S\&P 500 total return\index{return!total} index (Tech Brew 2022). Stock returns carry little signal, competition for it is intense, and a model that learns from the past is always learning about a market that has already moved on.
 \end{callout}
 
-% Key terms that this chapter uses without defining them, for readers new to finance.
+% Key terms of the chapter, in alphabetical order, for readers new to finance.
+% A term defined in an earlier chapter points to the chapter, section and page.
 \providecolor{FEMaroon}{RGB}{128,30,45}
 \providecolor{FECream}{RGB}{253,248,238}
 \providecolor{FEGold}{RGB}{196,150,60}
@@ -969,12 +970,60 @@ Machine learning is a better blender, not a crystal ball: expect a modest improv
 \begin{keyterms}
 \small
 \begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Activation function.] An activation function is the transformation applied to a neuron's weighted sum, and it is what lets a network capture curves.
+  \item[Autoencoder.] An autoencoder is a neural network that compresses many inputs, such as many returns, into a few factors and then rebuilds them.
+  \item[Backpropagation.] Backpropagation computes how the loss changes with every weight in a network by an efficient use of the chain rule.
+  \item[Bagging.] Bagging, short for bootstrap aggregating, averages many trees, each grown on a different bootstrap sample of the training data.
+  \item[Bias (of an estimator).] Bias is how far an estimate lands from the true value on average, across many samples.
+  \item[Bias--variance trade-off.] The bias--variance trade-off is that a more complex model has less bias but more variance, so the best forecasts come from a model of intermediate complexity.
+  \item[Boosting.] Boosting builds a forecast from many small trees grown one after another, each correcting the errors left by the trees before it.
+  \item[Bootstrap sample.] A bootstrap sample draws as many observations as the training data at random with replacement, so some observations appear more than once and others not at all.
   \item[Credit scoring.] Credit scoring uses data about borrowers to predict whether they will repay a loan.
+  \item[Cross-section.] The cross-section is the set of different stocks at one point in time, so cross-sectional prediction asks which stocks will do better than others.
+  \item[Deciles.] Deciles are the ten equal-sized groups into which stocks are sorted by a characteristic.
+  \item[Depth (of a tree).] A tree's depth is the number of questions it asks in sequence before reaching a forecast.
+  \item[Double descent.] Double descent is the pattern in which test error rises as a model approaches the point where it fits the training data exactly and then falls again as the model grows larger.
+  \item[Early stopping.] Early stopping ends training when the error on the validation data stops falling.
+  \item[Elastic net.] The elastic net is a penalized regression that combines the L1 and L2 penalties.
+  \item[Ensemble.] An ensemble combines the forecasts of many models, usually trees, into one.
+  \item[Epoch.] An epoch is one pass through all the training data.
   \item[Feature importance.] Feature importance measures how much a model's accuracy depends on each of its inputs.
+  \item[Features and target.] Features are the inputs a model uses to make a forecast, and the target is the outcome it forecasts.
+  \item[Gradient boosting.] Gradient boosting starts from a simple forecast and repeatedly adds a small tree fitted to the remaining errors.
+  \item[Gradient descent.] Gradient descent finds the minimum of a loss function by taking repeated small steps downhill.
+  \item[Hidden layers.] Hidden layers are the layers of neurons between a network's inputs and its output.
   \item[Hyperparameters.] Hyperparameters are settings chosen before a model is fitted, such as the strength of a penalty or the depth of a tree, usually by testing them on validation data.
+  \item[Instrumented principal components (IPCA).] IPCA builds a few factors whose loadings depend on stock characteristics, keeping the structure of a factor model while letting the data choose the factors.
+  \item[Interaction.] An interaction is present when the effect of one characteristic depends on the value of another.
+  \item[Interpolation threshold.] The interpolation threshold is the model size at which the number of parameters equals the number of observations, so the model fits the training data exactly.
+  \item[Irreducible error.] The irreducible error is the part of a return that is pure noise, which no model can predict.
+  \item[Kitchen-sink regression.] A kitchen-sink regression uses every available predictor at once, so it fits the training data best but usually forecasts badly.
+  \item[L1 penalty (lasso).] The L1 penalty, used by the lasso, adds the sum of absolute slopes to the fitting error, which sets some slopes exactly to zero.
+  \item[L2 penalty (ridge).] The L2 penalty, used by ridge regression, adds the sum of squared slopes to the fitting error, which shrinks every slope toward zero.
+  \item[Learning rate.] The learning rate is the small weight given to each new step, so a model moves only part of the way toward correcting each error.
+  \item[Machine learning.] Machine learning is a set of methods in which a computer learns patterns from data, rather than being given a model in advance.
   \item[Market timing.] Market timing means moving money into or out of the market according to a forecast of its next return.
+  \item[Model complexity.] Model complexity is roughly the number of parameters a model estimates.
+  \item[Neural network.] A neural network passes its inputs through layers of simple units, each of which adds up weighted inputs and transforms the sum.
+  \item[Neuron.] A neuron is a unit of a neural network that adds up its weighted inputs plus a constant and passes the sum through an activation function.
+  \item[Panel data.] Panel data are many assets observed over many periods.
   \item[Partial dependence.] Partial dependence shows how a model's forecast changes as one input changes, with the other inputs held at typical values.
+  \item[Partial least squares.] Partial least squares builds combinations of the predictors according to how strongly they relate to the return, and then regresses on a few of them.
+  \item[Principal components regression.] Principal components regression first finds the combinations of predictors that capture most of their variation and then regresses returns on a few of them.
+  \item[Random forest.] A random forest averages many trees, each grown on a bootstrap sample and allowed to choose each split from only a random subset of the inputs.
+  \item[Random Fourier features.] Random Fourier features are many random nonlinear transformations of the original predictors, used to build very large models.
+  \item[Rectified linear unit (ReLU).] The rectified linear unit, $\max(0, a)$, returns its input when it is positive and zero otherwise.
+  \item[Regression tree.] A regression tree forecasts a number by asking a sequence of yes-or-no questions about the inputs.
   \item[Root, internal nodes and leaves.] A tree starts at its root, splits the data at each internal node, and gives its forecast at the leaves, where no further splits are made.
   \item[Shapley values.] Shapley values split a single forecast into the contributions of each input, so that the contributions add up to the forecast.
+  \item[Sigmoid.] The sigmoid, or logistic, function turns any number into a value between 0 and 1.
+  \item[Stochastic gradient descent.] Stochastic gradient descent takes each downhill step using a small random batch of the training data rather than all of it.
+  \item[Supervised learning.] In supervised learning a model learns from examples whose outcomes are known.
+  \item[Underfitting.] Underfitting means using a model too simple to capture the real effects in the data.
+  \item[Variance (of a model).] A model's variance is how widely its estimates scatter from one training sample to the next.
+  \item[Virtue of complexity.] The virtue of complexity is the claim that very large models can predict returns better than small ones.
+  \item[Volatility-timed momentum.] Volatility-timed momentum is a strategy whose position is a weighted average of recent returns, scaled down when volatility is high.
+  \item[Weak learners.] Weak learners are very simple models, such as trees only one or two questions deep, that boosting combines.
+  \item[Weights (of a network).] A network's weights play the role of regression coefficients, multiplying the inputs to each neuron.
 \end{description}
 \end{keyterms}

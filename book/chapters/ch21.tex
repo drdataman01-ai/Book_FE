@@ -66,7 +66,7 @@ A forecasting method deserves attention only if it beats simple alternatives. Se
 \subsection{Foundation models}
 \label{sec:21-fm}
 
-A time-series foundation model is a large neural network\index{neural network}, usually a \term{transformer}\index{transformer|textbf}, the network design behind modern chatbots, pretrained on a broad collection of series and then used \term{zero-shot}\index{foundation models!zero-shot forecasting|textbf}, without any training on the target series. In plain words, these models chop a series into pieces and learn to predict the next piece, much as a chatbot predicts the next word. The shaded box describes the two best-known designs.
+A time-series foundation model is a large neural network\index{neural network}, usually a \term{transformer}\index{transformer|textbf}\label{kt:transformer}, the network design behind modern chatbots, pretrained on a broad collection of series and then used \term{zero-shot}\index{foundation models!zero-shot forecasting|textbf}, without any training on the target series. In plain words, these models chop a series into pieces and learn to predict the next piece, much as a chatbot predicts the next word. The shaded box describes the two best-known designs.
 
 \begin{technote}
 \textbf{Technical note: two model designs.} Two design families matter here:
@@ -264,7 +264,8 @@ Benchmark any foundation model against the historical mean, an autoregression an
 \textbf{What Failed: forecasting home prices at scale.} In 2018 Zillow began buying homes through Zillow Offers, relying on its price models to decide what to pay. In November 2021 it closed the business (Zillow Group 2021), wrote down its home inventory by \$304.4 million and cut about a quarter of its workforce, citing unpredictable home prices, capacity\index{capacity} constraints and other operational problems. A forecast that is accurate on average can still fail when acted on at scale, in a market that turns, against sellers who know more about the particular house.
 \end{callout}
 
-% Key terms that this chapter uses without defining them, for readers new to finance.
+% Key terms of the chapter, in alphabetical order, for readers new to finance.
+% A term defined in an earlier chapter points to the chapter, section and page.
 \providecolor{FEMaroon}{RGB}{128,30,45}
 \providecolor{FECream}{RGB}{253,248,238}
 \providecolor{FEGold}{RGB}{196,150,60}
@@ -280,8 +281,20 @@ Benchmark any foundation model against the historical mean, an autoregression an
 \begin{keyterms}
 \small
 \begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[ARIMA.] ARIMA models extend an autoregression with differencing and moving-average terms.
+  \item[Autoregression.] An autoregression forecasts a series by regressing it on its own past values.
+  \item[Chronos.] Chronos is a time-series foundation model that scales each series, turns its values into tokens and forecasts the next token like a language model.
+  \item[Contamination.] Contamination happens when the test data were part of a model's training data, which makes the model look better than it is.
   \item[Forecast interval calibration.] A forecast interval is well calibrated when the outcome falls inside it as often as promised, for example in 80\% of cases for an 80\% interval.
+  \item[Foundation models.] Foundation models are large models trained on very broad collections of data and then used for many tasks with little or no further training.
+  \item[Large language models.] Large language models are neural networks trained on vast amounts of text to predict the next word, which is how chatbots learn to write.
+  \item[Pinball loss.] The pinball loss scores a forecast quantile, penalizing outcomes on the wrong side of it in proportion to the quantile's level.
   \item[Pretraining.] Pretraining is the first stage of building a foundation model, in which it learns general patterns from a very large collection of data before it is used on a specific task.
+  \item[Rolling origins.] Rolling origins is the forecasting name for a walk-forward design, in which each forecast uses only data up to its own date.
+  \item[TimesFM.] TimesFM is a time-series foundation model, a transformer that reads a series in patches and forecasts the next patch.
+  \item[Training cutoff.] A model's training cutoff is the last date of the data it was trained on, so only later data give a clean test.
   \item[Training, validation and test sets.] The training set is used to fit a model, the validation set to choose its settings, and the test set, kept untouched until the end, to judge it.
+  \item[Transformer.] A transformer is the neural network design behind modern chatbots, built around the attention mechanism.
+  \item[Zero-shot.] A model is used zero-shot when it forecasts a series without any training on that series.
 \end{description}
 \end{keyterms}

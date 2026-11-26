@@ -468,7 +468,7 @@ This matters because of the way portfolios are weighted (Section~\ref{sec:02-fou
   \item \textbf{Value-weighted}\index{index weighting!value-weighted|textbf} portfolios weight stocks by market capitalization, so they reflect where investors' money actually is.
 \end{itemize}
 
-Micro-caps are also expensive and difficult to trade. Their \term{bid--ask spreads}\index{bid--ask spread|textbf}, the gap between the price at which you can buy and the price at which you can sell, are wide. They have little \term{liquidity}\index{liquidity|textbf}, which means that buying or selling even a modest amount moves the price. They are also costly to \term{sell short}\index{short selling|textbf}, that is, to borrow and sell in the hope of buying them back later at a lower price. In addition, micro-caps have the most extreme returns and the most data problems, including the missing delisting returns described in Section~\ref{sec:02-survivorship}. A pattern that appears in equal-weighted portfolios but not in value-weighted ones may therefore exist only where no large investor can exploit it.
+Micro-caps are also expensive and difficult to trade. Their \term{bid--ask spreads}\index{bid--ask spread|textbf}\label{kt:bid-ask-spread}, the gap between the price at which you can buy and the price at which you can sell, are wide. They have little \term{liquidity}\index{liquidity|textbf}, which means that buying or selling even a modest amount moves the price. They are also costly to \term{sell short}\index{short selling|textbf}, that is, to borrow and sell in the hope of buying them back later at a lower price. In addition, micro-caps have the most extreme returns and the most data problems, including the missing delisting returns described in Section~\ref{sec:02-survivorship}. A pattern that appears in equal-weighted portfolios but not in value-weighted ones may therefore exist only where no large investor can exploit it.
 
 The replication\index{replication} debate in Chapter~\ref{ch:16} turns partly on this point. An \term{anomaly}\index{anomaly|textbf} is a pattern in returns that standard risk models, such as the CAPM\index{capital asset pricing model (CAPM)}, cannot explain. Hou, Xue and Zhang\index{q-factor model} (2020) found that many anomalies disappear when micro-caps are given little weight, while their critics argue that this mainly shows that anomalies are concentrated among small stocks. For an investor, both readings lead to the same caution: a pattern that lives only in tiny stocks may be real, yet still impossible to profit from at any meaningful scale. Either way, the lesson for this chapter is simple: \textbf{always ask how a portfolio is weighted and whether the result survives without micro-caps.}
 
@@ -590,7 +590,8 @@ Before you trust any backtest, your own or someone else's, work through these qu
   \item[$\square$] \textbf{Shared data (Section~\ref{sec:02-snooping}):} Has the result been tested on other periods, other markets or the years after publication?
 \end{itemize}
 
-% Key terms that this chapter uses without defining them, for readers new to finance.
+% Key terms of the chapter, in alphabetical order, for readers new to finance.
+% A term defined in an earlier chapter points to the chapter, section and page.
 \providecolor{FEMaroon}{RGB}{128,30,45}
 \providecolor{FECream}{RGB}{253,248,238}
 \providecolor{FEGold}{RGB}{196,150,60}
@@ -606,10 +607,39 @@ Before you trust any backtest, your own or someone else's, work through these qu
 \begin{keyterms}
 \small
 \begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Adjusted prices.] Adjusted prices rescale past prices so that the change in the adjusted price equals the return a shareholder actually earned.
+  \item[Anomaly.] An anomaly is a pattern in returns that standard risk models, such as the CAPM, cannot explain.
+  \item[Arithmetic average.] The arithmetic average is the simple mean of the period returns, which estimates the expected return in any single period.
+  \item[Backfill.] Backfill happens when a database adds a company or fund together with its earlier history, which brings in past returns only for those that did well.
+  \item[Bid--ask spread.] The bid--ask spread is the gap between the price at which you can buy a stock and the price at which you can sell it.
+  \item[Book-to-market.] The book-to-market ratio is a company's accounting value divided by its market value, so a high ratio marks a cheap, or value, stock.
   \item[Compustat.] Compustat is the standard subscription database of companies' accounting data, such as earnings and book values.
+  \item[Corporate actions.] Corporate actions are company events, such as stock splits and dividends, that change the share price without bringing shareholders a gain or a loss.
   \item[CRSP.] CRSP, the Center for Research in Security Prices, is the standard subscription database of U.S. stock prices and returns, including companies that no longer exist.
+  \item[Data-snooping bias.] Data-snooping bias arises when what researchers choose to test is guided by what earlier studies found in the same data, which makes results look more significant than they are.
+  \item[Delisting return.] A delisting return is the change from a stock's last trading price to the amount shareholders finally receive when the stock stops trading.
+  \item[Dividend yield.] The dividend yield is the annual dividend divided by the share price.
+  \item[Equal-weighted.] An equal-weighted portfolio puts the same amount of money into each stock, whatever its size.
+  \item[Ex-dividend date.] The ex-dividend date is the first day on which a buyer of the stock no longer receives the next dividend, so the price usually falls by about the dividend on that day.
+  \item[Fiscal year.] A fiscal year is the twelve-month period for which a company reports its accounts, which does not always end in December.
   \item[FRED.] FRED is the Federal Reserve Bank of St.~Louis's free online database of economic and financial series, such as interest rates and inflation.
-  \item[Open Source Asset Pricing.] See Chapter~\ref{ch:16}, Section~\ref{sec:19-how}, page~\pageref{sec:19-how}.
+  \item[Geometric average.] The geometric average is the constant rate of return that would have produced the same ending wealth, so it describes what a buy-and-hold investor actually earned.
+  \item[Liquidity.] Liquidity is the ease of trading, so in an illiquid stock even a modest trade moves the price.
+  \item[Look-ahead bias.] Look-ahead bias arises when a backtest uses information that was not yet available when the decision would have been made.
+  \item[Market capitalization.] Market capitalization is a company's share price multiplied by its number of shares, that is, the market value of the whole company.
+  \item[Micro-caps.] Micro-caps are the smallest listed stocks, each smaller than four-fifths of the stocks on the New York Stock Exchange.
+  \item[Open Source Asset Pricing.] Open Source Asset Pricing is a free online library of the returns of hundreds of published stock-return predictors, built from CRSP and Compustat data.
+  \item[Point-in-time data.] Point-in-time data record what was known on each date, including the original values of numbers that were later revised.
+  \item[Price-weighted.] A price-weighted index, such as the Dow Jones Industrial Average, weights each stock by its share price alone.
   \item[Rebalancing.] Rebalancing means buying and selling to bring a portfolio's weights back to their targets after prices have moved.
+  \item[Short selling.] To sell short is to borrow a stock and sell it, in the hope of buying it back later at a lower price.
+  \item[Size premium.] The size premium is the extra return of small companies over large ones.
+  \item[Stock split.] A stock split divides each share into several shares and cuts the price in the same proportion, so shareholders neither gain nor lose.
+  \item[Survivorship bias.] Survivorship bias arises when a sample includes only the companies, funds or strategies that are still around at the end of the period.
+  \item[Valuation ratio.] A valuation ratio, such as the dividend yield or book-to-market, compares a company's or the market's fundamentals with its price to measure how cheap it is.
+  \item[Value-weighted.] A value-weighted portfolio holds each stock in proportion to its market capitalization.
+  \item[Vintage.] A vintage is a dataset as it looked on a particular date, before any later corrections were made.
+  \item[Volatility drag.] Volatility drag is the gap by which the geometric average falls below the arithmetic average, roughly half the variance of returns.
+  \item[Walk-forward test.] A walk-forward test chooses its settings at each date using only the data available before that date, as an investor in real time would have to.
 \end{description}
 \end{keyterms}

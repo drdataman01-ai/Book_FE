@@ -418,7 +418,7 @@ Risk-based rules decide how much risk each asset should carry, not how much mone
 
 \subsection{Trade less}
 
-Rebalancing\index{rebalancing} less often, or penalizing \term{turnover}\index{turnover}, reduces \term{trading costs}. The price is that the portfolio holds weights based on older information.
+Rebalancing\index{rebalancing} less often, or penalizing \term{turnover}\index{turnover}\label{kt:turnover}, reduces \term{trading costs}. The price is that the portfolio holds weights based on older information.
 
 
 \section{How allocation rules behave in rising and falling markets}
@@ -575,7 +575,8 @@ Treat 1/N as the benchmark, and compare any optimized allocation with equal weig
 \textbf{What Failed: the optimizer nobody would use.} In the early 1990s, Fischer Black and Robert Litterman of Goldman Sachs reported that investment professionals found asset-allocation models hard to use, because the portfolios they produced were ``badly behaved'': concentrated, extreme and sensitive to small changes in the inputs. Their solution was to start from the expected returns implied by market equilibrium and depart from them only where managers had confident views. The optimizer does exactly what it was designed to do; the problem is what it is fed.
 \end{callout}
 
-% Key terms that this chapter uses without defining them, for readers new to finance.
+% Key terms of the chapter, in alphabetical order, for readers new to finance.
+% A term defined in an earlier chapter points to the chapter, section and page.
 \providecolor{FEMaroon}{RGB}{128,30,45}
 \providecolor{FECream}{RGB}{253,248,238}
 \providecolor{FEGold}{RGB}{196,150,60}
@@ -591,8 +592,24 @@ Treat 1/N as the benchmark, and compare any optimized allocation with equal weig
 \begin{keyterms}
 \small
 \begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
-  \item[Certainty equivalent.] See Chapter~\ref{ch:06}, Section~\ref{sec:09-accuracy}, page~\pageref{sec:09-accuracy}.
+  \item[Certainty equivalent.] See Chapter~\ref{ch:06}, Section~\ref{sec:09-accuracy}, page~\pageref{kt:certainty-equivalent}.
+  \item[Constraint.] A constraint is a rule imposed on a portfolio, such as forbidding short sales, that limits the weights an optimizer may choose.
+  \item[Efficient frontier.] The efficient frontier is the set of portfolios with the highest expected return for each level of risk.
+  \item[Equal risk contribution.] Equal risk contribution gives every asset the same share of the portfolio's total risk.
   \item[Estimation error.] Estimation error is the gap between an estimated quantity, such as an expected return, and its true value, caused by having only limited data.
-  \item[Turnover.] See Chapter~\ref{ch:14}, Section~\ref{sec:17-turnover}, page~\pageref{sec:17-turnover}.
+  \item[Global minimum-variance portfolio.] The global minimum-variance portfolio has the lowest variance of any fully invested portfolio, and it needs no estimates of expected returns.
+  \item[Hierarchical risk parity.] Hierarchical risk parity groups similar assets together and then divides money between the groups and within them.
+  \item[Inverse-volatility weighting.] Inverse-volatility weighting gives each asset a weight in proportion to one over its volatility, so riskier assets receive less money.
+  \item[Jobson--Korkie test.] The Jobson--Korkie test checks whether two Sharpe ratios differ by more than chance.
+  \item[Ledoit--Wolf covariance.] The Ledoit--Wolf covariance estimate is a weighted average of the sample covariance matrix and a simple structured target, which reduces estimation error.
+  \item[Mean--variance optimization.] Mean--variance optimization finds the mix of assets with the highest expected return for each level of risk.
+  \item[Penalized regression.] A penalized regression adds a cost for large coefficients, which pulls extreme estimates toward more ordinary values.
+  \item[Reward-to-risk timing.] Reward-to-risk timing sets each asset's weight in proportion to its average return divided by its variance.
+  \item[Risk aversion.] Risk aversion measures how heavily an investor penalizes risk, so a more risk-averse investor accepts less risk for a given reward.
+  \item[Shrinkage.] Shrinkage pulls noisy estimates toward a simpler target, trading a little bias for much less estimation error.
+  \item[Tangency portfolio.] The tangency portfolio is the portfolio of risky assets with the highest Sharpe ratio.
+  \item[Trading costs.] See Chapter~\ref{ch:01}, Section~\ref{sec:01-sharpe}, page~\pageref{kt:trading-cost}.
+  \item[Turnover.] Turnover is the share of a portfolio that is bought and sold in a period, which drives its trading costs.
+  \item[Volatility timing.] Volatility timing sets each asset's weight in proportion to one over its variance, ignoring correlations.
 \end{description}
 \end{keyterms}

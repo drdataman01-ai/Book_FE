@@ -389,3 +389,39 @@ Anyone measuring risk should use a volatility forecast that reacts quickly, such
 \label{sec:11-open}
 \textbf{Open questions.} Can realized volatility\index{volatility!realized} from intraday returns (Chapter~\ref{ch:07}) catch the first day of a crisis, and how should regulators balance the accuracy of risk measures against stability?
 
+% Key terms of the chapter, in alphabetical order, for readers new to finance.
+% A term defined in an earlier chapter points to the chapter, section and page.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Basel Committee.] The Basel Committee on Banking Supervision is the international group of bank regulators that sets the rules for banks' capital.
+  \item[Breach.] A breach is a day on which the loss is larger than the VaR forecast.
+  \item[Christoffersen test.] The Christoffersen (1998) test checks whether VaR breaches arrive independently or in clusters.
+  \item[Conditional coverage.] Conditional coverage combines unconditional coverage and independence, so that the chance of a breach is exactly as promised given everything known the day before.
+  \item[Elicitable.] A risk measure is elicitable when some scoring rule can rank forecasts of it against outcomes, which VaR is and expected shortfall alone is not.
+  \item[Exceedance-residual test.] The exceedance-residual test checks whether the losses on breach days match the expected-shortfall forecast on average.
+  \item[Expected shortfall (ES).] Expected shortfall is the average loss on the worst days, those beyond the VaR.
+  \item[Filtered historical simulation.] Filtered historical simulation rescales past returns by a volatility model before ranking them, combining the strengths of historical simulation and GARCH.
+  \item[Historical simulation.] Historical simulation ranks the returns of a past window from worst to best and reads the VaR directly from them.
+  \item[Independence of breaches.] Independence means that a VaR breach today does not make a breach tomorrow more likely, so breaches do not come in clusters.
+  \item[Kupiec test.] The Kupiec (1995) test checks whether VaR breaches occur as often as the model promises.
+  \item[Procyclicality.] Procyclicality is the way risk models that react to recent volatility force many banks to cut risk at the same time in a crisis, deepening it.
+  \item[Quantile.] A quantile, or percentile, is the value below which a given share of outcomes falls, so the 1st percentile is exceeded on the downside only 1\% of the time.
+  \item[Stressed VaR.] Stressed VaR is a VaR measured over a year of severe market stress, which regulators added to the capital rules in 2009.
+  \item[Subadditive.] A risk measure is subadditive when the risk of a combined portfolio is never more than the sum of the risks of its parts, so it always rewards diversification.
+  \item[Unconditional coverage.] Unconditional coverage means that a VaR model is breached as often as promised on average, for example on 1\% of days.
+  \item[Value at Risk (VaR).] See the introduction to Chapter~\ref{ch:07}, page~\pageref{kt:value-at-risk}.
+\end{description}
+\end{keyterms}

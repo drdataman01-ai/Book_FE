@@ -268,7 +268,7 @@ In words, a stock's risk has two parts: the part that comes from the market as a
 Let's understand the two terms:
 \begin{enumerate}
 \item The first term is the \term{systematic variance}\index{variance!systematic|textbf}, the part that comes from exposure to the market, and 
-\item the second is the \term{idiosyncratic variance}\index{variance!idiosyncratic|textbf}, the part that belongs to the asset alone. 
+\item the second is the \term{idiosyncratic variance}\index{variance!idiosyncratic|textbf}\label{kt:idiosyncratic-variance}, the part that belongs to the asset alone. 
 \end{enumerate}
 The decomposition gives the regression's $R^2$ a direct economic meaning. The share of systematic variance in the total is exactly the $R^2$, so an $R^2$ of 0.9 says that 90\% of the asset's risk comes from the market and only 10\% is its own.
 \end{technote}
@@ -799,3 +799,47 @@ A factor should therefore meet three conditions before it is accepted:
 The most useful habit is to \textbf{separate alpha from factor exposure.} Index funds and factor ETFs offer size, value and other known factors cheaply, so when a fund charges more for active management, check how much of its return comes from those same factors. Be cautious with new factors that only just clear the usual bar, and look at returns after trading costs, short-selling fees and management fees (Chapter~\ref{ch:14}).
 
 \textbf{Questions to ask fund managers:} How much of your performance is alpha, and how much is exposure to factors a low-cost fund would also provide? How many models or variations did you test before choosing this strategy? How large is your alpha after fees and trading costs?
+
+% Key terms of the chapter, in alphabetical order, for readers new to finance.
+% A term defined in an earlier chapter points to the chapter, section and page.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Accruals.] Accruals are the part of a company's reported profit that has not yet arrived as cash, such as sales made on credit.
+  \item[Alpha decay.] Alpha decay is the shrinking of a manager's or strategy's alpha once more factors are added to the benchmark.
+  \item[Autocorrelation.] See Chapter~\ref{ch:01}, Section~\ref{sec:01-signal-noise}, page~\pageref{kt:autocorrelated}.
+  \item[Diversification.] Diversification means spreading money across many investments, so that risks unique to each one largely cancel out.
+  \item[Factor loadings.] Factor loadings are the regression slopes that measure how strongly a portfolio is exposed to each factor.
+  \item[Factor zoo.] The factor zoo is the hundreds of published factors that claim to explain stock returns, many of them probably false discoveries.
+  \item[Fat tails.] Fat tails mean that extreme returns occur far more often than a normal distribution predicts.
+  \item[Idiosyncratic variance.] Idiosyncratic variance is the part of an asset's variance that belongs to the asset alone, which diversification can remove.
+  \item[Investment factor.] The investment factor is the return of companies that invest conservatively minus the return of companies that invest aggressively.
+  \item[Kurtosis.] Kurtosis measures how heavy the tails of a distribution are, and a value above 3, the normal distribution's value, signals fat tails.
+  \item[Long--short portfolio.] A long--short portfolio buys one group of stocks and short-sells another, so its return is the difference between the two groups.
+  \item[Mean.] The mean is the average return, the center of a return distribution.
+  \item[Moments.] Moments are four numbers, the mean, variance, skewness and kurtosis, that summarize a return distribution.
+  \item[Multiple-testing problem.] The multiple-testing problem is that when many hypotheses are tested, some will pass the usual significance bar by chance alone.
+  \item[Profitability factor.] The profitability factor, RMW, is the return of highly profitable companies minus the return of weakly profitable ones.
+  \item[Publication bias.] Publication bias is the tendency of journals to publish significant results and not failures, so published findings overstate what works.
+  \item[Residuals.] Residuals are the gaps between the actual values and the line fitted by a regression.
+  \item[Security market line.] The security market line is the straight line that the CAPM predicts between beta and expected return.
+  \item[Skewness.] Skewness measures asymmetry, and it is negative when large losses are more likely than large gains of the same size.
+  \item[SMB.] SMB, Small Minus Big, is the return of small companies' stocks minus the return of large companies' stocks.
+  \item[Style drift.] Style drift is a gradual change in a fund's actual investment style away from the style it advertises.
+  \item[Systematic variance.] Systematic variance is the part of an asset's variance that comes from its exposure to the market, which diversification cannot remove.
+  \item[Value stocks.] Value stocks are stocks that are cheap relative to their accounting value or earnings, as opposed to expensive growth or glamour stocks.
+  \item[Variance.] The variance measures how far returns typically fall from the mean, and its square root is the standard deviation.
+\end{description}
+\end{keyterms}

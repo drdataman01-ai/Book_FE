@@ -88,7 +88,7 @@ ARCH needed many lags to capture volatility that stays high for weeks. Engle's d
 \end{figure}
 
 
-The claim carries a great deal of weight. Option prices, risk limits, \term{Value at Risk}\index{Value at Risk (VaR)}, \term{margin} requirements\index{margin} (the deposits that brokers demand from investors who borrow or trade futures) and volatility-targeting\index{volatility targeting} funds all assume that volatility\index{volatility} can be forecast. If it could not, a risk manager would have no better guess for tomorrow's risk than the long-run average, and none of these tools would work as intended.
+The claim carries a great deal of weight. Option prices, risk limits, \term{Value at Risk}\index{Value at Risk (VaR)}\label{kt:value-at-risk}, \term{margin} requirements\index{margin} (the deposits that brokers demand from investors who borrow or trade futures) and volatility-targeting\index{volatility targeting} funds all assume that volatility\index{volatility} can be forecast. If it could not, a risk manager would have no better guess for tomorrow's risk than the long-run average, and none of these tools would work as intended.
 
 Yet in the 1990s the evidence looked weak. Researchers judged a GARCH forecast by how well it predicted the next day's squared return, and by that test the forecasts explained only a few percent of the variation. It seemed that the models, though popular, had little real forecasting power.
 
@@ -315,7 +315,7 @@ Its use goes beyond option pricing, though. Option traders often quote prices in
 
 The best-known measure of implied volatility is the \term{VIX}\index{VIX|textbf}. It measures the market's expected volatility of the S\&P~500 over the next 30 days, computed from the prices of many index options, and it is quoted in annual percentage points. A VIX of 20 means an expected volatility of about 20\% a year, or about $20/\sqrt{252} \approx 1.3\%$ a day.
 
-Implied volatility has one important bias. In plain words, the VIX tends to run a little high, because it mixes the market's forecast of volatility with the price investors pay for protection. More precisely, it is a forecast under the \emph{\term{risk-neutral}\index{risk-neutral pricing}} measure, the probabilities that price assets as if investors did not care about risk, not under real-world probabilities. In practice, investors pay extra for options that protect them when volatility jumps, just as they pay for insurance. As a result, the VIX usually exceeds the volatility that actually follows. This gap is the \term{variance risk premium}\index{variance risk premium|textbf}. A forecaster who uses implied volatility must allow for it, and an investor who sells options earns it, which is the subject of Chapter~\ref{ch:19}.
+Implied volatility has one important bias. In plain words, the VIX tends to run a little high, because it mixes the market's forecast of volatility with the price investors pay for protection. More precisely, it is a forecast under the \emph{\term{risk-neutral}\index{risk-neutral pricing}\label{kt:risk-neutral}} measure, the probabilities that price assets as if investors did not care about risk, not under real-world probabilities. In practice, investors pay extra for options that protect them when volatility jumps, just as they pay for insurance. As a result, the VIX usually exceeds the volatility that actually follows. This gap is the \term{variance risk premium}\index{variance risk premium|textbf}. A forecaster who uses implied volatility must allow for it, and an investor who sells options earns it, which is the subject of Chapter~\ref{ch:19}.
 
 \begin{figure}[htbp]
 \centering
@@ -537,7 +537,8 @@ Forecastable volatility predicts risk, not returns, so it does not contradict ma
 \textbf{What Failed: selling volatility before February 5, 2018.} For years, products that bet against volatility were among the market's best performers. The VelocityShares Daily Inverse VIX Short-Term ETN (XIV) earned the variance risk premium by shorting VIX futures and held \$1.9 billion. On February 5, 2018, the VIX rose 115.6\%, its largest one-day increase ever. XIV lost 96.3\% that day, and Credit Suisse closed it within weeks. Volatility forecasts are informative on average, but a forecast that volatility will stay low is weakest exactly at the onset of a spike, and a strategy that loses almost everything on one day can look excellent in any backtest that misses that day (Chapter~\ref{ch:08}).
 \end{callout}
 
-% Key terms that this chapter uses without defining them, for readers new to finance.
+% Key terms of the chapter, in alphabetical order, for readers new to finance.
+% A term defined in an earlier chapter points to the chapter, section and page.
 \providecolor{FEMaroon}{RGB}{128,30,45}
 \providecolor{FECream}{RGB}{253,248,238}
 \providecolor{FEGold}{RGB}{196,150,60}
@@ -553,6 +554,28 @@ Forecastable volatility predicts risk, not returns, so it does not contradict ma
 \begin{keyterms}
 \small
 \begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
-  \item[Value at Risk (VaR).] See Chapter~\ref{ch:08}, Section~\ref{sec:11-foundations}, page~\pageref{sec:11-foundations}.
+  \item[ARCH.] ARCH, autoregressive conditional heteroskedasticity, is a model in which today's variance depends on the size of recent returns.
+  \item[Call option.] A call option gives its buyer the right to buy an asset at a fixed price before a set date.
+  \item[EWMA.] EWMA, the exponentially weighted moving average, estimates today's variance as a weighted average of past squared returns that gives recent days the most weight.
+  \item[GARCH.] GARCH, generalized ARCH, lets today's variance depend on both recent squared returns and yesterday's variance, and it is the standard model of financial volatility.
+  \item[GJR-GARCH.] GJR-GARCH is a version of GARCH with an extra term that raises the variance more after down days than after up days.
+  \item[Half-life.] The half-life of a volatility shock is the number of days it takes for half of the gap between current and long-run variance to close.
+  \item[HAR model.] The HAR model forecasts tomorrow's realized variance from its average over the last day, week and month.
+  \item[Implied volatility.] Implied volatility is the volatility that makes an option's model price equal its market price, so it reveals the market's own view of future volatility.
+  \item[Leverage effect.] The leverage effect is the tendency of volatility to rise more after a fall in prices than after a rise of the same size.
+  \item[Long-run variance.] The long-run variance is the normal level of variance to which a GARCH forecast returns over time.
+  \item[Loss function.] A loss function scores a forecast by turning its error into a single penalty, so that forecasts can be compared.
+  \item[Margin.] Margin is the deposit that a broker demands from an investor who borrows or trades futures.
+  \item[Maximum likelihood.] Maximum likelihood estimates a model's parameters by choosing the values that make the observed data most probable.
+  \item[MSE.] MSE, the mean squared error, averages the squared forecast errors, so the largest misses dominate it.
+  \item[Proxy.] A proxy is an observable stand-in for a quantity that cannot be observed directly, such as summed squared returns for true variance.
+  \item[QLIKE.] QLIKE is a loss function for variance forecasts that penalizes forecasts that are too low much more than those that are too high.
+  \item[Realized variance.] Realized variance measures a day's variance by adding up the squares of many short intraday returns.
+  \item[Risk-neutral measure.] The risk-neutral measure uses adjusted probabilities that price assets as if investors did not care about risk, so every asset is expected to earn the risk-free rate.
+  \item[Value at Risk (VaR).] Value at Risk is a loss that should be exceeded only rarely, for example on one trading day in a hundred.
+  \item[Variance risk premium.] The variance risk premium is the gap by which implied variance usually exceeds the variance that actually follows, which option sellers earn.
+  \item[VIX.] The VIX measures the market's expected volatility of the S\&P~500 over the next 30 days, computed from the prices of index options.
+  \item[Volatility clustering.] Volatility clustering is the tendency of large price moves to follow large moves and calm days to follow calm days.
+  \item[Volatility feedback.] Volatility feedback is the effect by which higher expected volatility raises the return investors require and so lowers prices.
 \end{description}
 \end{keyterms}

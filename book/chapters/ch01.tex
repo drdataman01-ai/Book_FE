@@ -30,11 +30,11 @@ Each of these situations raises the same question: does a good record show that 
 \term{Empirical finance} is the branch of finance that tests ideas about markets against real data, such as decades of stock prices, fund returns and interest rates.
 Whether a good record reveals skill is also one of the oldest questions in empirical finance. In the 1960s mutual funds, which pool the savings of many investors and pay a professional manager to choose the stocks, sold themselves on their past returns. At the same time, the newly developed \term{Capital Asset Pricing Model (CAPM)}, which links the return an investor should expect from an investment to how strongly it moves with the overall market, gave researchers a way to ask whether those returns were more than the reward for bearing market risk. Jensen (1968) applied it to 115 mutual funds over 1945--1964. After expenses, the funds as a group earned less than a \term{buy-and-hold} position in the market with the same risk, and very few individual funds did better than chance would allow. In plain terms, the typical fund investor would have done better by buying a slice of the whole market and simply holding it. Jensen's measure, the intercept of a \term{regression} of a fund's \term{excess return} on the market's, is still called \term{Jensen's alpha}\index{alpha!Jensen's}. In everyday language, \term{alpha} is the extra return a manager earns beyond what the market alone would have delivered, and it is the yardstick for skill throughout this book.
 
-The question matters because the answer decides how money is managed. If a long record reveals skill, investors can find good managers by studying their past returns, and paying a manager to pick stocks, which is called \term{active management}, is sensible. If it does not, much of what investors pay for is luck, and a low-cost \term{index fund}, which simply holds every stock in a \term{market index} such as the S\&P~500, is the better choice. The statistics are harder than they look. Returns are noisy, histories are short, and thousands of managers and strategies are compared at once, so the best record among many is mostly the product of chance. A simple analogy shows why. If a thousand people each flip a coin ten times, chances are that one of them will flip ten heads in a row, yet nobody would call that person a skilled coin flipper. When thousands of fund managers compete, some of them will produce dazzling records in the same way. Fama and French (2010) returned to Jensen's question for this reason, asking whether the stars among thousands of modern funds outnumber what luck alone would produce, and they confirmed that few fund managers show enough skill to cover their costs. Bailey, Borwein, L\'opez de Prado and Zhu (2014) saw the same danger in backtests, which apply a trading rule to historical prices to see how it would have performed. They showed that because a researcher can try thousands of variations of a rule and report only the best one, the winning backtest can look impressive even when the rule has no value. Harvey, Liu and Zhu (2016) noted that the field had by then tested hundreds of factors against the usual bar, and argued that it should therefore demand stronger evidence before accepting a new result.
+The question matters because the answer decides how money is managed. If a long record reveals skill, investors can find good managers by studying their past returns, and paying a manager to pick stocks, which is called \term{active management}, is sensible. If it does not, much of what investors pay for is luck, and a low-cost \term{index fund}, which simply holds every stock in a \term{market index} such as the \term{S\&P~500}, is the better choice. The statistics are harder than they look. Returns are noisy, histories are short, and thousands of managers and strategies are compared at once, so the best record among many is mostly the product of chance. A simple analogy shows why. If a thousand people each flip a coin ten times, chances are that one of them will flip ten heads in a row, yet nobody would call that person a skilled coin flipper. When thousands of fund managers compete, some of them will produce dazzling records in the same way. Fama and French (2010) returned to Jensen's question for this reason, asking whether the stars among thousands of modern funds outnumber what luck alone would produce, and they confirmed that few fund managers show enough skill to cover their costs. Bailey, Borwein, L\'opez de Prado and Zhu (2014) saw the same danger in \term{backtests}, which apply a trading rule to historical prices to see how it would have performed. They showed that because a researcher can try thousands of variations of a rule and report only the best one, the winning backtest can look impressive even when the rule has no value. Harvey, Liu and Zhu (2016) noted that the field had by then tested hundreds of \term{factors} against the usual bar, and argued that it should therefore demand stronger evidence before accepting a new result.
 
-The implications run through the rest of this book. Every claim that follows is supported by some record of past returns, and every one of them faces the same question: how much of the record is luck? The claim on trial\index{claims-on-trial method} in this chapter is the one every strategy builder hopes is true: \textbf{a long enough track record can reveal real skill.} Testing it means learning how long ``long enough'' is, and what else a record must show. The chapter also introduces the method the rest of the book uses: state the claim, understand it, verify it, judge it, and apply what survives.
+The implications run through the rest of this book. Every claim that follows is supported by some record of past returns, and every one of them faces the same question: how much of the record is luck? The \term{claim on trial}\index{claims-on-trial method} in this chapter is the one every strategy builder hopes is true: \textbf{a long enough track record can reveal real skill.} Testing it means learning how long ``long enough'' is, and what else a record must show. The chapter also introduces the method the rest of the book uses: state the claim, understand it, verify it, judge it, and apply what survives.
 
-The chapter draws on four papers. Jensen (1968) and Fama and French (2010) test whether fund managers beat chance; their fund data are not free, so their results are discussed rather than rerun. Bailey et al.\ (2014) show how the best of many backtests misleads, and Harvey, Liu and Zhu (2016) ask how high the statistical bar must be. The lab in Section~\ref{sec:01-lab} replicates the logic of these papers with free data: it runs 1,000 strategies with no skill at all on the U.S. market since 1926, in order to measure how good a track record luck alone can produce, and how much higher the bar must be before a record counts as evidence of skill. A strategy here is simply a rule that decides, month by month, whether to own the stock market or to keep the money in safe \term{Treasury bills}.
+The chapter draws on four papers. Jensen (1968) and Fama and French (2010) test whether fund managers beat chance; their fund data are not free, so their results are discussed rather than rerun. Bailey et al.\ (2014) show how the best of many backtests misleads, and Harvey, Liu and Zhu (2016) ask how high the statistical bar must be. The lab in Section~\ref{sec:01-lab} replicates the logic of these papers with free data: it runs 1,000 strategies with no skill at all on the U.S. market since 1926, in order to measure how good a track record luck alone can produce, and how much higher the bar must be before a record counts as evidence of skill. A \term{strategy} here is simply a rule that decides, month by month, whether to own the stock market or to keep the money in safe \term{Treasury bills}.
 
 By the end of the chapter you will be able to:
 
@@ -304,7 +304,7 @@ Investors who make money in the stock market can do so for three different reaso
   by those well-known tilts alone (Chapter~\ref{ch:03}).
   With \textbf{(iii) better execution}, a trading firm
   buys and sells the same stocks as everyone else but pays less in \term{trading
-  costs}\index{transaction costs} and \term{price impact}\index{market impact}. It keeps a few \term{basis points}\index{basis point} per trade that others
+  costs}\index{transaction costs}\label{kt:trading-cost} and \term{price impact}\index{market impact}\label{kt:price-impact}. It keeps a few \term{basis points}\index{basis point} per trade that others
   give away. A basis point is one hundredth of a percentage point, so the
   saving on each trade is tiny, but it adds up over millions of trades.
 
@@ -650,7 +650,7 @@ The rule ``the mean needs a long history, risk needs frequent data'' is a good g
 \begin{itemize}
   \item \textbf{Very high frequency adds noise.} At intraday frequencies, the bounce between \term{bid and ask prices} (the prices at which dealers will buy and sell) and stale quotes distort measured returns, so for volatility, more frequent data help only up to a point.
   \item \textbf{Daily betas can be biased.} Stocks that trade infrequently react to market news with a delay, which makes their daily betas too low. Monthly data, or a correction that adds lagged market returns to the regression (Dimson, 1979), reduces the bias. This matters for the low-risk anomaly\index{low-risk anomaly} in Chapter~\ref{ch:15}.
-  \item \textbf{Annualizing is not automatic.} The rules in Section~\ref{sec:01-foundations} for converting monthly figures to annual ones assume that returns are uncorrelated over time. When they are \term{autocorrelated}, meaning that one month's return partly echoes the last, as for many hedge funds and illiquid assets that trade rarely and are hard to price, a monthly Sharpe ratio multiplied by $\sqrt{12}$ can be badly off (Lo, 2002).
+  \item \textbf{Annualizing is not automatic.} The rules in Section~\ref{sec:01-foundations} for converting monthly figures to annual ones assume that returns are uncorrelated over time. When they are \term{autocorrelated}\label{kt:autocorrelated}, meaning that one month's return partly echoes the last, as for many hedge funds and illiquid assets that trade rarely and are hard to price, a monthly Sharpe ratio multiplied by $\sqrt{12}$ can be badly off (Lo, 2002).
   \item \textbf{The cancellation is exact only for log returns.} For simple returns, the precision of the mean still depends mainly on the length of the history, but only approximately.
 \end{itemize}
 \end{technote}
@@ -769,7 +769,7 @@ The rest of this book applies one method to every claim. It is simple enough to 
 \begin{enumerate}
   \item \textbf{Claim} --- State what is asserted in one testable sentence. ``Momentum works'' is vague; ``stocks with the highest 12-month returns, skipping the last month, outperform the lowest by a positive average return after costs'' can be tested.
   \item \textbf{Understand} --- Learn how the idea works and how the original evidence was produced, including the data, the sample period, the method and the number of alternatives the authors tried.
-  \item \textbf{Verify} --- Rebuild the result yourself, then stress-test it \term{out of sample}\index{in-sample versus out-of-sample}, in other markets, after costs and after publication.
+  \item \textbf{Verify} --- Rebuild the result yourself, then stress-test it \term{out of sample}\index{in-sample versus out-of-sample}\label{kt:out-of-sample}, in other markets, after costs and after publication.
   \item \textbf{Judge} --- Compare your results with the published evidence, which each chapter summarizes in a section called \emph{Where the evidence stands}. Then reach your own verdict on the scale below, and date it with the sample period you tested.
   \item \textbf{Apply} --- State what an investor or practitioner can actually use, and what remains open.
 \end{enumerate}
@@ -811,7 +811,7 @@ This chapter's lab applies the method to a claim at the root of the whole field:
 
 \textbf{Claim on trial:} a long enough track record can reveal real skill. Bailey, Borwein, L\'opez de Prado and Zhu (2014) show that the best of many backtests can look impressive by chance alone, and Harvey, Liu and Zhu (2016) argue that the usual $t > 2$ hurdle is far too low when many strategies are tried. The lab therefore first measures what luck alone can do. It builds 1,000 strategies with no skill at all: each month, each one is either in the stock market or in Treasury bills, switching at random with an average holding period of 3 to 24 months, so that they look like real market-timing rules. The data are monthly U.S. market excess returns and Treasury bill rates since 1926 from the Kenneth R. French Data Library\index{Kenneth French data library}, and the code is in the repository folder \texttt{ch01-brilliant-by-chance/}.
 
-The first half of the sample, roughly 1926 to 1975, is the backtest\index{backtest|textbf}, in which a researcher would test the strategies and choose the best. The second half, roughly 1976 to today, is the period \textbf{after selection}, which shows what an investor who adopted the chosen strategy would have experienced. Skill is measured as alpha against buy-and-hold (Section~\ref{sec:01-foundations}), whose true value is zero for every strategy here. Its significance is the \term{one-sided}\index{hypothesis testing!one-sided and two-sided} t-statistic $t_\alpha$, computed with \term{Newey--West}\index{standard error!Newey--West (HAC)} standard errors (Chapter~\ref{ch:03}).
+The first half of the sample, roughly 1926 to 1975, is the backtest\index{backtest|textbf}, in which a researcher would test the strategies and choose the best. The second half, roughly 1976 to today, is the period \textbf{after selection}, which shows what an investor who adopted the chosen strategy would have experienced. Skill is measured as alpha against buy-and-hold (Section~\ref{sec:01-foundations}), whose true value is zero for every strategy here. Its significance is the \term{one-sided}\index{hypothesis testing!one-sided and two-sided} t-statistic $t_\alpha$, computed with \term{Newey--West}\index{standard error!Newey--West (HAC)}\label{kt:newey-west} standard errors (Chapter~\ref{ch:03}).
 
 The lab has three parts:
 \begin{enumerate}
@@ -871,7 +871,8 @@ The most important lesson is to judge evidence by \textbf{how it was produced}, 
 
 \textbf{Questions to ask a fund manager or strategy vendor:} How many strategies or settings did you test before choosing this one? Which part of the record is live, and which is a backtest? When was the design fixed, and how has it performed since? What is the alpha against the benchmark, with its t-statistic? Are transaction costs, fees and taxes included?
 
-% Key terms that this chapter uses without defining them, for readers new to finance.
+% Key terms of the chapter, in alphabetical order, for readers new to finance.
+% A term defined in an earlier chapter points to the chapter, section and page.
 \providecolor{FEMaroon}{RGB}{128,30,45}
 \providecolor{FECream}{RGB}{253,248,238}
 \providecolor{FEGold}{RGB}{196,150,60}
@@ -887,18 +888,66 @@ The most important lesson is to judge evidence by \textbf{how it was produced}, 
 \begin{keyterms}
 \small
 \begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Abnormal return.] An abnormal return is the part of a return that is higher than the investment's risk would justify.
+  \item[Active management.] Active management means paying a manager to pick investments in the hope of beating the market.
+  \item[Actively managed fund.] An actively managed fund pays a manager to pick stocks in the hope of beating the index, and it charges a higher fee than an index fund.
+  \item[Alpha.] Alpha is the extra return an investment earns beyond what its exposure to the market alone would have delivered.
+  \item[Autocorrelated returns.] Returns are autocorrelated when one period's return tends to repeat part of the previous period's return.
+  \item[Backtest.] A backtest applies a trading rule to past prices to see how it would have performed.
+  \item[Basis point.] A basis point is one hundredth of a percentage point, so 25 basis points equal 0.25\%.
+  \item[Beta.] Beta measures how strongly an investment moves with the market, so a beta of 1.5 means it tends to move 1.5 times as much.
+  \item[Bid and ask prices.] The bid is the price at which a dealer will buy, and the ask is the slightly higher price at which the dealer will sell.
+  \item[Bonferroni threshold.] The Bonferroni threshold is a stricter significance bar that grows with the number of tests, so that trying many ideas does not produce false discoveries.
+  \item[Bootstrap.] A bootstrap reshuffles the data many times to see what results could arise by chance alone.
   \item[Buy-and-hold.] Buy-and-hold means buying an investment and keeping it, without trying to time when to get in or out.
+  \item[Capital Asset Pricing Model (CAPM).] The CAPM says that an investment's expected return should depend only on how strongly it moves with the overall market.
+  \item[Claim on trial.] A claim on trial is a popular belief about markets that a chapter states in one sentence and then tests with data.
   \item[Data mining.] Data mining means searching through many variables or rules until one happens to fit the past, which usually means it was found by luck.
+  \item[Dividend.] A dividend is the part of a company's profit that it pays out in cash to its shareholders.
   \item[Earnings announcement.] An earnings announcement is the date on which a company publicly reports its profits for the latest quarter or year.
+  \item[Efficient market hypothesis.] The efficient market hypothesis says that prices already reflect the available information, so predictable profits are hard to find.
+  \item[Empirical finance.] Empirical finance is the branch of finance that tests ideas about markets against real data.
+  \item[Equity premium.] The equity premium is the extra average return that stocks have earned over safe Treasury bills.
+  \item[Excess return.] An excess return is an investment's return minus the risk-free rate.
+  \item[Expected return.] The expected return is the average return an investor anticipates, which must be estimated because it is never observed directly.
+  \item[Factors.] Factors are characteristics, such as company size or cheapness, that are claimed to explain why some stocks earn more than others.
+  \item[Hedge fund.] A hedge fund is a lightly regulated fund for wealthy investors and institutions that can borrow heavily and bet on prices falling as well as rising.
+  \item[High-frequency trading.] High-frequency trading uses computers to buy and sell within fractions of a second.
+  \item[Index fund.] An index fund simply holds all the stocks in a market index and charges a low fee.
   \item[Insider trades.] Insider trades are purchases or sales of a company's shares by its own executives and directors.
+  \item[Jensen's alpha.] Jensen's alpha is alpha measured against the CAPM, the first yardstick used to test whether fund managers have skill.
+  \item[Joint-hypothesis problem.] The joint-hypothesis problem is that every test of market efficiency is also a test of a model of what returns should be, so a failure could come from either.
+  \item[Leverage.] Leverage means investing borrowed money as well as your own, which raises both the potential gains and the potential losses.
+  \item[Log return.] A log return is the natural logarithm of one plus the simple return, a form that makes returns easy to add up over time.
+  \item[Market index.] A market index, such as the S\&P~500, tracks the combined value of a large group of stocks, so that a rise in the index is what the news calls a rise in the market.
+  \item[Mutual fund.] A mutual fund pools money from many investors and invests it on their behalf.
   \item[Newey--West standard errors.] Newey--West standard errors adjust a statistical test for returns that are linked from one period to the next.
   \item[Normal distribution.] The normal distribution is the familiar bell-shaped curve, in which about 95\% of outcomes fall within two standard deviations of the average.
   \item[One-sided test.] A one-sided test looks for results that are surprising in one direction only, such as an alpha that is too high to be luck.
-  \item[Out of sample.] See Chapter~\ref{ch:06}, Section~\ref{sec:09-insample}, page~\pageref{sec:09-insample}.
-  \item[Out-of-the-money option.] See Chapter~\ref{ch:18}, Section~\ref{sec:14-foundations}, page~\pageref{sec:14-foundations}.
-  \item[Price impact.] Called market impact there. See Chapter~\ref{ch:14}, Section~\ref{sec:17-capacity}, page~\pageref{sec:17-capacity}.
+  \item[Out of sample.] Out of sample means on data that were not used to build or choose the strategy being tested.
+  \item[Out-of-the-money option.] An option is out of the money when it would pay nothing if it were exercised today.
+  \item[Price impact.] Price impact is the way a large trade pushes the price against the trader, raising the cost of buying or selling.
+  \item[Price return.] A price return counts only the change in price and leaves out dividends and other income.
+  \item[Put option.] A put option gives its buyer the right to sell an asset at a fixed price, so it works like insurance against a fall.
+  \item[$\boldsymbol{R^2}$.] $R^2$ is the share of the ups and downs in a variable that a model explains.
   \item[Realized return.] A realized return is the return that actually happened, as opposed to the return that was expected.
+  \item[Regression.] A regression finds the straight line that best describes how one variable moves with another.
+  \item[Risk.] Risk in this book means how much an investment's returns bounce around from period to period.
+  \item[Risk-free rate.] The risk-free rate is the return on a safe short-term government bill, which is known in advance.
+  \item[S\&P~500.] The S\&P~500 is a market index of about 500 of the largest U.S. companies.
+  \item[Share of stock.] A share of stock is a small piece of ownership in a company.
+  \item[Sharpe ratio.] The Sharpe ratio is an investment's excess return divided by its volatility, that is, its reward per unit of risk.
+  \item[Simple return.] A simple return is the gain in price plus any income, divided by the starting price.
+  \item[Size and value exposures.] Size and value exposures describe how much a portfolio leans toward small companies and toward cheap stocks.
+  \item[Standard deviation.] The standard deviation measures how far a typical outcome falls from the average.
+  \item[Standard error.] The standard error measures how far an estimate, such as an average return, is likely to be from the true value.
   \item[Statistically significant.] A result is statistically significant when it would be unlikely to arise by chance alone, usually with less than a 5\% chance.
-  \item[Trading costs.] See Chapter~\ref{ch:14}, Section~\ref{sec:17-anatomy}, page~\pageref{sec:17-anatomy}.
+  \item[Strategy.] A strategy is a rule that decides what to buy or sell and when.
+  \item[t-statistic.] A t-statistic counts how many standard errors an estimate lies away from zero, and a value above about 2 suggests the result is not luck.
+  \item[Total return.] A total return counts both the change in price and any income, such as dividends.
+  \item[Trading costs.] Trading costs are what an investor pays to trade, including commissions, the gap between bid and ask prices, and price impact.
+  \item[Treasury bill.] A Treasury bill is a short-term loan to the U.S. government, treated as the safest investment available.
+  \item[Volatility.] Volatility is the standard deviation of returns, the size of a typical swing around the average.
+  \item[Weak, semi-strong and strong forms.] These three forms of market efficiency say that prices reflect, in turn, past prices, all public information, and all information including private information.
 \end{description}
 \end{keyterms}

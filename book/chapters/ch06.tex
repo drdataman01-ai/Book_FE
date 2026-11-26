@@ -201,7 +201,7 @@ A one-sided $t$-test on the mean of $f_t$ tests whether the predictor carries si
 \end{technote}
 
 \subsection{Economic Value: Certainty-Equivalent Return (CER)}
-A statistical improvement matters only if it would have made an investor better off. The \term{certainty-equivalent} return translates a forecast's value into a guaranteed return: it is the safe return that an investor would consider just as good as following the forecast, so a gain of 1\% a year means the forecast was worth as much as an extra, risk-free 1\% a year. For a mean-variance investor with risk aversion $\gamma$, portfolio weight in equities is $w_t = \frac{\hat{r}_{t+1}}{\gamma \hat{\sigma}^2_{t+1}}$. The gain in Certainty-Equivalent Return ($\Delta \text{CER}$) measures the risk-free return premium the investor would accept to replace benchmark-based allocation with model-based forecasts. Campbell and Thompson (2008) provide the approximation $\Delta E[R] \approx R^2_{\text{OS}} / S^2$, where $S$ is the benchmark Sharpe ratio.
+A statistical improvement matters only if it would have made an investor better off. The \term{certainty-equivalent}\label{kt:certainty-equivalent} return translates a forecast's value into a guaranteed return: it is the safe return that an investor would consider just as good as following the forecast, so a gain of 1\% a year means the forecast was worth as much as an extra, risk-free 1\% a year. For a mean-variance investor with risk aversion $\gamma$, portfolio weight in equities is $w_t = \frac{\hat{r}_{t+1}}{\gamma \hat{\sigma}^2_{t+1}}$. The gain in Certainty-Equivalent Return ($\Delta \text{CER}$) measures the risk-free return premium the investor would accept to replace benchmark-based allocation with model-based forecasts. Campbell and Thompson (2008) provide the approximation $\Delta E[R] \approx R^2_{\text{OS}} / S^2$, where $S$ is the benchmark Sharpe ratio.
 
 \section{Multiple Testing in Next-Period Forecasting: White's Reality Check}
 \label{sec:09-reality}
@@ -314,7 +314,8 @@ Published return patterns in general & \textbf{Weaker} & Returns fall by about a
 
 Start from the historical mean, because it is the benchmark any return forecast must beat, and prefer an equal-weighted combination of forecasts to any single model. Before trusting a forecast, ask whether it was made strictly walk-forward with publication delays taken into account, whether it survives a multiple-testing correction such as White's Reality Check, and whether its predictability persisted after publication.
 
-% Key terms that this chapter uses without defining them, for readers new to finance.
+% Key terms of the chapter, in alphabetical order, for readers new to finance.
+% A term defined in an earlier chapter points to the chapter, section and page.
 \providecolor{FEMaroon}{RGB}{128,30,45}
 \providecolor{FECream}{RGB}{253,248,238}
 \providecolor{FEGold}{RGB}{196,150,60}
@@ -331,8 +332,21 @@ Start from the historical mean, because it is the benchmark any return forecast 
 \small
 \begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
   \item[Campbell--Thompson restrictions.] The Campbell--Thompson restrictions are simple economic rules on a forecast, such as never predicting a negative equity premium, that make forecasts more reliable.
-  \item[Earnings--price ratio.] The earnings--price ratio is a company's or the market's annual earnings divided by its price, a common measure of how cheap stocks are.
+  \item[Certainty equivalent.] The certainty-equivalent return is the safe return that an investor would consider just as good as following a forecast or a portfolio.
+  \item[Clark--West test.] The Clark--West test corrects the comparison of a forecasting model with the simpler historical mean, which would otherwise favor the simpler model.
+  \item[Cross-validation.] Cross-validation splits the data into several parts and tests a model on each part in turn while training it on the rest.
+  \item[Data leakage.] Data leakage is any way in which information from the future sneaks into a test of the past.
+  \item[Default yield spread.] The default yield spread is the gap between the yields of lower-rated (Baa) and top-rated (Aaa) corporate bonds.
+  \item[Diebold--Mariano test.] The Diebold--Mariano test asks whether one forecast's errors are reliably smaller than another's, or whether the difference could be luck.
+  \item[Dividend--price ratio.] The dividend--price ratio is the dividends that companies pay in a year divided by their share prices, a simple measure of how cheap the market is.
+  \item[Earnings--price ratio.] The earnings--price ratio is annual earnings divided by price, a common measure of how cheap stocks are.
+  \item[Embargoing.] Embargoing drops a block of training data immediately after each test period, so that correlated observations cannot leak information.
   \item[Forecast combination.] A forecast combination averages the forecasts of several models, which usually beats any single one because their errors partly cancel.
+  \item[Historical mean.] The historical mean forecast simply expects stocks to earn their average past return, and it is the benchmark every forecast must beat.
+  \item[In-sample period.] The in-sample period is the data used to discover or fit a result, as opposed to the later data used to test it.
   \item[Net equity expansion.] Net equity expansion measures how much new stock companies issue in a year, relative to the size of the market.
+  \item[Out-of-sample $\boldsymbol{R^2}$.] The out-of-sample $R^2$ measures how much smaller a model's forecast errors are than the errors of the historical mean.
+  \item[Purging.] Purging drops training observations whose outcome periods overlap with the test period.
+  \item[Term spread.] The term spread is the gap between long-term and short-term government bond yields.
 \end{description}
 \end{keyterms}
