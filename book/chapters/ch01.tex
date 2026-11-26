@@ -36,24 +36,12 @@ The implications run through the rest of this book. Every claim that follows is 
 
 The chapter draws on four papers. Jensen (1968) and Fama and French (2010) test whether fund managers beat chance; their fund data are not free, so their results are discussed rather than rerun. Bailey et al.\ (2014) show how the best of many backtests misleads, and Harvey, Liu and Zhu (2016) ask how high the statistical bar must be. The lab in Section~\ref{sec:01-lab} replicates the logic of these papers with free data: it runs 1,000 strategies with no skill at all on the U.S. market since 1926, in order to measure how good a track record luck alone can produce, and how much higher the bar must be before a record counts as evidence of skill. A \term{strategy} here is simply a rule that decides, month by month, whether to own the stock market or to keep the money in safe \term{Treasury bills}.
 
-By the end of the chapter you will be able to:
-
-\begin{itemize}
-  \item compute simple, log and excess returns\index{return!excess}, and convert monthly means and volatilities\index{volatility} to annual ones;
-  \item calculate a Sharpe ratio\index{Sharpe ratio} and judge whether a mean return is statistically different from zero;
-  \item distinguish profits that come from bearing risk, from luck and from skill, and measure skill as alpha\index{alpha};
-  \item explain what market efficiency\index{efficient market hypothesis} implies for return predictability\index{return predictability}, and what it does not;
-  \item calculate how many years of data are needed to tell a good strategy from luck;
-  \item list the main ways a backtest can mislead;
-  \item use the book's claims-on-trial method and verdict scale\index{verdict scale}.
-\end{itemize}
 
 In the lab you will generate 1,000 trading strategies that are random by construction, run them on nearly a century of real U.S. market data, and watch several of them look like the work of a genius. Because you know that every one of them is pure luck, you will see exactly what a real record must do to stand out from luck. That is the best preparation for judging and building the strategies you will meet in the rest of the book and in your career.
 
 \begin{callout}
 \textbf{For readers new to the stock market.} The chapter uses a handful of everyday market terms, and readers who already know them can skip ahead to Section~\ref{sec:01-foundations}. A \term{share of stock} is a small piece of ownership in a company, and its price rises and falls as investors change their views about the company's future profits. Some companies also pay part of their profits to shareholders as a \term{dividend}. A \term{stock market index}, such as the S\&P~500, tracks the combined value of a large group of stocks, in this case about 500 of the largest U.S. companies, so when the news reports that ``the market'' rose 1\% today, it usually means that an index rose 1\%. A mutual fund pools money from many investors and invests it on their behalf. An \term{actively managed fund} pays a manager to pick stocks in the hope of beating the index, while an index fund simply buys all the stocks in the index and charges a much lower fee. A Treasury bill is a short-term loan to the U.S. government, and because the government is all but certain to repay it, its interest rate serves as the return an investor can earn without taking any risk. Finally, \term{risk} in this book means how much an investment's returns bounce around from year to year, which is why a stock that rises 30\% one year and falls 20\% the next is called riskier than a savings account, even if it ends up ahead.
 \end{callout}
-
 
 
 \section{Foundations}
@@ -89,8 +77,6 @@ and its sample estimate over $T$ periods is
 \bar{R}^{e}_{m} = \frac{1}{T}\sum_{t=1}^{T} R^{e}_{m,t} = \frac{1}{T}\sum_{t=1}^{T}\left(R_{m,t} - R_{f,t}\right).
 \label{eq:equity-premium-sample}
 \end{equation}
-
-
 
 
 \subsection{Expected return and volatility}
@@ -376,8 +362,6 @@ Investors who make money in the stock market can do so for three different reaso
 \end{itemize}
 
 
-
-
 \begin{callout}
 \textbf{What Failed: Long-Term Capital Management.} 
 
@@ -385,7 +369,6 @@ In 1994 John Meriwether, a star bond trader, founded a \term{hedge fund}, a ligh
 
 In 1998, after Russia defaulted on its debt, investors everywhere fled to the safest assets, the gaps widened instead of closing, and the fund lost about \$4.6 billion in a few months. The Federal Reserve Bank of New York organized a rescue in which a group of banks put in \$3.6 billion to wind the fund down. Much of the fund's steady profit had been payment for bearing a rare crash risk, and a short record of good years could not reveal that risk until it struck (Lowenstein, 2000).
 \end{callout}
-
 
 
 \noindent\textbf{Which one is it?} Suppose an investor
@@ -471,9 +454,7 @@ needs about 15 years of data before the t-statistic of its mean return reaches 1
 \end{figure}
 
 
-
 \textbf{Worked example.} A strategy earns an average excess return of 0.5\% a month with a monthly standard deviation of 4\% over 10 years. Its annual mean is 6\%, its annual volatility is 4\% $\times \sqrt{12} \approx 13.9$\%, and its Sharpe ratio is $6/13.9 \approx 0.43$. The t-statistic is $0.5 / (4/\sqrt{120}) \approx 1.37$. This is not \term{statistically significant} at the 5\% level, even though the strategy may be genuinely good.
-
 
 
 \section{Efficient markets and the random walk}

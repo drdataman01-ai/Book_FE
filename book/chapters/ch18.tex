@@ -129,25 +129,11 @@ In 1973 Fischer Black and Myron Scholes, together with a closely related paper b
 The argument rests on assumptions that no real market meets: continuous trading, constant volatility and no trading costs. Researchers soon asked how much these assumptions matter. Leland (1985) asked what trading costs do to the hedge, and showed that with trading costs, a hedger who adjusts the hedge often pays a great deal, while one who adjusts it rarely is left with risk (Figure~\ref{fig:14-freq}), so perfect replication is impossible. After the crash of 1987, option prices showed a lasting \emph{volatility smile}\index{volatility smile}, a sign that the market does not believe the model's assumptions (Section~\ref{sec:14-iv}). To estimate what hedged option sellers are paid for bearing the risk the model leaves, Bakshi and Kapadia (2003) measured the gains on hedged option positions and found them consistently negative for option buyers, a sign that hedged option sellers are paid for bearing volatility risk (Section~\ref{sec:14-verdict}). Because volatility tends to rise when the market falls, Hull and White (2017) proposed a better hedge that allows for the way volatility tends to move with the market (Section~\ref{sec:14-stress}).
 
 
-
 The answer matters well beyond option traders. The replication argument underlies the pricing of almost every derivative, and it is why banks can sell structured products, investments that package a bond with options, such as a note that pays part of the stock market's gain while guaranteeing the original investment, and hedge them instead of betting on them. 
 
 The claim on trial\index{claims-on-trial method} is: \textbf{a trader who sells an option and delta-hedges it as Black--Scholes prescribes is left with little risk.}
 
 The lab in Section~\ref{sec:14-lab} repeats the Black--Scholes hedge, in the spirit of Bakshi and Kapadia (2003), on simulated price paths where the model holds exactly and on real index paths since 1990. It uses free daily U.S. market returns and the VIX as the implied volatility, to measure how much risk is left after hedging, where it comes from, and how large the losses are in the worst months.
-
-By the end of the chapter you will be able to:
-
-\begin{itemize}
-  \item explain how Black--Scholes prices an option by replicating it\index{replication}, and which assumptions this needs;
-  \item break a delta-hedged\index{delta hedging} option's daily profit and loss into gamma\index{Greeks!gamma} and theta\index{Greeks!theta}, and estimate the error from hedging only at intervals;
-  \item explain why the volatility smile\index{volatility smile} is evidence against the model's assumptions;
-  \item judge what risks a ``fully hedged'' option seller or structured-product issuer still carries.
-\end{itemize}
-
-
-
-
 
 
 \section{Foundations}
@@ -530,7 +516,6 @@ On a quiet day the bank earns \$0.022, the time decay of the previous example le
 \caption{A hedged option seller earns a little on quiet days and loses on big moves in either direction. The bank's delta-hedged profit or loss over one day, by Equation~\eqref{eq:14-pnl}, for the call in the story. The bank earns \$0.022 if the stock is unchanged, breaks even on a move of about \$1.05 either way, and loses \$0.156 on a \$3 move. The loss grows with the square of the move.}
 \label{fig:14-pnl}
 \end{figure}
-
 
 
 \subsection{Discrete hedging}

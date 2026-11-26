@@ -25,18 +25,11 @@ Jagannathan and Ma (2003), puzzled that a \term{constraint} could help, showed t
 
 DeMiguel, Garlappi and Uppal (2009) then put the whole approach to the test. They compared fourteen optimized strategies, several with such repairs built in, against the simplest rule there is: put an equal amount of money in every asset. None of the fourteen beat it consistently out of sample. Kirby and Ostdiek (2012) replied that simpler rules, which use fewer estimates and trade less, can beat equal weighting, and the debate between these two views runs through this chapter.
 
-The implications are large for anyone who builds portfolios. If optimization cannot beat equal weighting, the sophisticated models used in practice add \term{estimation error} rather than value, and an investor should prefer simple rules unless the inputs are unusually reliable. The claim on trial\index{claims-on-trial method} is: \textbf{optimized portfolio strategies achieve higher out-of-sample risk-adjusted returns than equal weighting ($1/N$).}
+The implications are large for anyone who builds portfolios. If optimization cannot beat equal weighting, the sophisticated models used in practice add \term{estimation error} rather than value, and an investor should prefer simple rules unless the inputs are unusually reliable. 
+
+The claim on trial\index{claims-on-trial method} is: \textbf{optimized portfolio strategies achieve higher out-of-sample risk-adjusted returns than equal weighting ($1/N$).}
 
 The lab in Section~\ref{sec:12-lab} replicates the comparison of DeMiguel, Garlappi and Uppal (2009) on the free industry and size--value portfolios of the Kenneth R. French Data Library, in order to check whether optimization still loses to equal weighting, how long an estimation window it would need to win, and which repairs narrow the gap.
-
-By the end of the chapter you will be able to:
-
-\begin{itemize}
-  \item compute the tangency and global minimum-variance portfolios\index{global minimum-variance portfolio}, and explain why errors in estimated expected returns\index{estimation error} distort them most;
-  \item describe the main repairs: constraints, shrinkage and risk budgeting\index{risk parity!risk contribution};
-  \item compare allocation rules out of sample\index{in-sample versus out-of-sample} with the Sharpe ratio\index{Sharpe ratio}, the certainty equivalent and the Jobson--Korkie\index{Jobson--Korkie test} test;
-  \item judge whether an optimized portfolio beats equal weighting\index{equal weighting (1/N)} after costs, and summarize the evidence.
-\end{itemize}
 
 
 \section{Foundations}
@@ -157,7 +150,7 @@ Two portfolios on the frontier matter most, and both are marked in Figure~\ref{f
     \mathbf{w}_T = \frac{\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}}{\mathbf{1}'\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}}
     \label{eq:12-tangency}
   \end{equation}
-  \item The \term{global minimum-variance portfolio} has the lowest variance of any fully invested portfolio. It needs no expected returns at all:
+  \item The \term{global minimum-variance portfolio}\index{global minimum-variance portfolio} has the lowest variance of any fully invested portfolio. It needs no expected returns at all:
   \begin{equation}
     \mathbf{w}_{MV} = \frac{\boldsymbol{\Sigma}^{-1}\mathbf{1}}{\mathbf{1}'\boldsymbol{\Sigma}^{-1}\mathbf{1}}
     \label{eq:12-minvar}

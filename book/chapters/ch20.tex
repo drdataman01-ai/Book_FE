@@ -35,18 +35,12 @@ For half a century the standard tool for predicting stock returns was linear reg
 
 The study changed both research and practice. \term{Machine learning} became a standard tool of empirical asset pricing, and funds and exchange-traded funds branded with artificial intelligence followed. The study also started a debate about what the gains mean. Kelly, Malamud and Zhou (2024), puzzled that predictions improved as models grew, argued that very large models can predict better than small ones, which they called a ``\term{virtue of complexity}''. Avramov, Cheng and Metzker (2023) asked whether the predictability can be traded, and found that much of it comes from small, hard-to-trade stocks and fades after costs. Nagel (2025) questioned whether an investor could have captured the reported gains in real time.
 
-The stakes are practical. If machine learning finds predictability that linear models miss, it belongs in every quantitative toolkit. If its gains vanish in tradable stocks after costs, the label promises more than it delivers. The claim on trial\index{claims-on-trial method} is: \textbf{machine-learning models find return predictability\index{return predictability} that traditional linear models miss, and it can be turned into profitable portfolios.}
+The stakes are practical. If machine learning finds predictability that linear models miss, it belongs in every quantitative toolkit. If its gains vanish in tradable stocks after costs, the label promises more than it delivers. 
+
+The claim on trial\index{claims-on-trial method} is: \textbf{machine-learning models find return predictability\index{return predictability} that traditional linear models miss, and it can be turned into profitable portfolios.}
 
 This chapter explains the essentials of regularized regression, random forests, gradient boosting and neural networks. Readers who want a fuller, step-by-step introduction to these methods, with code, can consult the chapters on supervised learning and regularization in Kuo (2024a). The lab in Section~\ref{sec:20-lab} repeats the horse race of Gu, Kelly and Xiu (2020) on 149 free portfolios from the Kenneth R. French Data Library, with the Goyal--Welch predictors of Chapter~\ref{ch:06}. It checks whether machine learning beats linear models out of sample, and whether the gain survives trading costs.
 
-By the end of the chapter you will be able to:
-
-\begin{itemize}
-  \item explain how ridge regression\index{regularization!ridge}, the lasso\index{regularization!lasso} and the elastic net\index{regularization!elastic net} shrink\index{shrinkage} coefficients to prevent overfitting;
-  \item explain how a regression tree is grown, how random forests\index{random forest} and gradient boosting\index{gradient boosting} combine many trees, and how a neural network computes and learns;
-  \item choose hyperparameters\index{hyperparameters} in a walk-forward design, and read a model through \term{feature importance}\index{feature importance}, \term{partial dependence}\index{partial dependence} and \term{Shapley values}\index{Shapley values};
-  \item judge a machine-learning strategy by its value-weighted\index{index weighting!value-weighted}, net-of-cost performance against a linear model on the same inputs.
-\end{itemize}
 
 In the lab you will run a horse race between linear models, an \term{elastic net}, gradient-boosted trees and a neural network on a panel of 149 portfolios, using only information available at each date. You will then test whether any gain survives among large portfolios, in later years and after trading costs. Finally, you will test whether the ``virtue of complexity\index{virtue of complexity}'' holds when very large models are used to time the stock market.
 
@@ -365,7 +359,7 @@ The tree in Figure~\ref{fig:20-tree} says that momentum predicts returns, and th
 
 A tree's flexibility is also its weakness. If it is allowed to keep splitting, it will eventually put every training stock in a leaf of its own and fit the training data perfectly. In the terms of Figure~\ref{fig:09-biasvar}, such a tree has low bias but very high variance, because each leaf's forecast rests on one or two noisy returns. A single tree is also unstable: a small change in the training data can change the first question, and with it the whole tree.
 
-The tree is regularized by limiting its growth. Its main \term{hyperparameters} are its maximum \textbf{depth} and the minimum number of observations allowed in a leaf. Depth also controls how many characteristics can interact: a tree of depth one uses a single characteristic at a time, and deeper trees allow interactions among two, three or more. As with $\lambda$ in the previous section, these settings are chosen on validation data. The next two sections show a more powerful remedy, which is to combine many trees.
+The tree is regularized by limiting its growth. Its main \term{hyperparameters}\index{hyperparameters} are its maximum \textbf{depth} and the minimum number of observations allowed in a leaf. Depth also controls how many characteristics can interact: a tree of depth one uses a single characteristic at a time, and deeper trees allow interactions among two, three or more. As with $\lambda$ in the previous section, these settings are chosen on validation data. The next two sections show a more powerful remedy, which is to combine many trees.
 
 \section{Random forests}
 \label{sec:20-rf}
@@ -894,7 +888,7 @@ Two lessons follow for any complex model: compare it with the simple strategy it
 \begin{itemize}
   \item \textbf{Part A} compares out-of-sample $R^2$, Diebold--Mariano tests against OLS-3, and top-minus-bottom 10\% long--short portfolios.
   \item \textbf{Part B} repeats this for large portfolios only, before and after 2000, and net of costs of 10, 25 and 50 basis points\index{basis point}.
-  \item \textbf{Part C} checks how much the network depends on its seed, and which inputs matter most.
+  \item \textbf{Part C} checks how much the network depends on its seed, and which inputs matter most, that is, their \term{feature importance}\index{feature importance}.
   \item \textbf{Part D} tests the virtue of complexity with ridge regressions on 2 to 1,200 random Fourier features of the Goyal--Welch predictors\index{walk-forward evaluation!rolling window}.
 \end{itemize}
 
@@ -1007,7 +1001,6 @@ Machine learning is a better blender, not a crystal ball: expect a modest improv
   \item[Neural network.] A neural network passes its inputs through layers of simple units, each of which adds up weighted inputs and transforms the sum.
   \item[Neuron.] A neuron is a unit of a neural network that adds up its weighted inputs plus a constant and passes the sum through an activation function.
   \item[Panel data.] Panel data are many assets observed over many periods.
-  \item[Partial dependence.] Partial dependence shows how a model's forecast changes as one input changes, with the other inputs held at typical values.
   \item[Partial least squares.] Partial least squares builds combinations of the predictors according to how strongly they relate to the return, and then regresses on a few of them.
   \item[Principal components regression.] Principal components regression first finds the combinations of predictors that capture most of their variation and then regresses returns on a few of them.
   \item[Random forest.] A random forest averages many trees, each grown on a bootstrap sample and allowed to choose each split from only a random subset of the inputs.
@@ -1015,7 +1008,6 @@ Machine learning is a better blender, not a crystal ball: expect a modest improv
   \item[Rectified linear unit (ReLU).] The rectified linear unit, $\max(0, a)$, returns its input when it is positive and zero otherwise.
   \item[Regression tree.] A regression tree forecasts a number by asking a sequence of yes-or-no questions about the inputs.
   \item[Root, internal nodes and leaves.] A tree starts at its root, splits the data at each internal node, and gives its forecast at the leaves, where no further splits are made.
-  \item[Shapley values.] Shapley values split a single forecast into the contributions of each input, so that the contributions add up to the forecast.
   \item[Sigmoid.] The sigmoid, or logistic, function turns any number into a value between 0 and 1.
   \item[Stochastic gradient descent.] Stochastic gradient descent takes each downhill step using a small random batch of the training data rather than all of it.
   \item[Supervised learning.] In supervised learning a model learns from examples whose outcomes are known.

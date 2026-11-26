@@ -33,18 +33,11 @@ Chatbots that write essays and answer questions have made artificial intelligenc
 
 For finance and economics the promise is striking. One pretrained model, applied to returns, volatility\index{volatility} or inflation\index{inflation}, could replace the careful work of building and estimating a model for each series. But financial series are unlike most of the data these models learn from. Returns are close to unpredictable. Volatility has long memory and fat tails\index{fat tails}. Macroeconomic series are short and are often revised. Public financial data may also have been part of the \term{training set}\index{training, validation and test sets}, which can make a model look better on history than it is. Rahimikia, Ni and Wang (2025) tested foundation models on stock returns from many countries. Used off the shelf, the models did not beat simple benchmarks, although training them on financial data helped.
 
-The stakes are high for forecasting practice in finance. If a pretrained model forecasts as well as a carefully built one, much of the craft of time-series econometrics becomes unnecessary. If not, the benchmarks of Chapters~\ref{ch:06} and~\ref{ch:07} remain the standard. The claim on trial\index{claims-on-trial method} is: \textbf{general-purpose time-series foundation models, used zero-shot, forecast financial and economic series more accurately than classical models.}
+The stakes are high for forecasting practice in finance. If a pretrained model forecasts as well as a carefully built one, much of the craft of time-series econometrics becomes unnecessary. If not, the benchmarks of Chapters~\ref{ch:06} and~\ref{ch:07} remain the standard. 
+
+The claim on trial\index{claims-on-trial method} is: \textbf{general-purpose time-series foundation models, used zero-shot, forecast financial and economic series more accurately than classical models.}
 
 The lab in Section~\ref{sec:21-lab} repeats the zero-shot comparison of these papers on six free series from the Kenneth R. French Data Library and FRED, using the open model weights of Chronos and TimesFM. It checks whether foundation models, used out of the box, forecast better than classical methods.
-
-By the end of the chapter you will be able to:
-
-\begin{itemize}
-  \item name the classical benchmark for each kind of series, such as the historical mean\index{historical-mean benchmark}, autoregressions, GARCH\index{GARCH} and HAR\index{HAR model};
-  \item explain how a foundation model is pretrained and used zero-shot\index{foundation models!zero-shot forecasting}, and why only data published after its training cutoff\index{training cutoff} avoid contamination\index{contamination};
-  \item compare forecasts on rolling origins\index{walk-forward evaluation!rolling origin} with MSE\index{loss function!squared-error (MSE)} ratios, the Diebold--Mariano\index{Diebold--Mariano test} test and the pinball and QLIKE\index{loss function!QLIKE} losses, and work out how long a test must run to detect a small gain;
-  \item judge the evidence on returns, volatility, other financial series and macroeconomic series.
-\end{itemize}
 
 
 \section{Foundations}

@@ -226,17 +226,12 @@ Many investors think about credit risk this way, and credit ratings\index{credit
 
 The view can be tested, because a century of default data shows how often bonds of each rating have defaulted and how much investors got back. When researchers ran the test, the numbers did not add up. Elton, Gruber, Agrawal and Mann (2001) checked whether expected default losses account for most of the spread, and found that they explain only a small part of corporate spreads, with taxes and a risk premium making up much of the rest. Collin-Dufresne, Goldstein and Martin (2001) tested whether spreads move with each firm's own finances, as models of default predict, and found that changes in spreads are driven mostly by a common force that has little to do with the default risk of individual firms. Huang and Huang (2012) showed that even models of default risk carefully fitted to actual default rates explain only a small fraction of investment-grade spreads, the spreads on bonds that rating agencies judge relatively safe (rated Baa or BBB and above). This gap became known as the \term{credit spread puzzle}\index{credit spread puzzle}. Gilchrist and Zakraj\v{s}ek (2012), suspecting that the rest of the spread reflects investors' appetite for risk, then split the spread into a part that reflects default risk and a remainder, the excess bond premium, and found that the remainder predicts recessions.
 
-The answer bears on what credit investors are really paid for, why spreads widen in recessions, and why highly rated structured securities proved so dangerous in 2007--08, when products designed around expected losses met a collapse in investors' appetite for risk. The claim on trial\index{claims-on-trial method} is: \textbf{the extra yield on corporate bonds over Treasuries is mostly payment for expected default losses.}
+The answer bears on what credit investors are really paid for, why spreads widen in recessions, and why highly rated structured securities proved so dangerous in 2007--08, when products designed around expected losses met a collapse in investors' appetite for risk. 
+
+The claim on trial\index{claims-on-trial method} is: \textbf{the extra yield on corporate bonds over Treasuries is mostly payment for expected default losses.}
 
 The lab in Section~\ref{sec:15-lab} repeats the analysis of Elton et al.\ (2001) on a century of Moody's corporate bond yields from FRED, using published default and recovery rates. It adds the excess bond premium of Gilchrist and Zakraj\v{s}ek (2012), which the Federal Reserve publishes free, to check how much of the spread reflects expected defaults and what the rest pays for.
 
-By the end of the chapter you will be able to:
-
-\begin{itemize}
-  \item define default probabilities, recovery rates\index{recovery rate} and \term{loss given default}, and compute the spread that expected losses justify;
-  \item explain why the timing of defaults matters for the spread, and summarize the evidence on the credit spread puzzle\index{credit spread puzzle}\index{excess bond premium};
-  \item judge what a credit investor is paid for, and when reaching for yield is likely to disappoint.
-\end{itemize}
 
 \begin{callout}{\term{Percentage points and basis points}}
 
@@ -261,7 +256,6 @@ The Baa--Aaa spread replaces the Treasury yield with the Aaa corporate yield:
   \label{eq:baa-aaa-spread}
 \end{equation}
 where $y_t^{\text{Baa}}$ and $y_t^{\text{Aaa}}$ are Moody's seasoned Baa and Aaa corporate bond yields in month $t$.
-
 
 
 \subsection{Default probability (PD)}
@@ -449,8 +443,7 @@ Institutions hold fewer junk bonds than investment-grade bonds. Insurers\index{i
 
 Consider an investor who cares only about the average payoff of a bond and not about its risk. Such an investor asks for just enough extra yield to make up for the money expected to be lost through default, and no more. 
 
-Suppose a bond promises to repay \$1 in one year. With probability PD the issuer defaults, and the investor recovers only a fraction $R$ of the \$1, called the \term{recovery rate}\index{recovery rate}, so the share lost is $1-R$. On average, the investor therefore receives $1 - \text{PD}(1-R)$ instead of \$1. 
-
+Suppose a bond promises to repay \$1 in one year. With probability PD the issuer defaults, and the investor recovers only a fraction $R$ of the \$1, called the \term{recovery rate}\index{recovery rate}, so the share lost, the \term{loss given default}\index{loss given default}, is $1-R$. On average, the investor therefore receives $1 - \text{PD}(1-R)$ instead of \$1. 
 
 
 With continuous compounding, the extra yield that makes up for this shortfall is called the \term{expected-loss spread}\index{credit spread!expected-loss component}:
@@ -483,8 +476,6 @@ There are a few reasons.
   \item For expected losses to explain the whole 2\%, the annual default rate would have to be about $(1 - e^{-0.02})/0.62 \approx 3.2\%$. That is roughly twelve times the historical Baa average, and well above the long-run average for Ba bonds.
   \item Even pessimistic assumptions, $\mathrm{PD} = 1\%$ and $R = 20\%$, explain only 0.8 percentage points of the 2\% spread.
 \end{itemize}
-
-
 
 
 \section{How it works}

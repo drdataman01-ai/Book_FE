@@ -32,18 +32,11 @@ Asset pricing asks why different assets earn different average returns. Since th
 
 The newest step comes from the technology behind large language models. A \textbf{transformer}\index{transformer|textbf} uses a mechanism called \term{attention}\index{attention (neural networks)|textbf}, which lets each word in a sentence look at the other words to decide what it means. Kelly, Kuznetsov, Malamud and Xu (2025) placed a transformer inside an asset-pricing model, so that each stock could ``look at'' other stocks before the model decided how to price it. They reported that this artificial intelligence pricing model priced U.S. stocks with errors about 30\% smaller than the best earlier models. Its tangency portfolio, the portfolio with the highest Sharpe ratio, earned an out-of-sample Sharpe ratio of about four. That is far above anything an investor has earned for long, so the result calls for careful testing.
 
-The stakes are large if the result holds. It would mean that the price of a stock depends on information about other stocks in ways that factor models cannot capture. It would also mean that the methods behind chatbots can improve one of the central models of finance. The claim on trial\index{claims-on-trial method} is: \textbf{an asset-pricing model that places a transformer inside the stochastic discount factor prices the cross-section with much smaller errors than earlier models, and its tangency portfolio earns a higher Sharpe ratio out of sample.}
+The stakes are large if the result holds. It would mean that the price of a stock depends on information about other stocks in ways that factor models cannot capture. It would also mean that the methods behind chatbots can improve one of the central models of finance. 
+
+The claim on trial\index{claims-on-trial method} is: \textbf{an asset-pricing model that places a transformer inside the stochastic discount factor prices the cross-section with much smaller errors than earlier models, and its tangency portfolio earns a higher Sharpe ratio out of sample.}
 
 The lab in Section~\ref{sec:22-lab} replicates the linear-transformer pricing model of Kelly et al.\ (2025) on free anomaly portfolios from the Jensen--Kelly--Pedersen data. It compares the model with the shrinkage baseline of Kozak, Nagel and Santosh (2020). The goal is to check whether attention across assets really prices returns better than a well-built factor model. The original study uses stock-level data from paid databases, so the lab replicates the mechanism one level up, with portfolios as the assets.
-
-By the end of the chapter you will be able to:
-
-\begin{itemize}
-  \item explain the stochastic discount factor\index{stochastic discount factor}, and why pricing all assets correctly means finding the portfolio with the highest Sharpe ratio;
-  \item describe how shrinkage, IPCA\index{IPCA}, deep networks and adversarial training have been used to estimate it;
-  \item compute attention weights by hand, and explain how a transformer shares information across stocks;
-  \item judge the claim by out-of-sample pricing errors, Sharpe ratios, results by size group, and costs.
-\end{itemize}
 
 
 \section{Foundations}

@@ -36,15 +36,6 @@ The claim on trial\index{claims-on-trial method} is: \textbf{foundation models p
 
 The lab in Section~\ref{sec:23-lab} replicates the core volatility comparisons of Shi et al.\ (2025) and Goel et al.\ (2025) on free daily market data. It uses Stooq price bars where a free key is available, and a fallback that uses only the Kenneth R. French Data Library. The goal is to check whether models trained on market data really beat GARCH under a fair test.
 
-By the end of the chapter you will be able to:
-
-\begin{itemize}
-  \item describe a price bar, and estimate daily volatility from its high, low, open and close;
-  \item explain how Kronos turns price bars into tokens, and how a general model is fine-tuned without look-ahead;
-  \item judge synthetic market data against the stylized facts of returns;
-  \item compare forecasts with the Diebold--Mariano and Giacomini--White tests, using only data after each model's training cutoff.
-\end{itemize}
-
 
 \section{Foundations}
 \label{sec:23-foundations}
@@ -135,7 +126,6 @@ In practice the researcher chooses a few variables $h_t$ known at time $t$, such
 \section{The claim}
 \label{sec:23-claim}
 
-Stated so that it can fail:
 
 \begin{callout}
 \textbf{Foundation models that are pretrained or fine-tuned on financial market data forecast volatility more accurately than GARCH and HAR models, and generate synthetic price paths that match the stylized facts of returns better than a GARCH simulation, on data that arrived after the models were trained.}
@@ -258,9 +248,7 @@ Keep HAR and GARCH as the yardstick, because they are cheap, transparent and har
   \item[Kronos.] Kronos is a foundation model trained on more than 12 billion price bars to forecast prices and volatility and to generate synthetic market data.
   \item[LoRA.] LoRA, low-rank adaptation, fine-tunes a large model cheaply by adding to each large weight matrix a correction made of two thin matrices.
   \item[OHLCV.] OHLCV data are the open, high, low and close prices and the volume of each price bar.
-  \item[Price bar.] A price bar summarizes trading over an interval, such as a minute or a day, by its open, high, low and close prices and its volume.
   \item[Stylized facts.] Stylized facts are patterns that real returns show across markets, such as fat tails and volatility clustering.
-  \item[Synthetic data.] Synthetic data are artificial price histories produced by a model, used to test strategies on more scenarios than history provides.
   \item[Tokens.] Tokens are the discrete symbols, from a fixed vocabulary, into which a model turns its input data.
 \end{description}
 \end{keyterms}
