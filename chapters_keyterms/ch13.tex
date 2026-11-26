@@ -1,0 +1,346 @@
+% Chapter 13 -- Claim: Investors Earn the Returns Their Stocks Earn
+% Requires: amsmath, amssymb, booktabs, array, tabularx, longtable, graphicx, tikz, pgfplots, tcolorbox (breakable, skins), hyperref or url.
+% Defines the callout box only if the preamble has not.
+\providecolor{fenavy}{HTML}{1B2A6B}
+\providecolor{feshade}{HTML}{F3F5FA}
+\providecolor{feorange}{HTML}{B8481C}
+\makeatletter
+\@ifundefined{callout}{%
+  \newtcolorbox{callout}{breakable, enhanced,
+    colback=white, colframe=gray!70, boxrule=0.5pt, arc=1mm,
+    borderline west={2.5pt}{0pt}{gray!70},
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+% Shaded box for optional technical material that general readers may skip.
+\@ifundefined{technote}{%
+  \newtcolorbox{technote}{breakable, enhanced,
+    colback=feshade, colframe=fenavy!60, boxrule=0.5pt, arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt}%
+}{}
+\makeatother
+
+\chapter{Claim: Investors Earn the Returns Their Stocks Earn}
+\label{ch:13}
+\providecommand{\term}[1]{\emph{#1}}
+
+Ask an investor why they still own a stock that has fallen by a third, and a common answer is that they will sell it ``once it gets back to what I paid.'' Ask the same investor about a stock that has risen by a fifth, and they may say they sold it to ``lock in the gain.'' Neither answer mentions a calendar. Real investors do not hold every position for exactly one month or one year; they decide when to sell by watching the price, and the price they paid often shapes that decision. This chapter asks whether those decisions change what investors earn.
+
+Almost every claim tested so far was judged by \term{fixed-period returns}\index{return!fixed-period|textbf}: the return of a portfolio over the next month, or the next year, measured on a calendar grid whether or not anyone traded on those dates. The models behind them, from the CAPM to the momentum factor, describe how prices move from one date to the next. They are silent about when investors buy and sell. A natural reading is that it does not matter: an investor who holds a stock earns the stock's return, whatever the holding period turns out to be.
+
+Behavioral economists challenged that reading in the 1980s. Shefrin and Statman (1985) gave a name, the \term{disposition effect}\index{disposition effect|textbf}, to the tendency to ``sell winners too early and ride losers too long,'' and argued that it followed from Kahneman and Tversky's (1979) prospect theory, in which people judge outcomes as gains and losses from a reference point such as the purchase price. Odean (1998) then obtained the trading records of 10,000 accounts at a large discount broker and found that investors sold stocks that had risen far more readily than stocks that had fallen. Worse for the investors, the winners they sold went on to beat the losers they kept. Dichev (2007) took the question to whole markets: because money tends to flow into stocks after they have risen, the average dollar invested in U.S. stocks earned less than the market's published return. If these findings hold, the fixed-period returns reported in the earlier chapters describe the stocks correctly but overstate what their holders actually received.
+
+This chapter opens Part VII, which returns to the classic findings with the tools of the last two decades. The answer matters for three groups. For researchers, it decides whether a return measured on a calendar grid is the right yardstick for investors' welfare. For investors, it decides whether their own selling habits cost them money. For anyone judging a fund, a trading system or an adviser, it decides how to compare returns earned over holding periods of different lengths. The claim on trial\index{claims-on-trial method} is: \textbf{investors earn the returns their stocks earn, whatever rule they use to decide when to sell.}
+
+The lab in Section~\ref{sec:hp-lab} tests the claim in three settings. It first applies six selling rules to the same simulated prices, where the true expected return is known. It then applies the same rules to a century of returns on the 49 industry portfolios of the Kenneth R. French Data Library, replicates the spirit of Odean's test of sold winners against held losers, and finally adds taxes and trading costs.
+
+By the end of the chapter you will be able to:
+
+\begin{itemize}
+  \item compute a holding-period return over a random horizon, explain what a stopping time\index{stopping time} is, and state what the optional stopping theorem\index{optional stopping theorem} says a selling rule can and cannot do;
+  \item compare returns earned over holding periods of different lengths without being misled by annualizing short holds;
+  \item explain the disposition effect\index{disposition effect} through prospect theory\index{prospect theory} and realization utility\index{realization utility}, and measure it with Odean's proportions of gains and losses realized;
+  \item test whether an investor's selling decisions, taxes and the timing of money flows separate the return an asset earns from the return its holder receives.
+\end{itemize}
+
+
+\section{Foundations: holding periods, stopping times and reference points}
+\label{sec:hp-foundations}
+
+\subsection{Fixed-period and holding-period returns}
+
+A \term{fixed-period return}\index{return!fixed-period} is measured over a set length of calendar time, such as a month. A \term{holding-period return}\index{return!holding-period|textbf} is measured over the time an investor actually owns the asset, from the purchase to the sale. If an investor buys at the end of month 0 and sells at the end of month $\tau$, the holding-period return compounds the monthly returns $r_1, r_2, \ldots, r_\tau$ in between, as in Section~\ref{sec:02-returns}:
+\begin{equation}
+  R_{0,\tau} = \prod_{t=1}^{\tau} (1 + r_t) - 1 = \frac{P_\tau}{P_0} - 1 .
+  \label{eq:hp-hpr}
+\end{equation}
+Here $P_t$ is the price at the end of month $t$, including reinvested dividends. Equation~\eqref{eq:hp-hpr} shows the first point of this chapter: \textbf{the holding-period return is built entirely from fixed-period returns}. A random holding period does not change the returns of the stock. It changes which of those returns the investor collects.
+
+\subsection{Selling rules and stopping times}
+
+A \term{selling rule}\index{selling rule|textbf} decides, at the end of each month, whether to sell. Common rules include:
+
+\begin{itemize}
+  \item \textbf{Fixed horizon.} Sell after a set number of months, whatever the price.
+  \item \textbf{Profit target.} Sell as soon as the gain reaches, say, 20\%.
+  \item \textbf{Stop-loss.} Sell as soon as the loss reaches, say, 20\%.
+  \item \textbf{Bracket.} Use a profit target and a stop-loss together, and sell at whichever comes first.
+  \item \textbf{Get even.} Sell at a profit target, but once the position has fallen far below cost, wait and sell as soon as the price is back to what was paid.
+\end{itemize}
+
+The month in which a rule sells, $\tau$, is random, because it depends on the price path. Probability theory calls such a random time a \term{stopping time}\index{stopping time|textbf} when the decision to stop at month $t$ uses only information available at month $t$. All five rules above qualify. A rule such as ``sell at the year's high'' does not, because no one knows that the high has arrived until later; it is the holding-period version of the look-ahead bias of Section~\ref{sec:02-lookahead}.
+
+\subsection{Fair games and the optional stopping theorem}
+
+A price is a \term{martingale}\index{martingale|textbf} if its expected value next period, given everything known today, equals today's price. In finance, discounted prices are martingales under the risk-neutral measure, and a stock with zero expected excess return behaves like one in the real world. A martingale is the mathematical version of a fair game.
+
+The \term{optional stopping theorem}\index{optional stopping theorem|textbf} says that if the price is a martingale and the stopping time is bounded, so that every position is eventually sold, then
+\begin{equation}
+  \mathrm{E}\left[P_\tau\right] = P_0 .
+  \label{eq:hp-ost}
+\end{equation}
+In words, \textbf{no selling rule can turn a fair game into a favorable one}. A rule can make wins frequent or rare, small or large, but it cannot change the expected value of the money that comes back.
+
+A coin-flip example makes the point concrete. Suppose a stock priced at \$100 moves up or down by \$1 each day with equal probability, and an investor sells as soon as it reaches \$110 or falls to \$50. The chance of reaching \$110 first is $50/60$, or about 83\%. The investor wins five times out of six, but each loss is five times as large as each win, and the expected profit is $\tfrac{5}{6}\times 10 - \tfrac{1}{6}\times 50 = 0$. A profit target with a distant stop produces a high win rate and a hidden tail of large losses. A tight stop-loss with a distant target does the opposite: frequent small losses and occasional large wins. The expected value is the same.
+
+\begin{technote}
+\textbf{Technical note: the conditions, and Wald's identity.} The optional stopping theorem needs the stopping time to be bounded, or at least well enough behaved that the price cannot drift arbitrarily far before the sale. A rule that holds losers ``until they get back to cost'' with no time limit can violate the condition: on a path that never recovers, the position is never sold, and Equation~\eqref{eq:hp-ost} need not hold for the positions that \emph{are} sold. This is why the lab gives every rule a longest holding period, the \term{cap}. For prices that follow geometric Brownian motion with expected return $\mu$ and volatility $\sigma$, the log price is a random walk with drift $\mu - \sigma^2/2$, the volatility drag of Equation~\eqref{eq:02-drag}. Wald's identity\index{Wald's identity} then gives, for any stopping time with finite expectation,
+\begin{equation}
+  \mathrm{E}\left[\ln \frac{P_\tau}{P_0}\right] = \left(\mu - \tfrac{1}{2}\sigma^2\right)\mathrm{E}[\tau] ,
+  \label{eq:hp-wald}
+\end{equation}
+so every selling rule earns the same expected log return per year invested.
+\end{technote}
+
+\subsection{Reference points, prospect theory and realization utility}
+\label{sec:hp-prospect}
+
+Why would an investor prefer one selling rule to another if all have the same expected value? Kahneman and Tversky (1979) proposed \term{prospect theory}\index{prospect theory|textbf}\label{kt:prospect-theory}, a description of how people actually choose among risky prospects. It has three features that matter here (Figure~\ref{fig:hp-value}):
+
+\begin{itemize}
+  \item \textbf{Reference dependence.} People judge outcomes as gains or losses relative to a reference point, not as levels of wealth. For an investor, the natural reference point is the purchase price.
+  \item \textbf{Loss aversion.} A loss hurts about twice as much as a gain of the same size pleases; Tversky and Kahneman (1992) estimated a ratio of about 2.25.
+  \item \textbf{Diminishing sensitivity.} The value function is concave for gains, so people are risk-averse when ahead, and convex for losses, so they are willing to gamble when behind.
+\end{itemize}
+
+Diminishing sensitivity gives the disposition effect directly. An investor sitting on a gain prefers to lock it in rather than gamble on a further rise, while an investor sitting on a loss prefers to gamble on a recovery rather than accept the loss. Barberis and Xiong (2009) showed that the link is less automatic than it looks when investors care about gains and losses over a year. Barberis and Xiong (2012) then proposed \term{realization utility}\index{realization utility|textbf}: investors feel a burst of pleasure when they \emph{sell} at a gain and a burst of pain when they sell at a loss, as if each sale closed an episode with a score. Under realization utility, selling a winner is a reward in itself, and selling a loser is a defeat to be postponed.
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.9}{%
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.78\linewidth, height=0.52\linewidth,
+  axis lines=middle, axis line style={-stealth},
+  xmin=-1.1, xmax=1.15, ymin=-2.4, ymax=1.35,
+  xtick=\empty, ytick=\empty,
+  clip=false,
+]
+  \addplot[fenavy, very thick, domain=0:1, samples=80] {x^0.88};
+  \addplot[fenavy, very thick, domain=-1:0, samples=80] {-2.25*(-x)^0.88};
+  \node[anchor=north east, font=\small, align=right] at (axis cs:1.15,-0.08) {gain or loss from\\ the purchase price};
+  \node[anchor=south east, font=\small] at (axis cs:-0.03,1.15) {felt value};
+  \node[anchor=south west, font=\small, align=left] at (axis cs:0.1,0.8) {gains: concave,\\ lock them in};
+  \node[anchor=west, font=\small, align=left] at (axis cs:0.08,-1.55) {losses: convex and steeper,\\ gamble on getting even};
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{Losses hurt more than gains please, and both fade at the margin. The prospect theory value function of Tversky and Kahneman (1992), $v(x) = x^{0.88}$ for gains and $v(x) = -2.25(-x)^{0.88}$ for losses. Measured from the purchase price, it makes an investor cautious after a gain and willing to gamble after a loss, which is the disposition effect.}
+\label{fig:hp-value}
+\end{figure}
+
+\subsection{Rational reasons for different holding periods}
+
+Not every difference in holding periods is a bias. Four rational forces also set how long investors hold.
+
+\begin{itemize}
+  \item \textbf{Trading costs.} Amihud and Mendelson (1986) showed that investors who expect to hold longer can spread the cost of a wide bid--ask spread over more years, so long-horizon investors end up owning the least liquid stocks. Atkins and Dyl (1997) confirmed that stocks with wider spreads are held longer. Chapter~\ref{ch:14} measures these costs.
+  \item \textbf{Taxes.} In most countries capital gains are taxed only when realized. Constantinides (1983) showed that a taxable investor should therefore realize losses promptly, to collect the tax saving, and defer gains, which is the opposite of the disposition effect.
+  \item \textbf{Liquidity needs.} Many investors sell because they need the money, for a house, a tuition bill or retirement, not because of the price. Blanchet-Scalliet, El Karoui, Jeanblanc and Martellini (2008) showed that when the date of such a need is uncertain and related to market returns, the optimal portfolio changes.
+  \item \textbf{Beliefs.} An investor who believes that today's losers will rebound and today's winners will fade would sell winners and keep losers on purpose. The disposition effect is costly only if that belief is wrong.
+\end{itemize}
+
+
+\section{How it works}
+\label{sec:hp-how}
+
+\textbf{Measuring the disposition effect.} Odean (1998) compared, on each day an investor sold anything, the gains the investor realized with the gains the investor could have realized. A position is a \term{paper gain}\index{paper gain and loss} if it is above its purchase price and was not sold that day, and a \term{realized gain} if it was sold. The \term{proportion of gains realized}\index{proportion of gains realized (PGR)|textbf} and the \term{proportion of losses realized}\index{proportion of losses realized (PLR)|textbf} are
+\begin{equation}
+  \text{PGR} = \frac{\text{realized gains}}{\text{realized gains} + \text{paper gains}} , \qquad
+  \text{PLR} = \frac{\text{realized losses}}{\text{realized losses} + \text{paper losses}} .
+  \label{eq:hp-pgr}
+\end{equation}
+An investor with no preference between selling winners and losers has PGR close to PLR. The disposition effect is PGR $>$ PLR.
+
+\textbf{From behavior to returns.} A selling rule can separate an investor's return from the stock's return through three channels.
+
+\begin{enumerate}
+  \item \textbf{The shape of outcomes.} Even when prices are a fair game, the rule changes the distribution of what investors experience: the win rate, the size of the typical loss and the number of positions still held below cost. The expected value does not change (Equation~\eqref{eq:hp-ost}).
+  \item \textbf{Predictable returns.} If returns are \emph{not} a fair game, the rule decides which returns the investor collects. With momentum\index{momentum} (Chapter~\ref{ch:04}), past winners tend to keep rising and past losers tend to keep falling, so an investor who sells winners and keeps losers holds the wrong stocks. Grinblatt and Han (2005) went further and argued that the disposition effect helps \emph{create} momentum: investors who sell winners too early slow the rise of good-news stocks, and investors who hold losers slow the fall of bad-news stocks, so prices underreact\index{underreaction} and then drift (Section~\ref{sec:05-behavior}). Frazzini (2006) found that prices underreact to news most when the stock's holders have large unrealized gains or losses.
+  \item \textbf{Taxes and costs.} Every sale pays a trading cost, and every realized gain pays tax. Two investors with identical pre-tax returns can end with very different wealth.
+\end{enumerate}
+
+\textbf{Comparing returns over different holding periods.} The usual way to compare returns of different lengths is to annualize each one, $(1 + R_{0,\tau})^{12/\tau} - 1$. Applied position by position, this rewards quick wins absurdly: a 20\% gain in two months annualizes to almost 200\%. A fairer measure divides the total log return of all positions by the total time they were held,
+\begin{equation}
+  g = \frac{\sum_j \ln(1 + R_j)}{\sum_j \tau_j / 12} ,
+  \label{eq:hp-peryear}
+\end{equation}
+which is the growth rate of money while it is invested under the rule. By Wald's identity, $g$ is the same for every selling rule when returns are unpredictable (Equation~\eqref{eq:hp-wald}). A difference in $g$ on real data is therefore evidence that the rule interacts with some predictable feature of returns.
+
+\textbf{Time-weighted and dollar-weighted returns.} A fund's published return is \term{time-weighted}\index{return!time-weighted|textbf}: it compounds the return of each period regardless of how much money was invested in it. An investor's own return is \term{dollar-weighted}\index{return!dollar-weighted|textbf}: it is the internal rate of return of the investor's cash flows, so periods with more money invested count more. If investors add money after good years and withdraw after bad ones, and returns then reverse, their dollar-weighted return falls below the time-weighted return. Dichev (2007) applied this idea to whole markets, treating share issues as money flowing in and buybacks and dividends as money flowing out.
+
+\begin{figure}[htbp]
+\centering
+\scalebox{0.9}{%
+\begin{tikzpicture}[x=0.45cm, y=8cm]
+  % reference lines
+  \draw[gray!60, dashed] (0,1.2) -- (22,1.2) node[right, font=\small, text=black] {+20\%: target};
+  \draw[gray!80] (0,1.0) -- (22,1.0) node[right, font=\small, text=black] {purchase price};
+  \draw[gray!60, dashed] (0,0.8) -- (22,0.8) node[right, font=\small, text=black] {$-$20\%: stop};
+  % price path
+  \draw[fenavy, thick] (0,1.0) -- (1,1.04) -- (2,0.97) -- (3,0.93) -- (4,0.88) -- (5,0.84) -- (6,0.79)
+    -- (7,0.82) -- (8,0.76) -- (9,0.80) -- (10,0.86) -- (11,0.91) -- (12,0.95) -- (13,1.01)
+    -- (14,1.06) -- (15,1.12) -- (16,1.10) -- (17,1.17) -- (18,1.22) -- (19,1.28) -- (20,1.33);
+  % exits
+  \fill[feorange] (6,0.79) circle (3pt);
+  \node[below, font=\footnotesize, align=center] at (6,0.77) {stop-loss and\\ bracket sell};
+  \fill[feorange] (13,1.01) circle (3pt);
+  \node[below right, font=\footnotesize] at (13,0.99) {get even sells};
+  \fill[feorange] (18,1.22) circle (3pt);
+  \node[above left, font=\footnotesize] at (18,1.23) {profit target sells};
+  % axis
+  \draw[-stealth] (0,0.66) -- (22,0.66) node[right, font=\small] {months};
+\end{tikzpicture}%
+}
+\caption{One price path, three holding periods. The same stock falls 20\% and then recovers to a 33\% gain. The stop-loss and the bracket sell at the bottom in month 6, the get-even rule sells at cost in month 13, and the profit target sells at $+$22\% in month 18. Each investor's holding-period return comes from the same monthly returns; the selling rule decides which of them each investor collects.}
+\label{fig:hp-path}
+\end{figure}
+
+
+\section{The claim}
+\label{sec:hp-claim}
+
+Stated so that it can fail:
+
+\begin{callout}
+\textbf{An investor who holds a stock earns, on average and per year invested, the return that fixed-period studies report for that stock, whatever rule the investor uses to decide when to sell, and after the taxes and costs that the rule itself causes.}
+\end{callout}
+
+The claim has a strong theoretical defense, the optional stopping theorem, and so the tests ask where that defense ends:
+
+\begin{itemize}
+  \item \textbf{Fair games.} When prices are unpredictable, do all selling rules earn the same expected return, and do they produce the same experience?
+  \item \textbf{Behavior.} Do real investors follow price-dependent selling rules, and which ones?
+  \item \textbf{Predictable returns.} Do the stocks investors sell go on to earn more or less than the stocks they keep?
+  \item \textbf{Taxes and costs.} Does the timing of sales change what investors keep?
+  \item \textbf{Money flows.} Does the timing of money into and out of the market make investors' dollar-weighted returns fall short of the market's?
+\end{itemize}
+
+
+\section{The original evidence}
+\label{sec:hp-evidence}
+
+\textbf{The disposition effect.} Shefrin and Statman (1985) named the effect and found supporting patterns in aggregate data on mutual fund redemptions and in earlier studies of individual trading accounts. \textbf{Odean (1998)}\index{Odean (1998)|textbf} provided the decisive test. Using 10,000 accounts at a discount broker from 1987 to 1993, he found that outside December investors realized 14.8\% of their available gains but only 9.8\% of their available losses, so a stock that was up was about one and a half times as likely to be sold as a stock that was down. In December, when selling losers saves taxes before the year ends, the pattern weakened. The effect was not explained by rebalancing, by the higher trading costs of low-priced stocks, or by a correct belief that losers would rebound: the winners investors sold beat the losers they kept by about 3.4 percentage points over the following year. Grinblatt and Keloharju (2001) found the same reluctance to realize losses among all investors in Finland, using a national register of trades.
+
+\textbf{Why investors do it.} The explanation turned out to be harder than the fact. Barberis and Xiong (2009) showed that standard prospect theory, applied to annual gains and losses, often predicts the \emph{opposite} of the disposition effect, because the investor who expects to be ahead takes more risk. Kyle, Ou-Yang and Xiong (2006) and Henderson (2012) solved the selling decision as an optimal stopping problem with prospect-theory preferences and found that a disposition effect does emerge once the investor's decision to sell is modeled directly. Kaustia (2010) found that the chance of selling jumps when a stock crosses its purchase price but changes little with the size of the gain or loss, which fits a reference point but not the curvature of the value function. Ben-David and Hirshleifer (2012) found that the chance of selling rises with \emph{both} larger gains and larger losses, a V-shape around the purchase price, and argued that investors sell when their beliefs about a stock change, not because they enjoy realizing gains.
+
+\textbf{Effects on prices.} Grinblatt and Han (2005) built a measure of each stock's unrealized capital gain across all its holders and found that it predicted returns and absorbed much of the momentum effect. Frazzini (2006) found that the drift after earnings announcements was strongest when the news pushed a stock away from its holders' purchase prices.
+
+\textbf{Money flows.} Dichev (2007) found that the dollar-weighted return of NYSE and AMEX stocks from 1926 to 2002 was 1.3 percentage points a year below the buy-and-hold return, that the gap for Nasdaq from 1973 to 2002 was 5.3 points, and that it was about 1.5 points across major international markets. The finding was quickly challenged. Keswani and Stolin (2008) found that the NYSE and AMEX gap was concentrated in the early part of Dichev's sample and that his international results depended on changes in database coverage. Hayley (2014) showed that a dollar-weighted return can fall below the time-weighted return simply because money follows \emph{past} returns, even if investors' timing does not hurt their expected wealth at all, and that this hindsight effect explains most of the gap for mainstream U.S. stocks.
+
+\textbf{Patient investors.} The longest holding periods belong to some professional managers. Cremers and Pareek (2016) found that fund managers who both deviate from their benchmark and trade infrequently outperformed, while frequent traders did not. Lan, Moneta and Wermers (2024) measured each mutual fund's holding horizon from its portfolio history and found that funds with long horizons earned positive long-term alphas.
+
+
+\section{Lab~\thechapter: Replicating Odean (1998) and testing the optional stopping theorem}
+\label{sec:hp-lab}
+
+\textbf{Claim on trial:} investors earn the returns their stocks earn, whatever rule they use to decide when to sell. The lab applies six selling rules, a fixed 12-month hold, a 120-month hold, a $+$20\% profit target, a $-$20\% stop-loss, a bracket and the get-even rule, to the same prices. Parts A, B and E use simulated prices with known properties; Parts C and D use the 49 value-weighted industry portfolios of the Kenneth R. French Data Library\index{Kenneth French data library}, monthly from July 1926. The code is in the repository folder \texttt{ch13-holding-periods/}.
+
+\textbf{Part A: optional stopping.} The six rules are applied to 50,000 simulated price paths with zero expected return and 30\% volatility, roughly the volatility of a single stock. Every rule's mean holding-period return is within two standard errors of zero, as Equation~\eqref{eq:hp-ost} requires. The experiences, however, could hardly differ more (Lab Figure~\ref{ch:13}.1). The profit target wins 71\% of the time, but its average loss is 63\%, and 29\% of its positions are still below cost when the ten-year cap forces a sale. The get-even rule wins 79\% of the time, with an average loss of 67\%. The stop-loss wins only 12\% of the time, but its average win is 165\%.
+
+\textbf{Part B: comparing returns over random horizons.} With an expected return of 8\% a year, annualizing each sale on its own makes the profit target look like a 77\% a year strategy and the stop-loss like a $-$16\% one. Measured by Equation~\eqref{eq:hp-peryear}, all six rules earn between 3.4\% and 3.5\% a year in log terms, the value $\mu - \sigma^2/2$ that Wald's identity predicts (Lab Figure~\ref{ch:13}.2).
+
+\textbf{Part C: real prices.} A position is bought every month in every industry, tens of thousands of positions in all, and each rule is applied with a five-year cap. The lab compares each rule's log return per year invested with the industries' own average, with a block bootstrap over entry months for the standard errors (Lab Figure~\ref{ch:13}.3). On unpredictable prices the gaps would be zero; a gap on real prices points to momentum or reversal in industry returns.
+
+\textbf{Part D: the disposition test.} For an investor who sells at $+$20\% and never sells below cost before the cap, the lab compares the next 12-month return of the winners sold with that of the losers held, month by month, with Newey--West standard errors for the overlapping horizons (Lab Figure~\ref{ch:13}.4). Industry portfolios are far less volatile than single stocks and capture only industry momentum (Moskowitz and Grinblatt 1999), so the gap should be smaller than Odean's.
+
+\textbf{Part E: taxes and costs.} Twenty thousand simulated investors follow four rules for 30 years, with a 20\% tax on realized gains, a credit for realized losses and a one-way cost of 10 basis points. Before tax, the rules end with nearly the same expected wealth, growing at 8.0\% to 8.2\% a year. After tax, selling losers to harvest the tax credit grows at 7.7\% a year and buying and holding at 7.5\%, while selling every year falls to 6.5\% and the disposition investor, who sells winners at $+$20\%, to 6.1\% (Lab Figure~\ref{ch:13}.5). Over 30 years, the disposition investor ends with about a third less expected wealth than the investor who harvests losses.
+
+\label{sec:hp-stress}
+\textbf{Robustness checks.} The thresholds, the cap and the sample are parameters, and Part C tests six rules at once, so a single significant gap should be read with the multiple-testing\index{multiple testing} caution of Chapter~\ref{ch:16}. The lab lets you change the thresholds, shorten the cap, start the sample in 1963, and turn taxes and costs off to see which part of each result they drive. The lab ends by asking you to reach your own verdict on the scale of Section~\ref{sec:01-method} and compare it with Section~\ref{sec:hp-verdict}.
+
+
+\section{Where the evidence stands}
+\label{sec:hp-verdict}
+
+The published studies point to a clear pattern: \textbf{a selling rule cannot change the expected return of a fair game, but real investors' rules change the experience, collect the wrong returns when returns are predictable, and pay taxes earlier than they need to, so investors who sell winners and keep losers earn less than their stocks.} The table summarizes the evidence as of November 2026.
+
+\begingroup
+\small
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{\dimexpr \linewidth-0.19\linewidth-0.13\linewidth-0.23\linewidth-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{0.23\linewidth}@{}}
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\emph{(continued)}} \\
+\toprule
+Situation & Holds? & Why & Evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r@{}}{\emph{(continued on the next page)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+Expected return when prices are a fair game & \textbf{Yes} & No bounded selling rule can change the expected value of a martingale. & Optional stopping theorem; Wald's identity \\*
+\addlinespace[3pt]
+The investor's experience & \textbf{No} & Rules reshape win rates, tails and the losers still held, even when the expected return is unchanged. & Lab Part A \\
+\addlinespace[3pt]
+Individual investors who sell winners and keep losers & \textbf{No} & The winners sold beat the losers kept by about 3.4 points over the next year. & Odean (1998); Grinblatt and Keloharju (2001) \\
+\addlinespace[3pt]
+After taxes & \textbf{No} & Selling winners realizes taxable gains early; selling losers first is the tax-efficient order. & Constantinides (1983); Odean (1998) \\
+\addlinespace[3pt]
+Whole markets, through the timing of money flows & \textbf{Disputed} & Dollar-weighted returns fall short of buy-and-hold, but much of the gap is a hindsight effect, not lost wealth. & Dichev (2007); Keswani and Stolin (2008); Hayley (2014) \\*
+\addlinespace[3pt]
+Patient professional investors & \textbf{Yes, or better} & Funds that hold for long horizons earned positive long-term alphas. & Cremers and Pareek (2016); Lan, Moneta and Wermers (2024) \\
+\end{longtable}
+\addtocounter{table}{-1}% uncaptioned longtable: keep table numbers unchanged
+\endgroup
+
+On the book's verdict scale, the claim \textbf{weakens}. It holds for the stock and for investors whose selling decisions do not depend on their purchase price, but not for the many investors whose decisions do.
+
+\textbf{What would change the picture.} The claim would regain ground if new account-level data, such as the records of commission-free trading apps, showed that the winners investors sell no longer beat the losers they keep once momentum is accounted for. It would weaken further if the dollar-weighted gap survived Hayley's (2014) correction in markets other than the United States.
+
+\label{sec:hp-open}
+\textbf{Open questions.} Is the disposition effect a preference, as realization utility says, or a belief, as Ben-David and Hirshleifer (2012) argue? And does it still drive momentum now that more stock is held by funds and algorithms that have no purchase price to anchor on?
+
+
+\section{What practitioners and investors can use}
+\label{sec:hp-investors}
+
+Write the selling rule down before buying, and make it depend on what you expect the stock to do next, not on what you paid for it. A useful test for any position is to ask whether you would buy it today at today's price; if not, the purchase price is not a reason to keep it. In a taxable account, the tax code rewards the opposite of the natural instinct: realize losses, which earn a tax saving, and let gains run, which defers the tax. When comparing your own results with a fund's, or one trading system with another, compare returns per year invested, as in Equation~\eqref{eq:hp-peryear}, never the average of annualized short trades, and ask for the win rate together with the average loss. A strategy that wins nine times out of ten may be selling insurance against the tenth.
+
+\begin{callout}
+\textbf{What Failed: waiting to get back to even.} The most natural selling rule for a losing position is to wait until the price returns to what was paid. Odean's (1998) investors followed something close to it, and the losers they kept went on to underperform the winners they sold by about 3.4 percentage points over the following year, before counting the tax savings they gave up by not realizing the losses. The rule failed because the purchase price carries no information about the stock's future: the market does not know or care what any one investor paid. The claim that holding a loser until it recovers costs nothing \textbf{fails}.
+\end{callout}
+
+% Key terms of the chapter, in alphabetical order, for readers new to finance.
+% A term defined in an earlier chapter points to the chapter, section and page.
+\providecolor{FEMaroon}{RGB}{128,30,45}
+\providecolor{FECream}{RGB}{253,248,238}
+\providecolor{FEGold}{RGB}{196,150,60}
+\makeatletter
+\@ifundefined{keyterms}{%
+  \newtcolorbox{keyterms}[1][Key terms in this chapter]{breakable, enhanced,
+    colback=FECream, colframe=FEGold, boxrule=0.6pt, arc=2pt, leftrule=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=12pt, after skip=12pt,
+    fonttitle=\bfseries, coltitle=white, colbacktitle=FEMaroon, title={#1}}%
+}{}
+\makeatother
+
+\begin{keyterms}
+\small
+\begin{description}[leftmargin=0pt, itemsep=2pt, parsep=0pt, font=\normalfont\bfseries\color{FEMaroon}]
+  \item[Bid--ask spread.] See Chapter~\ref{ch:02}, Section~\ref{sec:02-microcaps}, page~\pageref{kt:bid-ask-spread}.
+  \item[Cap.] The cap is the longest holding period a selling rule allows, after which the position is sold whatever has happened.
+  \item[Disposition effect.] The disposition effect is the tendency of investors to sell winning stocks too early and to hold on to losing stocks too long.
+  \item[Dollar-weighted return.] A dollar-weighted return is the internal rate of return of an investor's own cash flows, so periods with more money invested count more.
+  \item[Fixed-period return.] A fixed-period return is measured over a set length of calendar time, such as a month, whether or not anyone bought or sold.
+  \item[Holding-period return.] A holding-period return is measured over the time an investor actually owns an asset, from the purchase to the sale.
+  \item[Martingale.] A price is a martingale when its expected value next period, given everything known today, equals today's price, the mathematical version of a fair game.
+  \item[Momentum.] See the introduction to Chapter~\ref{ch:04}, page~\pageref{kt:momentum}.
+  \item[Newey--West standard errors.] See Chapter~\ref{ch:01}, Section~\ref{sec:01-lab}, page~\pageref{kt:newey-west}.
+  \item[Optional stopping theorem.] The optional stopping theorem says that no rule for when to sell can change the expected value of a martingale price, as long as every position is eventually closed.
+  \item[Paper gain and loss.] A paper gain or loss is the change in value of a stock the investor still owns and has not yet sold.
+  \item[Proportion of gains realized (PGR).] The PGR is the share of an investor's winning positions that are sold on a day the investor sells anything, out of all the winners that could have been sold.
+  \item[Proportion of losses realized (PLR).] The PLR is the share of an investor's losing positions that are sold on a day the investor sells anything, out of all the losers that could have been sold.
+  \item[Prospect theory.] Prospect theory describes how people actually choose among risky prospects, judging outcomes as gains and losses against a reference point and feeling losses more strongly than gains.
+  \item[Realization utility.] Realization utility is the pleasure or pain an investor feels at the moment of selling a stock at a gain or at a loss.
+  \item[Realized gain and loss.] A realized gain or loss is a profit or loss that becomes final when the investor sells the stock.
+  \item[Risk-neutral measure.] See Chapter~\ref{ch:07}, Section~\ref{sec:10-iv}, page~\pageref{kt:risk-neutral}.
+  \item[Selling rule.] A selling rule decides, at the end of each period, whether to sell a position, for example after a fixed time or once a gain or loss target is reached.
+  \item[Stopping time.] A stopping time is a random time at which a position is closed, chosen using only the information available at that moment.
+  \item[Time-weighted return.] A time-weighted return compounds the return of each period regardless of how much money was invested in it, which is how a fund reports its performance.
+  \item[Turnover.] See Chapter~\ref{ch:09}, Section~\ref{sec:12-repairs}, page~\pageref{kt:turnover}.
+\end{description}
+\end{keyterms}
