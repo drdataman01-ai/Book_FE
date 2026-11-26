@@ -1,5 +1,5 @@
 % ======================================================================
-% Financial Engineering and the Evidence -- master file
+% Financial Engineering in Practice -- master file
 % "Brought into Glory" design, 7.5 x 9.25 in Kindle Direct Publishing.
 %
 % Build from this folder (either engine works):
@@ -22,6 +22,26 @@
 \KDPBleedfalse
 
 \input{common/glory-style}
+
+% ---------- Table of contents: room for two-digit section numbers ----------
+% The default number column fits 1.1 and 1.1.1 but not 20.10 or 20.10.1, so
+% those numbers ran into the titles. Each column is widened by 0.8em and each
+% deeper level is moved right by the same amount, so titles still line up.
+% Set at \begin{document}, after the style file has made its own settings.
+\makeatletter
+\AtBeginDocument{%
+  \ifdefined\cftsecnumwidth
+    \addtolength{\cftsecnumwidth}{0.8em}%        20.10
+    \addtolength{\cftsubsecindent}{0.8em}%
+    \addtolength{\cftsubsecnumwidth}{0.8em}%     20.10.1
+    \addtolength{\cftsubsubsecindent}{1.6em}%
+    \addtolength{\cftsubsubsecnumwidth}{0.8em}%  20.10.1.1
+  \else
+    \renewcommand*\l@section{\@dottedtocline{1}{1.5em}{3.1em}}%
+    \renewcommand*\l@subsection{\@dottedtocline{2}{4.6em}{4.0em}}%
+    \renewcommand*\l@subsubsection{\@dottedtocline{3}{8.6em}{4.9em}}%
+  \fi}
+\makeatother
 
 % ---------- Tighter vertical spacing in the chapters ----------
 % Boxes and figures in the chapters get \FEboxskip above and below.

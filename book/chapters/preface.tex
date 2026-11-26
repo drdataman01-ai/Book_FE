@@ -10,8 +10,7 @@
 
 Asset pricing is full of open questions. Does value beat growth? Does momentum work? Are stock returns predictable? Do optimized portfolios beat naive ones? Can machine learning find hidden alpha?
 
-Practitioners act on the answers, products are sold on them, and many answers are taught as if they were settled. 
-These questions also make an excellent starting point for learning, because each one rests on a model, a body of research and data, and an ongoing debate.
+Practitioners act on the answers, products are sold on them, and many answers are taught as if they were settled. Yet in the research literature, many of these questions remain open. Studies that ask the same question often reach different answers, because they use different data, sample periods, methods or standards of evidence, and later work has overturned or narrowed many early findings. These questions therefore make an excellent starting point for learning, because each one rests on a model, a body of research and data, and an ongoing debate.
 
 Each chapter of this book is organized around one question, such as ``do investors earn the returns their stocks earn?'' A question is a good place to start because it gives the methods a purpose: to understand it, you need the theory behind it, the data used to study it, and the reasons researchers have answered it differently. The book reports where the published evidence stands, and introduces those debates. Every chapter follows the same structure:
 
@@ -25,121 +24,79 @@ Each chapter of this book is organized around one question, such as ``do investo
   \item \textbf{What practitioners and investors can use.} Take away the lessons that matter in practice, and what remains open.
 \end{enumerate}
 
-This order is the heart of the active approach. Because the question comes first, every method is learned at the moment it is needed, to understand something you actually want to know. Newey--West errors, false-discovery rates and walk-forward evaluation stop being abstract tools and become the tools you need to make sense of a question. Each lab also asks you to write down what you expect before you run a step. When the data disagree with your prediction, the surprise is visible, and it stays with you.
+Because the question comes first, you learn each method when you need it. Newey–West errors, false-discovery rates and walk-forward evaluation become tools for answering a question, not abstract techniques. Each lab also asks you to predict a result before you see it, and a prediction that turns out wrong is one you remember.
 
-The published evidence does not point the same way for every question. For some, the early answer has largely held up, as for the predictability of volatility. For others, it holds only in weakened form, as for value and momentum. On some questions, such as how many published anomalies hold up, serious researchers still disagree, and the chapter presents both sides.
+The evidence does not point the same way for every question. Some early answers have held up, such as the predictability of volatility; others hold only in weaker form, such as value and momentum; and on some, such as how many published anomalies hold up, researchers still disagree.
 
 Repeated across twenty-three chapters, this way of working becomes a habit. That habit, more than any single result, is what I hope you take from this book: before believing a result, ask ``compared to what, out of sample, and after costs?''
 
+
 \section*{How the book is organized}
 
-The book has nine parts, twenty-three chapters and four appendices. Every chapter is organized around a question, and the chapters are ordered by two rules. Methods climb from simple to complex, so no chapter needs a method taught later. Within that ladder, the chapters follow the dates of the papers that first raised each question, so the book moves from the performance studies of the 1960s to the foundation models of 2025 in roughly the order the field itself did. The one exception is Part VIII, on derivatives and credit, which comes after Part VII even though its founding papers are older. It is the most technical part of the book, and no later chapter depends on it.
-Table~\ref{tab:pref-parts} lists the chapters in each part.
+The book has nine parts, twenty-three chapters and four appendices. Every chapter is organized around a question, and the chapters are ordered by two rules. Methods climb from simple to complex, so no chapter needs a method taught later. 
+Table~\ref{tab:pref-parts} lists the nine parts and, for each chapter, the question it asks and the models and tools it teaches.
 
 \begingroup
 \small
 \setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
-\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.07\linewidth}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedleft\arraybackslash}p{0.04\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.56\linewidth-6\tabcolsep\relax}@{}}
-\caption{The nine parts of the book and their chapters.}
+\begin{longtable}{@{}r>{\raggedright\arraybackslash}p{0.44\linewidth}>{\raggedright\arraybackslash}p{\dimexpr 0.50\linewidth-4\tabcolsep\relax}@{}}
+\caption{The parts and chapters of the book.}
 \label{tab:pref-parts} \\
 \toprule
-Part & Theme & Ch. & Title \\
+Ch. & Question & Models and tools \\
 \midrule
 \endfirsthead
-\multicolumn{4}{@{}l}{\footnotesize\itshape Table~\ref{tab:pref-parts}, continued} \\
+\multicolumn{3}{@{}l}{\footnotesize\itshape Table~\ref{tab:pref-parts}, continued} \\
 \toprule
-Part & Theme & Ch. & Title \\
+Ch. & Question & Models and tools \\
 \midrule
 \endhead
 \bottomrule
 \endlastfoot
-I & Returns, luck and data & \ref{ch:01} & Does a Strong Track Record Prove Skill? \\
- &  & \ref{ch:02} & Can Historical Data Show What a Strategy Would Have Earned? \\
-\addlinespace
-II & The classical cross-section & \ref{ch:03} & Can Size and Value Explain Returns That Beta Cannot? \\
- &  & \ref{ch:04} & Do Past Winners Keep Winning? \\
-\addlinespace
-III & Predictability through time & \ref{ch:05} & Can Simple Trading Rules Beat Buy-and-Hold? \\
- &  & \ref{ch:06} & Can Valuations Predict the Equity Premium Out of Sample? \\
-\addlinespace
-IV & Volatility and risk & \ref{ch:07} & How Predictable Is Volatility? \\
- &  & \ref{ch:08} & How Reliably Do Value-at-Risk Models Measure Risk? \\
-\addlinespace
-V & Portfolios and dependence & \ref{ch:09} & Can Optimized Portfolios Beat an Equal Split Across Assets? \\
- &  & \ref{ch:10} & Does Diversification Fail When You Need It Most? \\
-\addlinespace
-VI & Currencies and interest rates & \ref{ch:11} & Do High-Interest Currencies Depreciate Enough to Offset Their Yield? \\
- &  & \ref{ch:12} & What Do Forward Rates Say About Future Interest Rates? \\
-\addlinespace
-VII & The reckoning: holding periods, costs, low risk and replication & \ref{ch:13} & Do Investors Earn the Returns Their Stocks Earn? \\
- &  & \ref{ch:14} & Is a Profitable Backtest Profitable to Trade? \\
- &  & \ref{ch:15} & Why Might Low-Risk Stocks Beat High-Risk Stocks? \\
- &  & \ref{ch:16} & How Many Published Anomalies Hold Up? \\
-\addlinespace
-VIII & Derivatives and credit & \ref{ch:17} & What Do Credit Spreads Reflect? \\
- &  & \ref{ch:18} & How Much Option Risk Does Delta Hedging Remove? \\
- &  & \ref{ch:19} & Does Selling Options Earn a Reliable Premium? \\
-\addlinespace
-IX & Machine learning and foundation models & \ref{ch:20} & Can Machine Learning Predict Returns Better Than Linear Models? \\
- &  & \ref{ch:21} & Can Foundation Models Forecast Better Than Classical Methods? \\
- &  & \ref{ch:22} & Can Transformers Price Stocks Better Than Factor Models? \\
- &  & \ref{ch:23} & Can Foundation Models Trained on Market Data Beat GARCH? \\
+\multicolumn{3}{@{}l}{\textbf{Part I. Returns, luck and data}} \\*
+\ref{ch:01} & Does a strong track record prove skill? & Returns, Sharpe ratio, t-statistics, luck by simulation \\*
+\ref{ch:02} & Can historical data show what a strategy would have earned? & Adjusted prices; survivorship, look-ahead and micro-cap biases \\
+\addlinespace[4pt]
+\multicolumn{3}{@{}l}{\textbf{Part II. The classical cross-section}} \\*
+\ref{ch:03} & Can size and value explain returns that beta cannot? & OLS, the CAPM, factor models \\*
+\ref{ch:04} & Do past winners keep winning? & Portfolio sorts, cross-sectional momentum, crash risk \\
+\addlinespace[4pt]
+\multicolumn{3}{@{}l}{\textbf{Part III. Predictability through time}} \\*
+\ref{ch:05} & Can simple trading rules beat buy-and-hold? & Trading rules, time-series momentum, the Reality Check \\*
+\ref{ch:06} & Can valuations predict the equity premium out of sample? & Walk-forward evaluation, out-of-sample $R^2$, forecast tests \\
+\addlinespace[4pt]
+\multicolumn{3}{@{}l}{\textbf{Part IV. Volatility and risk}} \\*
+\ref{ch:07} & How predictable is volatility? & ARCH/GARCH, realized and implied volatility, HAR \\*
+\ref{ch:08} & How reliably do VaR models measure risk? & VaR, expected shortfall, backtesting, Basel \\
+\addlinespace[4pt]
+\multicolumn{3}{@{}l}{\textbf{Part V. Portfolios and dependence}} \\*
+\ref{ch:09} & Can optimized portfolios beat an equal split across assets? & Mean--variance, efficient frontier, covariance estimation \\*
+\ref{ch:10} & Does diversification fail when you need it most? & Correlation dynamics, tail dependence \\
+\addlinespace[4pt]
+\multicolumn{3}{@{}l}{\textbf{Part VI. Currencies and interest rates}} \\*
+\ref{ch:11} & Do high-interest currencies depreciate enough to offset their yield? & Covered and uncovered interest parity, carry \\*
+\ref{ch:12} & What do forward rates say about future interest rates? & Yield curves, forward rates, duration, expectations hypothesis \\
+\addlinespace[4pt]
+\multicolumn{3}{@{}l}{\textbf{Part VII. The reckoning: holding periods, costs, low risk and replication}} \\*
+\ref{ch:13} & Do investors earn the returns their stocks earn? & Holding-period returns, stopping times, the disposition effect \\*
+\ref{ch:14} & Is a profitable backtest profitable to trade? & Spreads, turnover, break-even costs, capacity \\*
+\ref{ch:15} & Why might low-risk stocks beat high-risk stocks? & Security market line, Fama--MacBeth, leverage constraints \\*
+\ref{ch:16} & How many published anomalies hold up? & Multiple testing, shrinkage, post-publication tests \\
+\addlinespace[4pt]
+\multicolumn{3}{@{}l}{\textbf{Part VIII. Derivatives and credit}} \\*
+\ref{ch:17} & What do credit spreads reflect? & Default, recovery, spreads, the expected-loss spread \\*
+\ref{ch:18} & How much option risk does delta hedging remove? & Options, Black--Scholes, the Greeks, dynamic hedging \\*
+\ref{ch:19} & Does selling options earn a reliable premium? & Implied volatility, the VIX, the variance risk premium \\
+\addlinespace[4pt]
+\multicolumn{3}{@{}l}{\textbf{Part IX. Machine learning and foundation models}} \\*
+\ref{ch:20} & Can machine learning predict returns better than linear models? & Regularization, trees, neural nets, cross-validation \\*
+\ref{ch:21} & Can foundation models forecast better than classical methods? & ARIMA, exponential smoothing, zero-shot foundation models \\*
+\ref{ch:22} & Can transformers price stocks better than factor models? & Stochastic discount factor, IPCA, attention \\*
+\ref{ch:23} & Can foundation models trained on market data beat GARCH? & Range-based volatility, fine-tuning, synthetic data \\
 \end{longtable}
 \endgroup
 
-
-Working through the questions takes you through the standard financial engineering curriculum. Each question rests on a core model, and each chapter teaches that model in a self-contained Foundations section before anything else. You learn the same material as in a conventional course, but you meet each model at the point where it says something about real markets.
-
-The book can therefore stand alone or sit beside the classics. Hull, Cochrane, and Campbell, Lo and MacKinlay teach how the models are built and what they imply. This book adds what those texts cannot: hands-on practice with every method, on data and simulations you run yourself. For readers who do not have those texts at hand, each chapter's Foundations section supplies the background the chapter needs.
-
-Every chapter has a Python lab. The labs are not replications of the studies they draw on. Many of those studies used proprietary or commercial data that most readers cannot obtain, such as the brokerage records behind Odean (1998). Each lab instead borrows the central idea of a study and works with data that anyone can download for free, such as the Kenneth French library, FRED and Goyal and Welch's predictor file, together with simulations in which the right answer is known in advance. The simulations let you see a mechanism clearly, and the real data let you see how it behaves in markets. Where an original study used a paid database, the lab explains how the free substitute differs.
-
-
-\section*{Why these questions}
-
-Each of the twenty-three questions, in Chapters~\ref{ch:01} to~\ref{ch:23}, was chosen to do two jobs at once: to matter to practitioners or researchers, and to teach a core model. The table shows how the questions map onto the standard curriculum.
-
-\begingroup
-\small
-\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
-\begin{longtable}{@{}l>{\raggedright\arraybackslash}p{0.198\linewidth}>{\raggedright\arraybackslash}p{0.288\linewidth}>{\raggedright\arraybackslash}p{0.297\linewidth}@{}}
-\toprule
-Ch. & Core area & Model or tool & Question \\
-\midrule
-\endfirsthead
-\toprule
-Ch. & Core area & Model or tool & Question \\
-\midrule
-\endhead
-\bottomrule
-\endlastfoot
-\ref{ch:01} & Statistics of returns & Returns, Sharpe ratio, t-statistics, luck by simulation & Does a strong track record prove skill? \\
-\ref{ch:02} & Financial data & Adjusted prices; survivorship, look-ahead and micro-cap biases & Can historical data show what a strategy would have earned? \\
-\ref{ch:03} & Asset pricing and factors & OLS, the CAPM, factor models & Can size and value explain returns that beta cannot? \\
-\ref{ch:04} & Market efficiency and behavior & Portfolio sorts, cross-sectional momentum, crash risk & Do past winners keep winning? \\
-\ref{ch:05} & Technical analysis & Trading rules, time-series momentum, the Reality Check & Can simple trading rules beat buy-and-hold? \\
-\ref{ch:06} & Forecasting and the equity premium & Walk-forward evaluation, out-of-sample $R^2$, forecast tests & Can valuations predict the equity premium out of sample? \\
-\ref{ch:07} & Volatility modelling & ARCH/GARCH, realized and implied volatility, HAR & How predictable is volatility? \\
-\ref{ch:08} & Risk management & VaR, expected shortfall, backtesting, Basel & How reliably do VaR models measure risk? \\
-\ref{ch:09} & Portfolio construction & Mean--variance, efficient frontier, covariance estimation & Can optimized portfolios beat an equal split across assets? \\
-\ref{ch:10} & Diversification and dependence & Correlation dynamics, tail dependence & Does diversification fail when you need it most? \\
-\ref{ch:11} & International finance & Covered and uncovered interest parity, carry & Do high-interest currencies depreciate enough to offset their yield? \\
-\ref{ch:12} & Fixed income & Yield curves, forward rates, duration, expectations hypothesis & What do forward rates say about future interest rates? \\
-\ref{ch:13} & Investor behavior and holding periods & Holding-period returns, stopping times, the disposition effect & Do investors earn the returns their stocks earn? \\
-\ref{ch:14} & Trading and implementation & Spreads, turnover, break-even costs, capacity & Is a profitable backtest profitable to trade? \\
-\ref{ch:15} & CAPM and leverage & Security market line, Fama--MacBeth, leverage constraints & Why might low-risk stocks beat high-risk stocks? \\
-\ref{ch:16} & Econometrics of finance & Multiple testing, shrinkage, post-publication tests & How many published anomalies hold up? \\
-\ref{ch:17} & Credit & Default, recovery, spreads, the expected-loss spread & What do credit spreads reflect? \\
-\ref{ch:18} & Derivative pricing and hedging & Options, Black--Scholes, the Greeks, dynamic hedging & How much option risk does delta hedging remove? \\
-\ref{ch:19} & Options and volatility premia & Implied volatility, the VIX, the variance risk premium & Does selling options earn a reliable premium? \\
-\ref{ch:20} & Machine learning & Regularization, trees, neural nets, cross-validation & Can machine learning predict returns better than linear models? \\
-\ref{ch:21} & Forecasting & ARIMA, exponential smoothing, zero-shot foundation models & Can foundation models forecast better than classical methods? \\
-\ref{ch:22} & Asset-pricing theory & Stochastic discount factor, IPCA, attention & Can transformers price stocks better than factor models? \\
-\ref{ch:23} & Financial time series and AI & Range-based volatility, fine-tuning, synthetic data & Can foundation models trained on market data beat GARCH? \\
-\end{longtable}
-\endgroup
-
-Every question had to meet five criteria before it earned a chapter.
+Each question was chosen to do two jobs at once: to matter to practitioners or researchers, and to teach a core model. Every question had to meet five criteria before it earned a chapter.
 
 \begin{enumerate}
   \item \textbf{Anchored in a core model.} Answering it requires you to learn a model that belongs in any financial engineering course.
@@ -149,7 +106,11 @@ Every question had to meet five criteria before it earned a chapter.
   \item \textbf{A spread of outcomes.} In the published evidence, some early answers have largely held up (volatility is predictable), some hold only in weakened form (value, momentum, the option premium), and some have largely failed (forward rates as forecasts, optimized portfolios beating an equal-weighted one). The book does not lean toward debunking.
 \end{enumerate}
 
-The questions do not cover everything. This is not a full treatment of stochastic calculus, exotic derivatives, term-structure models beyond the basics, corporate finance, or market microstructure at the level of the order book.
+Working through the questions takes you through the standard financial engineering curriculum. The questions do not cover everything, however. This is not a full treatment of stochastic calculus, exotic derivatives, term-structure models beyond the basics, corporate finance, or market microstructure at the level of the order book.
+
+The book can therefore stand alone or sit beside the classics. Hull, Cochrane, and Campbell, Lo and MacKinlay teach how the models are built and what they imply. This book adds hands-on practice with every method, on data and simulations you run yourself. For readers who do not have those texts at hand, each chapter's Foundations section supplies the background the chapter needs.
+
+Every chapter has a Python lab. The labs are not replications of the studies they draw on, because many of those studies used proprietary or commercial data that most readers cannot obtain, such as the brokerage records behind Odean (1998). Each lab instead borrows the central idea of a study and works with data that anyone can download for free, such as the Kenneth French library, FRED and Goyal and Welch's predictor file, together with simulations in which the right answer is known in advance. The simulations let you see a mechanism clearly, and the real data let you see how it behaves in markets. Where an original study used a paid database, the lab explains how the free substitute differs.
 
 \section*{Foundations sections by chapter}
 
@@ -215,7 +176,6 @@ A one-semester course can follow Parts I to VII and Part IX in order. Instructor
 
 Learning by doing is slower at first than learning by reading. You will make predictions that turn out wrong, and you will spend time on ideas that turn out to be harder than they first looked. But you will understand each method because you needed it, and you will remember each result because you worked through it yourself.
 
-I wrote this book in the hope that it makes learning financial engineering more active and more enjoyable. Pick a question, write down what you expect, and open the lab.
 
 \bigskip
 \begin{flushright}

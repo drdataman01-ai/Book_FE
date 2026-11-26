@@ -1,5 +1,5 @@
 % ======================================================================
-% Shared preamble -- Financial Engineering and the Evidence
+% Shared preamble -- Financial Engineering in Practice
 % Same look as "Designing Agentic AI Solutions" (book class, Latin Modern,
 % pale tcolorbox callouts, natbib/hyperref), set for a 7.5 x 9.25 in
 % Kindle Direct Publishing (KDP) paperback/hardcover trim.
@@ -119,6 +119,18 @@
 \fancyhead[LE,RO]{\thepage}
 \fancyhead[RE]{\truncate{0.86\headwidth}{\slshape\small\leftmark}}
 \fancyhead[LO]{\truncate{0.86\headwidth}{\slshape\small\rightmark}}
+
+% ---------- table of contents ----------------------------------------
+% The book class reserves room for numbers such as 1.1 and 1.1.1 only, so
+% two-digit numbers such as 20.10 and 20.10.1 ran into the titles. These
+% widen the number column at each level. Each indent equals the indent plus
+% the number width of the level above, so titles at each level line up.
+% \@dottedtocline{level}{indent}{width reserved for the number}
+\makeatletter
+\renewcommand*\l@section{\@dottedtocline{1}{1.5em}{3.0em}}% fits 20.10
+\renewcommand*\l@subsection{\@dottedtocline{2}{4.5em}{3.9em}}% fits 20.10.1
+\renewcommand*\l@subsubsection{\@dottedtocline{3}{8.4em}{4.8em}}% fits 20.10.1.1
+\makeatother
 
 % ---------- subject index (load before hyperref) ---------------------
 \usepackage{imakeidx}
