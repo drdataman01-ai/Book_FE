@@ -1,12 +1,10 @@
-% Preface -- Financial Engineering and the Evidence
+% Preface -- Financial Engineering in Practice
+% The title below is not final; change it in this one line if you choose another.
 \chapter*{Preface}
 \addcontentsline{toc}{chapter}{Preface}
 \markboth{Preface}{Preface}
 
-\emph{Financial Engineering and the Evidence: Active Learning by Verifying Famous Claims}
-
-
-\textbf{Asset pricing}\index{asset pricing|textbf} is the study of why financial assets are worth what they are worth. An asset, such as a stock, a bond or an option, is a claim to uncertain payments in the future, and its price today must reflect both when those payments arrive and how risky they are. Asset pricing explains how markets translate future payoffs into present prices, why some assets earn higher average returns than others, and how those returns compensate investors for bearing risk. 
+\textbf{Asset pricing}\index{asset pricing|textbf} is the study of why financial assets are worth what they are worth. An asset, such as a stock, a bond or an option, is a claim to uncertain payments in the future, and its price today must reflect both when those payments arrive and how risky they are. Asset pricing explains how markets translate future payoffs into present prices, why some assets earn higher average returns than others, and how those returns compensate investors for bearing risk.
 
 \section*{A natural way to learn}
 
@@ -14,47 +12,49 @@ For a long time I have been thinking about how people learn a technical subject,
 
 Many textbooks follow a familiar pattern: a model is presented, its formulas are derived, a few examples are worked, and exercises follow at the end of the chapter. This is a time-tested way to pass on knowledge.
 
-But it may not make a reader research-oriented, and it may not build the judgment a working quant needs most: knowing whether a result can be trusted. When I turn the question around and ask, ``Does this actually work? Let's find out,'' the classroom comes alive. Students make predictions, argue about what the data will show, run the numbers, and remember what they found, often because it was not what they expected.
+But it may not make a reader research-oriented, and it may not build the judgment a working quant needs most: knowing whether a result can be trusted. When I start instead from a famous claim and put the methods in students' hands, the classroom comes alive. Students make predictions, argue about what the data will show, run the numbers, and remember what they found, often because it was not what they expected.
 
-I believe this is the natural way people learn, even in the age of AI. This book is built on that conviction. Its subtitle, \emph{Active Learning by Verifying Famous Claims}, describes the method. You will not be asked to accept the results of quantitative finance on authority. Instead, you will be invited to test those results for yourself while learning the techniques of financial engineering.
+I believe this is the natural way people learn, even in the age of AI. This book is built on that conviction. It teaches financial engineering by putting every idea in your hands. Each chapter explains a set of core methods and then gives you a lab in which you run them on real market data and on simulated data, change the assumptions, and watch what happens. The aim is the kind of understanding that comes from seeing an idea work, and seeing where it stops working, rather than from reading about it.
 
 \section*{Why this approach, and why now}
 
 Three developments make this the right moment for a book like this.
 
-First, the evidence behind many famous claims is live and unresolved. For example, Hou, Xue and Zhang (2020) asked how many published anomalies survive when micro-caps are given little weight, and found that about 65 percent of 452 anomalies fail a basic significance test. Jensen, Kelly and Pedersen (2023) asked whether a verdict that uses the evidence from all factors at once would be kinder, and, using a Bayesian method and data from 93 countries, concluded that most factors do replicate. Goyal, Welch and Zafirov (2024) checked whether the return predictors proposed since 2008 still work, and found that many have lost their power. When leading researchers disagree, students need to be able to work through the disagreement themselves. This book is designed to bring students into such debates rather than only report their conclusions. In Chapter~\ref{ch:16}, for example, students replicate both sides of the anomaly debate and form their own view.
+First, the evidence behind many famous claims is live and unresolved. For example, Hou, Xue and Zhang (2020) asked how many published anomalies survive when micro-caps are given little weight, and found that about 65 percent of 452 anomalies fail a basic significance test. Jensen, Kelly and Pedersen (2023) asked whether an assessment that uses the evidence from all factors at once would be kinder, and, using a Bayesian method and data from 93 countries, concluded that most factors do replicate. Goyal, Welch and Zafirov (2024) checked whether the return predictors proposed since 2008 still work, and found that many have lost their power. When leading researchers disagree, students benefit from understanding the methods each side uses. This book introduces students to such debates through those methods and reports where the published evidence stands, without taking sides. In Chapter~\ref{ch:16}, for example, students work hands-on with the methods behind both sides of the anomaly debate.
 
-Second, the data to do so is now free. Kenneth French's data library, FRED, Goyal and Welch's predictor file, the Jensen--Kelly--Pedersen global factors and Chen and Zimmermann's Open Source Asset Pricing portfolios let any student rebuild published results without a paid database.
+Second, the data are now free. Kenneth French's data library, FRED, Goyal and Welch's predictor file, the Jensen--Kelly--Pedersen global factors and Chen and Zimmermann's Open Source Asset Pricing portfolios let any student work with the same kinds of data that researchers use, without a paid database.
 
-Third, new methods are entering finance faster than they are being tested. Machine learning and time series foundation models promise much, but the finance-specific evidence is mixed. Students need to learn where these tools help and where they do not, and the only way to know is to test them.
+Third, new methods are entering finance faster than the evidence on them can accumulate. Machine learning and time series foundation models promise much, but the finance-specific evidence is mixed. Students need to learn how these tools work, how they are evaluated, and why a fair evaluation is harder than it looks.
 
-Courses that teach the replication debate usually do it through journal articles, while their textbooks present results rather than ask students to re-test them. This book is written to fill that gap.
+Courses on these topics usually teach the research debates through journal articles, while their textbooks present results without giving students a way to work with them. This book is written to fill that gap.
 
-\section*{Putting famous claims on trial}
+\section*{Famous claims as a way in}
 
 Finance is full of famous claims. Value beats growth. Momentum works. Stock returns are predictable. Optimized portfolios beat naive ones. Machine learning finds hidden alpha.
 
-Practitioners act on these claims, products are sold on them, and many are taught as if they were settled. They are also exactly the kind of question an active learner can answer with data.
+Practitioners act on these claims, products are sold on them, and many are taught as if they were settled. They also make an excellent starting point for learning, because each one rests on a model, a body of data and a debate.
 
-In this book, every such claim is put on trial, and you are the one who tries it. Each claim chapter follows the same cycle:
+Each chapter of this book is organized around one famous claim, such as ``investors earn the returns their stocks earn.'' A famous claim is a good place to start because it gives the methods a purpose: to understand the claim, you need the theory behind it, the data used to study it, and the reasons researchers have disagreed about it. The book reports where the published evidence stands, but it does not take sides in those debates. Every chapter follows the same structure:
 
 \begin{enumerate}
-  \item \textbf{Claim.} State what is asserted, in one testable sentence.
-  \item \textbf{Understand.} Learn how the idea works and how the original evidence was produced.
-  \item \textbf{Verify.} Rebuild the result in a Python lab on open data, then stress-test it out of sample, in other markets and after costs.
-  \item \textbf{Judge.} Reach a dated verdict: survives, weakens, fails or provisional.
-  \item \textbf{Apply.} Take away what investors and practitioners can use, and what remains open.
+  \item \textbf{Foundations.} Learn the core model and the background the chapter needs, in plain language.
+  \item \textbf{How it works.} See how the model turns into measurements and methods that researchers use.
+  \item \textbf{The claim.} Read the famous claim, stated precisely.
+  \item \textbf{The original evidence.} Learn what the founding studies found and how later researchers responded.
+  \item \textbf{Lab.} Work with the chapter's methods yourself, in Python, on free data and on simulations.
+  \item \textbf{Where the evidence stands.} See a summary of the published findings and whose evidence supports each one.
+  \item \textbf{What practitioners and investors can use.} Take away the lessons that matter in practice, and what remains open.
 \end{enumerate}
 
-This order is the heart of the active approach. Because the question comes first, every method is learned at the moment it is needed, to settle something you actually want to know. Newey--West errors, false-discovery rates and walk-forward evaluation stop being abstract tools and become the instruments that decide a case. Each lab also asks you to write down what you expect before you run a step. When the data disagree with your prediction, the surprise is visible, and it stays with you.
+This order is the heart of the active approach. Because the question comes first, every method is learned at the moment it is needed, to understand something you actually want to know. Newey--West errors, false-discovery rates and walk-forward evaluation stop being abstract tools and become the tools you need to make sense of a famous claim. Each lab also asks you to write down what you expect before you run a step. When the data disagree with your prediction, the surprise is visible, and it stays with you.
 
-The verdicts are not foregone conclusions. Some claims largely survive, such as the predictability of volatility. Some survive only in weakened form, such as value and momentum. The goal is to follow the evidence wherever it leads, and on some questions, such as whether most published anomalies are false, serious researchers still disagree. There you will replicate both sides and write your own verdict.
+The published evidence does not point the same way for every claim. Some claims have largely held up, such as the predictability of volatility. Some hold only in weakened form, such as value and momentum. On some questions, such as whether most published anomalies are false, serious researchers still disagree, and the chapter presents both sides.
 
-Repeated across twenty-three claims, the cycle becomes a habit. That habit, more than any single verdict, is what I hope you take from this book: before believing a result, ask ``compared to what, out of sample, and after costs?''
+Repeated across twenty-three chapters, this way of working becomes a habit. That habit, more than any single result, is what I hope you take from this book: before believing a result, ask ``compared to what, out of sample, and after costs?''
 
 \section*{How the book is organized}
 
-The book has nine parts, twenty-three claim chapters and four appendices. Every chapter puts a famous claim on trial, and the chapters are ordered by two rules. Methods climb from simple to complex, so no chapter needs a method taught later. Within that ladder, the chapters follow the dates of the papers that started each claim, so the book moves from the performance tests of the 1960s to the foundation models of 2025 in roughly the order the field itself did. The one exception is Part VIII, on derivatives and credit, which comes after Part VII even though its founding papers are older. It is the most technical part of the book, and no later chapter depends on it.
+The book has nine parts, twenty-three claim chapters and four appendices. Every chapter is organized around a famous claim, and the chapters are ordered by two rules. Methods climb from simple to complex, so no chapter needs a method taught later. Within that ladder, the chapters follow the dates of the papers that started each claim, so the book moves from the performance studies of the 1960s to the foundation models of 2025 in roughly the order the field itself did. The one exception is Part VIII, on derivatives and credit, which comes after Part VII even though its founding papers are older. It is the most technical part of the book, and no later chapter depends on it.
 Table~\ref{tab:pref-parts} lists the chapters in each part.
 
 \begingroup
@@ -109,27 +109,27 @@ IX & Machine learning and foundation models & \ref{ch:20} & Machine Learning Pre
 \endgroup
 
 
-Testing the claims takes you through the standard financial engineering curriculum. Each claim rests on a core model, and each chapter teaches that model in a self-contained Foundations section before testing the claim. You learn the same material as in a conventional course, but you meet each model where it makes a prediction the data can contradict.
+Working through the claims takes you through the standard financial engineering curriculum. Each claim rests on a core model, and each chapter teaches that model in a self-contained Foundations section before anything else. You learn the same material as in a conventional course, but you meet each model at the point where it says something about real markets.
 
-The book can therefore stand alone or sit beside the classics. Hull, Cochrane, and Campbell, Lo and MacKinlay teach how the models are built, while this book asks whether their predictions hold.
+The book can therefore stand alone or sit beside the classics. Hull, Cochrane, and Campbell, Lo and MacKinlay teach how the models are built and what they imply. This book adds what those texts cannot: hands-on practice with every method, on data and simulations you run yourself. For readers who do not have those texts at hand, each chapter's Foundations section supplies the background the chapter needs.
 
-Every chapter has a Python lab that replicates the papers behind its claim. All labs use free data, such as the Kenneth French library, FRED and Goyal and Welch's predictor file. Where an original study used a paid database, the lab explains how the free substitute differs.
+Every chapter has a Python lab. The labs are not replications of the studies they draw on. Many of those studies used proprietary or commercial data that most readers cannot obtain, such as the brokerage records behind Odean (1998). Each lab instead borrows the central idea of a study and works with data that anyone can download for free, such as the Kenneth French library, FRED and Goyal and Welch's predictor file, together with simulations in which the right answer is known in advance. The simulations let you see a mechanism clearly, and the real data let you see how it behaves in markets. Where an original study used a paid database, the lab explains how the free substitute differs.
 
 
 \section*{Why these claims}
 
-Each of the twenty-three claims, in Chapters~\ref{ch:01} to~\ref{ch:23}, was chosen to do two jobs at once: to settle a question that matters, and to teach a core model. The table shows how the claims map onto the standard curriculum. 
+Each of the twenty-three claims, in Chapters~\ref{ch:01} to~\ref{ch:23}, was chosen to do two jobs at once: to raise a question that matters, and to teach a core model. The table shows how the claims map onto the standard curriculum.
 
 \begingroup
 \small
 \setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
 \begin{longtable}{@{}l>{\raggedright\arraybackslash}p{0.198\linewidth}>{\raggedright\arraybackslash}p{0.288\linewidth}>{\raggedright\arraybackslash}p{0.297\linewidth}@{}}
 \toprule
-Ch. & Core area & Model or tool & Claim on trial \\
+Ch. & Core area & Model or tool & Famous claim \\
 \midrule
 \endfirsthead
 \toprule
-Ch. & Core area & Model or tool & Claim on trial \\
+Ch. & Core area & Model or tool & Famous claim \\
 \midrule
 \endhead
 \bottomrule
@@ -160,21 +160,21 @@ Ch. & Core area & Model or tool & Claim on trial \\
 \end{longtable}
 \endgroup
 
-Every claim had to pass five tests before it earned a chapter.
+Every claim had to meet five criteria before it earned a chapter.
 
 \begin{enumerate}
-  \item \textbf{Anchored in a core model.} Testing it requires you to learn a model that belongs in any financial engineering course.
+  \item \textbf{Anchored in a core model.} Understanding it requires you to learn a model that belongs in any financial engineering course.
   \item \textbf{Famous and consequential.} Practitioners act on it, products are sold on it, or it shaped the research literature.
-  \item \textbf{Testable with free data.} Any student can replicate the founding paper with the French library, FRED and similar public sources.
-  \item \textbf{Still debated.} Recent papers disagree, so the verdict is not a foregone conclusion and your own test adds information.
-  \item \textbf{A spread of verdicts.} Some claims largely survive (volatility is predictable), some survive only in weakened form (value, momentum, the option premium), and some largely fail (forward rates as forecasts, optimized portfolios beating an equal-weighted one). The method does not always say no.
+  \item \textbf{Workable with free data.} The central idea of its founding study can be studied hands-on with the French library, FRED and similar public sources.
+  \item \textbf{Still debated.} Recent papers disagree, so the chapter can show you a live research question rather than a settled answer.
+  \item \textbf{A spread of outcomes.} In the published evidence, some claims have largely held up (volatility is predictable), some hold only in weakened form (value, momentum, the option premium), and some have largely failed (forward rates as forecasts, optimized portfolios beating an equal-weighted one). The book does not lean toward debunking.
 \end{enumerate}
 
-The claims do not cover everything. This is not a full treatment of stochastic calculus, exotic derivatives, term-structure models beyond the basics, corporate finance, or market microstructure at the level of the order book. 
+The claims do not cover everything. This is not a full treatment of stochastic calculus, exotic derivatives, term-structure models beyond the basics, corporate finance, or market microstructure at the level of the order book.
 
 \section*{Foundations sections by chapter}
 
-The Foundations section in every claim chapter is part of what each chapter expects you to learn. 
+The Foundations section in every claim chapter is part of what each chapter expects you to learn.
 The table below lists the standard texts that treat its topic in depth. You do not need the books in the Further reading column to follow this one. They are listed for readers who want a deeper treatment of a topic.
 
 \begingroup
@@ -221,22 +221,22 @@ Full references for these books are listed alphabetically under Further Reading 
 
 \section*{Who this book is for}
 
-This book is for anyone who builds, buys or studies quantitative strategies and needs to judge whether the evidence behind them holds up.
+This book is for anyone who builds, buys or studies quantitative strategies and wants to understand the methods and the evidence behind them.
 Students in financial engineering, quantitative finance and financial data science will use the whole book, labs included, as will quantitative analysts and researchers at asset managers, banks and fintech firms.
-PhD students can use it as a companion for the replication debate. Portfolio managers, allocators and serious individual investors can read the principles and verdicts and skim the labs.
+PhD students can use it as a hands-on companion to the research literature. Portfolio managers, allocators and serious individual investors can read the Foundations sections and the summaries of the evidence and skim the labs.
 
-You will need to possess basic Python, and to know introductory statistics, regression and the elements of investments. Everything else is taught along the way.
+You will need basic Python and a working knowledge of introductory statistics, regression and the elements of investments. Everything else is taught along the way.
 
 \section*{How to use this book}
 
-The book covers a wide range of financial engineering. 
-A one-semester course can follow Parts I to VII and Part IX in order. Instructors can treat Part VIII, on derivatives and credit, as optional. Learning objectives for every chapter, which instructors can use to plan a syllabus or write exam questions, are in the instructor guide in the companion GitHub repository, next to the capstone project. 
+The book covers a wide range of financial engineering.
+A one-semester course can follow Parts I to VII and Part IX in order. Instructors can treat Part VIII, on derivatives and credit, as optional. Learning objectives for every chapter, which instructors can use to plan a syllabus or write exam questions, are in the instructor guide in the companion GitHub repository, next to the capstone project.
 
 \section*{An invitation}
 
-Learning by verifying is slower at first than learning by reading. You will make predictions that turn out wrong, and you will spend time on results that do not hold. But you will understand each method because you needed it, and you will remember each verdict because you reached it yourself.
+Learning by doing is slower at first than learning by reading. You will make predictions that turn out wrong, and you will spend time on ideas that turn out to be harder than they first looked. But you will understand each method because you needed it, and you will remember each result because you worked through it yourself.
 
-I wrote this book in the hope that it makes learning financial engineering more active and more enjoyable. Pick a claim, write down what you expect, and let the evidence decide.
+I wrote this book in the hope that it makes learning financial engineering more active and more enjoyable. Pick a claim, write down what you expect, and open the lab.
 
 \bigskip
 \begin{flushright}
