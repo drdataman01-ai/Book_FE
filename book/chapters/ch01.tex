@@ -396,8 +396,13 @@ An average computed from a limited number of years is only an estimate of the tr
   \mathrm{SE}(\bar{R}) = \frac{\sigma}{\sqrt{T}}.
   \label{eq:01-se}
 \end{equation}
-The standard error measures how far the sample mean is likely to fall from the true mean, and it shrinks only with the square root of the number of observations, so quadrupling the data merely halves it. The \term{t-statistic}\index{t-statistic|textbf} is a signal-to-noise ratio. It counts how many units of noise an average return sits above zero, and as a rule of thumb a value above about 2 means the result is unlikely to be luck. Formally, the t-statistic of a mean is the estimate divided by its standard error; under the hypothesis that the true mean is zero, it has approximately a standard \term{normal distribution}\index{distribution!normal}, so values beyond about $\pm 1.96$ occur by chance only 5\% of the time. Applied to the Sharpe ratio, the same arithmetic gives a useful rule: the t-statistic of a strategy's mean return is approximately its annual Sharpe ratio times the square root of the number of years. A Sharpe ratio of 0.5
-needs about 15 years of data before the t-statistic of its mean return reaches 1.96 (Figure~\ref{fig:01-years}).
+
+The standard error measures how much a sample average may differ from the true average. It decreases as more data are collected, but slowly: four times more data cuts the standard error in half.
+
+The t-statistic measures how strong a result is relative to noise. A value above 2 is often considered statistically significant. It is calculated by dividing the estimated average return by its standard error.
+
+For investment strategies, the t-statistic is approximately the Sharpe ratio  multiplying $ \sqrt{T}$. For example, a strategy with a Sharpe ratio of 0.5 needs about 15 years of data to reach a statistically significant t-statistic of 1.96.
+See Figure~\ref{fig:01-years}.
 
 %\begin{figure}[htbp]
 %\centering
@@ -622,14 +627,34 @@ Questions about \emph{risk} are different. Each additional observation adds info
 \begin{equation}
   \mathrm{SE}(\hat{\sigma}) \approx \frac{\sigma}{\sqrt{2N}} \nonumber
 \end{equation}
-With 20\% volatility and a century of data, the standard error is about 0.41 percentage points with monthly returns ($N = 1{,}200$) and about 0.09 with daily returns ($N \approx 25{,}200$), more than four times smaller. This is why the chapters on volatility (Chapter~\ref{ch:07}), value at risk\index{Value at Risk (VaR)} (Chapter~\ref{ch:08}), trading costs (Chapter~\ref{ch:14}) and delta hedging\index{delta hedging} (Chapter~\ref{ch:18}) use daily or even intraday data.
+The precision therefore depends on how many returns we observe, not on how
+many years the data cover. Consider a stock with an annual volatility of
+20\% 
+and a century of data. With monthly returns, $N = 1{,}200$, and
+Equation~\eqref{eq:se-vol} gives
+\begin{equation}
+  \mathrm{SE}(\hat{\sigma}) \approx \frac{0.20}{\sqrt{2 \times 1{,}200}}
+  = \frac{0.20}{49.0} \approx 0.0041 ,
+\end{equation}
+or about 0.41 percentage points. With daily returns over the same century,
+$N \approx 25{,}200$, and
+\begin{equation}
+  \mathrm{SE}(\hat{\sigma}) \approx \frac{0.20}{\sqrt{2 \times 25{,}200}}
+  = \frac{0.20}{224.5} \approx 0.0009 ,
+\end{equation}
+or about 0.09 percentage points. The same hundred years of history estimate
+volatility more than four times as precisely when we sample daily instead of
+monthly, because the standard error falls with the square root of $N$ and
+there are 21 times as many daily returns as monthly ones
+($\sqrt{21} \approx 4.6$).
 
-The rule ``the mean needs a long history, risk needs frequent data'' is a good guide, but it has limits.
+
+
+\textbf{The rule ``the mean needs a long history, risk needs frequent data'' is a good guide, but it has limits.}
 \begin{itemize}
   \item \textbf{Very high frequency adds noise.} At intraday frequencies, the bounce between \term{bid and ask prices} (the prices at which dealers will buy and sell) and stale quotes distort measured returns, so for volatility, more frequent data help only up to a point.
   \item \textbf{Daily betas can be biased.} Stocks that trade infrequently react to market news with a delay, which makes their daily betas too low. Monthly data, or a correction that adds lagged market returns to the regression (Dimson, 1979), reduces the bias. This matters for the low-risk anomaly\index{low-risk anomaly} in Chapter~\ref{ch:15}.
   \item \textbf{Annualizing is not automatic.} The rules in Section~\ref{sec:01-foundations} for converting monthly figures to annual ones assume that returns are uncorrelated over time. When they are \term{autocorrelated}\label{kt:autocorrelated}, meaning that one month's return partly echoes the last, as for many hedge funds and illiquid assets that trade rarely and are hard to price, a monthly Sharpe ratio multiplied by $\sqrt{12}$ can be badly off (Lo, 2002).
-  \item \textbf{The cancellation is exact only for log returns.} For simple returns, the precision of the mean still depends mainly on the length of the history, but only approximately.
 \end{itemize}
 \end{technote}
 
