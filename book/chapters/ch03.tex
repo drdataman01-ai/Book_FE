@@ -382,6 +382,21 @@ A long--short portfolio involves buying stocks in one group and short-selling st
 
 The beauty of the Fama--French SMB factor is that it captures the difference in returns between small and large companies through a simple long--short strategy. By buying small-company stocks and short-selling large-company stocks, it isolates the performance of smaller firms relative to larger ones. This approach allows investors to measure the size effect directly, without relying on the overall direction of the stock market.
 
+Readers who want to know exactly how the two factors are built will find the details in the shaded box.
+
+\begin{technote}
+\textbf{Technical note: how SMB and HML are built.} Each June, Fama and French sort NYSE, AMEX and Nasdaq stocks into two size groups, split at the median market capitalization of NYSE stocks, and into three book-to-market groups, split at the 30th and 70th NYSE percentiles. Crossing the two sorts gives six portfolios: small value, small neutral, small growth, big value, big neutral and big growth. Each portfolio holds every stock in its group, is value-weighted and is held for a year. The factors are simple averages of these portfolios:
+\begin{equation}
+  SMB = \tfrac{1}{3}(SV + SN + SG) - \tfrac{1}{3}(BV + BN + BG)
+  \label{eq:04-smb}
+\end{equation}
+\begin{equation}
+  HML = \tfrac{1}{2}(SV + BV) - \tfrac{1}{2}(SG + BG)
+  \label{eq:04-hml}
+\end{equation}
+Using NYSE breakpoints and value weights keeps the thousands of tiny Nasdaq stocks from dominating the factors, so SMB and HML are closer to what a large investor could trade than an equal-weighted comparison of small and large stocks would be. Book equity comes from the fiscal year ending in the previous calendar year, which leaves at least six months for accounting data to become public before they are used. The factors are research benchmarks rather than funds: their returns include no trading costs, short-selling fees or delays in trading, which Chapter~\ref{ch:14} adds back.
+\end{technote}
+
 \textbf{The economic argument.} Why should size and value earn premia, that is, extra average returns? 
 Fama and French offered a risk-based explanation. They argued that small companies and financially distressed companies face risks that are not fully captured by the overall market factor. Small companies tend to share common return movements that differ from those of large companies. Similarly, value companies, which often have persistently weak earnings, tend to be more financially distressed than growth companies. Their stock returns reflect this additional source of risk. Investors may therefore require higher expected returns to hold these stocks. In this interpretation, SMB and HML capture risks beyond the overall market risk.
 
