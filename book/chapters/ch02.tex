@@ -60,8 +60,6 @@ A stock's quoted price can change for reasons that bring shareholders neither a 
   \item \textbf{Dividend.} A dividend is a cash payment that a company makes to its shareholders. Only investors who own the stock before the \term{ex-dividend date} receive the payment, and anyone who buys on or after that date does not. For this reason, the share price usually falls by about the amount of the dividend on the ex-dividend date. Suppose, for example, that a \$100 stock pays a \$2 dividend and opens at \$98 on the ex-dividend date. The price return is $-2$\%, but the shareholder has lost nothing, because they now hold \$98 in stock and \$2 in cash, so their total return\index{return!total} is zero.
 \end{itemize}
 
-Databases therefore publish \term{adjusted prices}\index{data!adjusted prices|textbf}, which rescale past prices so that the change in the adjusted price equals the return a shareholder actually earned. After the split above, for example, every earlier price is divided by two. Total-return series go one step further and also adjust for dividends. Data vendors do not all make these adjustments in the same way, which is one reason why two sources can disagree about the history of the same stock.
-
 \subsection{Market capitalization and index weights}
 
 A company's \term{market capitalization}\index{market capitalization|textbf}, or market value, is its share price multiplied by the number of shares outstanding, so a company with one billion shares priced at \$50 is worth \$50 billion. The way a portfolio uses this number determines which stocks drive its results, and there are three common approaches.
@@ -69,10 +67,17 @@ A company's \term{market capitalization}\index{market capitalization|textbf}, or
 \begin{itemize}
   \item A \term{value-weighted}\index{index weighting!value-weighted|textbf} (or capitalization-weighted) portfolio holds each stock in proportion to its market capitalization. If company A is worth \$900 billion and company B is worth \$100 billion, the two are worth \$1 trillion together, so A receives 90\% of the money invested and B receives 10\%.
   \item An \term{equal-weighted}\index{index weighting!equal-weighted|textbf} portfolio puts the same amount of money into each stock, whatever its size, so A and B would each receive 50\%. Because company B makes up only 10\% of the market's value but receives half of the portfolio, equal weighting\index{equal weighting (1/N)} gives small companies far more influence than their size in the economy would justify.
-  \item A \term{price-weighted}\index{index weighting!price-weighted|textbf} index, such as the Dow Jones Industrial Average, weights each stock by its share price alone. A \$500 stock therefore counts ten times as much as a \$50 stock, regardless of how large the two companies are. This method is a historical convention and has no economic justification.
+  \item A \term{price-weighted}\index{index weighting!price-weighted|textbf} portfolio or index, such as the Dow Jones Industrial Average\index{Dow Jones Industrial Average}, weights each stock by its share price alone. A \$500 stock therefore counts ten times as much as a \$50 stock, regardless of how large the two companies are. This method is a historical convention and has no economic justification.
 \end{itemize}
 
-A value-weighted portfolio needs little \term{rebalancing}\index{rebalancing}, because its weights move with prices automatically. It trades mainly when stocks enter or leave the portfolio, or when companies issue new shares or buy back existing ones. An equal-weighted portfolio, by contrast, must be rebalanced regularly as prices drift apart, which means selling part of the stocks that have risen and buying more of those that have fallen until the weights are equal again.
+A value-weighted portfolio needs little \term{rebalancing}\index{rebalancing}, because its weights move with prices automatically. It trades mainly when stocks enter or leave the portfolio, or when companies issue new shares or buy back existing ones. 
+
+A price-weighted portfolio also adjusts itself as prices move\index{index weighting!price-weighted!rebalancing}, because it amounts to holding the same number of shares of each stock. A stock split\index{stock split!price-weighted index} is the exception. Suppose an index contains two stocks, X at \$500 and Y at \$50, so X has a weight of about 91\%. 
+If X splits two-for-one, its price falls to \$250 and its weight in the index falls to about 83\%, 
+even though the company is worth exactly what it was before. A portfolio that tracks the index now holds two shares of X for every share of Y and is overweight in X, so it must sell some of X and buy more of Y until it again holds the same number of shares of each stock.
+
+
+An equal-weighted portfolio, by contrast, must be rebalanced regularly as prices drift apart\index{index weighting!equal-weighted!rebalancing}, which means selling part of the stocks that have risen and buying more of those that have fallen until the weights are equal again.
 
 
 \subsection{The main research databases}
