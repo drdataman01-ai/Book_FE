@@ -215,6 +215,27 @@ where $\sigma$ is the volatility. For a stock index with 20\% annual volatility,
   \label{fig:02-drag}
 \end{figure}
 
+Readers who want to see where Equation~\eqref{eq:02-drag} comes from will find a short derivation in the shaded box; the rest of the chapter does not depend on it.
+
+\begin{technote}
+\textbf{Technical note: where the volatility drag comes from.} The approximation follows from working with log returns\index{return!log}, which turn compounding into addition. Taking the natural logarithm of Equation~\eqref{eq:02-geometric} shows that the log of one plus the geometric average equals the average log return:
+\begin{equation}
+  \ln(1+G) = \frac{1}{T}\sum_{t=1}^{T} \ln(1+R_t)
+  \label{eq:02-drag-log}
+\end{equation}
+When returns are not too large, a second-order Taylor expansion gives $\ln(1+R) \approx R - R^2/2$. The average of $R_t$ is $A$, and the average of $R_t^2$ equals $\sigma^2 + A^2$, where $\sigma^2$ is the variance of the returns. Applying the expansion to each term of Equation~\eqref{eq:02-drag-log} and averaging therefore gives
+\begin{equation}
+  \ln(1+G) \approx A - \frac{A^2 + \sigma^2}{2}
+\end{equation}
+The same expansion applied to the arithmetic average gives $\ln(1+A) \approx A - A^2/2$. Subtracting one result from the other, the $A^2$ terms cancel and only the variance is left:
+\begin{equation}
+  \ln(1+A) - \ln(1+G) \approx \frac{\sigma^2}{2}
+\end{equation}
+Because $\ln(1+x)$ is close to $x$ when $x$ is small, the left side is close to $A - G$, and rearranging gives Equation~\eqref{eq:02-drag}.
+
+The result becomes exact in one important case. If log returns are normally distributed with mean $m$ and variance $s^2$, the expected gross return is $1 + A = e^{m + s^2/2}$, while over a long horizon the geometric average settles at $1 + G = e^{m}$. The gap in logs is then exactly $s^2/2$. This is the setting of geometric Brownian motion, used in Chapters~\ref{ch:13} and~\ref{ch:18}, in which the log price drifts at $\mu - \sigma^2/2$. The approximation is least reliable when returns are very large or strongly skewed, because the expansion ignores the cubic and higher terms, and these matter most for the most volatile assets.
+\end{technote}
+
 \textbf{Implications:}
 \begin{enumerate}
 \item Use the arithmetic average when you need the expected return for a single period, as in the Sharpe ratio or a forecast, and use the geometric average when you report how much an investment grew. 
@@ -480,7 +501,7 @@ Chapter~\ref{ch:01} described the problem of selection within one researcher's s
 
 Lo and MacKinlay (1990) called this \term{data-snooping bias}\index{data snooping|textbf}. When the choice of what to test is influenced by what earlier studies found in the same data, the usual significance levels\index{hypothesis testing!significance level} overstate the strength of the evidence. No single researcher can fix this bias, because no one knows how many ideas were tried and abandoned across the whole field. A lottery offers a useful comparison. Someone wins almost every week, but the winner is not evidence that a winning system exists, because millions of tickets were bought and we hear only about the one that won.
 
-Three defenses work, and later chapters use all of them.
+Although no researcher can measure data-snooping bias directly, three defenses can protect against it, and the later chapters of this book use each of them.
 
 \begin{enumerate}
   \item \textbf{New data.} Check the result in periods or markets that played no part in its discovery, such as the years before the original sample, the years after publication, or other countries (Chapters~\ref{ch:04} and~\ref{ch:16}).
@@ -491,7 +512,7 @@ Three defenses work, and later chapters use all of them.
 \section{Lab~\thechapter: Data Traps}
 \label{sec:02-lab}
 
-\textbf{What you will explore:} how features of the data, such as missing failures, missing delisting losses, repeated searching and tiny stocks, change the return a backtest appears to earn. Each part of the lab draws on one study that showed how a feature of the data can change a result. Brown, Goetzmann, Ibbotson and Ross (1992) showed by simulation that dropping funds that disappear can create false persistence, and Shumway (1997) measured the missing delisting losses. Brock, Lakonishok and LeBaron (1992) made moving-average rules famous, and Sullivan, Timmermann and White (1999) showed how much of their success came from searching across many rules. Banz (1981) discovered the size effect, and Horowitz, Loughran and Savin (2000) and Schwert (2003) found that it weakened after publication and depended on the smallest stocks. The data are monthly and daily U.S. market returns and size-sorted portfolios\index{portfolio sort} since 1926 from the Kenneth R. French Data Library\index{Kenneth French data library}, plus a simulated stock market, and the code is in the repository folder \texttt{ch02-data-traps/}. Survivorship is measured with a simulation because it requires the same backtest with and without the failed companies, and free sources do not let us take the failures out.
+\textbf{What you will explore:} how choices about the data, such as which average is reported, whether failed companies are included, how many rules are tried and whether tiny stocks are kept, change the return a backtest appears to earn. Part~A measures the volatility drag of Section~\ref{sec:02-returns}; Part~B follows Brown, Goetzmann, Ibbotson and Ross (1992) and Shumway (1997); Part~C follows Brock, Lakonishok and LeBaron (1992) and Sullivan, Timmermann and White (1999); and Part~D follows Banz (1981), Horowitz, Loughran and Savin (2000) and Schwert (2003). The data are monthly and daily U.S. market returns and size-sorted portfolios\index{portfolio sort} since 1926 from the Kenneth R. French Data Library\index{Kenneth French data library}, together with a simulated stock market for Part~B, because measuring survivorship requires the same backtest with and without the failed companies, and free sources do not include the failures. The code is in the repository folder \texttt{ch02-data-traps/}.
 
 \textbf{Part A: Arithmetic versus geometric averages.} The lab computes both averages for Treasury bills, the market, and the largest and smallest 10\% of stocks, and compares each gap with the volatility-drag approximation $G \approx A - \sigma^2/2$\index{variance} of Section~\ref{sec:02-returns} (Lab Figure~\ref{ch:02}.1). Expect almost no gap for Treasury bills, about 2 percentage points a year for the market, and several points for the smallest stocks.
 
