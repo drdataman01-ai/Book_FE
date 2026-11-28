@@ -382,7 +382,6 @@ A long--short portfolio involves buying stocks in one group and short-selling st
 
 The beauty of the Fama--French SMB factor is that it captures the difference in returns between small and large companies through a simple long--short strategy. By buying small-company stocks and short-selling large-company stocks, it isolates the performance of smaller firms relative to larger ones. This approach allows investors to measure the size effect directly, without relying on the overall direction of the stock market.
 
-Readers who want to know exactly how the two factors are built will find the details in the shaded box.
 
 \begin{technote}
 \textbf{Technical note: how SMB and HML are built.} Each June, Fama and French sort NYSE, AMEX and Nasdaq stocks into two size groups, split at the median market capitalization of NYSE stocks, and into three book-to-market groups, split at the 30th and 70th NYSE percentiles. Crossing the two sorts gives six portfolios: small value, small neutral, small growth, big value, big neutral and big growth. Each portfolio holds every stock in its group, is value-weighted and is held for a year. The factors are simple averages of these portfolios:
@@ -394,16 +393,19 @@ Readers who want to know exactly how the two factors are built will find the det
   HML = \tfrac{1}{2}(SV + BV) - \tfrac{1}{2}(SG + BG)
   \label{eq:04-hml}
 \end{equation}
-Using NYSE breakpoints and value weights keeps the thousands of tiny Nasdaq stocks from dominating the factors, so SMB and HML are closer to what a large investor could trade than an equal-weighted comparison of small and large stocks would be. Book equity comes from the fiscal year ending in the previous calendar year, which leaves at least six months for accounting data to become public before they are used. The factors are research benchmarks rather than funds: their returns include no trading costs, short-selling fees or delays in trading, which Chapter~\ref{ch:14} adds back.
+
+Holding thousands of illiquid micro-caps and shorting hundreds of large stocks is not realistic. The factors are research benchmarks rather than funds: because they follow fixed, public rules and include every eligible stock, they measure the premiums for the whole market, leave no room to pick favorable stocks, and can be rebuilt and compared across studies.
+
+%Two of these choices limit the influence of the thousands of very small companies, most of them listed on Nasdaq. 
+%\begin{enumerate}
+%\item The breakpoints come from NYSE stocks only, which are larger on average, so the dividing line between small and big sits at the size of a mid-sized company rather than at the much lower median of all stocks. 
+%\item Because each portfolio is value-weighted, each company counts in proportion to its market value, so the many tiny stocks together have little effect on a portfolio's return. As a result, SMB and HML are closer to what a large investor could trade than an equal-weighted comparison of small and large stocks would be. 
+%\end{enumerate}
 \end{technote}
 
-\textbf{The economic argument.} Why should size and value earn premia, that is, extra average returns? 
-Fama and French offered a risk-based explanation. They argued that small companies and financially distressed companies face risks that are not fully captured by the overall market factor. Small companies tend to share common return movements that differ from those of large companies. Similarly, value companies, which often have persistently weak earnings, tend to be more financially distressed than growth companies. Their stock returns reflect this additional source of risk. Investors may therefore require higher expected returns to hold these stocks. In this interpretation, SMB and HML capture risks beyond the overall market risk.
+\textbf{The economic argument.}  Why should size and value earn premia, that is, extra average returns? Fama and French argued that the premia are compensation for risks the market factor misses. Small companies share return movements of their own, and value companies, often with persistently weak earnings, are more likely to be in financial distress. Investors who bear these risks demand higher expected returns, so SMB and HML capture risks beyond market risk.
 
-\textbf{Alpha decay.} Moving from the CAPM to three factors does not remove any return; it relabels it. Returns that the CAPM counted as alpha are reassigned to exposures to $SMB$ and $HML$. For the 25 portfolios sorted on size and book-to-market, the $R^2$ rises substantially, above 90\% for most portfolios, and the alphas shrink toward zero (Fama and French 1993). This \term{alpha decay}\index{alpha!decay|textbf} is the main practical consequence of the new decomposition: a manager who looked skilled under the CAPM may simply have held small value stocks.
-
-Lakonishok, Shleifer and Vishny's behavioral reading has an everyday counterpart. When a restaurant becomes fashionable, diners pay high prices and the place often disappoints, while the unfashionable diner down the street quietly offers better value. In their view, glamour stocks are the fashionable restaurant and value stocks the unfashionable one.
-
+\textbf{Alpha decay.} Returns that the CAPM counted as alpha are reassigned to exposures to $SMB$ and $HML$. For the 25 portfolios sorted on size and book-to-market, the $R^2$ rises substantially, above 90\% for most portfolios, and the alphas shrink toward zero (Fama and French 1993). This \term{alpha decay}\index{alpha!decay|textbf} is the main practical consequence of the new decomposition: a manager who looked skilled under the CAPM may simply have held small value stocks.
 
 \subsection{Beyond Three Factors: The Fama--French Five-Factor Model}
 \label{sec:04-multifactor}
@@ -442,14 +444,11 @@ Under the five-factor model, alpha measures the return that cannot be explained 
 A different set of factors may produce a different alpha. Therefore, alpha is not simply a characteristic of an asset; it depends on the
 asset pricing model used to evaluate it. Any discussion of alpha should make clear which model is being used.
 
-Factor premiums are also far from guaranteed in any given decade. Value investors learned this the hard way: measured by the Fama--French value factor, value stocks trailed growth stocks from 2007 onward, and by mid-2020 the factor had suffered a drawdown of about 55\%, the largest since its data begin in 1963. A premium that is real on average can still disappoint for a decade or more, which is exactly the kind of noise Chapter~\ref{ch:01} warned about.
-
-
 \subsection{The Factor Zoo}
 \label{sec:04-zoo}
 The search did not stop at five or six factors. As Cochrane (2011) and Harvey, Liu, and Zhu (2016) document, intense backtesting has led to a ``zoo of factors''\index{factor zoo|textbf} comprising hundreds of published anomalies; Harvey, Liu, and Zhu counted more than 300. Each began life the same way as momentum and profitability did, as a pattern in average returns that the existing model could not explain.
 
-Cochrane (2011) posed the question that the zoo raises: which characteristics really provide independent information about average returns, and which are the same few effects measured in different ways? The logic of risk decomposition offers one answer, and statistics offers another. The economic answer is that a factor deserves a place in the model only if there is a reason to expect its returns to track bad times, or a reason to expect a mispricing that arbitrage cannot remove. Without such a reason, adding factors becomes a mechanical exercise. Every new factor turns some alpha into beta, and with enough factors almost any alpha can be made to disappear, so the decomposition loses its power to tell skill from exposure.
+Cochrane (2011) posed the question that the zoo raises: which characteristics really provide independent information about average returns, and which are the same few effects measured in different ways? The logic of risk decomposition offers one answer, and statistics offers another. The economic answer is that a factor deserves a place in the model only if there is a reason to expect its returns to track bad times, or a reason to expect a mispricing that arbitrage cannot remove. Without such a reason, adding factors becomes a mechanical exercise. 
 
 The statistical answer is that a factor found by searching through hundreds of candidates must clear a higher bar than one proposed in advance. Most factors in the zoo were found by testing many candidate signals on the same few decades of U.S. data, which is exactly the kind of search that Chapter~\ref{ch:01} warned about. Section~\ref{sec:04-multiple-testing} explains why such a search demands strict multiple-testing corrections. The zoo is where the two halves of this chapter meet: the risk decomposition supplies the candidate factors, and the $t$-statistic decides which of them survive.
 
@@ -523,11 +522,9 @@ A few entries in the table use specialist terms. \term{Accruals} are the part of
 \subsection{Statistical significance versus economic significance}
 \label{subsec:04-statistical-economic-significance}
 
-When researchers identify a factor with a positive average return, an important question is whether the estimated premium is statistically significant. Statistical significance helps determine whether the observed premium is likely to reflect more than sampling variation. However, it does not tell us whether the premium is large enough to matter economically.
+A factor's premium can be statistically significant without being economically significant. Statistical significance asks whether the average return is too large to be explained by chance, while economic significance asks whether it is large enough to matter. A premium of 0.20\% a month can clear the statistical bar if its standard error is small, yet 2.4\% a year may not be worth the risk and the trading costs.
 
-Consider a factor with an estimated average monthly return of 0.20\%. If its standard error is sufficiently small, the estimated premium may be statistically significant. Yet an annualized premium of approximately 2.4\% may or may not be attractive, depending on the risk involved and the costs of implementing the strategy. By contrast, a factor with a larger estimated premium may have substantial uncertainty and fail to meet conventional significance thresholds.
-
-A common way to summarize a factor's historical performance is to calculate its annualized average return and Sharpe ratio. If $\bar{f}$ denotes the average monthly factor return and $s_f$ its monthly standard deviation, the annualized quantities are
+Two summaries of a factor's record are standard. If $\bar{f}$ is the average monthly factor return and $s_f$ its monthly standard deviation, then
 \begin{equation}
   \text{Annualized premium}=12\bar{f},
   \qquad
@@ -535,188 +532,49 @@ A common way to summarize a factor's historical performance is to calculate its 
   =\sqrt{12}\frac{\bar{f}}{s_f}.
   \label{eq:04-factor-sharpe}
 \end{equation}
-These calculations provide a convenient summary of the factor's historical return and risk. They rely on standard annualization conventions and should be interpreted with care, particularly when returns exhibit serial correlation.
+These conversions assume that monthly returns are uncorrelated, so they should be used with care when returns are serially correlated.
 
-Economic significance requires a broader assessment than the size of an estimated premium or its $t$-statistic. A strategy may generate a statistically significant return before costs but become unattractive after accounting for transaction costs, portfolio turnover, liquidity constraints and the practical difficulty of implementing the strategy. The results may also depend on the sample period, portfolio construction method and assumptions about trading.
-
-There is another important distinction. A factor's historical premium does not, by itself, establish why the premium exists. Under a risk-based interpretation, investors earn compensation for bearing systematic risks. Under other interpretations, the premium may reflect mispricing, investor behavior or limitations in the empirical model. Establishing a reliable economic explanation requires more than observing a positive average return.
-
-For these reasons, evaluating a factor requires several complementary questions:
+A credible factor should pass four tests:
 
 \begin{itemize}
-  \item \textbf{Statistical significance:} Is the estimated premium sufficiently precise to distinguish it from zero?
-  \item \textbf{Economic significance:} Is the premium large enough to matter relative to the risk taken?
-  \item \textbf{Implementability:} Does the premium remain attractive after transaction costs, turnover and liquidity constraints?
-  \item \textbf{Economic interpretation:} Is there a convincing explanation for why the factor should earn a premium?
+  \item \textbf{Statistical significance:} Is the premium clearly different from zero?
+  \item \textbf{Economic significance:} Is it large relative to the risk taken?
+  \item \textbf{Implementability:} Does it survive transaction costs, turnover and illiquid stocks?
+  \item \textbf{Economic interpretation:} Is there a convincing reason, such as risk or mispricing, why it should exist?
 \end{itemize}
 
-These questions are especially important in empirical asset pricing, where researchers may examine hundreds of candidate factors. A statistically significant result can arise by chance, particularly when many hypotheses are tested. Even a factor that survives statistical scrutiny must still demonstrate economic relevance and practical value. A credible factor discovery should therefore combine statistical evidence, economic reasoning and realistic investment considerations. Put simply, a result can be real and still too small, too costly to trade or too poorly understood to be worth acting on.
+When hundreds of factors are tested, some will pass the first test by chance, which makes the other three all the more important. Put simply, a result can be real and still too small, too costly to trade or too poorly understood to be worth acting on.
 
 
 \subsection{Practical and Institutional Implications}
 \label{sec:04-implications}
 
-Multi-factor models have changed how investors evaluate fund
-performance, manage portfolios, and make corporate investment
-decisions. Three applications illustrate their importance.
+Multi-factor models have changed how investors judge funds and how companies set the returns their projects must earn.
 
-\textbf{Asset management and identifying manager skill.}
-A fund's excess return can be divided into two parts: returns
-explained by exposure to common risk factors and the additional
-return, called alpha, that the factors cannot explain. Investors
-can now obtain exposure to many of these factors at relatively
-low cost through index funds and factor-based funds. Therefore,
-when evaluating an active fund manager, investors want to know
-whether the manager's performance comes from genuine investment
-skill or simply from holding stocks with certain factor
-characteristics. Carhart (1997) found that momentum exposure and
-fund expenses explain much of the apparent persistence in mutual
-fund performance. In other words, funds that seemed to win year
-after year were often just holding the stocks that had recently
-risen, which anyone could do cheaply. Fama and French (2010) also found that very few
-fund managers consistently generate returns that are high enough
-to cover their costs.
+\textbf{Identifying manager skill.} A fund's return can be split into the part explained by its factor exposures and the alpha that remains. Because factor exposure can now be bought cheaply through index and factor funds, only the alpha is evidence of skill. Carhart (1997) found that momentum exposure and fees explain much of the apparent persistence in mutual fund performance: funds that seemed to win year after year were often just holding recent winners. Fama and French (2010) found that very few managers earn enough to cover their costs.
 
-\textbf{Performance evaluation and investment style.}
-Multifactor models also help investors understand how a fund
-generates its returns. By comparing a fund's returns with those
-of different investment style indexes, researchers can identify
-whether the fund follows a growth, value, or other investment
-strategy, even without examining its individual holdings.
-Sharpe (1992) demonstrated this approach using style analysis, which finds the mix of simple index funds whose combined returns most closely track the fund's returns.
-Institutional investors also monitor a manager's factor exposures
-over time to detect changes in investment strategy, known as
-\term{style drift}\index{style drift|textbf}. For example, if a
-fund described as a value fund gradually loses its exposure to
-the HML factor, its actual investment style may no longer match
-its stated strategy.
+\textbf{Investment style.} Factor models also show how a fund earns its returns without looking at its holdings. Sharpe's (1992) style analysis finds the mix of simple index funds whose returns best track the fund. Investors also watch for \term{style drift}\index{style drift|textbf}: a ``value'' fund whose exposure to HML fades over time no longer follows its stated strategy.
 
-\textbf{Corporate finance and the cost of capital.}
-Companies also use asset pricing models to estimate the cost of
-equity, which helps them decide whether a proposed project offers
-a sufficient expected return. While the CAPM uses only market
-risk, multifactor models allow companies to consider additional
-sources of risk, such as firm size and other characteristics.
-However, the CAPM remains the most widely used approach in
-corporate practice (Graham and Harvey 2001). More factors do not
-necessarily produce more accurate estimates. Fama and French
-(1997) found that estimates of industry costs of equity were
-highly uncertain under both the CAPM and the three-factor model,
-with standard errors exceeding 3\% per year. Thus, multifactor
-models may provide additional information for investment
-decisions, but they do not eliminate the difficulty of estimating
-the cost of capital accurately.
+\textbf{The cost of capital.} Companies use asset pricing models to estimate the return their shareholders require. Multi-factor models can add risks beyond the market, but the CAPM remains the most common choice in practice (Graham and Harvey 2001), and more factors do not mean more accurate estimates. Fama and French (1997) found that industry costs of equity were highly uncertain under both models, with standard errors above 3\% a year.
 
 
 \subsection{The Factor Zoo and the Multiple-Testing Problem}
 \label{sec:04-multiple-testing}
 
-The growing number of proposed risk factors raises an important
-statistical question: how should we judge whether a newly discovered
-factor is genuinely related to expected stock returns? Traditionally,
-researchers often regard a $t$-statistic greater than approximately
-2.0 as evidence of statistical significance at the 5\% level. This
-convention is appropriate when testing a single hypothesis under the
-usual statistical assumptions. However, asset pricing research
-presents a different situation. Researchers have tested hundreds
-of possible factors, often using overlapping data, similar
-methodologies, and related measures of firm characteristics. When
-so many hypotheses are tested, some will appear statistically
-significant simply by chance.
+A $t$-statistic above about 2 is the usual sign of significance at the 5\% level, but that bar is meant for a single test. Researchers have tested hundreds of factors on the same data, and when so many are tested, some will pass by chance. Harvey, Liu and Zhu (2016) therefore argue that significance must be judged against the whole search, not just the result a paper reports.
 
-Harvey, Liu, and Zhu (2016)
-address this problem. They argue that the traditional significance
-threshold is too low for a field in which researchers have tested
-so many potential explanations for the cross-section of stock
-returns. Their central message is that statistical significance
-must be evaluated in light of the entire search process, not just
-the final result reported in an individual paper.
-
-\textbf{Why testing many factors creates a problem.}
-To understand their argument, consider a simple example. Suppose
-a researcher tests 100 factors, none of which has a genuine
-relationship with expected returns. 
-
-If each factor is tested
-individually at the 5\% significance level, assuming
-the tests are independent, the probability of obtaining at least
-one false positive is
+\textbf{Why testing many factors creates a problem.} Suppose a researcher tests 100 factors, none with a true premium, each at the 5\% level. If the tests are independent, each has a 95\% chance of avoiding a false positive, so the chance that at least one passes by luck is
 \begin{equation}
   1-(1-0.05)^{100} \approx 99.4\%. \nonumber
 \end{equation}
+Cast enough lines and something will bite, even in a nearly empty lake. This is the \term{multiple-testing problem}\index{multiple-testing problem|textbf}: a $t$-statistic of 2.1 looks significant on its own, but much less so once the other attempts are counted.
 
-The probability of avoiding a false positive is 1-0.05 = 0.95. 
-$0.95^{100}$ represents the probability that all 100 tests avoid false positives. 
-Subtracting this probability from 1 gives \textbf{the probability of at least one false positive}, which is approximately 99.4\%.
+\textbf{Publication bias.} The published record makes the problem look smaller than it is. Journals are more likely to publish a factor with a $t$-statistic of 2.5 than one with 0.8, so the factors we see have already passed a significance filter. Because of this \term{publication bias}\index{publication bias|textbf}, the failed attempts that never appear are part of the search too.
 
-In other words, when 100 independent factors, each with a true premium of zero, are tested at the 5\% significance level, 
-there is approximately a 99.4\% 
-chance that at least one will incorrectly appear to have a significant premium.
-
-A fishing trip offers a simple picture of the problem: cast enough lines and something will eventually bite, even in a nearly empty lake. This issue is known as the \term{multiple-testing problem}.
-\index{multiple-testing problem|textbf} A conventional $t$-test
-evaluates one hypothesis at a time. It does not account for the
-number of other hypotheses that researchers have examined.
-Consequently, a factor with a $t$-statistic of 2.1 may appear
-significant when considered in isolation, even though the result
-is much less convincing after accounting for the many other
-factors that researchers have tried.
-
-There is another difficulty: researchers and academic journals
-are more likely to report statistically significant findings than
-unsuccessful experiments. A factor that produces a $t$-statistic
-of 2.5 may be published, while another factor that produces a
-$t$-statistic of 0.8 may never appear in a journal article. The
-published literature therefore contains a disproportionate
-number of successful results. This phenomenon is known as
-\term{publication bias}\index{publication bias|textbf}. It
-creates a form of selection bias: the factors we observe are
-already those that have passed an initial significance threshold.
-
-Harvey, Liu, and Zhu emphasize that the number of published
-factors is not the same as the total number of factors researchers
-have tested. The unsuccessful experiments that never become
-publicly available are also part of the research process and
-should be considered when evaluating the reliability of reported
-discoveries.
-
-\textbf{How many factors have researchers actually tested?}
-To investigate the scale of the problem, Harvey, Liu, and Zhu
-(2016) assembled a database of 313 research papers that proposed
-and tested 316 factors related to the cross-section of expected
-stock returns. 
-
-The list of 316 factors illustrates the extensive search for
-variables that can explain differences in average stock returns.
-The 316 factors do
-not necessarily represent 316 independent sources of risk.
-But more importantly, the authors recognized that factors that failed to
-produce significant results were unlikely to be published.
-Their statistical framework therefore attempts to account for
-these unobserved tests rather than treating the published
-literature as the complete record of research activity.
-
-The short answer is that a new factor should usually reach a $t$-statistic of about 3 rather than 2. The shaded box summarizes how the authors arrived at that number.
+\textbf{How high the bar should be.} Harvey, Liu and Zhu collected 313 papers proposing 316 factors, and their method also allows for the tests that were never published. Their answer is that a new factor should usually reach a $t$-statistic of about 3 rather than 2. The shaded box explains why the number is a guide rather than an exact rule.
 
 \begin{technote}
-\textbf{Technical note: how high the bar should be.} The authors then evaluate how demanding the statistical
-significance threshold should be when researchers test many
-potential factors. They consider several approaches that
-differ in how strictly they control the possibility of false
-discoveries. 
-
-
-After accounting for multiple testing, unpublished
-experiments and correlations among factors, they find
-that the required $t$-statistic varies with the statistical
-method and assumptions. Some stricter approaches require
-a value more than 3.92. Their widely cited recommendation,
-however, is that a newly discovered factor should generally
-have a $t$-statistic greater than 3.0.
-The precise threshold is not a universal constant. It depends
-on the number of tests, the dependence among test statistics,
-the assumed number of unreported experiments, and the chosen
-error-control procedure.
+\textbf{Technical note: why the bar is about 3.} The required $t$-statistic depends on how strictly a method controls false discoveries, how many unpublished tests are assumed and how closely the factors are correlated. Some strict methods require more than 3.9, but the authors' widely cited recommendation is 3.0. The threshold is therefore a guide for the field, not a universal constant.
 \end{technote}
 
 \subsection{Economical magnitude}
